@@ -28,3 +28,19 @@ rule pdb_seqres2fasta:
     run:
         from Bio import SeqIO
         SeqIO.convert(input[0], "pdb-seqres", output[0], "fasta")
+
+rule hhmake:
+    input:
+        "{prefix}.msa"
+    output:
+        "{prefix}.hmm"
+    shell:
+        "hhmake -i {input} -o {output}"
+
+rule hhalign:
+    input:
+        "{file}.fa"
+    output:
+        "{file}.hhalign"
+    shell:
+        "sed 's/-//g' {input} | hhalign -i stdin -t PF01600_full.hmm -o {output}"
