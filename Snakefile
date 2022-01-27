@@ -51,14 +51,14 @@ rule hmmbuild:
     shell:
         "hmmbuild {output} {input}"
 
-rule hhalign:
+rule hmmsearch:
     input:
         "{file}.fa",
-        "PF01600_full.hmm"
+        "PF09408_full.hmm"
     output:
-        "{file}.hhalign"
+        "{file}.hmmsearch"
     shell:
-        "sed 's/-//g' {wildcards.file}.fa | hhalign -i stdin -t PF01600_full.hmm -o {output}"
+        "sed 's/-//g' {wildcards.file}.fa | hmmsearch PF09408_full.hmm - > {output}"
 
 rule find_S1_chains:
     input:
