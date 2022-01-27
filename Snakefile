@@ -9,3 +9,13 @@ rule download_pdb:
         "pdb/{id}.pdb"
     shell:
         "wget https://www.crystallography.net/pdb/{wildcards.id}.pdb -O {output}"
+
+# Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
+# Contacts between S1 and antibody chains define the contact surface.
+rule vorocontacts:
+    input:
+        "pdb/{id}.pdb"
+    output:
+        "vorocontacts/{id}.tab"
+    shell:
+        "voronota-contacts -i {input} > {output}"
