@@ -39,21 +39,23 @@ rule hhmake:
 
 rule hhalign:
     input:
-        "{file}.fa"
+        "{file}.fa",
+        "PF01600_full.hmm"
     output:
         "{file}.hhalign"
     shell:
-        "sed 's/-//g' {input} | hhalign -i stdin -t PF01600_full.hmm -o {output}"
+        "sed 's/-//g' {wildcards.file}.fa | hhalign -i stdin -t PF01600_full.hmm -o {output}"
 
 rule find_S1_chains:
     input:
-        "pdb-seqres/{id}.fa"
+        "pdb-seqres/{id}.fa",
+        "PF01600_full.hmm"
     output:
         "pdb-S1/{id}.lst"
     shell:
         """
         echo -n > {output}
-        cat {input} | while read -d '>' FASTA
+        cat pdb-seqres/{wildcards.id}.fa | while read -d '>' FASTA
                       do
                         test -z "$FASTA" && continue
                         PROB=$(echo ">$FASTA" | sed 's/-//g' | hhalign -i stdin -t PF01600_full.hmm -o /dev/stdout | grep -oP 'Sum_probs=[^.]+' | cut -d = -f 2)
