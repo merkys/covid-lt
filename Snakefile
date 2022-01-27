@@ -63,16 +63,8 @@ rule hmmsearch:
 rule find_S1_chains:
     input:
         "pdb-seqres/{id}.fa",
-        "PF01600_full.hmm"
+        "PF09408_full.hmm"
     output:
         "pdb-S1/{id}.lst"
     shell:
-        """
-        echo -n > {output}
-        cat pdb-seqres/{wildcards.id}.fa | while read -d '>' FASTA
-                      do
-                        test -z "$FASTA" && continue
-                        PROB=$(echo ">$FASTA" | sed 's/-//g' | hhalign -i stdin -t PF01600_full.hmm -o /dev/stdout | grep -oP 'Sum_probs=[^.]+' | cut -d = -f 2 || true)
-                        test -n "$PROB" -a "$PROB" -ge 30 && echo ">$FASTA" | grep '^>' | cut -d ' ' -f 1 | cut -d : -f 2 >> {output} || true
-                      done
-        """
+        "hmmsearch PF09408_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
