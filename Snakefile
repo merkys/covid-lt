@@ -10,6 +10,20 @@ rule download_pdb:
     shell:
         "wget https://www.crystallography.net/pdb/{wildcards.id}.pdb -O {output}"
 
+rule download_pdb_all:
+    input:
+        "S1-antibody-complexes.lst"
+    output:
+        touch(".download_pdb_all.done")
+    shell:
+        """
+        cat {input} | while read ID
+                      do
+                        wget https://www.crystallography.net/pdb/$ID.pdb -O pdb/$ID.pdb
+                        sleep 1
+                      done
+        """
+
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between S1 and antibody chains define the contact surface.
 rule vorocontacts:
