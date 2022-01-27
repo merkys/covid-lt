@@ -19,3 +19,12 @@ rule vorocontacts:
         "vorocontacts/{id}.tab"
     shell:
         "voronota-contacts -i {input} > {output}"
+
+rule pdb_seqres2fasta:
+    input:
+        "pdb/{id}.pdb"
+    output:
+        "pdb-seqres/{id}.fa"
+    run:
+        from Bio import SeqIO
+        SeqIO.convert(input[0], "pdb-seqres", output[0], "fasta")
