@@ -72,7 +72,7 @@ rule find_S1_chains:
         cat pdb-seqres/{wildcards.id}.fa | while read -d '>' FASTA
                       do
                         test -z "$FASTA" && continue
-                        PROB=$(echo ">$FASTA" | sed 's/-//g' | hhalign -i stdin -t PF01600_full.hmm -o /dev/stdout | grep -oP 'Sum_probs=[^.]+' | cut -d = -f 2)
+                        PROB=$(echo ">$FASTA" | sed 's/-//g' | hhalign -i stdin -t PF01600_full.hmm -o /dev/stdout | grep -oP 'Sum_probs=[^.]+' | cut -d = -f 2 || true)
                         test -n "$PROB" -a "$PROB" -ge 30 && echo ">$FASTA" | grep '^>' | cut -d ' ' -f 1 | cut -d : -f 2 >> {output} || true
                       done
         """
