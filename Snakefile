@@ -44,3 +44,20 @@ rule hhalign:
         "{file}.hhalign"
     shell:
         "sed 's/-//g' {input} | hhalign -i stdin -t PF01600_full.hmm -o {output}"
+
+rule find_S1_chains:
+    input:
+        "pdb-seqres/{id}.fa"
+    output:
+        "pdb-S1/{id}.lst"
+    shell:
+        """
+        echo -n > {output}
+        cat {input} | while read -d '>' FASTA
+                      do
+                        test -z "$FASTA" && continue
+                        PROB=$(echo ">$FASTA" | sed 's/-//g' | hhalign -i stdin -t PF01600_full.hmm -o /dev/stdout | grep -oP 'Sum_probs=[^.]+' | cut -d = -f 2)
+                        echo "$PROB"
+                        test -n "$PROB" -a "$PROB" -ge 30 && echo ">$FASTA" | grep '^>' | cut -d ' ' -f 1 | cut -d : -f 2 >> {output} || true
+                      done
+        """
