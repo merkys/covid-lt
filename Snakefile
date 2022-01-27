@@ -59,7 +59,6 @@ rule find_S1_chains:
                       do
                         test -z "$FASTA" && continue
                         PROB=$(echo ">$FASTA" | sed 's/-//g' | hhalign -i stdin -t PF01600_full.hmm -o /dev/stdout | grep -oP 'Sum_probs=[^.]+' | cut -d = -f 2)
-                        echo "$PROB"
                         test -n "$PROB" -a "$PROB" -ge 30 && echo ">$FASTA" | grep '^>' | cut -d ' ' -f 1 | cut -d : -f 2 >> {output} || true
                       done
         """
