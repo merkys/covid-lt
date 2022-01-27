@@ -43,13 +43,13 @@ rule pdb_seqres2fasta:
         from Bio import SeqIO
         SeqIO.convert(input[0], "pdb-seqres", output[0], "fasta")
 
-rule hhmake:
+rule hmmbuild:
     input:
         "{prefix}.msa"
     output:
         "{prefix}.hmm"
     shell:
-        "hhmake -i {input} -o {output}"
+        "hmmbuild {output} {input}"
 
 rule hhalign:
     input:
