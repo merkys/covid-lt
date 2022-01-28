@@ -68,3 +68,12 @@ rule find_S1_chains:
         "pdb-S1/{id}.lst"
     shell:
         "hmmsearch PF09408_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
+
+rule pdb_seq_hits:
+    input:
+        "pdb-seqres/{id}.fa",
+        "{pfam}_full.hmm"
+    output:
+        "pdb-{pfam}/{id}.lst"
+    shell:
+        "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
