@@ -60,15 +60,6 @@ rule hmmsearch:
     shell:
         "sed 's/-//g' {wildcards.file}.fa | hmmsearch PF09408_full.hmm - > {output}"
 
-rule find_S1_chains:
-    input:
-        "pdb-seqres/{id}.fa",
-        "PF09408_full.hmm"
-    output:
-        "pdb-S1/{id}.lst"
-    shell:
-        "hmmsearch PF09408_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
-
 rule pdb_seq_hits:
     input:
         "pdb-seqres/{id}.fa",
