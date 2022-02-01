@@ -100,7 +100,9 @@ rule renumber_antibodies:
                     numbering = abchain.ab_numbering()
                 except AttributeError:
                     next
-                print(numbering)
+                for i, res in enumerate(chain):
+                    if i < len(numbering):
+                        res.id = (res.id[0], numbering[i], res.id[2])
         io = PDB.PDBIO()
         io.set_structure(struct)
         io.save(output[0])
