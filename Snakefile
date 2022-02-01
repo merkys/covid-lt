@@ -1,12 +1,6 @@
 wildcard_constraints:
     pdbid = "[a-zA-Z0-9]{4}"
 
-rule S1_antibody_complexes:
-    output:
-        "S1-antibody-complexes.lst"
-    shell:
-        "./get-S1-antibody-complexes > {output}"
-
 rule download_pdb:
     output:
         "pdb/{pdbid}.pdb"
