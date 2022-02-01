@@ -1,3 +1,6 @@
+wildcard_constraints:
+    pdbid = "[a-zA-Z0-9]{4}"
+
 rule S1_antibody_complexes:
     output:
         "S1-antibody-complexes.lst"
@@ -6,9 +9,9 @@ rule S1_antibody_complexes:
 
 rule download_pdb:
     output:
-        "pdb/{id}.pdb"
+        "pdb/{pdbid}.pdb"
     shell:
-        "wget https://www.crystallography.net/pdb/{wildcards.id}.pdb -O {output}"
+        "wget https://www.crystallography.net/pdb/{wildcards.pdbid}.pdb -O {output}"
 
 rule pdb_seqres_fa:
     output:
@@ -76,3 +79,28 @@ rule pdb_seq_hits:
         "pdb-{pfam}/{id}.lst"
     shell:
         "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
+
+rule renumber_antibodies:
+    input:
+        "pdb/{id}.pdb"
+    output:
+        "pdb/{id}-renumbered.pdb"
+    run:
+        from abpytools.core import Chain
+        from abpytools.core.flags import numbering
+        from Bio import PDB
+        from Bio.SeqUtils import seq1
+        parser = PDB.PDBParser()
+        struct = parser.get_structure(wildcards.id, input[0])
+        for model in struct:
+            for chain in model:
+                seq = ''.join([seq1(res.resname) for res in chain])
+                try:
+                    abchain = Chain.load_from_string(sequence=seq, numbering_scheme=numbering.KABAT)
+                    numbering = abchain.ab_numbering()
+                except AttributeError:
+                    next
+                print(numbering)
+        io = PDB.PDBIO()
+        io.set_structure(struct)
+        io.save(output[0])
