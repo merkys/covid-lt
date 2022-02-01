@@ -59,12 +59,12 @@ rule hmmbuild:
 
 rule hmmsearch:
     input:
-        "{file}.fa",
-        "PF09408_full.hmm"
+        "{fasta}.fa",
+        "{pfam}_full.hmm"
     output:
-        "{file}.hmmsearch"
+        "{fasta}-{pfam}.hmmsearch"
     shell:
-        "sed 's/-//g' {wildcards.file}.fa | hmmsearch PF09408_full.hmm - > {output}"
+        "sed 's/-//g' {wildcards.fasta}.fa | hmmsearch {wildcards.pfam}_full.hmm - > {output}"
 
 rule pdb_seq_hits:
     input:
