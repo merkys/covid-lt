@@ -10,6 +10,12 @@ rule download_pdb:
     shell:
         "wget https://www.crystallography.net/pdb/{wildcards.id}.pdb -O {output}"
 
+rule pdb_seqres_fa:
+    output:
+        "pdb_seqres.fa"
+    shell:
+        "curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}"
+
 rule download_pdb_all:
     input:
         "S1-antibody-complexes.lst"

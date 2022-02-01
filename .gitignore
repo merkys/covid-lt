@@ -1,2 +1,3 @@
 .*.done
 .snakemake
+pdb_seqres.fa
