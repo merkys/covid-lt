@@ -19,6 +19,7 @@ rule pdb_seqres_fa:
     shell:
         "curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}"
 
+# Download models of PDB entries of interest
 rule download_pdb_all:
     input:
         "pdb_seqres-PF01401.hmmsearch",
@@ -62,6 +63,7 @@ rule hmmbuild:
     shell:
         "hmmbuild {output} {input}"
 
+# Perform hmmsearch of given PFAM HMMs
 rule hmmsearch:
     input:
         "{fasta}.fa",
@@ -80,6 +82,9 @@ rule pdb_seq_hits:
     shell:
         "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
+# Renumber antibody chains in PDB files according to Kabat scheme.
+# Uses AbPyTools (https://github.com/gf712/AbPyTools), commit 9ff0d43.
+# FIXME: All chains are renumbered as antibodies right now.
 rule renumber_antibodies:
     input:
         "pdb/{id}.pdb"
