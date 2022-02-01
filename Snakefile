@@ -96,13 +96,28 @@ rule renumber_antibodies:
             for chain in model:
                 seq = ''.join([seq1(res.resname) for res in chain])
                 try:
+                    # Will fail for chains other than antibodies
                     abchain = Chain.load_from_string(sequence=seq, numbering_scheme=numbering.KABAT)
                     numbering = abchain.ab_numbering()
                 except AttributeError:
                     next
+                # Hack: Give sufficiently high numbers to residues before renumbering them again
+                for res in chain:
+                    res.id = (res.id[0], res.id[1] + 5000, res.id[2])
                 for i, res in enumerate(chain):
                     if i < len(numbering):
-                        res.id = (res.id[0], numbering[i], res.id[2])
+                        altpos = res.id[2]
+                        try:
+                            # Will fail for residues marked as alternative
+                            int(numbering[i][-1])
+                        except ValueError:
+                            altpos = numbering[i][-1]
+                            numbering[i] = numbering[i][:-1]
+                        try:
+                            # Strangely some residues are given the same number...
+                            res.id = (res.id[0], int(numbering[i][1:]), altpos)
+                        except ValueError:
+                            pass
         io = PDB.PDBIO()
         io.set_structure(struct)
         io.save(output[0])
