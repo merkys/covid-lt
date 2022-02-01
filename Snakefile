@@ -18,14 +18,16 @@ rule pdb_seqres_fa:
 
 rule download_pdb_all:
     input:
-        "S1-antibody-complexes.lst"
+        "pdb_seqres-PF01401.hmmsearch",
+        "pdb_seqres-PF09408.hmmsearch"
     output:
         touch(".download_pdb_all.done")
     shell:
         """
-        cat {input} | while read ID
+        grep '>>' {input} | cut -d ' ' -f 2 | cut -d _ -f 1 | sort | uniq \
+            | while read ID
                       do
-                        wget https://www.crystallography.net/pdb/$ID.pdb -O pdb/$ID.pdb
+                        wget https://www.crystallography.net/pdb/$ID.pdb -O pdb/$ID.pdb || true
                         sleep 1
                       done
         """
