@@ -120,3 +120,45 @@ rule renumber_antibodies:
         io = PDB.PDBIO()
         io.set_structure(struct)
         io.save(output[0])
+
+rule renumber_S1:
+    input:
+        "pdb/{id}.pdb",
+        "pdb_seqres-PF09408.hmmsearch",
+        "P0DTC2.fa"
+    output:
+        "pdb/{id}-S1.pdb"
+    run:
+        from Bio import AlignIO, PDB, SeqIO
+        from Bio.Align.Applications import MuscleCommandline
+        from Bio.Seq import Seq
+        from Bio.SeqRecord import SeqRecord
+        from Bio.SeqUtils import seq1
+        import re
+        import subprocess
+
+        chains = []
+        hmmsearch_file = open(input[1], 'r')
+        for line in hmmsearch_file.readlines():
+            match = re.search(" " + wildcards.id + "_(.) ", line)
+            if match:
+                chains.append(match.group(1))
+        hmmsearch_file.close()
+
+        sequences = [s for s in SeqIO.parse(input[2], "fasta")]
+        P0DTC2 = sequences[0]
+
+        parser = PDB.PDBParser()
+        struct = parser.get_structure(wildcards.id, input[0])
+        for model in struct:
+            for chain in model:
+                if chain.id in chains:
+                    muscle = MuscleCommandline()
+                    child = subprocess.Popen(str(muscle), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                    SeqIO.write(SeqRecord(Seq(''.join([seq1(res.resname) for res in chain]))), child.stdin, "fasta")
+                    child.stdin.close()
+                    align = AlignIO.read(child.stdout, "fasta")
+                    print(align)
+        io = PDB.PDBIO()
+        io.set_structure(struct)
+        io.save(output[0])
