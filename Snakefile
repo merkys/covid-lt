@@ -153,11 +153,26 @@ rule renumber_S1:
         for model in struct:
             for chain in model:
                 if chain.id in chains:
+                    # Hack: Give sufficiently high numbers to residues before renumbering them again
+                    # for res in chain:
+                    #     res.id = (res.id[0], res.id[1] + 5000, res.id[2])
                     muscle = MuscleCommandline()
                     child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
                     SeqIO.write([P0DTC2, SeqRecord(Seq(''.join([seq1(res.resname) for res in chain])))], child.stdin, "fasta")
                     child.stdin.close()
                     align = AlignIO.read(child.stdout, "fasta")
+                    pos_in_P0DTC2 = 1
+                    pos_in_PDB = 0
+                    residues = [res for res in chain]
+                    for pos, aa in enumerate(align[0]):
+                        if aa == '-': # insertion in PDB, not sure what to do
+                            pos_in_PDB = pos_in_PDB + 1
+                        elif align[1][pos] == '-': # deletion in PDB, just skip
+                            pos_in_P0DTC2 = pos_in_P0DTC2 + 1
+                        else:
+                            residues[pos_in_PDB].id = (residues[pos_in_PDB].id[0], pos_in_P0DTC2, residues[pos_in_PDB].id[2])
+                            pos_in_P0DTC2 = pos_in_P0DTC2 + 1
+                            pos_in_PDB = pos_in_PDB + 1
         io = PDB.PDBIO()
         io.set_structure(struct)
         io.save(output[0])
