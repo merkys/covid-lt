@@ -134,8 +134,8 @@ rule renumber_S1:
         from Bio.Seq import Seq
         from Bio.SeqRecord import SeqRecord
         from Bio.SeqUtils import seq1
+        from subprocess import Popen, PIPE
         import re
-        import subprocess
 
         chains = []
         hmmsearch_file = open(input[1], 'r')
@@ -154,11 +154,10 @@ rule renumber_S1:
             for chain in model:
                 if chain.id in chains:
                     muscle = MuscleCommandline()
-                    child = subprocess.Popen(str(muscle), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                    SeqIO.write(SeqRecord(Seq(''.join([seq1(res.resname) for res in chain]))), child.stdin, "fasta")
+                    child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
+                    SeqIO.write([P0DTC2, SeqRecord(Seq(''.join([seq1(res.resname) for res in chain])))], child.stdin, "fasta")
                     child.stdin.close()
                     align = AlignIO.read(child.stdout, "fasta")
-                    print(align)
         io = PDB.PDBIO()
         io.set_structure(struct)
         io.save(output[0])
