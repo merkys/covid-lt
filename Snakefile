@@ -135,7 +135,7 @@ rule renumber_S1:
         from Bio.SeqRecord import SeqRecord
         from Bio.SeqUtils import seq1
         from subprocess import Popen, PIPE
-        import re
+        import re, sys
 
         chains = []
         hmmsearch_file = open(input[1], 'r')
@@ -153,9 +153,10 @@ rule renumber_S1:
         for model in struct:
             for chain in model:
                 if chain.id in chains:
-                    # Hack: Give sufficiently high numbers to residues before renumbering them again
-                    # for res in chain:
-                    #     res.id = (res.id[0], res.id[1] + 5000, res.id[2])
+                    # Hack: Give sufficiently high numbers to residues before renumbering them again.
+                    # This will as well make insertions have high numbers to be easily identified.
+                    for res in chain:
+                        res.id = (res.id[0], res.id[1] + 5000, res.id[2])
                     muscle = MuscleCommandline()
                     child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
                     SeqIO.write([P0DTC2, SeqRecord(Seq(''.join([seq1(res.resname) for res in chain])))], child.stdin, "fasta")
@@ -166,8 +167,10 @@ rule renumber_S1:
                     residues = [res for res in chain]
                     for pos, aa in enumerate(align[0]):
                         if aa == '-': # insertion in PDB, not sure what to do
+                            print("Insertion after {}".format(pos_in_P0DTC2), file=sys.stderr)
                             pos_in_PDB = pos_in_PDB + 1
                         elif align[1][pos] == '-': # deletion in PDB, just skip
+                            print("Deletion of {}".format(pos_in_P0DTC2), file=sys.stderr)
                             pos_in_P0DTC2 = pos_in_P0DTC2 + 1
                         else:
                             residues[pos_in_PDB].id = (residues[pos_in_PDB].id[0], pos_in_P0DTC2, residues[pos_in_PDB].id[2])
