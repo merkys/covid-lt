@@ -1,0 +1,17 @@
+#!/usr/bin/python3
+
+import re, sys
+
+pdb_id   = None
+molecule = None
+
+for line in sys.stdin:
+    line = re.sub("\s*;?\s*\n$", "", line)
+    if re.match("HEADER ", line):
+        pdb_id = line[62:66]
+    elif re.match("COMPND ", line):
+        if line[11:20] == 'MOLECULE:':
+            molecule = line[21:]
+        elif line[11:17] == 'CHAIN:':
+            for chain in re.split("\s*,\s*", line[18:]):
+                print("{}\t{}\t{}".format(pdb_id, chain, molecule))
