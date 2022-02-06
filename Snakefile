@@ -76,50 +76,13 @@ rule pdb_seq_hits:
     shell:
         "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
-# Renumber antibody chains in PDB files according to Kabat scheme.
-# Uses AbPyTools (https://github.com/gf712/AbPyTools), commit 9ff0d43.
-# FIXME: All chains are renumbered as antibodies right now.
 rule renumber_antibodies:
     input:
         "pdb/{id}.pdb"
     output:
         "pdb/{id}-renumbered.pdb"
-    run:
-        from abpytools.core import Chain
-        from abpytools.core.flags import numbering
-        from Bio import PDB
-        from Bio.SeqUtils import seq1
-        parser = PDB.PDBParser()
-        struct = parser.get_structure(wildcards.id, input[0])
-        for model in struct:
-            for chain in model:
-                seq = ''.join([seq1(res.resname) for res in chain])
-                try:
-                    # Will fail for chains other than antibodies
-                    abchain = Chain.load_from_string(sequence=seq, numbering_scheme=numbering.KABAT)
-                    numbering = abchain.ab_numbering()
-                except AttributeError:
-                    next
-                # Hack: Give sufficiently high numbers to residues before renumbering them again
-                for res in chain:
-                    res.id = (res.id[0], res.id[1] + 5000, res.id[2])
-                for i, res in enumerate(chain):
-                    if i < len(numbering):
-                        altpos = res.id[2]
-                        try:
-                            # Will fail for residues marked as alternative
-                            int(numbering[i][-1])
-                        except ValueError:
-                            altpos = numbering[i][-1]
-                            numbering[i] = numbering[i][:-1]
-                        try:
-                            # Strangely some residues are given the same number...
-                            res.id = (res.id[0], int(numbering[i][1:]), altpos)
-                        except ValueError:
-                            pass
-        io = PDB.PDBIO()
-        io.set_structure(struct)
-        io.save(output[0])
+    shell:
+        "antibody_numbering_converter -s {input} -o {output}"
 
 rule renumber_S1:
     input:
