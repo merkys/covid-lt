@@ -22,7 +22,7 @@ rule download_pdb_all:
         touch(".download_pdb_all.done")
     shell:
         """
-        grep '>>' {input} | cut -d ' ' -f 2 | cut -d _ -f 1 | sort | uniq \
+        grep '>>' {input} | cut -d ' ' -f 2 | cut -d _ -f 1 | sort | uniq | tr '[:lower:]' '[:upper:]' \
             | while read ID
                       do
                         wget https://www.crystallography.net/pdb/$ID.pdb -O pdb/$ID.pdb || true
