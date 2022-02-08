@@ -3,7 +3,7 @@ wildcard_constraints:
 
 rule download_pdb:
     output:
-        "pdb/{pdbid}.pdb"
+        "pdb/pristine/{pdbid}.pdb"
     shell:
         "wget https://www.crystallography.net/pdb/{wildcards.pdbid}.pdb -O {output}"
 
@@ -42,7 +42,7 @@ rule vorocontacts:
 
 rule pdb_seqres2fasta:
     input:
-        "pdb/{id}.pdb"
+        "pdb/pristine/{id}.pdb"
     output:
         "pdb-seqres/{id}.fa"
     run:
@@ -69,18 +69,18 @@ rule hmmsearch:
 
 rule pdb_seq_hits:
     input:
-        "pdb-seqres/{id}.fa",
+        "pdb-seqres/{pdbid}.fa",
         "{pfam}_full.hmm"
     output:
         "pdb-{pfam}/{id}.lst"
     shell:
-        "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
+        "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.pdbid}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
 # Fix missing atoms and residues in PDB using Jackal.
 # profix -fix 1 will attempt to repair missing residues
 rule profix:
     input:
-        "pdb/{id}.pdb"
+        "pdb/pristine/{id}.pdb"
     output:
         "pdbfix/{id}.pdb"
     shell:
