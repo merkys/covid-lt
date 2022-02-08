@@ -76,13 +76,21 @@ rule pdb_seq_hits:
     shell:
         "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
+# Renumber antibody chains using Rosetta
 rule renumber_antibodies:
     input:
         "pdb/{id}.pdb"
     output:
         "pdb/{id}-renumbered.pdb"
     shell:
-        "antibody_numbering_converter -s {input} -o {output}"
+        """
+        TMP_DIR=$(mktemp --directory)
+        cp {input} $TMP_DIR
+        (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.id}.pdb)
+        pwd
+        cp $TMP_DIR/{wildcards.id}_0001.pdb {output}
+        rm -rf $TMP_DIR
+        """
 
 rule renumber_S1:
     input:
