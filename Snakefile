@@ -76,6 +76,22 @@ rule pdb_seq_hits:
     shell:
         "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.id}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
+# Fix missing atoms and residues in PDB using Jackal.
+# profix -fix 1 will attempt to repair missing residues
+rule profix:
+    input:
+        "pdb/{id}.pdb"
+    output:
+        "pdbfix/{id}.pdb"
+    shell:
+        """
+        TMP_DIR=$(mktemp --directory)
+        cp {input} $TMP_DIR
+        (cd $TMP_DIR && profix -fix 1 pdb/{wildcards.id}.pdb)
+        cp $TMP_DIR/{wildcards.id}_fix.pdb {output}
+        rm -rf $TMP_DIR
+        """
+
 # Renumber antibody chains using Rosetta
 rule renumber_antibodies:
     input:
@@ -87,7 +103,6 @@ rule renumber_antibodies:
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
         (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.id}.pdb)
-        pwd
         cp $TMP_DIR/{wildcards.id}_0001.pdb {output}
         rm -rf $TMP_DIR
         """
