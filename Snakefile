@@ -97,7 +97,7 @@ rule renumber_antibodies:
     input:
         "pdb/fixed/{pdbid}.pdb"
     output:
-        "pdb/{pdbid}-renumbered.pdb"
+        "pdb/Clothia/{pdbid}.pdb"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -109,7 +109,7 @@ rule renumber_antibodies:
 
 rule renumber_S1:
     input:
-        "pdb/{pdbid}-renumbered.pdb",
+        "pdb/Clothia/{pdbid}.pdb",
         "pdb_seqres-PF09408.hmmsearch",
         "P0DTC2.fa"
     output:
