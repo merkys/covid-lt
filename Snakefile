@@ -34,7 +34,7 @@ rule download_pdb_all:
 # Contacts between S1 and antibody chains define the contact surface.
 rule vorocontacts:
     input:
-        "pdb/{id}.pdb"
+        "pdb/{id}-S1.pdb"
     output:
         "vorocontacts/{id}.tab"
     shell:
@@ -109,7 +109,7 @@ rule renumber_antibodies:
 
 rule renumber_S1:
     input:
-        "pdb/{id}.pdb",
+        "pdb/{id}-renumbered.pdb",
         "pdb_seqres-PF09408.hmmsearch",
         "P0DTC2.fa"
     output:
