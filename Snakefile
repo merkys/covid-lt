@@ -87,7 +87,7 @@ rule profix:
         """
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
-        (cd $TMP_DIR && profix -fix 1 pdb/{wildcards.id}.pdb)
+        (cd $TMP_DIR && profix -fix 1 {wildcards.id}.pdb)
         cp $TMP_DIR/{wildcards.id}_fix.pdb {output}
         rm -rf $TMP_DIR
         """
