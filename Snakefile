@@ -95,7 +95,7 @@ rule profix:
 # Renumber antibody chains using Rosetta
 rule renumber_antibodies:
     input:
-        "pdb/{id}.pdb"
+        "pdbfix/{id}.pdb"
     output:
         "pdb/{id}-renumbered.pdb"
     shell:
