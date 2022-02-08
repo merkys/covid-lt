@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import re, sys
+import argparse, re, sys
 
 def create_atom(fields):
     return { 'chain': fields[0],
@@ -15,7 +15,14 @@ def write_atom(atom):
 atom_re = 'c<([^>]+)>r<(\d+)>a<(\d+)>R<([^>]+)>A<([^>]+)>'
 contact_re = atom_re + '\s+' + atom_re
 
-files = sys.argv[1:]
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--chain', action='append')
+args = parser.parse_args()
+
+chains = sorted(args.chain)
+
+files = args.files
 if len(files) == 0:
     files = [sys.stdin]
 
@@ -27,4 +34,12 @@ for file in files:
         if match:
             atom1 = create_atom([match.group(i) for i in range(1, 6)])
             atom2 = create_atom([match.group(i) for i in range(6, 11)])
-            print(write_atom(atom1), write_atom(atom2), sep='\t')
+            if len(chains) == 0:
+                print(write_atom(atom1), write_atom(atom2), sep='\t')
+            elif atom1['chain'] == atom2['chain']:
+                if len(chains) == 1 and atom1['chain'] == chains[0]:
+                    print(write_atom(atom1), write_atom(atom2), sep='\t')
+            elif atom1['chain'] == chains[0] and atom2['chain'] == chains[1]:
+                print(write_atom(atom1), write_atom(atom2), sep='\t')
+            else:
+                pass # not sure what to do here
