@@ -82,7 +82,7 @@ rule profix:
     input:
         "pdb/pristine/{pdbid}.pdb"
     output:
-        "pdbfix/{pdbid}.pdb"
+        "pdb/fixed/{pdbid}.pdb"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -95,7 +95,7 @@ rule profix:
 # Renumber antibody chains using Rosetta
 rule renumber_antibodies:
     input:
-        "pdbfix/{pdbid}.pdb"
+        "pdb/fixed/{pdbid}.pdb"
     output:
         "pdb/{pdbid}-renumbered.pdb"
     shell:
