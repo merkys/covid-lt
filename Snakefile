@@ -34,9 +34,9 @@ rule download_pdb_all:
 # Contacts between S1 and antibody chains define the contact surface.
 rule vorocontacts:
     input:
-        "pdb/{pdbid}-S1.pdb"
+        "pdb/P0DTC2/{pdbid}.pdb"
     output:
-        "vorocontacts/{id}.tab"
+        "vorocontacts/{pdbid}.tab"
     shell:
         "voronota-contacts -i {input} > {output}"
 
@@ -113,7 +113,7 @@ rule renumber_S1:
         "pdb_seqres-PF09408.hmmsearch",
         "P0DTC2.fa"
     output:
-        "pdb/{pdbid}-S1.pdb"
+        "pdb/P0DTC2/{pdbid}.pdb"
     run:
         from Bio import AlignIO, PDB, SeqIO
         from Bio.Align.Applications import MuscleCommandline
