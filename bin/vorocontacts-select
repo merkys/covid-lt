@@ -12,12 +12,24 @@ def create_atom(fields):
 def write_atom(atom):
     return '\t'.join([atom['chain'], atom['res_nr'], atom['atom_nr'], atom['res_type'], atom['atom_type']])
 
+def register_contact(contacts, atom1, atom2, distance, area):
+    if atom1['chain'] not in contacts:
+        contacts[atom1['chain']] = {}
+    if atom1['res_nr'] not in contacts[atom1['chain']]:
+        contacts[atom1['chain']][atom1['res_nr']] = {}
+    if atom2['chain'] not in contacts[atom1['chain']][atom1['res_nr']]:
+        contacts[atom1['chain']][atom1['res_nr']][atom2['chain']] = {}
+    if atom2['res_nr'] not in contacts[atom1['chain']][atom1['res_nr']][atom2['chain']]:
+        contacts[atom1['chain']][atom1['res_nr']][atom2['chain']][atom2['res_nr']] = []
+    contacts[atom1['chain']][atom1['res_nr']][atom2['chain']][atom2['res_nr']].append([atom1, atom2, distance, area])
+
 atom_re = 'c<([^>]+)>r<(\d+)>a<(\d+)>R<([^>]+)>A<([^>]+)>'
-contact_re = atom_re + '\s+' + atom_re
+contact_re = atom_re + '\s+' + atom_re + '\s+(\S+)\s+(\S+)'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append')
+parser.add_argument('--dist', choices=['min'])
 args = parser.parse_args()
 
 chains = sorted(args.chain)
@@ -29,11 +41,17 @@ if len(files) == 0:
 for file in files:
     if isinstance(file, str):
         file = open(file, 'r')
+    contacts = {}
     for line in file:
         match = re.match(contact_re, line)
         if match:
             atom1 = create_atom([match.group(i) for i in range(1, 6)])
             atom2 = create_atom([match.group(i) for i in range(6, 11)])
+            area = match.group(11)
+            distance = match.group(12)
+            register_contact(contacts, atom1, atom2, distance, area)
+            if args.dist:
+                continue
             if len(chains) == 0:
                 print(write_atom(atom1), write_atom(atom2), sep='\t')
             elif atom1['chain'] == atom2['chain']:
@@ -43,3 +61,9 @@ for file in files:
                 print(write_atom(atom1), write_atom(atom2), sep='\t')
             else:
                 pass # not sure what to do here
+    if args.dist:
+        for c1 in contacts:
+            for r1 in contacts[c1]:
+                for c2 in contacts[c1][r1]:
+                    for r2 in contacts[c1][r1][c2]:
+                        print(c1, r1, c2, r2, min([contact[2] for contact in contacts[c1][r1][c2][r2]]), sep='\t')
