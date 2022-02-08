@@ -1,5 +1,5 @@
 wildcard_constraints:
-    pdbid = "[a-zA-Z0-9]{4}"
+    pdbid = "[A-Z0-9]{4}"
 
 rule download_pdb:
     output:
@@ -34,7 +34,7 @@ rule download_pdb_all:
 # Contacts between S1 and antibody chains define the contact surface.
 rule vorocontacts:
     input:
-        "pdb/{id}-S1.pdb"
+        "pdb/{pdbid}-S1.pdb"
     output:
         "vorocontacts/{id}.tab"
     shell:
@@ -42,9 +42,9 @@ rule vorocontacts:
 
 rule pdb_seqres2fasta:
     input:
-        "pdb/pristine/{id}.pdb"
+        "pdb/pristine/{pdbid}.pdb"
     output:
-        "pdb-seqres/{id}.fa"
+        "pdb-seqres/{pdbid}.fa"
     run:
         from Bio import SeqIO
         SeqIO.convert(input[0], "pdb-seqres", output[0], "fasta")
@@ -80,40 +80,40 @@ rule pdb_seq_hits:
 # profix -fix 1 will attempt to repair missing residues
 rule profix:
     input:
-        "pdb/pristine/{id}.pdb"
+        "pdb/pristine/{pdbid}.pdb"
     output:
-        "pdbfix/{id}.pdb"
+        "pdbfix/{pdbid}.pdb"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
-        (cd $TMP_DIR && profix -fix 1 {wildcards.id}.pdb)
-        cp $TMP_DIR/{wildcards.id}_fix.pdb {output}
+        (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb)
+        cp $TMP_DIR/{wildcards.pdbid}_fix.pdb {output}
         rm -rf $TMP_DIR
         """
 
 # Renumber antibody chains using Rosetta
 rule renumber_antibodies:
     input:
-        "pdbfix/{id}.pdb"
+        "pdbfix/{pdbid}.pdb"
     output:
-        "pdb/{id}-renumbered.pdb"
+        "pdb/{pdbid}-renumbered.pdb"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
-        (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.id}.pdb)
-        cp $TMP_DIR/{wildcards.id}_0001.pdb {output}
+        (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb)
+        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output}
         rm -rf $TMP_DIR
         """
 
 rule renumber_S1:
     input:
-        "pdb/{id}-renumbered.pdb",
+        "pdb/{pdbid}-renumbered.pdb",
         "pdb_seqres-PF09408.hmmsearch",
         "P0DTC2.fa"
     output:
-        "pdb/{id}-S1.pdb"
+        "pdb/{pdbid}-S1.pdb"
     run:
         from Bio import AlignIO, PDB, SeqIO
         from Bio.Align.Applications import MuscleCommandline
@@ -126,7 +126,7 @@ rule renumber_S1:
         chains = []
         hmmsearch_file = open(input[1], 'r')
         for line in hmmsearch_file.readlines():
-            match = re.search(" " + wildcards.id + "_(.) ", line)
+            match = re.search(" " + wildcards.pdbid + "_(.) ", line)
             if match:
                 chains.append(match.group(1))
         hmmsearch_file.close()
@@ -135,7 +135,7 @@ rule renumber_S1:
         P0DTC2 = sequences[0]
 
         parser = PDB.PDBParser()
-        struct = parser.get_structure(wildcards.id, input[0])
+        struct = parser.get_structure(wildcards.pdbid, input[0])
         for model in struct:
             for chain in model:
                 if chain.id in chains:
