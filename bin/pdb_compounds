@@ -5,13 +5,20 @@ import re, sys
 pdb_id   = None
 molecule = None
 
-for line in sys.stdin:
-    line = re.sub("\s*;?\s*\n$", "", line)
-    if re.match("HEADER ", line):
-        pdb_id = line[62:66]
-    elif re.match("COMPND ", line):
-        if line[11:20] == 'MOLECULE:':
-            molecule = line[21:]
-        elif line[11:17] == 'CHAIN:':
-            for chain in re.split("\s*,\s*", line[18:]):
-                print("{}\t{}\t{}".format(pdb_id, chain, molecule))
+files = sys.argv[1:]
+if len(files) == 0:
+    files = [sys.stdin]
+
+for file in files:
+    if isinstance(file, str):
+        file = open(file, 'r')
+    for line in file:
+        line = re.sub("\s*;?\s*\n$", "", line)
+        if re.match("HEADER ", line):
+            pdb_id = line[62:66]
+        elif re.match("COMPND ", line):
+            if line[11:20] == 'MOLECULE:':
+                molecule = line[21:]
+            elif line[11:17] == 'CHAIN:':
+                for chain in re.split("\s*,\s*", line[18:]):
+                    print("{}\t{}\t{}".format(pdb_id, chain, molecule))
