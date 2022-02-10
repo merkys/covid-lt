@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+
+# Adapted from https://github.com/mdtraj/mdtraj/blob/master/examples/hbonds.ipynb
+
+import sys
+import mdtraj
+
+t = mdtraj.load_pdb(sys.argv[1])
+print(t)
+
+hbonds = mdtraj.baker_hubbard(t, periodic=False)
+label = lambda hbond : '%s -- %s' % (t.topology.atom(hbond[0]), t.topology.atom(hbond[2]))
+for hbond in hbonds:
+    print(label(hbond))
