@@ -47,6 +47,8 @@ contact_re = atom_re + '\s+' + atom_re + '\s+(\S+)\s+(\S+)'
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append')
+# Minimal distance between any two atoms in residues is taken as the distance between them, just as in ProteinTools, ref:
+# Ferruz et al., doi:10.1093/nar/gkab375
 parser.add_argument('--dist', choices=['min'])
 parser.add_argument('--select-salt-bridges', action='store_true')
 args = parser.parse_args()
@@ -79,6 +81,8 @@ for file in files:
             register_contact(contacts, atom1, atom2, distance, area)
             if args.dist:
                 continue
+            # Salt bridge filtering is implemented as in ProteinTools, ref:
+            # Ferruz et al., doi:10.1093/nar/gkab375
             if args.select_salt_bridges and \
                 (not is_possible_salt_bridge(atom1, atom2) or
                  float(distance) > 4):
