@@ -3,7 +3,7 @@
 import argparse, re, sys
 
 def write_residue(residue):
-    return '\t'.join([residue['chain'], str(residue['res_nr']), '?', residue['res_type'], '?'])
+    return '\t'.join([residue['chain'], str(residue['res_nr']), residue['res_type'], '?', '?'])
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')

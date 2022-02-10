@@ -10,7 +10,7 @@ def create_atom(fields):
              'atom_type': fields[4] }
 
 def write_atom(atom):
-    return '\t'.join([atom['chain'], atom['res_nr'], atom['atom_nr'], atom['res_type'], atom['atom_type']])
+    return '\t'.join([atom['chain'], atom['res_nr'], atom['res_type'], atom['atom_nr'], atom['atom_type']])
 
 def register_contact(contacts, atom1, atom2, distance, area):
     if atom1['chain'] not in contacts:
