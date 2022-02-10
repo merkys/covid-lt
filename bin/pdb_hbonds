@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 # Adapted from https://github.com/mdtraj/mdtraj/blob/master/examples/hbonds.ipynb
+# mdtraj most likely assumes full-hydrogen model, therefore this method
+# does not work as expected on pristine PDB files downloaded from the PDB.
 
 import sys
 import mdtraj
