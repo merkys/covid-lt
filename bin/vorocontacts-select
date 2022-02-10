@@ -23,6 +23,24 @@ def register_contact(contacts, atom1, atom2, distance, area):
         contacts[atom1['chain']][atom1['res_nr']][atom2['chain']][atom2['res_nr']] = []
     contacts[atom1['chain']][atom1['res_nr']][atom2['chain']][atom2['res_nr']].append([atom1, atom2, distance, area])
 
+def is_possible_salt_bridge(atom1, atom2):
+    types = {}
+    for atom in [atom1, atom2]:
+        types[atom['res_type']] = atom
+    if 'ARG' not in types and 'LYS' not in types:
+        return False
+    if 'ASP' not in types and 'GLU' not in types:
+        return False
+    if 'ARG' in types and types['ARG']['atom_type'] not in ['NH1', 'NH2']:
+        return False
+    if 'LYS' in types and types['LYS']['atom_type'] != 'NZ':
+        return False
+    if 'ASP' in types and types['ASP']['atom_type'] not in ['OD1', 'OD2']:
+        return False
+    if 'GLU' in types and types['GLU']['atom_type'] not in ['OE1', 'OE2']:
+        return False
+    return True
+
 atom_re = 'c<([^>]+)>r<(\d+)>a<(\d+)>R<([^>]+)>A<([^>]+)>'
 contact_re = atom_re + '\s+' + atom_re + '\s+(\S+)\s+(\S+)'
 
@@ -30,6 +48,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append')
 parser.add_argument('--dist', choices=['min'])
+parser.add_argument('--select-salt-bridges', action='store_true')
 args = parser.parse_args()
 
 chains = []
@@ -59,6 +78,10 @@ for file in files:
             distance = match.group(12)
             register_contact(contacts, atom1, atom2, distance, area)
             if args.dist:
+                continue
+            if args.select_salt_bridges and \
+                (not is_possible_salt_bridge(atom1, atom2) or
+                 float(distance) > 4):
                 continue
             print(write_atom(atom1), write_atom(atom2), sep='\t')
     if args.dist:
