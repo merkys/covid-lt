@@ -2,6 +2,8 @@
 
 * ProteinTools: https://proteintools.uni-bayreuth.de
 
+* pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/
+
 Antibody numbering
 ==================
 
