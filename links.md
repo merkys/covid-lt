@@ -1,3 +1,5 @@
+* Jackal manual: https://honiglab.c2b2.columbia.edu/software/Jackal/Jackalmanual.htm
+
 * S protein: https://www.uniprot.org/uniprot/P0DTC2
 
 * pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/
