@@ -9,3 +9,8 @@ Antibody numbering
 
 * Server: http://www.bioinf.org.uk/abs/abnum/
 * Python interface: https://gf712.github.io/AbPyTools/index.html
+
+PDB format
+==========
+
+* Atom naming: https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html
