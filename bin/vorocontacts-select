@@ -85,6 +85,11 @@ for file in files:
             # Ferruz et al., doi:10.1093/nar/gkab375
             if is_possible_salt_bridge(atom1, atom2) and float(distance) < 4:
                 contact = 'salt bridge'
+            # Hydrophobic ILV cluster detection is implemented similarly as in ProteinTools, ref:
+            # Ferruz et al., doi:10.1093/nar/gkab375
+            elif atom1['res_type'] in ['ILE', 'LEU', 'VAL'] and \
+                atom2['res_type'] in ['ILE', 'LEU', 'VAL']:
+                contact = 'hydrophobic'
             print(write_atom(atom1), write_atom(atom2), contact, sep='\t')
     if args.dist:
         for c1 in contacts:
