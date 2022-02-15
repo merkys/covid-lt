@@ -5,7 +5,8 @@ PDB_ID=$1
 # Taking only the first of S1 chains
 S1_CHAIN=$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch pdb_seqres-PF09408.hmmsearch | head -n1 | cut -f 2)
 
-# TODO: Check if any chains found
+# Exit if no S1 chains found
+test -z "${S1_CHAIN}" && exit 0
 
 bin/vorocontacts-select --chain ${S1_CHAIN} --exclude-self --dist min vorocontacts/${PDB_ID}.tab \
     | while read C1 R1 C2 R2 DIST
