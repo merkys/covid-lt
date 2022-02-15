@@ -96,15 +96,19 @@ for file in files:
                 contact = 'hydrophobic'
             print(write_atom(atom1), write_atom(atom2), contact, sep='\t')
     if args.contacting_chains:
+        contacting_chains = {}
         for c1 in contacts:
-            seen_chains = set()
             for r1 in contacts[c1]:
                 for c2 in contacts[c1][r1]:
-                    seen_chains.add(c2)
-            if c1 in seen_chains:
-                seen_chains.remove(c1)
-            if seen_chains:
-                print(c1, ','.join(seen_chains), sep='\t')
+                    if c1 not in contacting_chains:
+                        contacting_chains[c1] = set()
+                    if c2 not in contacting_chains:
+                        contacting_chains[c2] = set()
+                    contacting_chains[c1].add(c2)
+                    contacting_chains[c2].add(c1)
+        for chain in contacting_chains:
+            if contacting_chains[chain]:
+                print(chain, ','.join(contacting_chains[chain]), sep='\t')
     if args.dist:
         for c1 in contacts:
             for r1 in contacts[c1]:
