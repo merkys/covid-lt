@@ -91,7 +91,8 @@ rule pdb_seq_hits:
         "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.pdbid}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
 # Fix missing atoms and residues in PDB using Jackal.
-# profix -fix 1 will attempt to repair missing residues
+# profix -fix 1 will attempt to repair missing residues.
+# CHECKME: Jackal does something strange, see 118:A and 1:D interaction (0.165061 angstrom) in 6NB4.
 rule profix:
     input:
         "pdb/pristine/{pdbid}.pdb"
