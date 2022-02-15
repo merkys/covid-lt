@@ -6,9 +6,7 @@ PDB_ID=$1
 S1_CHAIN=$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch pdb_seqres-PF09408.hmmsearch | head -n1 | cut -f 2)
 
 # TODO: Check if any chains found
-# TODO: What to do with multiple distances of the same residue?
 
-# Assuming S1 is 1500 aminoacids long
 bin/vorocontacts-select --chain ${S1_CHAIN} --exclude-self --dist min vorocontacts/${PDB_ID}.tab \
     | while read C1 R1 C2 R2 DIST
       do
@@ -20,4 +18,20 @@ bin/vorocontacts-select --chain ${S1_CHAIN} --exclude-self --dist min vorocontac
         fi
       done \
     | sort -nk1.1 \
-    | join -1 1 -2 1 -a 2 -e '?' - <(seq 1 1500) --nocheck-order
+    | python3 -c '
+import re, sys
+residues = {}
+for line in sys.stdin:
+    match = re.match("(\d+)\t(\S+)", line)
+    if not match:
+        continue
+    residue = int(match.group(1))
+    dist = float(match.group(2))
+    if residue not in residues or dist < residues[residue]:
+        residues[residue] = dist
+for i in range(1, 1500): # Assuming S1 is max. 1500 aminoacids long
+    if i in residues:
+        print(residues[i])
+    else:
+        print("?")
+      '
