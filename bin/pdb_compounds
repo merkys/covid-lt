@@ -1,15 +1,18 @@
 #!/usr/bin/python3
 
-import re, sys
+import argparse, re, sys
 
-pdb_id   = None
-molecule = None
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+args = parser.parse_args()
 
-files = sys.argv[1:]
+files = args.files
 if len(files) == 0:
     files = [sys.stdin]
 
 for file in files:
+    pdb_id   = None
+    molecule = None
     if isinstance(file, str):
         file = open(file, 'r')
     for line in file:
