@@ -40,6 +40,20 @@ rule vorocontacts:
     shell:
         "voronota-contacts -i {input} > {output}"
 
+rule propka:
+    input:
+        "pdb/P0DTC2/{pdbid}.pdb"
+    output:
+        "propka/{pdbid}.out"
+    shell:
+        """
+        TMP_DIR=$(mktemp --directory)
+        cp {input} $TMP_DIR
+        (cd $TMP_DIR && propka {wildcards.pdbid}.pdb)
+        cp $TMP_DIR/{wildcards.pdbid}.pka {output}
+        rm -rf $TMP_DIR
+        """
+
 rule pdb_seqres2fasta:
     input:
         "pdb/pristine/{pdbid}.pdb"
