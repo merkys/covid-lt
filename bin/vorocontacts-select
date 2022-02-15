@@ -48,6 +48,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append')
 parser.add_argument('--contacting-chains', action='store_true', help='List all contacting pairs of chains')
+parser.add_argument('--exclude-self', action='store_true', help='Exclude contacts of a chain with itself')
 # Minimal distance between any two atoms in residues is taken as the distance between them, just as in ProteinTools, ref:
 # Ferruz et al., doi:10.1093/nar/gkab375
 parser.add_argument('--dist', choices=['min'])
@@ -71,11 +72,13 @@ for file in files:
             atom1 = create_atom([match.group(i) for i in range(1, 6)])
             atom2 = create_atom([match.group(i) for i in range(6, 11)])
             if len(chains) == 1:
-                if atom1['chain'] != chains[0] or atom2['chain'] != chains[0]:
+                if atom1['chain'] != chains[0] and atom2['chain'] != chains[0]:
                     continue
             elif len(chains) == 2:
                 if atom1['chain'] != chains[0] or atom2['chain'] != chains[1]:
                     continue
+            if args.exclude_self and atom1['chain'] == atom2['chain']:
+                continue
             area = match.group(11)
             distance = match.group(12)
             register_contact(contacts, atom1, atom2, distance, area)
