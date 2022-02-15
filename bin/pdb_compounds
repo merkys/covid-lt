@@ -4,11 +4,32 @@ import argparse, re, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
+parser.add_argument('--hmmsearch', action='append', help='Add output log of hmmsearch to identify chains')
 args = parser.parse_args()
 
 files = args.files
 if len(files) == 0:
     files = [sys.stdin]
+
+hmmsearch_chain_ids = {}
+for log in args.hmmsearch:
+    file = open(log, 'r')
+    in_main = False
+    for line in file:
+        if in_main:
+            if re.match('  ------ inclusion threshold', line) or line == '\n':
+                break
+            pdb_id = line[60:64].upper()
+            chain = line[65].upper()
+            if pdb_id not in hmmsearch_chain_ids:
+                hmmsearch_chain_ids[pdb_id] = {}
+            if chain in hmmsearch_chain_ids[pdb_id]:
+                # Rare case when more than one file matches the same chain
+                hmmsearch_chain_ids[pdb_id][chain] += ',' + log
+            else:
+                hmmsearch_chain_ids[pdb_id][chain] = log
+        elif re.match('    ------- ------', line):
+            in_main = True
 
 for file in files:
     pdb_id   = None
@@ -24,4 +45,7 @@ for file in files:
                 molecule = line[21:]
             elif line[11:17] == 'CHAIN:':
                 for chain in re.split("\s*,\s*", line[18:]):
-                    print("{}\t{}\t{}".format(pdb_id, chain, molecule))
+                    additional_info = '?'
+                    if pdb_id in hmmsearch_chain_ids and chain in hmmsearch_chain_ids[pdb_id]:
+                        additional_info = hmmsearch_chain_ids[pdb_id][chain]
+                    print(pdb_id, chain, molecule, additional_info, sep='\t')
