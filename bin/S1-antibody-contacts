@@ -11,6 +11,7 @@ test -z "${S1_CHAIN}" && exit 0
 bin/vorocontacts-select --chain ${S1_CHAIN} --exclude-self --dist min vorocontacts/${PDB_ID}.tab \
     | while read C1 R1 C2 R2 DIST
       do
+        # FIXME: Filter only the antibody chains
         if [ "${C1}" = "${S1_CHAIN}" ]
         then
             echo -e "${R1}\t${DIST}"
