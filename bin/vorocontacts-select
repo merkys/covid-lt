@@ -47,6 +47,7 @@ contact_re = atom_re + '\s+' + atom_re + '\s+(\S+)\s+(\S+)'
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append')
+parser.add_argument('--contacting-chains', action='store_true', help='List all contacting pairs of chains')
 # Minimal distance between any two atoms in residues is taken as the distance between them, just as in ProteinTools, ref:
 # Ferruz et al., doi:10.1093/nar/gkab375
 parser.add_argument('--dist', choices=['min'])
@@ -78,7 +79,7 @@ for file in files:
             area = match.group(11)
             distance = match.group(12)
             register_contact(contacts, atom1, atom2, distance, area)
-            if args.dist:
+            if args.dist or args.contacting_chains:
                 continue
             contact = '?'
             # Salt bridge filtering is implemented as in ProteinTools, ref:
@@ -91,6 +92,16 @@ for file in files:
                 atom2['res_type'] in ['ILE', 'LEU', 'VAL']:
                 contact = 'hydrophobic'
             print(write_atom(atom1), write_atom(atom2), contact, sep='\t')
+    if args.contacting_chains:
+        for c1 in contacts:
+            seen_chains = set()
+            for r1 in contacts[c1]:
+                for c2 in contacts[c1][r1]:
+                    seen_chains.add(c2)
+            if c1 in seen_chains:
+                seen_chains.remove(c1)
+            if seen_chains:
+                print(c1, ','.join(seen_chains), sep='\t')
     if args.dist:
         for c1 in contacts:
             for r1 in contacts[c1]:
