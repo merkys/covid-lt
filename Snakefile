@@ -5,7 +5,7 @@ rule download_pdb:
     output:
         "pdb/pristine/{pdbid}.pdb"
     shell:
-        "wget https://www.crystallography.net/pdb/{wildcards.pdbid}.pdb -O {output}"
+        "wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output}"
 
 rule pdb_seqres_fa:
     output:
