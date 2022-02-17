@@ -104,9 +104,9 @@ rule profix:
         """
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
-        (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1)
-        cp $TMP_DIR/{wildcards.pdbid}_fix.pdb {output}
+        (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
+        cp $TMP_DIR/{wildcards.pdbid}_fix.pdb {output} # This will kill Snakemake on Jackal failure
         rm -rf $TMP_DIR
         """
 
