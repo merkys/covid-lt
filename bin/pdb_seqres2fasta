@@ -3,9 +3,12 @@
 from Bio import SeqIO
 import sys
 
+progname = sys.argv[0]
+type = progname[progname.find('_')+1:progname.find('2')]
+
 files = sys.argv[1:]
 if len(files) == 0:
     files = [sys.stdin]
 
 for file in files:
-    SeqIO.convert(file, 'pdb-seqres', sys.stdout, 'fasta')
+    SeqIO.convert(file, 'pdb-' + type, sys.stdout, 'fasta')
