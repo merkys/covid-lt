@@ -1,0 +1,11 @@
+#!/usr/bin/python3
+
+from Bio import SeqIO
+import sys
+
+files = sys.argv[1:]
+if len(files) == 0:
+    files = [sys.stdin]
+
+for file in files:
+    SeqIO.convert(file, 'pdb-seqres', sys.stdout, 'fasta')

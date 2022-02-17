@@ -59,9 +59,8 @@ rule pdb_seqres2fasta:
         "pdb/pristine/{pdbid}.pdb"
     output:
         "pdb-seqres/{pdbid}.fa"
-    run:
-        from Bio import SeqIO
-        SeqIO.convert(input[0], "pdb-seqres", output[0], "fasta")
+    shell:
+        "./bin/pdb_seqres2fasta {input} > {output}"
 
 rule hmmbuild:
     input:
