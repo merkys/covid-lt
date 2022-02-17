@@ -98,12 +98,15 @@ rule profix:
         "pdb/pristine/{pdbid}.pdb"
     output:
         "pdb/fixed/{pdbid}.pdb"
+    log:
+        "pdb/fixed/{pdbid}.log"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
-        (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb)
+        (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1)
         cp $TMP_DIR/{wildcards.pdbid}_fix.pdb {output}
+        cp $TMP_DIR/{wildcards.pdbid}.log {log}
         rm -rf $TMP_DIR
         """
 
@@ -113,12 +116,16 @@ rule renumber_antibodies:
         "pdb/fixed/{pdbid}.pdb"
     output:
         "pdb/Clothia/{pdbid}.pdb"
+    log:
+        "pdb/Clothia/{pdbid}.log"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
-        (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb)
-        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output}
+        (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
+        cp $TMP_DIR/{wildcards.pdbid}.log {log}
+        test -e $TMP_DIR/ROSETTA_CRASH.log && cat $TMP_DIR/ROSETTA_CRASH.log >> {log}
+        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} # This will kill Snakemake on Rosetta failure
         rm -rf $TMP_DIR
         """
 
