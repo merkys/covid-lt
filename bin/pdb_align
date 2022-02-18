@@ -27,7 +27,10 @@ for seq in atom_seqs:
     atom_seqs_by_chain[seq.id[5]] = seq
 seqres_seqs_by_chain = {}
 for seq in seqres_seqs:
-    seqres_seqs_by_chain[seq.id[5]] = seq
+    chain = seq.id
+    if len(chain) > 1: # This is probably a problem with Bio module
+        chain = chain[5]
+    seqres_seqs_by_chain[chain] = seq
 
 adjustments = {}
 for atom_seq in atom_seqs:
