@@ -29,6 +29,7 @@ seqres_seqs_by_chain = {}
 for seq in seqres_seqs:
     seqres_seqs_by_chain[seq.id[5]] = seq
 
+adjustments = {}
 for atom_seq in atom_seqs:
     seqres_seq = seqres_seqs_by_chain[atom_seq.id[5]]
     # TODO: Check if such exists
@@ -44,4 +45,20 @@ for atom_seq in atom_seqs:
     while align[1][gaps_seqres] == '-':
         gaps_seqres += 1
     if first_id_of_chain[atom_seq.id[5]] != gaps_atom + 1:
-        print('Chain ' + atom_seq.id[5] + ' needs adjusting ' + str(gaps_atom + 1 - first_id_of_chain[atom_seq.id[5]]), file=sys.stderr)
+        # print('Chain ' + atom_seq.id[5] + ' needs adjusting ' + str(gaps_atom + 1 - first_id_of_chain[atom_seq.id[5]]), file=sys.stderr)
+        adjustments[atom_seq.id[5]] = gaps_atom + 1 - first_id_of_chain[atom_seq.id[5]]
+
+renumberings = {
+    'SSBOND': [ [ 15, 17, 20 ], [ 29, 31, 34 ] ],
+}
+
+pdb = open(file, 'r')
+for line in pdb:
+    if line[0:6] in renumberings:
+        for renumbering in renumberings[line[0:6]]:
+            chain, start, end = renumbering
+            end += 1
+            if line[chain] in adjustments:
+                new_residue = '    ' + str(int(line[start:end]) + adjustments[line[chain]])
+                line = line[0:start] + new_residue[-4:] + line[end:]
+    print(line, end='')
