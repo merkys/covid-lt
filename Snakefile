@@ -92,7 +92,7 @@ rule pdb_seq_hits:
 # Fix missing atoms and residues in PDB using Jackal.
 # profix -fix 1 will attempt to repair missing residues.
 # CHECKME: Jackal does something strange, see 118:A and 1:D interaction (0.165061 angstrom) in 6NB4.
-# FIXME: Jackal renumbers residues, but does not renumber SSBOND, HELIX etc. See C chain in 7AKJ.
+# FIXME: Jackal renumbers residues, but does not renumber SSBOND, HELIX etc. See C chain in 7AKJ. This is fixed by running through bin/pdb_align as of b7bada8abd1e99ddc60c5d40b0640905287a7cac.
 rule profix:
     input:
         "pdb/pristine/{pdbid}.pdb"
