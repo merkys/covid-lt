@@ -52,6 +52,7 @@ for atom_seq in atom_seqs:
         adjustments[atom_seq.id[5]] = gaps_atom + 1 - first_id_of_chain[atom_seq.id[5]]
 
 renumberings = {
+    'LINK  ': [ [ 21, 22, 25 ], [ 51, 52, 55 ] ],
     'SSBOND': [ [ 15, 17, 20 ], [ 29, 31, 34 ] ],
 }
 
