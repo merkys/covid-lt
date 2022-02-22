@@ -44,13 +44,21 @@ rule download_pdb_all:
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
 # For this project, of interest are contacts between S1, ACE2 and antibody chains
-rule vorocontacts:
+rule vorocontacts_out:
     input:
         "pdb/P0DTC2/{pdbid}.pdb"
     output:
-        "vorocontacts/{pdbid}.tab"
+        "vorocontacts/{pdbid}.out"
     shell:
         "voronota-contacts -i {input} > {output}"
+
+rule vorocontacts_tab:
+    input:
+        "vorocontacts/{pdbid}.out"
+    output:
+        "vorocontacts/{pdbid}.tab"
+    shell:
+        "bin/vorocontacts2tab {input} > {output}"
 
 rule propka_out:
     input:
