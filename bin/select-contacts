@@ -2,13 +2,6 @@
 
 import argparse, re, sys
 
-def create_atom(fields):
-    return { 'chain': fields[0],
-             'res_nr': fields[1],
-             'atom_nr': fields[2],
-             'res_type': fields[3],
-             'atom_type': fields[4] }
-
 def write_atom(atom):
     return '\t'.join([atom['chain'], atom['res_nr'], atom['res_type'], atom['atom_nr'], atom['atom_type']])
 
@@ -24,6 +17,7 @@ def register_contact(contacts, atom1, atom2, distance, area):
     contacts[atom1['chain']][atom1['res_nr']][atom2['chain']][atom2['res_nr']].append([atom1, atom2, distance, area])
 
 def is_possible_salt_bridge(atom1, atom2):
+    # Will ignore unknown atom types
     types = {}
     for atom in [atom1, atom2]:
         types[atom['res_type']] = atom
@@ -41,13 +35,10 @@ def is_possible_salt_bridge(atom1, atom2):
         return False
     return True
 
-atom_re = 'c<([^>]+)>r<(\d+)>a<(\d+)>R<([^>]+)>A<([^>]+)>'
-contact_re = atom_re + '\s+' + atom_re + '\s+(\S+)\s+(\S+)'
-
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append')
-parser.add_argument('--contacting-chains', action='store_true', help='List all contacting pairs of chains')
+parser.add_argument('--contacting-chains', action='store_true', help='List all contacting pairs of chains, suppress normal output')
 parser.add_argument('--exclude-self', action='store_true', help='Exclude contacts of a chain with itself')
 # Minimal distance between any two atoms in residues is taken as the distance between them, just as in ProteinTools, ref:
 # Ferruz et al., doi:10.1093/nar/gkab375
@@ -67,34 +58,34 @@ for file in files:
         file = open(file, 'r')
     contacts = {}
     for line in file:
-        match = re.match(contact_re, line)
-        if match:
-            atom1 = create_atom([match.group(i) for i in range(1, 6)])
-            atom2 = create_atom([match.group(i) for i in range(6, 11)])
-            if len(chains) == 1:
-                if atom1['chain'] != chains[0] and atom2['chain'] != chains[0]:
-                    continue
-            elif len(chains) == 2:
-                if atom1['chain'] != chains[0] or atom2['chain'] != chains[1]:
-                    continue
-            if args.exclude_self and atom1['chain'] == atom2['chain']:
+        atom1, atom2 = {}, {}
+        fields = line.strip().split('\t')
+        atom1['chain'], atom1['res_nr'], atom1['res_type'], atom1['atom_nr'], atom1['atom_type'], \
+            atom2['chain'], atom2['res_nr'], atom2['res_type'], atom2['atom_nr'], atom2['atom_type'], *fields = fields
+        # fields = fields[10:]
+        area, distance = fields # Only in voronota-contacts output
+        if len(chains) == 1:
+            if atom1['chain'] != chains[0] and atom2['chain'] != chains[0]:
                 continue
-            area = match.group(11)
-            distance = match.group(12)
-            register_contact(contacts, atom1, atom2, distance, area)
-            if args.dist or args.contacting_chains:
+        elif len(chains) == 2:
+            if atom1['chain'] != chains[0] or atom2['chain'] != chains[1]:
                 continue
-            contact = '?'
-            # Salt bridge filtering is implemented as in ProteinTools, ref:
-            # Ferruz et al., doi:10.1093/nar/gkab375
-            if is_possible_salt_bridge(atom1, atom2) and float(distance) < 4:
-                contact = 'salt bridge'
-            # Hydrophobic ILV cluster detection is implemented similarly as in ProteinTools, ref:
-            # Ferruz et al., doi:10.1093/nar/gkab375
-            elif atom1['res_type'] in ['ILE', 'LEU', 'VAL'] and \
-                atom2['res_type'] in ['ILE', 'LEU', 'VAL']:
-                contact = 'hydrophobic'
-            print(write_atom(atom1), write_atom(atom2), contact, sep='\t')
+        if args.exclude_self and atom1['chain'] == atom2['chain']:
+            continue
+        register_contact(contacts, atom1, atom2, distance, area)
+        if args.dist or args.contacting_chains:
+            continue
+        contact = '?'
+        # Salt bridge filtering is implemented as in ProteinTools, ref:
+        # Ferruz et al., doi:10.1093/nar/gkab375
+        if is_possible_salt_bridge(atom1, atom2) and float(distance) < 4:
+            contact = 'salt bridge'
+        # Hydrophobic ILV cluster detection is implemented similarly as in ProteinTools, ref:
+        # Ferruz et al., doi:10.1093/nar/gkab375
+        elif atom1['res_type'] in ['ILE', 'LEU', 'VAL'] and \
+            atom2['res_type'] in ['ILE', 'LEU', 'VAL']:
+            contact = 'hydrophobic'
+        print(write_atom(atom1), write_atom(atom2), *fields, contact, sep='\t')
     if args.contacting_chains:
         contacting_chains = {}
         for c1 in contacts:
