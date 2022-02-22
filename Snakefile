@@ -31,7 +31,8 @@ rule download_pdb_all:
         """
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
-# Contacts between S1 and antibody chains define the contact surface.
+# Contacts between chains define the contact surfaces.
+# For this project, of interest are contacts between S1, ACE2 and antibody chains
 rule vorocontacts:
     input:
         "pdb/P0DTC2/{pdbid}.pdb"
