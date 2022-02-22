@@ -113,6 +113,7 @@ rule pdb_seq_hits:
 # profix -fix 1 will attempt to repair missing residues.
 # Prior to running profix, bin/pdb_align is called to align structure numbering to sequence numbering.
 # After calling profix, care is taken to preserve original LINK, SSBOND etc. records.
+# NOTE: Jackal seems to have problems in handling large PDB files, for example, 7E8C, being unable to find SEQRES records. Removing 'REMARK 465' lines fixes the issue.
 rule profix:
     input:
         "pdb/pristine/{pdbid}.pdb"
