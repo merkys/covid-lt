@@ -130,6 +130,10 @@ rule renumber_antibodies:
         rm -rf $TMP_DIR
         """
 
+# Renumber PDB chains containing S1 according to its UNIPROT sequence.
+# To do so, first PDB chains containing S1 are identified by its HMM.
+# Then, each matching chain is aligned with the UNIPROT sequence.
+# Lastly, the alignment is propagated to the PDB file.
 rule renumber_S1:
     input:
         "pdb/Clothia/{pdbid}.pdb",
