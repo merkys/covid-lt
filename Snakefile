@@ -92,6 +92,8 @@ rule pdb_seq_hits:
 
 # Fix missing atoms and residues in PDB using Jackal.
 # profix -fix 1 will attempt to repair missing residues.
+# Prior to running profix, bin/pdb_align is called to align structure numbering to sequence numbering.
+# After calling profix, care is taken to preserve original LINK, SSBOND etc. records.
 # CHECKME: Jackal does something strange, see 104:A and 1:D interaction (0.165061 angstrom) in 6NB4: Jackal looses LINK records which are important.
 rule profix:
     input:
@@ -106,7 +108,11 @@ rule profix:
         bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb
         (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        cp $TMP_DIR/{wildcards.pdbid}_fix.pdb {output} # This will kill Snakemake on Jackal failure
+        test -e $TMP_DIR/{wildcards.pdbid}_fix.pdb # This will kill Snakemake on Jackal failure
+        ORIG_LINES=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}.pdb | head -n 1 | cut -d : -f 1 | xargs -I _ expr _ - 1 || true)
+        NEW_OFFSET=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}_fix.pdb | head -n 1 | cut -d : -f 1 || true)
+        head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
+        tail -n +$NEW_OFFSET $TMP_DIR/{wildcards.pdbid}_fix.pdb >> {output}
         rm -rf $TMP_DIR
         """
 
