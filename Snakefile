@@ -13,7 +13,8 @@ rule pdb_seqres_fa:
     shell:
         "curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}"
 
-# Download models of PDB entries of interest
+# Download models of PDB entries of interest.
+# Nonexistent files (i.e., when structures do not fit into PDB format) are removed.
 rule download_pdb_all:
     input:
         "pdb_seqres-PF01401.hmmsearch",
@@ -25,7 +26,7 @@ rule download_pdb_all:
         grep '>>' {input} | cut -d ' ' -f 2 | cut -d _ -f 1 | sort | uniq | tr '[:lower:]' '[:upper:]' \
             | while read ID
                       do
-                        wget https://www.crystallography.net/pdb/$ID.pdb -O pdb/$ID.pdb || true
+                        wget https://files.rcsb.org/download/$ID.pdb -O pdb/pristine/$ID.pdb || rm pdb/pristine/$ID.pdb
                         sleep 1
                       done
         """
