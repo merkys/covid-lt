@@ -54,6 +54,7 @@ for i in range(1, 1500): # Assuming S1 is max. 1500 aminoacids long
 
     if grep --silent . "${TMP_DIR}/column.tab"
     then
+        echo $PDB_ID | cat - "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/column.tab"
         if test -e "${TMP_DIR}/output.tab"
         then
             paste "${TMP_DIR}/output.tab" "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/output.tab"
