@@ -8,7 +8,7 @@ rule test:
     shell:
         """
         PDBID=$(ls -1 pdb/pristine/*.pdb | shuf | head -n 1 | sed 's/pdb\/pristine\///; s/\.pdb//')
-        snakemake propka/$PDBID.out vorocontacts/$PDBID.tab
+        snakemake propka/$PDBID.tab vorocontacts/$PDBID.tab
         """
 
 rule download_pdb:
