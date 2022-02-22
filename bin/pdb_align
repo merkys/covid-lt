@@ -3,7 +3,9 @@
 # Align peptide sequences in ATOM records to the sequences in SEQRES records.
 # Sometimes they may be off and need to be adjusted in case the further processing software is unable to do that.
 # For example, Jackal does the alignment (plain renumbering starting from 1?) on its own, but does not renumber LINK and SSBOND records.
-# In particular, PDB 7AKJ record, chain C. Processing it with Jackal leaves SSBOND pointing to a missing residue.
+# In particular:
+# - PDB 7AKJ record, chain C. Processing it with Jackal leaves SSBOND pointing to a missing residue.
+# - PDB 6NB4 record, interaction between 104:A and 1:D. Jackal looses LINK record which is important.
 
 from Bio import AlignIO, PDB, SeqIO
 from Bio.Align.Applications import MuscleCommandline

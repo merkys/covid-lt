@@ -113,7 +113,6 @@ rule pdb_seq_hits:
 # profix -fix 1 will attempt to repair missing residues.
 # Prior to running profix, bin/pdb_align is called to align structure numbering to sequence numbering.
 # After calling profix, care is taken to preserve original LINK, SSBOND etc. records.
-# CHECKME: Jackal does something strange, see 104:A and 1:D interaction (0.165061 angstrom) in 6NB4: Jackal looses LINK records which are important.
 rule profix:
     input:
         "pdb/pristine/{pdbid}.pdb"
