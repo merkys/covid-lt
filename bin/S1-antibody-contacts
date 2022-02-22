@@ -14,7 +14,7 @@ ANTIBODY_CHAINS="$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch pdb_
 # Exit if no antibody chains found
 test -z "${ANTIBODY_CHAINS}" && exit 0
 
-bin/vorocontacts-select --chain ${S1_CHAIN} --exclude-self --dist min vorocontacts/${PDB_ID}.tab \
+bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min vorocontacts/${PDB_ID}.tab \
     | while read C1 R1 C2 R2 DIST
       do
         # Ignore non-antibody chains
