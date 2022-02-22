@@ -79,14 +79,15 @@ for file in files:
         contact = '?'
         # Salt bridge filtering is implemented as in ProteinTools, ref:
         # Ferruz et al., doi:10.1093/nar/gkab375
-        if is_possible_salt_bridge(atom1, atom2) and float(distance) < 4:
+        if is_possible_salt_bridge(atom1, atom2) and distance is not None and distance < 4:
             contact = 'salt bridge'
         # Hydrophobic ILV cluster detection is implemented similarly as in ProteinTools, ref:
         # Ferruz et al., doi:10.1093/nar/gkab375
         elif atom1['res_type'] in ['ILE', 'LEU', 'VAL'] and \
             atom2['res_type'] in ['ILE', 'LEU', 'VAL']:
             contact = 'hydrophobic'
-        print(write_atom(atom1), write_atom(atom2), *fields, contact, sep='\t')
+        fields[2] = contact
+        print(write_atom(atom1), write_atom(atom2), *fields, sep='\t')
     if args.contacting_chains:
         contacting_chains = {}
         for c1 in contacts:
