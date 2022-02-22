@@ -3,6 +3,7 @@
 import argparse, re, sys
 
 def write_residue(residue):
+    # Propka output does not identify atoms, thus two '?' are appended.
     return '\t'.join([residue['chain'], str(residue['res_nr']), residue['res_type'], '?', '?'])
 
 parser = argparse.ArgumentParser()

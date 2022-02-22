@@ -52,7 +52,7 @@ rule vorocontacts:
     shell:
         "voronota-contacts -i {input} > {output}"
 
-rule propka:
+rule propka_out:
     input:
         "pdb/P0DTC2/{pdbid}.pdb"
     output:
@@ -65,6 +65,14 @@ rule propka:
         cp $TMP_DIR/{wildcards.pdbid}.pka {output}
         rm -rf $TMP_DIR
         """
+
+rule propka_tab:
+    input:
+        "propka/{pdbid}.out"
+    output:
+        "propka/{pdbid}.tab"
+    shell:
+        "./bin/propka-contacts {input} > {output}"
 
 rule pdb_seqres2fasta:
     input:
