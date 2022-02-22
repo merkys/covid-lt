@@ -1,0 +1,32 @@
+#!/usr/bin/python3
+
+import re, sys
+
+def create_atom(fields):
+    return { 'chain': fields[0],
+             'res_nr': fields[1],
+             'atom_nr': fields[2],
+             'res_type': fields[3],
+             'atom_type': fields[4] }
+
+def write_atom(atom):
+    return '\t'.join([atom['chain'], atom['res_nr'], atom['res_type'], atom['atom_nr'], atom['atom_type']])
+
+atom_re = 'c<([^>]+)>r<(\d+)>a<(\d+)>R<([^>]+)>A<([^>]+)>'
+contact_re = atom_re + '\s+' + atom_re + '\s+(\S+)\s+(\S+)'
+
+files = sys.argv[1:]
+if len(files) == 0:
+    files = [sys.stdin]
+
+for file in files:
+    if isinstance(file, str):
+        file = open(file, 'r')
+    for line in file:
+        match = re.match(contact_re, line)
+        if match:
+            atom1 = create_atom([match.group(i) for i in range(1, 6)])
+            atom2 = create_atom([match.group(i) for i in range(6, 11)])
+            area = match.group(11)
+            distance = match.group(12)
+            print(write_atom(atom1), write_atom(atom2), area, distance, sep='\t')
