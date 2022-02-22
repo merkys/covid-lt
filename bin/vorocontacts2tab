@@ -29,4 +29,4 @@ for file in files:
             atom2 = create_atom([match.group(i) for i in range(6, 11)])
             area = match.group(11)
             distance = match.group(12)
-            print(write_atom(atom1), write_atom(atom2), area, distance, sep='\t')
+            print(write_atom(atom1), write_atom(atom2), area, distance, '?', sep='\t')

@@ -6,6 +6,10 @@ def write_residue(residue):
     # Propka output does not identify atoms, thus two '?' are appended.
     return '\t'.join([residue['chain'], str(residue['res_nr']), residue['res_type'], '?', '?'])
 
+def print_contact(res1, res2, comment):
+    # Propka does not have neither area, nor distance, hence two '?'
+    print(write_residue(res1), write_residue(res2), '?', '?', comment, sep='\t')
+
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
@@ -33,14 +37,14 @@ for file in files:
         resB = { 'chain': line[84], 'res_nr': int(line[79:84]), 'res_type': line[76:79] }
         resC = { 'chain': line[102], 'res_nr': int(line[97:102]), 'res_type': line[94:97] }
         if resS['res_type'] != 'XXX':
-            print(write_residue(res1), write_residue(resS), 'sidechain hbond', sep='\t')
+            print_contact(res1, resS, 'sidechain hbond')
         else:
             resS = None
         if resB['res_type'] != 'XXX':
-            print(write_residue(res1), write_residue(resB), 'backbone hbond', sep='\t')
+            print_contact(res1, resB, 'backbone hbond')
         else:
             resB = None
         if resC['res_type'] != 'XXX':
-            print(write_residue(res1), write_residue(resC), 'coulombic', sep='\t')
+            print_contact(res1, resC, 'coulombic')
         else:
             resC = None
