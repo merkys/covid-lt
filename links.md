@@ -13,6 +13,7 @@ Antibody numbering
 PDB format
 ==========
 
+* Description: https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html
 * Atom naming: https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html
 
 ProteinTools
