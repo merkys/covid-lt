@@ -1,6 +1,16 @@
 wildcard_constraints:
     pdbid = "[A-Z0-9]{4}"
 
+# A rule to test the pipeline (so far).
+rule test:
+    input:
+        ".download_pdb_all.done"
+    shell:
+        """
+        PDBID=$(ls -1 pdb/pristine/*.pdb | shuf | head -n 1 | sed 's/pdb\/pristine\///; s/\.pdb//')
+        snakemake propka/$PDBID.out vorocontacts/$PDBID.tab
+        """
+
 rule download_pdb:
     output:
         "pdb/pristine/{pdbid}.pdb"
