@@ -72,7 +72,7 @@ rule propka_tab:
     output:
         "propka/{pdbid}.tab"
     shell:
-        "./bin/propka-contacts {input} > {output}"
+        "./bin/propka2tab {input} > {output}"
 
 rule pdb_seqres2fasta:
     input:
