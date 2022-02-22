@@ -62,7 +62,9 @@ for file in files:
         fields = line.strip().split('\t')
         atom1['chain'], atom1['res_nr'], atom1['res_type'], atom1['atom_nr'], atom1['atom_type'], \
             atom2['chain'], atom2['res_nr'], atom2['res_type'], atom2['atom_nr'], atom2['atom_type'], *fields = fields
-        area, distance = fields # Only in voronota-contacts output
+        area, distance, comment = fields
+        area = float(area) if area != '?' else None
+        distance = float(distance) if distance != '?' else None
         if len(chains) == 1:
             if atom1['chain'] != chains[0] and atom2['chain'] != chains[0]:
                 continue
