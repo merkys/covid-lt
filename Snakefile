@@ -93,7 +93,6 @@ rule pdb_seq_hits:
 # Fix missing atoms and residues in PDB using Jackal.
 # profix -fix 1 will attempt to repair missing residues.
 # CHECKME: Jackal does something strange, see 118:A and 1:D interaction (0.165061 angstrom) in 6NB4.
-# FIXME: Jackal renumbers residues, but does not renumber SSBOND, HELIX etc. See C chain in 7AKJ. This is fixed by running through bin/pdb_align as of b7bada8abd1e99ddc60c5d40b0640905287a7cac.
 rule profix:
     input:
         "pdb/pristine/{pdbid}.pdb"
@@ -104,7 +103,7 @@ rule profix:
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        cp {input} $TMP_DIR
+        bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb
         (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
         cp $TMP_DIR/{wildcards.pdbid}_fix.pdb {output} # This will kill Snakemake on Jackal failure
