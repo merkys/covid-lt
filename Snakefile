@@ -15,7 +15,10 @@ rule download_pdb:
     output:
         "pdb/pristine/{pdbid}.pdb"
     shell:
-        "wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output}"
+        """
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output}
+        chmod -w {output}
+        """
 
 rule pdb_seqres_fa:
     output:
@@ -37,6 +40,7 @@ rule download_pdb_all:
             | while read ID
                       do
                         wget https://files.rcsb.org/download/$ID.pdb -O pdb/pristine/$ID.pdb || rm pdb/pristine/$ID.pdb
+                        test -e pdb/pristine/$ID.pdb && chmod -w pdb/pristine/$ID.pdb || true
                         sleep 1
                       done
         """
