@@ -124,8 +124,8 @@ rule pdb_seq_hits:
 # Fix missing atoms and residues in PDB using Jackal.
 # profix -fix 1 will attempt to repair missing residues.
 # Prior to running profix, bin/pdb_align is called to align structure numbering to sequence numbering.
+# PDB 'REMARK 465' lines are removed as Jackal seems to be unable to handle large PDB files (looses SEQRES records), see 7E8C for example.
 # After calling profix, care is taken to preserve original LINK, SSBOND etc. records.
-# NOTE: Jackal seems to have problems in handling large PDB files, for example, 7E8C, being unable to find SEQRES records. Removing 'REMARK 465' lines fixes the issue.
 rule profix:
     input:
         "pdb/pristine/{pdbid}.pdb"
@@ -136,7 +136,7 @@ rule profix:
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb
+        bin/pdb_align {input} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb
         (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
         test -e $TMP_DIR/{wildcards.pdbid}_fix.pdb # This will kill Snakemake on Jackal failure
