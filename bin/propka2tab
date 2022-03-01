@@ -12,6 +12,7 @@ def print_contact(res1, res2, comment):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
+parser.add_argument('--no-coulombic', action='store_true', help='Exclude Coulombic interactions from the output')
 args = parser.parse_args()
 
 files = args.files
@@ -44,7 +45,7 @@ for file in files:
             print_contact(res1, resB, 'backbone hbond')
         else:
             resB = None
-        if resC['res_type'] != 'XXX':
+        if resC['res_type'] != 'XXX' and not args.no_coulombic:
             print_contact(res1, resC, 'coulombic')
         else:
             resC = None
