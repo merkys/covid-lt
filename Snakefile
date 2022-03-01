@@ -77,7 +77,7 @@ rule propka_out:
         cp {input} $TMP_DIR
         (cd $TMP_DIR && propka {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        test -s $TMP_DIR/{wildcards.pdbid}.pka # This should kill Snakemake on propka failure
+        test -s $TMP_DIR/{wildcards.pdbid}.pka # This kills Snakemake on propka failure
         cp $TMP_DIR/{wildcards.pdbid}.pka {output}
         rm -rf $TMP_DIR
         """
@@ -88,7 +88,7 @@ rule propka_tab:
     output:
         "propka/{pdbid}.tab"
     shell:
-        "./bin/propka2tab --no-coulombic {input} > {output}"
+        "bin/propka2tab --no-coulombic {input} > {output}"
 
 rule pdb_seqres2fasta:
     input:
@@ -96,7 +96,7 @@ rule pdb_seqres2fasta:
     output:
         "pdb-seqres/{pdbid}.fa"
     shell:
-        "./bin/pdb_seqres2fasta {input} > {output}"
+        "bin/pdb_seqres2fasta {input} > {output}"
 
 rule hmmbuild:
     input:
@@ -143,7 +143,7 @@ rule profix:
         bin/pdb_align {input} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb
         (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        test -e $TMP_DIR/{wildcards.pdbid}_fix.pdb # This will kill Snakemake on Jackal failure
+        test -e $TMP_DIR/{wildcards.pdbid}_fix.pdb # This kills Snakemake on Jackal failure
         ORIG_LINES=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}.pdb | head -n 1 | cut -d : -f 1 | xargs -I _ expr _ - 1 || true)
         NEW_OFFSET=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}_fix.pdb | head -n 1 | cut -d : -f 1 || true)
         head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
@@ -166,7 +166,7 @@ rule renumber_antibodies:
         (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
         test -e $TMP_DIR/ROSETTA_CRASH.log && cat $TMP_DIR/ROSETTA_CRASH.log >> {log}
-        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} # This will kill Snakemake on Rosetta failure
+        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} # This kills Snakemake on Rosetta failure
         rm -rf $TMP_DIR
         """
 
