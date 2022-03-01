@@ -170,6 +170,7 @@ rule renumber_antibodies:
 # To do so, first PDB chains containing S1 are identified by its HMM.
 # Then, each matching chain is aligned with the UNIPROT sequence.
 # Lastly, the alignment is propagated to the PDB file.
+# FIXME: There are problems with 5W9L after passing it through this code "Invalid PDB atom record in line: ATOM ..."
 rule renumber_S1:
     input:
         "pdb/Clothia/{pdbid}.pdb",
