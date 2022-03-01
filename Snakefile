@@ -234,3 +234,15 @@ rule renumber_S1:
         io = PDB.PDBIO()
         io.set_structure(struct)
         io.save(output[0])
+
+rule contact_map:
+    output:
+        "contact-maps/{search}.tab"
+    shell:
+        """
+        comm -1 -2 \
+            <(ls -1 vorocontacts/*.tab | cut -d / -f 2 | sort) \
+            <(ls -1 propka/*.tab | cut -d / -f 2 | sort) \
+          | sed 's/\.tab//' \
+          | xargs bin/S1-antibody-contacts --filter "{wildcards.search}" > {output}
+        """
