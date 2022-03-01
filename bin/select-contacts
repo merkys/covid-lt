@@ -86,7 +86,8 @@ for file in files:
         elif atom1['res_type'] in ['ILE', 'LEU', 'VAL'] and \
             atom2['res_type'] in ['ILE', 'LEU', 'VAL']:
             contact = 'hydrophobic'
-        fields[2] = contact
+        if comment == '?':
+            fields[2] = contact
         print(write_atom(atom1), write_atom(atom2), *fields, sep='\t')
     if args.contacting_chains:
         contacting_chains = {}
