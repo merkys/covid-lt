@@ -5,7 +5,7 @@ import argparse, re, sys
 def write_atom(atom):
     return '\t'.join([atom['chain'], atom['res_nr'], atom['res_type'], atom['atom_nr'], atom['atom_type']])
 
-def register_contact(contacts, atom1, atom2, distance, area):
+def register_contact(contacts, atom1, atom2, distance, area, comment):
     if atom1['chain'] not in contacts:
         contacts[atom1['chain']] = {}
     if atom1['res_nr'] not in contacts[atom1['chain']]:
@@ -14,7 +14,7 @@ def register_contact(contacts, atom1, atom2, distance, area):
         contacts[atom1['chain']][atom1['res_nr']][atom2['chain']] = {}
     if atom2['res_nr'] not in contacts[atom1['chain']][atom1['res_nr']][atom2['chain']]:
         contacts[atom1['chain']][atom1['res_nr']][atom2['chain']][atom2['res_nr']] = []
-    contacts[atom1['chain']][atom1['res_nr']][atom2['chain']][atom2['res_nr']].append([atom1, atom2, distance, area])
+    contacts[atom1['chain']][atom1['res_nr']][atom2['chain']][atom2['res_nr']].append([atom1, atom2, distance, area, comment])
 
 def is_possible_salt_bridge(atom1, atom2):
     # Will ignore unknown atom types
@@ -73,9 +73,6 @@ for file in files:
                 continue
         if args.exclude_self and atom1['chain'] == atom2['chain']:
             continue
-        register_contact(contacts, atom1, atom2, distance, area)
-        if args.dist or args.contacting_chains:
-            continue
         contact = '?'
         # Salt bridge filtering is implemented as in ProteinTools, ref:
         # Ferruz et al., doi:10.1093/nar/gkab375
@@ -88,7 +85,9 @@ for file in files:
             contact = 'hydrophobic'
         if comment == '?':
             fields[2] = contact
-        print(write_atom(atom1), write_atom(atom2), *fields, sep='\t')
+        register_contact(contacts, atom1, atom2, distance, area, fields[2])
+        if not args.dist and not args.contacting_chains:
+            print(write_atom(atom1), write_atom(atom2), *fields, sep='\t')
     if args.contacting_chains:
         contacting_chains = {}
         for c1 in contacts:
@@ -108,4 +107,8 @@ for file in files:
             for r1 in contacts[c1]:
                 for c2 in contacts[c1][r1]:
                     for r2 in contacts[c1][r1][c2]:
-                        print(c1, r1, c2, r2, min([contact[2] for contact in contacts[c1][r1][c2][r2]]), sep='\t')
+                        comments = set(contact[4] for contact in contacts[c1][r1][c2][r2])
+                        if len(comments) > 1:
+                            comments.remove('?')
+                        comments = ','.join(comments)
+                        print(c1, r1, c2, r2, min([contact[2] for contact in contacts[c1][r1][c2][r2]]), comments, sep='\t')
