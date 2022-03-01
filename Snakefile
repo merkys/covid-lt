@@ -175,6 +175,7 @@ rule renumber_antibodies:
 # Then, each matching chain is aligned with the UNIPROT sequence.
 # Lastly, the alignment is propagated to the PDB file.
 # FIXME: There are problems with 5W9L and 5W9M after passing them through this code "Invalid PDB atom record in line: ATOM ..."
+# FIXME: biopython attempts to write 6-digit atom numbers...
 rule renumber_S1:
     input:
         "pdb/Clothia/{pdbid}.pdb",
