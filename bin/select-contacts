@@ -101,7 +101,7 @@ for file in files:
                     contacting_chains[c2].add(c1)
         for chain in contacting_chains:
             if contacting_chains[chain]:
-                print(chain, ','.join(contacting_chains[chain]), sep='\t')
+                print(chain, ','.join(sorted(contacting_chains[chain])), sep='\t')
     if args.dist:
         for c1 in contacts:
             for r1 in contacts[c1]:
