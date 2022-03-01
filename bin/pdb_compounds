@@ -20,7 +20,7 @@ for log in args.hmmsearch:
             if re.match('  ------ inclusion threshold', line) or line == '\n':
                 break
             pdb_id = line[60:64].upper()
-            chain = line[65].upper()
+            chain = line[65]
             if pdb_id not in hmmsearch_chain_ids:
                 hmmsearch_chain_ids[pdb_id] = {}
             if chain in hmmsearch_chain_ids[pdb_id]:
