@@ -84,7 +84,7 @@ rule propka_tab:
     output:
         "propka/{pdbid}.tab"
     shell:
-        "./bin/propka2tab {input} > {output}"
+        "./bin/propka2tab --no-coulombic {input} > {output}"
 
 rule pdb_seqres2fasta:
     input:
