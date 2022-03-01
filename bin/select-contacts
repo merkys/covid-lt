@@ -108,7 +108,7 @@ for file in files:
                 for c2 in contacts[c1][r1]:
                     for r2 in contacts[c1][r1][c2]:
                         comments = set(contact[4] for contact in contacts[c1][r1][c2][r2])
-                        if len(comments) > 1:
+                        if len(comments) > 1 and '?' in comments:
                             comments.remove('?')
                         comments = ','.join(comments)
                         print(c1, r1, c2, r2, min([contact[2] for contact in contacts[c1][r1][c2][r2]]), comments, sep='\t')
