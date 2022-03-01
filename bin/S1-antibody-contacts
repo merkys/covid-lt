@@ -19,7 +19,8 @@ do
     # Next if no antibody chains found
     test -z "${ANTIBODY_CHAINS}" && continue
 
-    bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min vorocontacts/${PDB_ID}.tab \
+    cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab \
+        | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
         | while read C1 R1 C2 R2 DIST
           do
             # Ignore non-antibody chains
