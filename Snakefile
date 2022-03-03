@@ -75,7 +75,7 @@ rule propka_out:
         """
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
-        (cd $TMP_DIR && propka {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
+        (cd $TMP_DIR && propka3 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
         test -s $TMP_DIR/{wildcards.pdbid}.pka # This kills Snakemake on propka failure
         cp $TMP_DIR/{wildcards.pdbid}.pka {output}

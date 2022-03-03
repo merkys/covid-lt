@@ -5,7 +5,6 @@ sudo apt-get install \
     hmmer \
     mmseqs2 \
     muscle \
-    pdb2pqr \
     python3-biopython \
     snakemake \
     voronota \
