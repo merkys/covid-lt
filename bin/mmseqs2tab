@@ -1,0 +1,25 @@
+#!/usr/bin/python3
+
+# Extract clusters from mmseqs output
+
+import re, sys
+
+files = sys.argv[1:]
+if len(files) == 0:
+    files = [sys.stdin]
+
+for file in files:
+    if isinstance(file, str):
+        file = open(file, 'r')
+    cluster_nr = 0
+    cluster_name = None
+    for line in file:
+        cluster, seq = line.rstrip().split('\t')
+        if cluster_name is None:
+            cluster_name = cluster
+        if cluster_name != cluster:
+            cluster_name = cluster
+            cluster_nr += 1
+        match = re.match('([A-Za-z0-9]{4})_(.)', seq)
+        if match:
+            print(match.group(1).upper(), match.group(2), cluster_nr, sep='\t')

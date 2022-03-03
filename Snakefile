@@ -130,13 +130,15 @@ rule cd_hit:
     input:
         "alignments/{base}.sto"
     output:
-        "alignments/{base}.clstr"
+        "alignments/{base}.clusters"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/stockholm2fasta {input} | sed 's/-//g' > $TMP_DIR/input.fa
-        cd-hit -i $TMP_DIR/input.fa -o $TMP_DIR/output
-        mv $TMP_DIR/output.clstr {output}
+        bin/stockholm2fasta {input} > $TMP_DIR/input.fa
+        mmseqs createdb $TMP_DIR/input.fa $TMP_DIR/DB
+        mmseqs cluster $TMP_DIR/DB $TMP_DIR/clu $TMP_DIR/tmp
+        mmseqs createtsv $TMP_DIR/DB $TMP_DIR/DB $TMP_DIR/clu $TMP_DIR/clu.tsv
+        bin/mmseqs2tab $TMP_DIR/clu.tsv > {output}
         rm -rf $TMP_DIR
         """
 
