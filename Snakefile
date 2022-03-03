@@ -126,6 +126,20 @@ rule pdb_seq_hits:
     shell:
         "hmmsearch {input[1]} {input[0]} | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
+rule cd_hit:
+    input:
+        "alignments/{base}.sto"
+    output:
+        "alignments/{base}.clstr"
+    shell:
+        """
+        TMP_DIR=$(mktemp --directory)
+        bin/stockholm2fasta {input} | sed 's/-//g' > $TMP_DIR/input.fa
+        cd-hit -i $TMP_DIR/input.fa -o $TMP_DIR/output
+        mv $TMP_DIR/output.clstr {output}
+        rm -rf $TMP_DIR
+        """
+
 # Fix missing atoms and residues in PDB using Jackal.
 # profix -fix 1 will attempt to repair missing residues.
 # Prior to running profix, bin/pdb_align is called to align structure numbering to sequence numbering.
