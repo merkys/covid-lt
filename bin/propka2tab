@@ -30,7 +30,7 @@ for file in files:
             continue
         if line == '\n' or re.match('---------  -----', line):
             continue
-        if line[0] == '-':
+        if line[0] == '-' or re.match('Coupled residues', line):
             residues_seen = False
             continue
         res1 = { 'chain': line[8], 'res_nr': int(line[3:8]), 'res_type': line[0:3] }
