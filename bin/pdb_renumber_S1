@@ -1,0 +1,81 @@
+#!/usr/bin/python3
+
+# Renumber PDB chains containing S1 according to its UNIPROT sequence.
+# To do so, first PDB chains containing S1 are identified by its HMM.
+# Then, each matching chain is aligned with the UNIPROT sequence.
+# Lastly, the alignment is propagated to the PDB file.
+# FIXME: There are problems with 5W9L and 5W9M after passing them through this code "Invalid PDB atom record in line: ATOM ..."
+# FIXME: biopython attempts to write 6-digit atom numbers...
+
+from Bio import AlignIO, PDB, SeqIO
+from Bio.Align.Applications import MuscleCommandline
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio.SeqUtils import seq1
+from subprocess import Popen, PIPE
+import argparse, re, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--hmmsearch', help='Specify the output log of hmmsearch to identify S1 chain')
+parser.add_argument('--align-with', help='Specify the S1 sequence in FASTA format')
+args = parser.parse_args()
+
+if not args.hmmsearch:
+    raise ValueError('hmmsearch output log is mandatory')
+
+if not args.align_with:
+    raise ValueError('FASTA sequence of S1 is mandatory')
+
+sequences = [s for s in SeqIO.parse(args.align_with, 'fasta')]
+P0DTC2 = sequences[0]
+
+files = args.files
+if len(files) == 0:
+    files = [sys.stdin]
+
+for filename in files:
+    pdbid = None
+    match = re.search('([A-Z0-9]{4})\.pdb$', filename)
+    if match:
+        pdbid = match.group(1)
+
+    chains = []
+    hmmsearch_file = open(args.hmmsearch, 'r')
+    for line in hmmsearch_file.readlines():
+        match = re.search(" " + pdbid + "_(.) ", line)
+        if match:
+            chains.append(match.group(1))
+    hmmsearch_file.close()
+
+    parser = PDB.PDBParser()
+    struct = parser.get_structure(pdbid, filename)
+    for model in struct:
+        for chain in model:
+            if chain.id in chains:
+                # Hack: Give sufficiently high numbers to residues before renumbering them again.
+                # This will as well make insertions have high numbers to be easily identified.
+                for res in chain:
+                    res.id = (res.id[0], res.id[1] + 5000, res.id[2])
+                muscle = MuscleCommandline()
+                child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
+                SeqIO.write([P0DTC2, SeqRecord(Seq(''.join([seq1(res.resname) for res in chain])))], child.stdin, 'fasta')
+                child.stdin.close()
+                align = AlignIO.read(child.stdout, 'fasta')
+                pos_in_P0DTC2 = 1
+                pos_in_PDB = 0
+                residues = [res for res in chain]
+                for pos, aa in enumerate(align[0]):
+                    if aa == '-': # insertion in PDB, not sure what to do
+                        print('Insertion after {}'.format(pos_in_P0DTC2), file=sys.stderr)
+                        pos_in_PDB = pos_in_PDB + 1
+                    elif align[1][pos] == '-': # deletion in PDB, just skip
+                        print('Deletion of {}'.format(pos_in_P0DTC2), file=sys.stderr)
+                        pos_in_P0DTC2 = pos_in_P0DTC2 + 1
+                    else:
+                        residues[pos_in_PDB].id = (residues[pos_in_PDB].id[0], pos_in_P0DTC2, residues[pos_in_PDB].id[2])
+                        pos_in_P0DTC2 = pos_in_P0DTC2 + 1
+                        pos_in_PDB = pos_in_PDB + 1
+    io = PDB.PDBIO()
+    io.set_structure(struct)
+    io.save('/dev/stdout')

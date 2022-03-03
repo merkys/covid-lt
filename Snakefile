@@ -171,11 +171,6 @@ rule renumber_antibodies:
         """
 
 # Renumber PDB chains containing S1 according to its UNIPROT sequence.
-# To do so, first PDB chains containing S1 are identified by its HMM.
-# Then, each matching chain is aligned with the UNIPROT sequence.
-# Lastly, the alignment is propagated to the PDB file.
-# FIXME: There are problems with 5W9L and 5W9M after passing them through this code "Invalid PDB atom record in line: ATOM ..."
-# FIXME: biopython attempts to write 6-digit atom numbers...
 rule renumber_S1:
     input:
         "pdb/Clothia/{pdbid}.pdb",
@@ -183,57 +178,8 @@ rule renumber_S1:
         "P0DTC2.fa"
     output:
         "pdb/P0DTC2/{pdbid}.pdb"
-    run:
-        from Bio import AlignIO, PDB, SeqIO
-        from Bio.Align.Applications import MuscleCommandline
-        from Bio.Seq import Seq
-        from Bio.SeqRecord import SeqRecord
-        from Bio.SeqUtils import seq1
-        from subprocess import Popen, PIPE
-        import re, sys
-
-        chains = []
-        hmmsearch_file = open(input[1], 'r')
-        for line in hmmsearch_file.readlines():
-            match = re.search(" " + wildcards.pdbid + "_(.) ", line)
-            if match:
-                chains.append(match.group(1))
-        hmmsearch_file.close()
-
-        sequences = [s for s in SeqIO.parse(input[2], "fasta")]
-        P0DTC2 = sequences[0]
-
-        parser = PDB.PDBParser()
-        struct = parser.get_structure(wildcards.pdbid, input[0])
-        for model in struct:
-            for chain in model:
-                if chain.id in chains:
-                    # Hack: Give sufficiently high numbers to residues before renumbering them again.
-                    # This will as well make insertions have high numbers to be easily identified.
-                    for res in chain:
-                        res.id = (res.id[0], res.id[1] + 5000, res.id[2])
-                    muscle = MuscleCommandline()
-                    child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
-                    SeqIO.write([P0DTC2, SeqRecord(Seq(''.join([seq1(res.resname) for res in chain])))], child.stdin, "fasta")
-                    child.stdin.close()
-                    align = AlignIO.read(child.stdout, "fasta")
-                    pos_in_P0DTC2 = 1
-                    pos_in_PDB = 0
-                    residues = [res for res in chain]
-                    for pos, aa in enumerate(align[0]):
-                        if aa == '-': # insertion in PDB, not sure what to do
-                            print("Insertion after {}".format(pos_in_P0DTC2), file=sys.stderr)
-                            pos_in_PDB = pos_in_PDB + 1
-                        elif align[1][pos] == '-': # deletion in PDB, just skip
-                            print("Deletion of {}".format(pos_in_P0DTC2), file=sys.stderr)
-                            pos_in_P0DTC2 = pos_in_P0DTC2 + 1
-                        else:
-                            residues[pos_in_PDB].id = (residues[pos_in_PDB].id[0], pos_in_P0DTC2, residues[pos_in_PDB].id[2])
-                            pos_in_P0DTC2 = pos_in_P0DTC2 + 1
-                            pos_in_PDB = pos_in_PDB + 1
-        io = PDB.PDBIO()
-        io.set_structure(struct)
-        io.save(output[0])
+    shell:
+        "bin/pdb_renumber_S1 {input[0]} --hmmsearch {input[1]} --align-with {input[2]} > {output}"
 
 rule contact_map:
     output:
