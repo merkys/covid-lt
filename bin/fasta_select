@@ -36,6 +36,8 @@ if len(files) == 0:
 
 for file in files:
     for sequence in SeqIO.parse(file, 'fasta'):
+        if len(sequence.id) == 1:
+            continue # These are entries with DBREF1/DBREF2 records instead of DBREF
         pdb_id = sequence.id[0:4].upper()
         chain = sequence.id[5]
         if selected and (pdb_id not in selected or chain not in selected[pdb_id]):
