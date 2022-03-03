@@ -1,10 +1,14 @@
 #!/usr/bin/python3
 
-import argparse, re, sys
+from Bio import AlignIO, PDB, SeqIO
+import argparse, re, sys, warnings
+
+warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--hmmsearch', action='append', default=[], help='Add output log of hmmsearch to identify chains (may be multiple)')
+parser.add_argument('--with-lengths', action='store_true', help='Include chain lengths')
 args = parser.parse_args()
 
 files = args.files
@@ -32,6 +36,20 @@ for log in args.hmmsearch:
             in_main = True
 
 for file in files:
+    if args.with_lengths:
+        atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
+        seqres_seqs = [seq for seq in SeqIO.parse(file, 'pdb-seqres')]
+
+        atom_seqs_by_chain = {}
+        for seq in atom_seqs:
+            atom_seqs_by_chain[seq.id[5]] = seq
+        seqres_seqs_by_chain = {}
+        for seq in seqres_seqs:
+            chain = seq.id
+            if len(chain) > 1: # This is probably a problem with Bio module
+                chain = chain[5]
+            seqres_seqs_by_chain[chain] = seq
+
     pdb_id   = None
     molecule = None
     if isinstance(file, str):
@@ -48,4 +66,14 @@ for file in files:
                     additional_info = '?'
                     if pdb_id in hmmsearch_chain_ids and chain in hmmsearch_chain_ids[pdb_id]:
                         additional_info = hmmsearch_chain_ids[pdb_id][chain]
-                    print(pdb_id, chain, molecule, additional_info, sep='\t')
+                    output = [pdb_id, chain, molecule]
+                    if args.with_lengths:
+                        atom_seq_length = '?'
+                        seqres_seq_length = '?'
+                        if chain in atom_seqs_by_chain:
+                            atom_seq_length = len(atom_seqs_by_chain[chain])
+                        if chain in seqres_seqs_by_chain:
+                            seqres_seq_length = len(seqres_seqs_by_chain[chain])
+                        output = output + [atom_seq_length, seqres_seq_length]
+
+                    print(*output, additional_info, sep='\t')
