@@ -30,8 +30,8 @@ rule pdb_seqres_fa:
 # Nonexistent files (i.e., when structures do not fit into PDB format) are removed.
 rule download_pdb_all:
     input:
-        "pdb_seqres-PF01401.hmmsearch",
-        "pdb_seqres-PF09408.hmmsearch"
+        "alignments/pdb_seqres-PF01401.hmmsearch",
+        "alignments/pdb_seqres-PF09408.hmmsearch"
     output:
         touch(".download_pdb_all.done")
     shell:
@@ -110,20 +110,20 @@ rule hmmbuild:
 rule hmmsearch:
     input:
         "{fasta}.fa",
-        "{pfam}_full.hmm"
+        "alignments/{pfam}_full.hmm"
     output:
-        "{fasta}-{pfam}.hmmsearch"
+        "alignments/{fasta}-{pfam}.hmmsearch"
     shell:
-        "sed 's/-//g' {wildcards.fasta}.fa | hmmsearch {wildcards.pfam}_full.hmm - > {output}"
+        "sed 's/-//g' {input[0]} | hmmsearch {input[1]} - > {output}"
 
 rule pdb_seq_hits:
     input:
         "pdb-seqres/{pdbid}.fa",
-        "{pfam}_full.hmm"
+        "alignments/{pfam}_full.hmm"
     output:
         "pdb-{pfam}/{id}.lst"
     shell:
-        "hmmsearch {wildcards.pfam}_full.hmm pdb-seqres/{wildcards.pdbid}.fa | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
+        "hmmsearch {input[1]} {input[0]} | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
 # Fix missing atoms and residues in PDB using Jackal.
 # profix -fix 1 will attempt to repair missing residues.
@@ -174,7 +174,7 @@ rule renumber_antibodies:
 rule renumber_S1:
     input:
         "pdb/Clothia/{pdbid}.pdb",
-        "pdb_seqres-PF09408.hmmsearch",
+        "alignments/pdb_seqres-PF09408.hmmsearch",
         "P0DTC2.fa"
     output:
         "pdb/P0DTC2/{pdbid}.pdb"

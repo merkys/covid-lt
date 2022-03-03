@@ -20,13 +20,13 @@ TMP_DIR=$(mktemp --directory)
 for PDB_ID in ${PDB_IDS}
 do
     # Select all S1 chains
-    S1_CHAINS="$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch pdb_seqres-PF09408.hmmsearch | grep PF09408 | cut -f 2 | xargs | sed 's/ //g')"
+    S1_CHAINS="$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch alignments/pdb_seqres-PF09408.hmmsearch | grep PF09408 | cut -f 2 | xargs | sed 's/ //g')"
 
     # Next if no S1 chains found
     test -z "${S1_CHAINS}" && continue
 
     # Selecting antibody chains
-    ANTIBODY_CHAINS="$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch pdb_seqres-PF07654.hmmsearch | grep PF07654 | cut -f 2 | xargs | sed 's/ //g')"
+    ANTIBODY_CHAINS="$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch alignments/pdb_seqres-PF07654.hmmsearch | grep PF07654 | cut -f 2 | xargs | sed 's/ //g')"
 
     # Next if no antibody chains found
     test -z "${ANTIBODY_CHAINS}" && continue
