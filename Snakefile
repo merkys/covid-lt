@@ -112,9 +112,10 @@ rule hmmsearch:
         "{fasta}.fa",
         "alignments/{pfam}_full.hmm"
     output:
+        "alignments/{fasta}-{pfam}.sto",
         "alignments/{fasta}-{pfam}.hmmsearch"
     shell:
-        "sed 's/-//g' {input[0]} | hmmsearch {input[1]} - > {output}"
+        "sed 's/-//g' {input[0]} | hmmsearch --noali -A {output[0]} {input[1]} - > {output[1]}"
 
 rule pdb_seq_hits:
     input:
