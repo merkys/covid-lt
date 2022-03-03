@@ -126,15 +126,16 @@ rule pdb_seq_hits:
     shell:
         "hmmsearch {input[1]} {input[0]} | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
-rule cd_hit:
+rule mmseqs:
     input:
-        "alignments/{base}.sto"
+        "pdb_seqres.fa",
+        "alignments/{base}.hmmsearch"
     output:
         "alignments/{base}.clusters"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/stockholm2fasta {input} > $TMP_DIR/input.fa
+        bin/fasta_select {input[0]} --hmmsearch {input[1]} > $TMP_DIR/input.fa
         mmseqs createdb $TMP_DIR/input.fa $TMP_DIR/DB
         mmseqs cluster $TMP_DIR/DB $TMP_DIR/clu $TMP_DIR/tmp
         mmseqs createtsv $TMP_DIR/DB $TMP_DIR/DB $TMP_DIR/clu $TMP_DIR/clu.tsv

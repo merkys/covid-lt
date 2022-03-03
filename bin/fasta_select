@@ -1,0 +1,43 @@
+#!/usr/bin/python3
+
+from Bio import AlignIO, PDB, SeqIO
+from Bio.Align.Applications import MuscleCommandline
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio.SeqUtils import seq1
+from subprocess import Popen, PIPE
+import argparse, re, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--hmmsearch', help='Specify the output log of hmmsearch for selection')
+args = parser.parse_args()
+
+selected = None
+if args.hmmsearch:
+    selected = {}
+    file = open(args.hmmsearch, 'r')
+    in_main = False
+    for line in file:
+        if in_main:
+            if re.match('  ------ inclusion threshold', line) or line == '\n':
+                break
+            pdb_id = line[60:64].upper()
+            chain = line[65]
+            if pdb_id not in selected:
+                selected[pdb_id] = {}
+            selected[pdb_id][chain] = 1
+        elif re.match('    ------- ------', line):
+            in_main = True
+
+files = args.files
+if len(files) == 0:
+    files = [sys.stdin]
+
+for file in files:
+    for sequence in SeqIO.parse(file, 'fasta'):
+        pdb_id = sequence.id[0:4].upper()
+        chain = sequence.id[5]
+        if selected and (pdb_id not in selected or chain not in selected[pdb_id]):
+            continue
+        SeqIO.write([sequence], sys.stdout, format='fasta')
