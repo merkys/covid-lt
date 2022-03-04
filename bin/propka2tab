@@ -33,8 +33,11 @@ for file in files:
         if line[0] == '-' or re.match('Coupled residues', line):
             residues_seen = False
             continue
-        resS = resB = resC = None
-        res1 = { 'chain': line[8], 'res_nr': int(line[3:8]), 'res_type': line[0:3] }
+        res1 = resS = resB = resC = None
+        try:
+            res1 = { 'chain': line[8], 'res_nr': int(line[3:8]), 'res_type': line[0:3] }
+        except ValueError:
+            continue # do not register contacts with hetero compounds
         try:
             resS = { 'chain': line[66], 'res_nr': int(line[61:66]), 'res_type': line[58:61] }
         except ValueError:
