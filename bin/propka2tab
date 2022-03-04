@@ -33,19 +33,23 @@ for file in files:
         if line[0] == '-' or re.match('Coupled residues', line):
             residues_seen = False
             continue
+        resS = resB = resC = None
         res1 = { 'chain': line[8], 'res_nr': int(line[3:8]), 'res_type': line[0:3] }
-        resS = { 'chain': line[66], 'res_nr': int(line[61:66]), 'res_type': line[58:61] }
-        resB = { 'chain': line[84], 'res_nr': int(line[79:84]), 'res_type': line[76:79] }
-        resC = { 'chain': line[102], 'res_nr': int(line[97:102]), 'res_type': line[94:97] }
-        if resS['res_type'] != 'XXX':
+        try:
+            resS = { 'chain': line[66], 'res_nr': int(line[61:66]), 'res_type': line[58:61] }
+        except ValueError:
+            pass
+        try:
+            resB = { 'chain': line[84], 'res_nr': int(line[79:84]), 'res_type': line[76:79] }
+        except ValueError:
+            pass
+        try:
+            resC = { 'chain': line[102], 'res_nr': int(line[97:102]), 'res_type': line[94:97] }
+        except ValueError:
+            pass
+        if resS and resS['res_type'] != 'XXX':
             print_contact(res1, resS, 'sidechain hbond')
-        else:
-            resS = None
-        if resB['res_type'] != 'XXX':
+        if resB and resB['res_type'] != 'XXX':
             print_contact(res1, resB, 'backbone hbond')
-        else:
-            resB = None
-        if resC['res_type'] != 'XXX' and not args.no_coulombic:
+        if resC and resC['res_type'] != 'XXX' and not args.no_coulombic:
             print_contact(res1, resC, 'coulombic')
-        else:
-            resC = None
