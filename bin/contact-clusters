@@ -5,6 +5,7 @@ import argparse, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--cluster-file', help='A file to extract clustering infomation from')
+parser.add_argument('--cluster-id', help='Select a particular cluster')
 args = parser.parse_args()
 
 # Process the cluster file
@@ -38,24 +39,30 @@ for file in files:
 
     # Attempt joining clusters
     if clusters:
-        for cluster in clusters:
-            representative = None
-            for pdb_id in clusters[cluster]:
-                if not pdb_id in contacts:
-                    continue
-                if representative:
-                    if contacts[representative].count('?') > contacts[pdb_id].count('?'):
-                        representative = pdb_id
-                else:
-                    representative = pdb_id
-            if not representative:
-                continue
-            for pdb_id in clusters[cluster]:
-                if pdb_id != representative and pdb_id in contacts:
+        if args.cluster_id is not None:
+            for pdb_id in pdb_ids:
+                if not args.cluster_id in clusters or not pdb_id in clusters[args.cluster_id]:
                     contacts.pop(pdb_id)
+        else:
+            for cluster in clusters:
+                representative = None
+                for pdb_id in clusters[cluster]:
+                    if not pdb_id in contacts:
+                        continue
+                    if representative:
+                        if contacts[representative].count('?') > contacts[pdb_id].count('?'):
+                            representative = pdb_id
+                    else:
+                        representative = pdb_id
+                if not representative:
+                    continue
+                for pdb_id in clusters[cluster]:
+                    if pdb_id != representative and pdb_id in contacts:
+                        contacts.pop(pdb_id)
 
     # Print the filtered contacts
     pdb_ids = [pdb_id for pdb_id in contacts]
     print(*pdb_ids, sep='\t')
-    for i in range(len(contacts[pdb_ids[0]])):
-        print(*[contacts[pdb_id][i] for pdb_id in contacts], sep='\t')
+    if pdb_ids:
+        for i in range(len(contacts[pdb_ids[0]])):
+            print(*[contacts[pdb_id][i] for pdb_id in contacts], sep='\t')
