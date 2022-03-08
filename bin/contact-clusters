@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--cluster-file', help='A file to extract clustering infomation from')
 parser.add_argument('--cluster-id', help='Select a particular cluster')
+parser.add_argument('--collate', choices=['most-contacts', 'average'], default='most-contacts', help='Collation method for a cluster')
 args = parser.parse_args()
 
 # Process the cluster file
@@ -46,19 +47,36 @@ for file in files:
         else:
             for cluster in clusters:
                 representative = None
+                cluster_ids = []
                 for pdb_id in clusters[cluster]:
                     if not pdb_id in contacts:
                         continue
+                    cluster_ids.append(pdb_id)
                     if representative:
                         if contacts[representative].count('?') > contacts[pdb_id].count('?'):
                             representative = pdb_id
                     else:
                         representative = pdb_id
-                if not representative:
-                    continue
-                for pdb_id in clusters[cluster]:
-                    if pdb_id != representative and pdb_id in contacts:
+                if args.collate == 'most-contacts':
+                    if not representative:
+                        continue
+                    for pdb_id in cluster_ids:
+                        if pdb_id != representative:
+                            contacts.pop(pdb_id)
+                elif cluster_ids: # 'average'
+                    averaged = []
+                    for i in range(len(contacts[cluster_ids[0]])):
+                        cluster_contacts = []
+                        for pdb_id in cluster_ids:
+                            if contacts[pdb_id][i] != '?':
+                                cluster_contacts.append(float(contacts[pdb_id][i]))
+                        if cluster_contacts:
+                            averaged.append(sum(cluster_contacts)/len(cluster_contacts))
+                        else:
+                            averaged.append('?')
+                    for pdb_id in cluster_ids:
                         contacts.pop(pdb_id)
+                    contacts[','.join(cluster_ids)] = averaged
 
     # Print the filtered contacts
     pdb_ids = [pdb_id for pdb_id in contacts]
