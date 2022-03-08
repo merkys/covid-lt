@@ -136,7 +136,7 @@ rule mmseqs:
         TMP_DIR=$(mktemp --directory)
         bin/fasta_select {input[0]} --hmmsearch {input[1]} > $TMP_DIR/input.fa
         mmseqs createdb $TMP_DIR/input.fa $TMP_DIR/DB
-        mmseqs cluster $TMP_DIR/DB $TMP_DIR/clu $TMP_DIR/tmp
+        mmseqs cluster --min-seq-id 0.9 $TMP_DIR/DB $TMP_DIR/clu $TMP_DIR/tmp
         mmseqs createtsv $TMP_DIR/DB $TMP_DIR/DB $TMP_DIR/clu $TMP_DIR/clu.tsv
         bin/mmseqs2tab $TMP_DIR/clu.tsv > {output}
         rm -rf $TMP_DIR
