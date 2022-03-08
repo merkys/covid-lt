@@ -1,0 +1,5 @@
+#!/usr/bin/Rscript
+
+D = read.csv("/dev/stdin", header=TRUE, sep="\t", na.strings="?")
+svg("/dev/stdout")
+heatmap(t(as.matrix(D)), Colv=NA, Rowv=NA)

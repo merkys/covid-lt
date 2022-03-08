@@ -6,6 +6,7 @@ sudo apt-get install \
     mmseqs2 \
     muscle \
     python3-biopython \
+    r-base-core \
     snakemake \
     voronota \
     #
