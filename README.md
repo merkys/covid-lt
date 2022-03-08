@@ -6,8 +6,8 @@ Preparing the system
 
 F/LOSS part of the dependencies can be installed from standard Debian/Ubuntu repositories.
 List of such dependencies is found at `dependencies/Ubuntu-20.04/run.sh`.
-Sadly, Propka is broken in latest Debian/Ubuntu packages.
-I will look into circumventing this a bit later.
+Some Python modules have to be installed from PyPI.
+List of such dependencies is found at `dependencies/PyPI/run.sh`.
 
 Jackal and Rosetta have to be installed with their executables accessible in `$PATH`.
 Jackal does not seem to have version numbers, I have downloaded my copy on 2022-02-08.
