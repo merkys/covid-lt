@@ -1,9 +1,9 @@
 #!/bin/bash
 
 sudo apt-get install \
+    cd-hit \
     hhsuite \
     hmmer \
-    mmseqs2 \
     muscle \
     python3-biopython \
     r-base-core \

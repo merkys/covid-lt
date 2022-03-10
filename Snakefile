@@ -125,7 +125,7 @@ rule pdb_seq_hits:
     shell:
         "hmmsearch {input[1]} {input[0]} | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
-rule mmseqs:
+rule cd_hit:
     input:
         "pdb_seqres.fa",
         "alignments/{base}.hmmsearch"
@@ -135,10 +135,8 @@ rule mmseqs:
         """
         TMP_DIR=$(mktemp --directory)
         bin/fasta_select {input[0]} --hmmsearch {input[1]} > $TMP_DIR/input.fa
-        mmseqs createdb $TMP_DIR/input.fa $TMP_DIR/DB
-        mmseqs cluster --min-seq-id 0.9 $TMP_DIR/DB $TMP_DIR/clu $TMP_DIR/tmp
-        mmseqs createtsv $TMP_DIR/DB $TMP_DIR/DB $TMP_DIR/clu $TMP_DIR/clu.tsv
-        bin/mmseqs2tab $TMP_DIR/clu.tsv > {output}
+        cd-hit -i $TMP_DIR/input.fa -o $TMP_DIR/output
+        bin/cd-hit2tab $TMP_DIR/output.clstr > {output}
         rm -rf $TMP_DIR
         """
 
