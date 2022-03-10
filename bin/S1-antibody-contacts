@@ -35,7 +35,7 @@ do
     test -z "${ANTIBODY_CHAINS}" && continue
 
     cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab \
-        | awk "{OFS=\"\t\"; if (\$1 ~ /[${S1_CHAINS}]/) { \$1 = \"${S1_CHAIN}\" }; if (\$6 ~ /[${S1_CHAINS}]/) { \$6 = \"${S1_CHAIN}\" }; print}" \
+        | awk "BEGIN { FS=\"\t\"; OFS=\"\t\" } {if (\$1 ~ /[${S1_CHAINS}]/) { \$1 = \"${S1_CHAIN}\" }; if (\$6 ~ /[${S1_CHAINS}]/) { \$6 = \"${S1_CHAIN}\" }; print}" \
         | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
         | grep "${FILTER}" \
         | while read C1 R1 C2 R2 DIST
