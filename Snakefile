@@ -233,11 +233,14 @@ rule quality_map:
                     | xargs -I_ echo _ Y \
                     | join --nocheck-order -a 1 <(seq 1 1500 | xargs -I_ echo _ N) - \
                     | awk '{{print $NF}}' >> $TMP_DIR/column.tab || true
-                if test -e $TMP_DIR/table.tab
+                if tail -n +2 $TMP_DIR/column.tab | grep --silent Y
                 then
-                    paste $TMP_DIR/table.tab $TMP_DIR/column.tab | sponge $TMP_DIR/table.tab
-                else
-                    mv $TMP_DIR/column.tab $TMP_DIR/table.tab
+                    if test -e $TMP_DIR/table.tab
+                    then
+                        paste $TMP_DIR/table.tab $TMP_DIR/column.tab | sponge $TMP_DIR/table.tab
+                    else
+                        mv $TMP_DIR/column.tab $TMP_DIR/table.tab
+                    fi
                 fi
             done
         cp $TMP_DIR/table.tab {output}
