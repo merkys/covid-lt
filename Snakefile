@@ -230,7 +230,9 @@ rule quality_map:
                     | tr -d ' ' \
                     | sort -n \
                     | uniq \
-                    | join --nocheck-order - <(seq 1 1500) >> $TMP_DIR/column.tab || true
+                    | xargs -I_ echo _ Y \
+                    | join --nocheck-order -a 1 <(seq 1 1500 | xargs -I_ echo _ N) - \
+                    | awk '{{print $NF}}' >> $TMP_DIR/column.tab || true
                 if test -e $TMP_DIR/table.tab
                 then
                     paste $TMP_DIR/table.tab $TMP_DIR/column.tab | sponge $TMP_DIR/table.tab
