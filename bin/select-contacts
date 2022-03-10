@@ -47,7 +47,7 @@ args = parser.parse_args()
 
 chains = []
 if args.chain:
-    chains = sorted(args.chain)
+    chains = sorted(list(''.join(args.chain)))
 
 files = args.files
 if len(files) == 0:
@@ -65,12 +65,8 @@ for file in files:
         area, distance, comment = fields
         area = float(area) if area != '?' else None
         distance = float(distance) if distance != '?' else float('inf')
-        if len(chains) == 1:
-            if atom1['chain'] != chains[0] and atom2['chain'] != chains[0]:
-                continue
-        elif len(chains) == 2:
-            if atom1['chain'] != chains[0] or atom2['chain'] != chains[1]:
-                continue
+        if chains and atom1['chain'] not in chains and atom2['chain'] not in chains:
+            continue
         if args.exclude_self and atom1['chain'] == atom2['chain']:
             continue
         contact = '?'
