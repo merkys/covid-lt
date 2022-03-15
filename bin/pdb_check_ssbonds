@@ -1,0 +1,32 @@
+#!/usr/bin/python3
+
+import re, sys
+
+files = sys.argv[1:]
+if len(files) == 0:
+    files = [sys.stdin]
+
+for file in files:
+    if isinstance(file, str):
+        file = open(file, 'r')
+    cysteines = {}
+    for line in file:
+        if re.match('SSBOND', line):
+            for offset in [15, 29]:
+                chain = line[offset]
+                residue = int(line[offset+2:offset+6])
+                if chain not in cysteines:
+                    cysteines[chain] = set()
+                cysteines[chain].add(residue)
+        elif re.match('ATOM  ', line):
+            chain = line[21]
+            residue = int(line[22:26])
+            if chain in cysteines and residue in cysteines[chain]:
+                resname = line[17:20]
+                if resname != 'CYS':
+                    print('NOT-CYS', chain, residue, resname, sep='\t')
+                cysteines[chain].remove(residue)
+    for chain in cysteines:
+        if len(cysteines[chain]) == 0:
+            continue
+        print('NOT-FOUND', chain, ','.join([str(r) for r in cysteines[chain]]), sep='\t')
