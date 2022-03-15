@@ -1,5 +1,23 @@
 #!/usr/bin/Rscript --vanilla
 
+dist_na <- function(m) {
+    nrow = dim(m)[1]
+
+    distances = matrix( nrow=nrow, ncol=nrow )
+    for (i in 1:nrow) {
+        for (j in 1:nrow) {
+            row1 = m[i,]
+            row2 = m[j,]
+
+            row1_filtered = row1[!is.na(row1) & !is.na(row2)]
+            row2_filtered = row2[!is.na(row1) & !is.na(row2)]
+
+            distances[i,j] = sqrt(sum((row1_filtered-row2_filtered)^2))
+        }
+    }
+    return(as.dist(distances))
+}
+
 file = '/dev/stdin'
 files = commandArgs(trailingOnly=TRUE)
 if( length(files) != 0 ) {
