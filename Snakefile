@@ -11,6 +11,15 @@ rule test:
         snakemake propka/$PDBID.tab vorocontacts/$PDBID.tab
         """
 
+# Top-level 'all' rule:
+rule all:
+    input:
+        "quality-map.tab",
+        "contact-maps/..tab",
+        "contact-maps/hbond.tab",
+        "contact-maps/hydrophobic.tab",
+        "contact-maps/salt.tab"
+
 # Nonexistent files (i.e., when structures do not fit into PDB format) are removed.
 # These are not counted as failures.
 rule download_pdb:
