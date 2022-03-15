@@ -204,6 +204,8 @@ rule renumber_S1:
         "bin/pdb_renumber_S1 {input[0]} --hmmsearch {input[1]} --align-with {input[2]} > {output}"
 
 rule contact_map:
+    input:
+        ".download_pdb_all.done"
     output:
         "contact-maps/{search}.tab"
     shell:
@@ -217,8 +219,9 @@ rule contact_map:
 
 rule quality_map:
     input:
-        "alignments/pdb_seqres-PF09408.hmmsearch",
-        "P0DTC2.fa"
+        ".download_pdb_all.done",
+        hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
+        seq = "P0DTC2.fa"
     output:
         "quality-map.tab"
     shell:
@@ -231,7 +234,7 @@ rule quality_map:
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
-                bin/pdb_renumber_S1 pdb/pristine/$PDB_ID.pdb --hmmsearch {input[0]} --align-with {input[1]} --output-only-S1 \
+                bin/pdb_renumber_S1 pdb/pristine/$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 \
                     | grep ^ATOM \
                     | cut -c 23-26 \
                     | tr -d ' ' \
