@@ -8,7 +8,7 @@ parser.add_argument('--cluster-file', help='A file to extract clustering infomat
 parser.add_argument('--cluster-id', help='Select a particular cluster')
 parser.add_argument('--collate', choices=['most-contacts', 'average', 'most-residues'], default='most-contacts', help='Collation method for a cluster')
 parser.add_argument('--quality-map', help='File containing quality map')
-parser.add_argument('--remove-nonmodelled', help='Remove contacts involving nonmodelled residues')
+parser.add_argument('--remove-nonmodelled', action='store_true', help='Remove contacts involving nonmodelled residues')
 args = parser.parse_args()
 
 # Process the cluster file
@@ -60,6 +60,13 @@ for file in files:
             continue
         for i, contact in enumerate(line.rstrip().split('\t')):
             contacts[pdb_ids[i]].append(contact)
+
+    # Remove nonmodelled, if requested
+    if args.remove_nonmodelled:
+        for pdb_id in pdb_ids:
+            if pdb_id not in quality:
+                continue # FIXME: Also report
+            contacts[pdb_id] = [contacts[pdb_id][i] if quality[pdb_id][i] == 'Y' else '?' for i in range(len(contacts[pdb_id]))]
 
     # Attempt joining clusters
     if clusters:
