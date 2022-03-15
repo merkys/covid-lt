@@ -6,7 +6,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--cluster-file', help='A file to extract clustering infomation from')
 parser.add_argument('--cluster-id', help='Select a particular cluster')
-parser.add_argument('--collate', choices=['most-contacts', 'average'], default='most-contacts', help='Collation method for a cluster')
+parser.add_argument('--collate', choices=['most-contacts', 'average', 'most-residues'], default='most-contacts', help='Collation method for a cluster')
+parser.add_argument('--quality-map', help='File containing quality map')
 args = parser.parse_args()
 
 # Process the cluster file
@@ -19,6 +20,9 @@ if args.cluster_file:
         if cluster not in clusters:
             clusters[cluster] = set()
         clusters[cluster].add(pdb_id)
+
+if args.collate == 'most-residues' and not args.quality_map:
+    raise Exception('Collation \'most-residues\' requires a quality map')
 
 files = args.files
 if len(files) == 0:
