@@ -39,10 +39,9 @@ if args.collate == 'most-residues':
             pdb_ids = line.rstrip().split('\t')
         else:
             for i, is_modeled in enumerate(line.rstrip().split('\t')):
-                if is_modeled == 'Y':
-                    if pdb_ids[i] not in quality:
-                        quality[pdb_ids[i]] = 0
-                    quality[pdb_ids[i]] += 1
+                if pdb_ids[i] not in quality:
+                    quality[pdb_ids[i]] = []
+                quality[pdb_ids[i]].append(is_modeled)
 
 files = args.files
 if len(files) == 0:
@@ -87,7 +86,7 @@ for file in files:
                                 if pdb_id not in quality:
                                     warnings.warn(pdb_id + ' not in quality map')
                                 continue
-                            if quality[representative] < quality[pdb_id]:
+                            if quality[representative].count('Y') > quality[pdb_id].count('Y'):
                                 representative = pdb_id
                     else:
                         representative = pdb_id
