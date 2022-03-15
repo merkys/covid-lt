@@ -7,6 +7,7 @@ sudo apt-get install \
     muscle \
     python3-biopython \
     r-base-core \
+    r-cran-optparse \
     snakemake \
     voronota \
     #

@@ -1,11 +1,46 @@
 #!/usr/bin/Rscript --vanilla
 
+dist_na <- function(m) {
+    nrow = dim(m)[1]
+
+    distances = matrix( nrow=nrow, ncol=nrow )
+    for (i in 1:nrow) {
+        for (j in 1:nrow) {
+            row1 = m[i,]
+            row2 = m[j,]
+
+            row1_filtered = row1[!is.na(row1) & !is.na(row2)]
+            row2_filtered = row2[!is.na(row1) & !is.na(row2)]
+
+            # Weighting as suggested in https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.nan_euclidean_distances.html
+            weight = length(row1)/length(row1_filtered)
+
+            if( !is.infinite(weight) ) {
+                distances[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
+            } else {
+                distances[i,j] = 1e6 # Sufficiently large number
+            }
+        }
+    }
+    return(as.dist(distances))
+}
+
+library( "optparse" )
+parser <- OptionParser()
+parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
+options = parse_args(parser, positional_arguments = TRUE)
+
 file = '/dev/stdin'
-files = commandArgs(trailingOnly=TRUE)
+files = options$args
 if( length(files) != 0 ) {
     file = files[1]
 }
 
+dendrogram = NA
+if( options$options$dendrogram ) {
+    dendrogram = NULL
+}
+
 D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
 svg("/dev/stdout")
-heatmap(t(as.matrix(D)), Colv=NA, Rowv=NA)
+heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram, distfun=dist_na)
