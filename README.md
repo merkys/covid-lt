@@ -13,6 +13,13 @@ Jackal and Rosetta have to be installed with their executables accessible in `$P
 Jackal does not seem to have version numbers, I have downloaded my copy on 2022-02-08.
 Rosetta's version 2021.16.61629 has been used.
 
+Temporary storage
+-----------------
+
+Some computations use temporary files and directories.
+They are created using `mktemp` and later on removed.
+Default place for `mktemp` to store these temporary files and directories is `/tmp`, but this could be overridden by setting `TMPDIR` environment variable.
+
 Generating contacts maps
 ------------------------
 

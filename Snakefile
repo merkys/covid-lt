@@ -11,13 +11,16 @@ rule test:
         snakemake propka/$PDBID.tab vorocontacts/$PDBID.tab
         """
 
+# Nonexistent files (i.e., when structures do not fit into PDB format) are removed.
+# These are not counted as failures.
 rule download_pdb:
     output:
         "pdb/pristine/{pdbid}.pdb"
     shell:
         """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output}
-        chmod -w {output}
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || rm {output}
+        test -e {output} && chmod -w {output} || true
+        sleep 1
         """
 
 rule pdb_seqres_fa:
@@ -26,24 +29,28 @@ rule pdb_seqres_fa:
     shell:
         "curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}"
 
+# Extract PDB IDs of structures of interest from hmmsearch outputs.
+def pdb_entries_of_interest():
+    import re
+    pdb_ids = set()
+    for PF in ['PF01401', 'PF09408']:
+        file = open('alignments/pdb_seqres-' + PF + '.hmmsearch', 'r')
+        for line in file:
+            match = re.match('>> ([0-9a-zA-Z]{4})', line)
+            if match:
+                pdb_ids.add(match.group(1).upper())
+    return list(pdb_ids)
+
 # Download models of PDB entries of interest.
-# Nonexistent files (i.e., when structures do not fit into PDB format) are removed.
+# Number of threads is limited to 1 in order not to overload the PDB.
 rule download_pdb_all:
     input:
         "alignments/pdb_seqres-PF01401.hmmsearch",
-        "alignments/pdb_seqres-PF09408.hmmsearch"
+        "alignments/pdb_seqres-PF09408.hmmsearch",
+        expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
     output:
         touch(".download_pdb_all.done")
-    shell:
-        """
-        grep '>>' {input} | cut -d ' ' -f 2 | cut -d _ -f 1 | sort | uniq | tr '[:lower:]' '[:upper:]' \
-            | while read ID
-                      do
-                        wget https://files.rcsb.org/download/$ID.pdb -O pdb/pristine/$ID.pdb || rm pdb/pristine/$ID.pdb
-                        test -e pdb/pristine/$ID.pdb && chmod -w pdb/pristine/$ID.pdb || true
-                        sleep 1
-                      done
-        """
+    threads: 1
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
@@ -115,15 +122,6 @@ rule hmmsearch:
         "alignments/{fasta}-{pfam}.hmmsearch"
     shell:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
-
-rule pdb_seq_hits:
-    input:
-        "pdb-seqres/{pdbid}.fa",
-        "alignments/{pfam}_full.hmm"
-    output:
-        "pdb-{pfam}/{id}.lst"
-    shell:
-        "hmmsearch {input[1]} {input[0]} | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
 
 rule cd_hit:
     input:
@@ -197,6 +195,8 @@ rule renumber_S1:
         "bin/pdb_renumber_S1 {input[0]} --hmmsearch {input[1]} --align-with {input[2]} > {output}"
 
 rule contact_map:
+    input:
+        ".download_pdb_all.done"
     output:
         "contact-maps/{search}.tab"
     shell:
@@ -210,8 +210,9 @@ rule contact_map:
 
 rule quality_map:
     input:
-        "alignments/pdb_seqres-PF09408.hmmsearch",
-        "P0DTC2.fa"
+        ".download_pdb_all.done",
+        hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
+        seq = "P0DTC2.fa"
     output:
         "quality-map.tab"
     shell:
@@ -224,7 +225,7 @@ rule quality_map:
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
-                bin/pdb_renumber_S1 pdb/pristine/$PDB_ID.pdb --hmmsearch {input[0]} --align-with {input[1]} --output-only-S1 \
+                bin/pdb_renumber_S1 pdb/pristine/$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 \
                     | grep ^ATOM \
                     | cut -c 23-26 \
                     | tr -d ' ' \

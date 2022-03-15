@@ -13,7 +13,9 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.SeqUtils import seq1
 from subprocess import Popen, PIPE
-import argparse, re, sys
+import argparse, re, sys, warnings
+
+warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
