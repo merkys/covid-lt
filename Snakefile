@@ -29,6 +29,7 @@ rule pdb_seqres_fa:
     shell:
         "curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}"
 
+# Extract PDB IDs of structures of interest from hmmsearch outputs.
 def pdb_entries_of_interest():
     import re
     pdb_ids = set()
