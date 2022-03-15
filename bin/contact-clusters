@@ -38,10 +38,10 @@ if args.collate == 'most-residues':
         if pdb_ids is None:
             pdb_ids = line.rstrip().split('\t')
         else:
-            for i, is_modeled in enumerate(line.rstrip().split('\t')):
+            for i, is_modelled in enumerate(line.rstrip().split('\t')):
                 if pdb_ids[i] not in quality:
                     quality[pdb_ids[i]] = []
-                quality[pdb_ids[i]].append(is_modeled)
+                quality[pdb_ids[i]].append(is_modelled)
 
 files = args.files
 if len(files) == 0:
