@@ -21,6 +21,7 @@ if args.cluster_file:
             clusters[cluster] = set()
         clusters[cluster].add(pdb_id)
 
+# Process the quality map, if given
 quality = None
 if args.collate == 'most-residues':
     if not args.quality_map:
@@ -71,11 +72,17 @@ for file in files:
                         continue
                     cluster_ids.append(pdb_id)
                     if representative:
-                        if contacts[representative].count('?') > contacts[pdb_id].count('?'):
-                            representative = pdb_id
+                        if args.collate == 'most-contacts':
+                            if contacts[representative].count('?') > contacts[pdb_id].count('?'):
+                                representative = pdb_id
+                        else: # 'most-residues'
+                            if representative not in quality or pdb_id not in quality:
+                                continue # FIXME: Warn?
+                            if quality[representative] < quality[pdb_id]:
+                                representative = pdb_id
                     else:
                         representative = pdb_id
-                if args.collate == 'most-contacts':
+                if args.collate in ['most-contacts', 'most-residues']:
                     if not representative:
                         continue
                     for pdb_id in cluster_ids:
