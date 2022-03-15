@@ -65,7 +65,8 @@ for file in files:
     if args.remove_nonmodelled:
         for pdb_id in pdb_ids:
             if pdb_id not in quality:
-                continue # FIXME: Also report
+                warnings.warn(pdb_id + ' not in quality map')
+                continue
             contacts[pdb_id] = [contacts[pdb_id][i] if quality[pdb_id][i] == 'Y' else '?' for i in range(len(contacts[pdb_id]))]
 
     # Attempt joining clusters
