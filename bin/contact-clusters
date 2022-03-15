@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import argparse, sys
+import argparse, sys, warnings
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -77,7 +77,11 @@ for file in files:
                                 representative = pdb_id
                         else: # 'most-residues'
                             if representative not in quality or pdb_id not in quality:
-                                continue # FIXME: Warn?
+                                if representative not in quality:
+                                    warnings.warn(representative + ' not in quality map')
+                                if pdb_id not in quality:
+                                    warnings.warn(pdb_id + ' not in quality map')
+                                continue
                             if quality[representative] < quality[pdb_id]:
                                 representative = pdb_id
                     else:
