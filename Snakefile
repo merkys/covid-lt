@@ -238,10 +238,11 @@ rule quality_map:
                     | grep ^ATOM \
                     | cut -c 23-26 \
                     | tr -d ' ' \
-                    | sort -n \
+                    | sort -k 1b,1 \
                     | uniq \
                     | xargs -I_ echo _ Y \
-                    | join --nocheck-order -a 1 <(seq 1 1500 | xargs -I_ echo _ N) - \
+                    | join -a 1 <(seq 1 1500 | xargs -I_ echo _ N | sort -k 1b,1) - \
+                    | sort -nk 1.1 \
                     | awk '{{print $NF}}' >> $TMP_DIR/column.tab || true
                 if tail -n +2 $TMP_DIR/column.tab | grep --silent Y
                 then
