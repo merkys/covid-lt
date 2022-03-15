@@ -18,7 +18,7 @@ rule download_pdb:
         "pdb/pristine/{pdbid}.pdb"
     shell:
         """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || rm pdb/pristine/$ID.pdb
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || rm {output}
         test -e {output} && chmod -w {output} || true
         sleep 1
         """
