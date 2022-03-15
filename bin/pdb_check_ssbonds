@@ -29,4 +29,4 @@ for file in files:
     for chain in cysteines:
         if len(cysteines[chain]) == 0:
             continue
-        print('NOT-FOUND', chain, ','.join(cysteines[chain]), sep='\t')
+        print('NOT-FOUND', chain, ','.join([str(r) for r in cysteines[chain]]), sep='\t')
