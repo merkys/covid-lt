@@ -11,13 +11,16 @@ rule test:
         snakemake propka/$PDBID.tab vorocontacts/$PDBID.tab
         """
 
+# Nonexistent files (i.e., when structures do not fit into PDB format) are removed.
+# These are not counted as failures.
 rule download_pdb:
     output:
         "pdb/pristine/{pdbid}.pdb"
     shell:
         """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output}
-        chmod -w {output}
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || rm pdb/pristine/$ID.pdb
+        test -e {output} && chmod -w {output} || true
+        sleep 1
         """
 
 rule pdb_seqres_fa:
@@ -26,24 +29,27 @@ rule pdb_seqres_fa:
     shell:
         "curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}"
 
+def pdb_entries_of_interest():
+    import re
+    pdb_ids = set()
+    for PF in ['PF01401', 'PF09408']:
+        file = open('alignments/pdb_seqres-' + PF + '.hmmsearch', 'r')
+        for line in file:
+            match = re.match('>> ([0-9a-zA-Z]{4})', line)
+            if match:
+                pdb_ids.add(match.group(1).upper())
+    return list(pdb_ids)
+
 # Download models of PDB entries of interest.
-# Nonexistent files (i.e., when structures do not fit into PDB format) are removed.
+# Number of threads is limited to 1 in order not to overload the PDB.
 rule download_pdb_all:
     input:
         "alignments/pdb_seqres-PF01401.hmmsearch",
-        "alignments/pdb_seqres-PF09408.hmmsearch"
+        "alignments/pdb_seqres-PF09408.hmmsearch",
+        expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
     output:
         touch(".download_pdb_all.done")
-    shell:
-        """
-        grep '>>' {input} | cut -d ' ' -f 2 | cut -d _ -f 1 | sort | uniq | tr '[:lower:]' '[:upper:]' \
-            | while read ID
-                      do
-                        wget https://files.rcsb.org/download/$ID.pdb -O pdb/pristine/$ID.pdb || rm pdb/pristine/$ID.pdb
-                        test -e pdb/pristine/$ID.pdb && chmod -w pdb/pristine/$ID.pdb || true
-                        sleep 1
-                      done
-        """
+    threads: 1
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
