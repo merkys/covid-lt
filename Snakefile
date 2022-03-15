@@ -207,3 +207,42 @@ rule contact_map:
           | sed 's/\.tab//' \
           | xargs bin/S1-antibody-contacts --filter "{wildcards.search}" > {output}
         """
+
+rule quality_map:
+    input:
+        "alignments/pdb_seqres-PF09408.hmmsearch",
+        "P0DTC2.fa"
+    output:
+        "quality-map.tab"
+    shell:
+        """
+        TMP_DIR=$(mktemp --directory)
+        comm -1 -2 \
+            <(ls -1 vorocontacts/*.tab | cut -d / -f 2 | sort) \
+            <(ls -1 propka/*.tab | cut -d / -f 2 | sort) \
+          | sed 's/\.tab//' \
+          | while read PDB_ID
+            do
+                echo $PDB_ID > $TMP_DIR/column.tab
+                bin/pdb_renumber_S1 pdb/pristine/$PDB_ID.pdb --hmmsearch {input[0]} --align-with {input[1]} --output-only-S1 \
+                    | grep ^ATOM \
+                    | cut -c 23-26 \
+                    | tr -d ' ' \
+                    | sort -n \
+                    | uniq \
+                    | xargs -I_ echo _ Y \
+                    | join --nocheck-order -a 1 <(seq 1 1500 | xargs -I_ echo _ N) - \
+                    | awk '{{print $NF}}' >> $TMP_DIR/column.tab || true
+                if tail -n +2 $TMP_DIR/column.tab | grep --silent Y
+                then
+                    if test -e $TMP_DIR/table.tab
+                    then
+                        paste $TMP_DIR/table.tab $TMP_DIR/column.tab | sponge $TMP_DIR/table.tab
+                    else
+                        mv $TMP_DIR/column.tab $TMP_DIR/table.tab
+                    fi
+                fi
+            done
+        cp $TMP_DIR/table.tab {output}
+        rm -rf $TMP_DIR
+        """

@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--hmmsearch', help='Specify the output log of hmmsearch to identify S1 chain')
 parser.add_argument('--align-with', help='Specify the S1 sequence in FASTA format')
+parser.add_argument('--output-only-S1', action='store_true', help='Output only S1 chains')
 args = parser.parse_args()
 
 if not args.hmmsearch:
@@ -76,6 +77,8 @@ for filename in files:
                         residues[pos_in_PDB].id = (residues[pos_in_PDB].id[0], pos_in_P0DTC2, residues[pos_in_PDB].id[2])
                         pos_in_P0DTC2 = pos_in_P0DTC2 + 1
                         pos_in_PDB = pos_in_PDB + 1
+            elif args.output_only_S1:
+                model.detach_child(chain.id)
     io = PDB.PDBIO()
     io.set_structure(struct)
     io.save('/dev/stdout')
