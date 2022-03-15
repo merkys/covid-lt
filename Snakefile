@@ -123,15 +123,6 @@ rule hmmsearch:
     shell:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
 
-rule pdb_seq_hits:
-    input:
-        "pdb-seqres/{pdbid}.fa",
-        "alignments/{pfam}_full.hmm"
-    output:
-        "pdb-{pfam}/{id}.lst"
-    shell:
-        "hmmsearch {input[1]} {input[0]} | grep '^>>' | cut -d ' ' -f 2 | cut -d : -f 2 | sort | uniq > {output} || true"
-
 rule cd_hit:
     input:
         "pdb_seqres.fa",
