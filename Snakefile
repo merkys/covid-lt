@@ -69,8 +69,10 @@ rule vorocontacts_out:
         "pdb/P0DTC2/{pdbid}.pdb"
     output:
         "vorocontacts/{pdbid}.out"
+    log:
+        "vorocontacts/{pdbid}.log"
     shell:
-        "voronota-contacts -i {input} > {output}"
+        "voronota-contacts -i {input} > {output} 2> {log}"
 
 rule vorocontacts_tab:
     input:
