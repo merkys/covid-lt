@@ -46,7 +46,7 @@ for filename in files:
     chains = []
     hmmsearch_file = open(args.hmmsearch, 'r')
     for line in hmmsearch_file.readlines():
-        match = re.search(" " + pdbid + "_(.) ", line)
+        match = re.match('>> ' + pdbid.lower() + '_(.)', line)
         if match:
             chains.append(match.group(1))
     hmmsearch_file.close()
@@ -73,7 +73,6 @@ for filename in files:
                         print('Insertion after {}'.format(pos_in_P0DTC2), file=sys.stderr)
                         pos_in_PDB = pos_in_PDB + 1
                     elif align[1][pos] == '-': # deletion in PDB, just skip
-                        print('Deletion of {}'.format(pos_in_P0DTC2), file=sys.stderr)
                         pos_in_P0DTC2 = pos_in_P0DTC2 + 1
                     else:
                         residues[pos_in_PDB].id = (residues[pos_in_PDB].id[0], pos_in_P0DTC2, residues[pos_in_PDB].id[2])
