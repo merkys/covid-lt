@@ -5,7 +5,7 @@
 # Then, each matching chain is aligned with the UNIPROT sequence.
 # Lastly, the alignment is propagated to the PDB file.
 # FIXME: There are problems with 5W9L and 5W9M after passing them through this code "Invalid PDB atom record in line: ATOM ..."
-# FIXME: biopython attempts to write 6-digit atom numbers...
+# FIXME: biopython attempts to write 6-digit atom numbers, see https://github.com/biopython/biopython/issues/1085
 
 from Bio import AlignIO, PDB, SeqIO
 from Bio.Align.Applications import MuscleCommandline
