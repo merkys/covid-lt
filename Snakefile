@@ -69,8 +69,10 @@ rule vorocontacts_out:
         "pdb/P0DTC2/{pdbid}.pdb"
     output:
         "vorocontacts/{pdbid}.out"
+    log:
+        "vorocontacts/{pdbid}.log"
     shell:
-        "voronota-contacts -i {input} > {output}"
+        "voronota-contacts -i {input} > {output} 2> {log}"
 
 rule vorocontacts_tab:
     input:
@@ -195,13 +197,15 @@ rule renumber_antibodies:
 # Renumber PDB chains containing S1 according to its UNIPROT sequence.
 rule renumber_S1:
     input:
-        "pdb/Clothia/{pdbid}.pdb",
-        "alignments/pdb_seqres-PF09408.hmmsearch",
-        "P0DTC2.fa"
+        pdb = "pdb/Clothia/{pdbid}.pdb",
+        hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
+        seq = "P0DTC2.fa"
     output:
         "pdb/P0DTC2/{pdbid}.pdb"
+    log:
+        "pdb/P0DTC2/{pdbid}.log"
     shell:
-        "bin/pdb_renumber_S1 {input[0]} --hmmsearch {input[1]} --align-with {input[2]} > {output}"
+        "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}"
 
 rule contact_map:
     input:

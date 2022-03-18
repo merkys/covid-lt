@@ -4,8 +4,6 @@
 # To do so, first PDB chains containing S1 are identified by its HMM.
 # Then, each matching chain is aligned with the UNIPROT sequence.
 # Lastly, the alignment is propagated to the PDB file.
-# FIXME: There are problems with 5W9L and 5W9M after passing them through this code "Invalid PDB atom record in line: ATOM ..."
-# FIXME: biopython attempts to write 6-digit atom numbers...
 
 from Bio import AlignIO, PDB, SeqIO
 from Bio.Align.Applications import MuscleCommandline
@@ -46,7 +44,7 @@ for filename in files:
     chains = []
     hmmsearch_file = open(args.hmmsearch, 'r')
     for line in hmmsearch_file.readlines():
-        match = re.search(" " + pdbid + "_(.) ", line)
+        match = re.match('>> ' + pdbid.lower() + '_(.)', line)
         if match:
             chains.append(match.group(1))
     hmmsearch_file.close()
@@ -70,10 +68,9 @@ for filename in files:
                 residues = [res for res in chain]
                 for pos, aa in enumerate(align[0]):
                     if aa == '-': # insertion in PDB, not sure what to do
-                        print('Insertion after {}'.format(pos_in_P0DTC2), file=sys.stderr)
+                        print('Insertion in chain {}, after {}'.format(chain.id, pos_in_P0DTC2), file=sys.stderr)
                         pos_in_PDB = pos_in_PDB + 1
                     elif align[1][pos] == '-': # deletion in PDB, just skip
-                        print('Deletion of {}'.format(pos_in_P0DTC2), file=sys.stderr)
                         pos_in_P0DTC2 = pos_in_P0DTC2 + 1
                     else:
                         residues[pos_in_PDB].id = (residues[pos_in_PDB].id[0], pos_in_P0DTC2, residues[pos_in_PDB].id[2])
@@ -83,4 +80,6 @@ for filename in files:
                 model.detach_child(chain.id)
     io = PDB.PDBIO()
     io.set_structure(struct)
-    io.save('/dev/stdout')
+    # Biopython attempts to write 6-digit atom numbers, see https://github.com/biopython/biopython/issues/1085.
+    # Thus the fix is to retain the original atom numbers.
+    io.save('/dev/stdout', preserve_atom_numbering=True)
