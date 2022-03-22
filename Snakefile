@@ -188,9 +188,9 @@ rule renumber_antibodies:
     input:
         "pdb/fixed/{pdbid}.pdb"
     output:
-        "pdb/Clothia/{pdbid}.pdb"
+        "pdb/Chothia/{pdbid}.pdb"
     log:
-        "pdb/Clothia/{pdbid}.log"
+        "pdb/Chothia/{pdbid}.log"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -205,7 +205,7 @@ rule renumber_antibodies:
 # Renumber PDB chains containing S1 according to its UNIPROT sequence.
 rule renumber_S1:
     input:
-        pdb = "pdb/Clothia/{pdbid}.pdb",
+        pdb = "pdb/Chothia/{pdbid}.pdb",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
         seq = "P0DTC2.fa"
     output:
