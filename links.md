@@ -9,6 +9,7 @@ Antibody numbering
 
 * Server: http://www.bioinf.org.uk/abs/abnum/
 * Python interface: https://gf712.github.io/AbPyTools/index.html
+* ANARCI, stand-alone software for antibody renumbering: https://github.com/oxpig/ANARCI
 
 PDB format
 ==========
