@@ -38,24 +38,21 @@ rule pdb_seqres_fa:
     shell:
         "curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}"
 
-# Extract PDB IDs of structures of interest from hmmsearch outputs.
+# Extract PDB IDs of structures of interest from blastp outputs.
 def pdb_entries_of_interest():
-    import re
     pdb_ids = set()
-    for PF in ['PF01401', 'PF09408']:
-        file = open('alignments/pdb_seqres-' + PF + '.hmmsearch', 'r')
-        for line in file:
-            match = re.match('>> ([0-9a-zA-Z]{4})', line)
-            if match:
-                pdb_ids.add(match.group(1).upper())
+    file = open('alignments/pdb_seqres-P0DTC2.blastp', 'r')
+    for line in file:
+        sseqid, evalue, score, length, pident, nident = line.rstrip().split('\t')
+        if int(length) >= 100 and float(pident) >= 90:
+            pdb_ids.add(sseqid[0:4].upper())
     return list(pdb_ids)
 
 # Download models of PDB entries of interest.
 # Number of threads is limited to 1 in order not to overload the PDB.
 rule download_pdb_all:
     input:
-        "alignments/pdb_seqres-PF01401.hmmsearch",
-        "alignments/pdb_seqres-PF09408.hmmsearch",
+        "alignments/pdb_seqres-P0DTC2.blastp",
         expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
     output:
         touch(".download_pdb_all.done")
