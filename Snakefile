@@ -178,6 +178,8 @@ rule profix:
         """
 
 # Renumber antibody chains using Rosetta
+# FIXME: This might not be working as expected at all; from [1] it seems that Rosetta needs properly numbered antibodies in its input.
+# [1] https://www.rosettacommons.org/docs/latest/application_documentation/antibody/General-Antibody-Options-and-Tips
 rule renumber_antibodies:
     input:
         "pdb/fixed/{pdbid}.pdb"
