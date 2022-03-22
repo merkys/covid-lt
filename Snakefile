@@ -36,7 +36,10 @@ rule pdb_seqres_fa:
     output:
         "pdb_seqres.fa"
     shell:
-        "curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}"
+        """
+        curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}
+        chmod -w {output}
+        """
 
 # Extract PDB IDs of structures of interest from blastp outputs.
 def pdb_entries_of_interest():
