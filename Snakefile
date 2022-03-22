@@ -20,15 +20,14 @@ rule all:
         "contact-maps/hydrophobic.tab",
         "contact-maps/salt.tab"
 
-# Nonexistent files (i.e., when structures do not fit into PDB format) are removed.
-# These are not counted as failures.
+# Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
 rule download_pdb:
     output:
         "pdb/pristine/{pdbid}.pdb"
     shell:
         """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || rm {output}
-        test -e {output} && chmod -w {output} || true
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || true
+        chmod -w {output}
         sleep 1
         """
 
