@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--hmmsearch', help='Specify the output log of hmmsearch to identify S1 chain')
 parser.add_argument('--align-with', help='Specify the S1 sequence in FASTA format')
+parser.add_argument('--output-alignment', action='store_true', help='Output alignments to STDERR for debug purpose')
 parser.add_argument('--output-only-S1', action='store_true', help='Output only S1 chains')
 args = parser.parse_args()
 
@@ -63,6 +64,8 @@ for filename in files:
                 SeqIO.write([P0DTC2, SeqRecord(Seq(''.join([seq1(res.resname) for res in chain])))], child.stdin, 'fasta')
                 child.stdin.close()
                 align = AlignIO.read(child.stdout, 'fasta')
+                if args.output_alignment:
+                    AlignIO.write(align, sys.stderr, 'fasta')
                 pos_in_P0DTC2 = 1
                 pos_in_PDB = 0
                 residues = [res for res in chain]
