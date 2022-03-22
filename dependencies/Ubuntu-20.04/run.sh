@@ -5,6 +5,7 @@ sudo apt-get install \
     hhsuite \
     hmmer \
     muscle \
+    ncbi-blast+ \
     python3-biopython \
     r-base-core \
     r-cran-optparse \

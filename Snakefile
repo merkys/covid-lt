@@ -116,6 +116,15 @@ rule pdb_seqres2fasta:
     shell:
         "bin/pdb_seqres2fasta {input} > {output}"
 
+rule blastp:
+    input:
+        subject = "{subject}.fa",
+        query = "{query}.fa"
+    output:
+        "alignments/{subject}-{query}.blastp"
+    shell:
+        "blastp -query {input.query} -subject {input.subject} -outfmt '6 sseqid evalue score length pident nident' -max_target_seqs $(wc -l < {input.subject}) -subject_besthit > {output}"
+
 rule hmmbuild:
     input:
         "{prefix}.msa"
