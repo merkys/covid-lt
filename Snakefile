@@ -225,6 +225,7 @@ rule contact_map:
           | xargs bin/S1-contact-map --contacts-with alignments/pdb_seqres-PF07654.hmmsearch --filter "{wildcards.search}" > {output}
         """
 
+# Identifies which residues in S1 chains are present in the original PDB files.
 rule quality_map:
     input:
         ".download_pdb_all.done",
