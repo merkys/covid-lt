@@ -43,7 +43,7 @@ do
     test -z "${S1_CHAINS}" && continue
 
     # Selecting antibody chains
-    ANTIBODY_CHAINS="$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch "${CONTACTS_WITH}" | grep PF07654 | cut -f 2 | xargs | sed 's/ //g')"
+    ANTIBODY_CHAINS="$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch "${CONTACTS_WITH}" | grep -F "${CONTACTS_WITH}" | cut -f 2 | xargs | sed 's/ //g')"
 
     # Next if no antibody chains found
     test -z "${ANTIBODY_CHAINS}" && continue
