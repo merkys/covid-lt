@@ -213,16 +213,17 @@ rule renumber_S1:
 
 rule contact_map:
     input:
-        ".download_pdb_all.done"
+        ".download_pdb_all.done",
+        hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch"
     output:
-        "contact-maps/PF07654/{search}.tab"
+        "contact-maps/{pfam}/{search}.tab"
     shell:
         """
         comm -1 -2 \
             <(ls -1 vorocontacts/*.tab | cut -d / -f 2 | sort) \
             <(ls -1 propka/*.tab | cut -d / -f 2 | sort) \
           | sed 's/\.tab//' \
-          | xargs bin/S1-contact-map --contacts-with alignments/pdb_seqres-PF07654.hmmsearch --filter "{wildcards.search}" > {output}
+          | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" > {output}
         """
 
 # Identifies which residues in S1 chains are present in the original PDB files.
