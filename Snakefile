@@ -222,7 +222,7 @@ rule contact_map:
             <(ls -1 vorocontacts/*.tab | cut -d / -f 2 | sort) \
             <(ls -1 propka/*.tab | cut -d / -f 2 | sort) \
           | sed 's/\.tab//' \
-          | xargs bin/S1-antibody-contacts --filter "{wildcards.search}" > {output}
+          | xargs bin/S1-antibody-contacts --contacts-with alignments/pdb_seqres-PF07654.hmmsearch --filter "{wildcards.search}" > {output}
         """
 
 rule quality_map:

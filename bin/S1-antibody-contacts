@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PDB_IDS=
+CONTACTS_WITH=
 FILTER=.
 
 while [ $# -gt 0 ]
@@ -8,6 +9,10 @@ do
     case $1 in
         --filter)
             FILTER=$2
+            shift
+            ;;
+        --contacts-with)
+            CONTACTS_WITH=$2
             shift
             ;;
         -*)
@@ -21,6 +26,12 @@ do
     shift
 done
 
+if [ -z "${CONTACTS_WITH}" ]
+then
+    echo "`basename $0`:: need hmmsearch results to identify the contacting chains, should be given with '--contacts-with' CLI option" >&2
+    exit 1
+fi
+
 TMP_DIR=$(mktemp --directory)
 
 for PDB_ID in ${PDB_IDS}
@@ -32,7 +43,7 @@ do
     test -z "${S1_CHAINS}" && continue
 
     # Selecting antibody chains
-    ANTIBODY_CHAINS="$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch alignments/pdb_seqres-PF07654.hmmsearch | grep PF07654 | cut -f 2 | xargs | sed 's/ //g')"
+    ANTIBODY_CHAINS="$(bin/pdb_compounds pdb/pristine/${PDB_ID}.pdb --hmmsearch "${CONTACTS_WITH}" | grep PF07654 | cut -f 2 | xargs | sed 's/ //g')"
 
     # Next if no antibody chains found
     test -z "${ANTIBODY_CHAINS}" && continue
