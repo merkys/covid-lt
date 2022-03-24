@@ -20,15 +20,14 @@ rule all:
         "contact-maps/hydrophobic.tab",
         "contact-maps/salt.tab"
 
-# Nonexistent files (i.e., when structures do not fit into PDB format) are removed.
-# These are not counted as failures.
+# Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
 rule download_pdb:
     output:
         "pdb/pristine/{pdbid}.pdb"
     shell:
         """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || rm {output}
-        test -e {output} && chmod -w {output} || true
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || true
+        chmod -w {output}
         sleep 1
         """
 
@@ -36,7 +35,10 @@ rule pdb_seqres_fa:
     output:
         "pdb_seqres.fa"
     shell:
-        "curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}"
+        """
+        curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}
+        chmod -w {output}
+        """
 
 # Extract PDB IDs of structures of interest from hmmsearch outputs.
 def pdb_entries_of_interest():
@@ -176,13 +178,15 @@ rule profix:
         """
 
 # Renumber antibody chains using Rosetta
+# FIXME: This might not be working as expected at all; from [1] it seems that Rosetta needs properly numbered antibodies in its input.
+# [1] https://www.rosettacommons.org/docs/latest/application_documentation/antibody/General-Antibody-Options-and-Tips
 rule renumber_antibodies:
     input:
         "pdb/fixed/{pdbid}.pdb"
     output:
-        "pdb/Clothia/{pdbid}.pdb"
+        "pdb/Chothia/{pdbid}.pdb"
     log:
-        "pdb/Clothia/{pdbid}.log"
+        "pdb/Chothia/{pdbid}.log"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -197,7 +201,7 @@ rule renumber_antibodies:
 # Renumber PDB chains containing S1 according to its UNIPROT sequence.
 rule renumber_S1:
     input:
-        pdb = "pdb/Clothia/{pdbid}.pdb",
+        pdb = "pdb/Chothia/{pdbid}.pdb",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
         seq = "P0DTC2.fa"
     output:
