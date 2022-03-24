@@ -215,7 +215,7 @@ rule contact_map:
     input:
         ".download_pdb_all.done"
     output:
-        "contact-maps/{search}.tab"
+        "contact-maps/PF07654/{search}.tab"
     shell:
         """
         comm -1 -2 \
