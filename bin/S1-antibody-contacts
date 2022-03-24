@@ -5,13 +5,19 @@ FILTER=.
 
 while [ $# -gt 0 ]
 do
-    if [ "$1" = "--filter" ]
-    then
-        FILTER=$2
-        shift
-    else
-        PDB_IDS="${PDB_IDS} $1"
-    fi
+    case $1 in
+        --filter)
+            FILTER=$2
+            shift
+            ;;
+        -*)
+            echo "`basename $0`:: ERROR, unknown option '$1'." >&2
+            exit 1
+            ;;
+        *)
+            PDB_IDS="${PDB_IDS} $1"
+            ;;
+    esac
     shift
 done
 
