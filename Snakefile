@@ -15,10 +15,14 @@ rule test:
 rule all:
     input:
         "quality-map.tab",
-        "contact-maps/..tab",
-        "contact-maps/hbond.tab",
-        "contact-maps/hydrophobic.tab",
-        "contact-maps/salt.tab"
+        "contact-maps/PF01401/..tab",
+        "contact-maps/PF01401/hbond.tab",
+        "contact-maps/PF01401/hydrophobic.tab",
+        "contact-maps/PF01401/salt.tab",
+        "contact-maps/PF07654/..tab",
+        "contact-maps/PF07654/hbond.tab",
+        "contact-maps/PF07654/hydrophobic.tab",
+        "contact-maps/PF07654/salt.tab"
 
 # Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
 rule download_pdb:
