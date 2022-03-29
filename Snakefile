@@ -4,7 +4,7 @@ wildcard_constraints:
 # A rule to test the pipeline (so far).
 rule test:
     input:
-        ".download_pdb_all.done"
+        "download_pdb_all.log"
     shell:
         """
         PDBID=$(ls -1 pdb/pristine/*.pdb | shuf | head -n 1 | sed 's/pdb\/pristine\///; s/\.pdb//')
@@ -30,7 +30,7 @@ rule download_pdb:
         "pdb/pristine/{pdbid}.pdb"
     shell:
         """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || true
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || touch {output}
         chmod -w {output}
         sleep 1
         """
@@ -54,7 +54,7 @@ def pdb_entries_of_interest():
             match = re.match('>> ([0-9a-zA-Z]{4})', line)
             if match:
                 pdb_ids.add(match.group(1).upper())
-    return list(pdb_ids)
+    return sorted(pdb_ids)
 
 # Download models of PDB entries of interest.
 # Number of threads is limited to 1 in order not to overload the PDB.
@@ -62,10 +62,12 @@ rule download_pdb_all:
     input:
         "alignments/pdb_seqres-PF01401.hmmsearch",
         "alignments/pdb_seqres-PF09408.hmmsearch",
-        expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
+        pdb_files = expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
     output:
-        touch(".download_pdb_all.done")
+        "download_pdb_all.log"
     threads: 1
+    shell:
+        "grep --no-filename ^REVDAT {input.pdb_files} > {output}"
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
@@ -217,7 +219,7 @@ rule renumber_S1:
 
 rule contact_map:
     input:
-        ".download_pdb_all.done",
+        "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch"
     output:
         "contact-maps/{pfam}/{search}.tab"
@@ -233,7 +235,7 @@ rule contact_map:
 # Identifies which residues in S1 chains are present in the original PDB files.
 rule quality_map:
     input:
-        ".download_pdb_all.done",
+        "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
         seq = "P0DTC2.fa"
     output:
