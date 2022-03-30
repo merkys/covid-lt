@@ -217,10 +217,21 @@ rule renumber_S1:
     shell:
         "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}"
 
+def downloaded_pdb_files():
+    pdb_ids = set()
+    file = open('download_pdb_all.log', 'r')
+    for line in file:
+        pdb_ids.add(line[23:27])
+    if '    ' in pdb_ids:
+        pdb_ids.remove('    ')
+    return sorted(pdb_ids)
+
 rule contact_map:
     input:
         "download_pdb_all.log",
-        hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch"
+        hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch",
+        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
+        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files())
     output:
         "contact-maps/{pfam}/{search}.tab"
     shell:
@@ -237,6 +248,8 @@ rule quality_map:
     input:
         "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
+        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
+        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files()),
         seq = "P0DTC2.fa"
     output:
         "quality-map.tab"
@@ -244,8 +257,8 @@ rule quality_map:
         """
         TMP_DIR=$(mktemp --directory)
         comm -1 -2 \
-            <(ls -1 vorocontacts/*.tab | cut -d / -f 2 | sort) \
-            <(ls -1 propka/*.tab | cut -d / -f 2 | sort) \
+            <(ls -1 {input.propka_tabs} 2>/dev/null | cut -d / -f 2 | sort) \
+            <(ls -1 {input.vorocontacts_tabs} 2>/dev/null | cut -d / -f 2 | sort) \
           | sed 's/\.tab//' \
           | while read PDB_ID
             do
