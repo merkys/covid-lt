@@ -58,6 +58,9 @@ do
         | head -n1 \
         | awk '{print $2}')
 
+    # Next if no S1 chains found
+    test -z "${S1_CHAIN}" && continue
+
     cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab \
         | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
         | grep "${FILTER}" \
