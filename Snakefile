@@ -80,7 +80,7 @@ rule vorocontacts_out:
     log:
         "vorocontacts/{pdbid}.log"
     shell:
-        "voronota-contacts -i {input} > {output} 2> {log}"
+        "voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
 
 rule vorocontacts_tab:
     input:
@@ -103,8 +103,7 @@ rule propka_out:
         cp {input} $TMP_DIR
         (cd $TMP_DIR && propka3 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        test -s $TMP_DIR/{wildcards.pdbid}.pka # This kills Snakemake on propka failure
-        cp $TMP_DIR/{wildcards.pdbid}.pka {output}
+        cp $TMP_DIR/{wildcards.pdbid}.pka {output} || touch {output} # propka failures manifest in nonexistent output files
         rm -rf $TMP_DIR
         """
 
@@ -175,11 +174,15 @@ rule profix:
         bin/pdb_align {input} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb
         (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        test -e $TMP_DIR/{wildcards.pdbid}_fix.pdb # This kills Snakemake on Jackal failure
-        ORIG_LINES=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}.pdb | head -n 1 | cut -d : -f 1 | xargs -I _ expr _ - 1 || true)
-        NEW_OFFSET=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}_fix.pdb | head -n 1 | cut -d : -f 1 || true)
-        head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
-        tail -n +$NEW_OFFSET $TMP_DIR/{wildcards.pdbid}_fix.pdb >> {output}
+        if [ -e $TMP_DIR/{wildcards.pdbid}_fix.pdb ] # Jackal succeeded
+        then
+            ORIG_LINES=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}.pdb | head -n 1 | cut -d : -f 1 | xargs -I _ expr _ - 1 || true)
+            NEW_OFFSET=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}_fix.pdb | head -n 1 | cut -d : -f 1 || true)
+            head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
+            tail -n +$NEW_OFFSET $TMP_DIR/{wildcards.pdbid}_fix.pdb >> {output}
+        else
+            touch {output}
+        fi
         rm -rf $TMP_DIR
         """
 
@@ -215,7 +218,7 @@ rule renumber_S1:
     log:
         "pdb/P0DTC2/{pdbid}.log"
     shell:
-        "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}"
+        "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
 
 def downloaded_pdb_files():
     pdb_ids = set()
