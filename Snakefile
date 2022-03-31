@@ -163,12 +163,10 @@ rule cd_hit:
         rm -rf $TMP_DIR
         """
 
-# Fix missing atoms and residues in PDB using Jackal.
-# profix -fix 1 will attempt to repair missing residues.
-# Prior to running profix, bin/pdb_align is called to align structure numbering to sequence numbering.
-# PDB 'REMARK 465' lines are removed as Jackal seems to be unable to handle large PDB files (looses SEQRES records), see 7E8C for example.
-# After calling profix, care is taken to preserve original LINK, SSBOND etc. records.
-rule profix:
+# Fix missing atoms and residues in PDB using pdbfixer.
+# Prior to running pdbfixer, bin/pdb_align is called to align structure numbering to sequence numbering.
+# After calling pdbfixer, care is taken to preserve original LINK, SSBOND etc. records.
+rule pdbfixer:
     input:
         "pdb/pristine/{pdbid}.pdb"
     output:
@@ -178,10 +176,9 @@ rule profix:
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/pdb_align {input} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb
-        (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
-        cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        test -e $TMP_DIR/{wildcards.pdbid}_fix.pdb # This kills Snakemake on Jackal failure
+        bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb
+        pdbfixer $TMP_DIR/{wildcards.pdbid}.pdb --output $TMP_DIR/{wildcards.pdbid}_fix.pdb > {log} 2>&1
+        test -e $TMP_DIR/{wildcards.pdbid}_fix.pdb # This should kill Snakemake on pdbfixer failure
         ORIG_LINES=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}.pdb | head -n 1 | cut -d : -f 1 | xargs -I _ expr _ - 1 || true)
         NEW_OFFSET=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}_fix.pdb | head -n 1 | cut -d : -f 1 || true)
         head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
