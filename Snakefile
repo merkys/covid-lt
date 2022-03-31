@@ -200,7 +200,7 @@ rule renumber_antibodies:
         (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
         test -e $TMP_DIR/ROSETTA_CRASH.log && cat $TMP_DIR/ROSETTA_CRASH.log >> {log}
-        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} # This kills Snakemake on Rosetta failure
+        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} || touch {output} # Rosetta failures manifest in nonexistent output files
         rm -rf $TMP_DIR
         """
 
