@@ -4,7 +4,7 @@ wildcard_constraints:
 # A rule to test the pipeline (so far).
 rule test:
     input:
-        ".download_pdb_all.done"
+        "download_pdb_all.log"
     shell:
         """
         PDBID=$(ls -1 pdb/pristine/*.pdb | shuf | head -n 1 | sed 's/pdb\/pristine\///; s/\.pdb//')
@@ -15,10 +15,14 @@ rule test:
 rule all:
     input:
         "quality-map.tab",
-        "contact-maps/..tab",
-        "contact-maps/hbond.tab",
-        "contact-maps/hydrophobic.tab",
-        "contact-maps/salt.tab"
+        "contact-maps/PF01401/..tab",
+        "contact-maps/PF01401/hbond.tab",
+        "contact-maps/PF01401/hydrophobic.tab",
+        "contact-maps/PF01401/salt.tab",
+        "contact-maps/PF07654/..tab",
+        "contact-maps/PF07654/hbond.tab",
+        "contact-maps/PF07654/hydrophobic.tab",
+        "contact-maps/PF07654/salt.tab"
 
 # Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
 rule download_pdb:
@@ -26,7 +30,7 @@ rule download_pdb:
         "pdb/pristine/{pdbid}.pdb"
     shell:
         """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || true
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || touch {output}
         chmod -w {output}
         sleep 1
         """
@@ -48,17 +52,19 @@ def pdb_entries_of_interest():
         sseqid, evalue, score, length, pident, nident = line.rstrip().split('\t')
         if int(length) >= 100 and float(pident) >= 90:
             pdb_ids.add(sseqid[0:4].upper())
-    return list(pdb_ids)
+    return sorted(pdb_ids)
 
 # Download models of PDB entries of interest.
 # Number of threads is limited to 1 in order not to overload the PDB.
 rule download_pdb_all:
     input:
         "alignments/pdb_seqres-P0DTC2.blastp",
-        expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
+        pdb_files = expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
     output:
-        touch(".download_pdb_all.done")
+        "download_pdb_all.log"
     threads: 1
+    shell:
+        "grep --no-filename ^REVDAT {input.pdb_files} > {output}"
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
@@ -184,6 +190,8 @@ rule profix:
         """
 
 # Renumber antibody chains using Rosetta
+# FIXME: This might not be working as expected at all; from [1] it seems that Rosetta needs properly numbered antibodies in its input.
+# [1] https://www.rosettacommons.org/docs/latest/application_documentation/antibody/General-Antibody-Options-and-Tips
 rule renumber_antibodies:
     input:
         "pdb/fixed/{pdbid}.pdb"
@@ -217,21 +225,23 @@ rule renumber_S1:
 
 rule contact_map:
     input:
-        ".download_pdb_all.done"
+        "download_pdb_all.log",
+        hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch"
     output:
-        "contact-maps/{search}.tab"
+        "contact-maps/{pfam}/{search}.tab"
     shell:
         """
         comm -1 -2 \
             <(ls -1 vorocontacts/*.tab | cut -d / -f 2 | sort) \
             <(ls -1 propka/*.tab | cut -d / -f 2 | sort) \
           | sed 's/\.tab//' \
-          | xargs bin/S1-antibody-contacts --filter "{wildcards.search}" > {output}
+          | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" > {output}
         """
 
+# Identifies which residues in S1 chains are present in the original PDB files.
 rule quality_map:
     input:
-        ".download_pdb_all.done",
+        "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
         seq = "P0DTC2.fa"
     output:

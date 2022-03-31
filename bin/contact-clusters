@@ -87,7 +87,7 @@ for file in files:
                         if args.collate == 'most-contacts':
                             if contacts[representative].count('?') > contacts[pdb_id].count('?'):
                                 representative = pdb_id
-                        else: # 'most-residues'
+                        elif args.collate == 'most-residues':
                             if representative not in quality or pdb_id not in quality:
                                 if representative not in quality:
                                     warnings.warn(representative + ' not in quality map')
