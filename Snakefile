@@ -171,7 +171,13 @@ rule profix:
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/pdb_align {input} 2> {log} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb
+        bin/pdb_align {input} 2> {log} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb || true
+        if [ ! -s $TMP_DIR/{wildcards.pdbid}.pdb ]
+        then
+            echo -n > {output}
+            rm -rf $TMP_DIR
+            exit
+        fi
         (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cat $TMP_DIR/{wildcards.pdbid}.log >> {log}
         if [ -e $TMP_DIR/{wildcards.pdbid}_fix.pdb ] # Jackal succeeded
