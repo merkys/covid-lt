@@ -3,6 +3,7 @@
 # Reads PDB file and trims nonexistent residues from starts and ends of SEQRES records.
 # Sequences in SEQRES and ATOM have to be aligned beforehand, otherwise cuts may be imprecise.
 
+from warnings import warn
 import sys
 
 file = sys.argv[1] # for now
@@ -32,9 +33,12 @@ for line in lines:
     if line[0:6] != 'ATOM  ':
         continue
     chain = line[21]
+    residue = line[17:20]
     resno = int(line[22:26])
     if not chain in first:
         first[chain] = resno
+        if residue != seqres[chain][resno-1]:
+            warn('SEQRES and ATOM sequences in chain {} are not aligned'.format(chain))
     last[chain] = resno
 
 for chain in seqres:
