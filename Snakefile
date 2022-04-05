@@ -181,7 +181,7 @@ rule profix:
             head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
             tail -n +$NEW_OFFSET $TMP_DIR/{wildcards.pdbid}_fix.pdb >> {output}
         else
-            touch {output}
+            echo -n > {output}
         fi
         rm -rf $TMP_DIR
         """
