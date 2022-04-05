@@ -175,7 +175,13 @@ rule pdbfixer:
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb
+        bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb 2> {log} || true
+        if [ ! -s $TMP_DIR/{wildcards.pdbid}.pdb ]
+        then
+            echo -n > {output}
+            rm -rf $TMP_DIR
+            exit
+        fi
         pdbfixer $TMP_DIR/{wildcards.pdbid}.pdb --output $TMP_DIR/{wildcards.pdbid}_fix.pdb > {log} 2>&1
         if [ -e $TMP_DIR/{wildcards.pdbid}_fix.pdb ] # pdbfixer succeeded
         then
@@ -184,7 +190,7 @@ rule pdbfixer:
             head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
             tail -n +$NEW_OFFSET $TMP_DIR/{wildcards.pdbid}_fix.pdb >> {output}
         else
-            touch {output}
+            echo -n > {output}
         fi
         rm -rf $TMP_DIR
         """
