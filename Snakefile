@@ -77,7 +77,7 @@ rule vorocontacts_out:
     log:
         "vorocontacts/{pdbid}.log"
     shell:
-        "voronota-contacts -i {input} > {output} 2> {log}"
+        "voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
 
 rule vorocontacts_tab:
     input:
@@ -100,8 +100,7 @@ rule propka_out:
         cp {input} $TMP_DIR
         (cd $TMP_DIR && propka3 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        test -s $TMP_DIR/{wildcards.pdbid}.pka # This kills Snakemake on propka failure
-        cp $TMP_DIR/{wildcards.pdbid}.pka {output}
+        cp $TMP_DIR/{wildcards.pdbid}.pka {output} || touch {output} # propka failures manifest in nonexistent output files
         rm -rf $TMP_DIR
         """
 
@@ -178,11 +177,15 @@ rule pdbfixer:
         TMP_DIR=$(mktemp --directory)
         bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb
         pdbfixer $TMP_DIR/{wildcards.pdbid}.pdb --output $TMP_DIR/{wildcards.pdbid}_fix.pdb > {log} 2>&1
-        test -e $TMP_DIR/{wildcards.pdbid}_fix.pdb # This should kill Snakemake on pdbfixer failure
-        ORIG_LINES=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}.pdb | head -n 1 | cut -d : -f 1 | xargs -I _ expr _ - 1 || true)
-        NEW_OFFSET=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}_fix.pdb | head -n 1 | cut -d : -f 1 || true)
-        head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
-        tail -n +$NEW_OFFSET $TMP_DIR/{wildcards.pdbid}_fix.pdb >> {output}
+        if [ -e $TMP_DIR/{wildcards.pdbid}_fix.pdb ] # pdbfixer succeeded
+        then
+            ORIG_LINES=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}.pdb | head -n 1 | cut -d : -f 1 | xargs -I _ expr _ - 1 || true)
+            NEW_OFFSET=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}_fix.pdb | head -n 1 | cut -d : -f 1 || true)
+            head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
+            tail -n +$NEW_OFFSET $TMP_DIR/{wildcards.pdbid}_fix.pdb >> {output}
+        else
+            touch {output}
+        fi
         rm -rf $TMP_DIR
         """
 
@@ -203,7 +206,7 @@ rule renumber_antibodies:
         (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
         cp $TMP_DIR/{wildcards.pdbid}.log {log}
         test -e $TMP_DIR/ROSETTA_CRASH.log && cat $TMP_DIR/ROSETTA_CRASH.log >> {log}
-        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} # This kills Snakemake on Rosetta failure
+        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} || touch {output} # Rosetta failures manifest in nonexistent output files
         rm -rf $TMP_DIR
         """
 
@@ -218,12 +221,23 @@ rule renumber_S1:
     log:
         "pdb/P0DTC2/{pdbid}.log"
     shell:
-        "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}"
+        "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
+
+def downloaded_pdb_files():
+    pdb_ids = set()
+    file = open('download_pdb_all.log', 'r')
+    for line in file:
+        pdb_ids.add(line[23:27])
+    if '    ' in pdb_ids:
+        pdb_ids.remove('    ')
+    return sorted(pdb_ids)
 
 rule contact_map:
     input:
         "download_pdb_all.log",
-        hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch"
+        hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch",
+        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
+        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files())
     output:
         "contact-maps/{pfam}/{search}.tab"
     shell:
@@ -240,6 +254,8 @@ rule quality_map:
     input:
         "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
+        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
+        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files()),
         seq = "P0DTC2.fa"
     output:
         "quality-map.tab"
@@ -247,8 +263,8 @@ rule quality_map:
         """
         TMP_DIR=$(mktemp --directory)
         comm -1 -2 \
-            <(ls -1 vorocontacts/*.tab | cut -d / -f 2 | sort) \
-            <(ls -1 propka/*.tab | cut -d / -f 2 | sort) \
+            <(ls -1 {input.propka_tabs} 2>/dev/null | cut -d / -f 2 | sort) \
+            <(ls -1 {input.vorocontacts_tabs} 2>/dev/null | cut -d / -f 2 | sort) \
           | sed 's/\.tab//' \
           | while read PDB_ID
             do
