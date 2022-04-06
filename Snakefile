@@ -182,7 +182,7 @@ rule pdbfixer:
             rm -rf $TMP_DIR
             exit
         fi
-        pdbfixer $TMP_DIR/{wildcards.pdbid}.pdb --output $TMP_DIR/{wildcards.pdbid}_fix.pdb > {log} 2>&1 || true
+        pdbfixer $TMP_DIR/{wildcards.pdbid}.pdb --output $TMP_DIR/{wildcards.pdbid}_fix.pdb --add-residues > {log} 2>&1 || true
         if [ -e $TMP_DIR/{wildcards.pdbid}_fix.pdb ] # pdbfixer succeeded
         then
             ORIG_LINES=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}.pdb | head -n 1 | cut -d : -f 1 | xargs -I _ expr _ - 1 || true)
