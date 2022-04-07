@@ -227,12 +227,14 @@ rule renumber_S1:
         "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
 
 def downloaded_pdb_files():
+    from os.path import exists
     pdb_ids = set()
-    file = open('download_pdb_all.log', 'r')
-    for line in file:
-        pdb_ids.add(line[23:27])
-    if '    ' in pdb_ids:
-        pdb_ids.remove('    ')
+    if exists('download_pdb_all.log'):
+        file = open('download_pdb_all.log', 'r')
+        for line in file:
+            pdb_ids.add(line[23:27])
+        if '    ' in pdb_ids:
+            pdb_ids.remove('    ')
     return sorted(pdb_ids)
 
 rule contact_map:
