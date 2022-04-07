@@ -1,6 +1,13 @@
 COVID-LT
 ========
 
+About `blast-pdbfixer` branch
+-----------------------------
+
+This branch has been opened to experiment with `pdbfixer` on structures selected by BLAST using SARS-CoV-2 spike protein sequence.
+`pdbfixer` turned out to be less powerful than expected, unable to fill in missing structure parts longer than one (!) residue.
+Therefore, this branch has turned out to be a dead-end and should be left only for future reference.
+
 Preparing the system
 --------------------
 
