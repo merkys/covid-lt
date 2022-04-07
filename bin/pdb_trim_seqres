@@ -6,9 +6,12 @@
 from warnings import warn
 import sys
 
-file = sys.argv[1] # for now
-
-lines = open(file, 'r').readlines()
+files = sys.argv[1:]
+lines = []
+if len(files) == 0:
+    lines = sys.stdin.readlines()
+else:
+    lines = open(files[0], 'r').readlines() # FIXME: For now, processing only the first file.
 
 # Read in SEQRES for each chain
 seqres = {}
