@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+# Modeller needs to know its LD_LIBRARY_PATH
+# LD_LIBRARY_PATH=/usr/local/lib
+
 from Bio import PDB
 from modeller import *
 from modeller.automodel import *
