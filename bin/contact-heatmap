@@ -28,6 +28,7 @@ dist_na <- function(m) {
 library( "optparse" )
 parser <- OptionParser()
 parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
+parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -41,6 +42,11 @@ if( options$options$dendrogram ) {
     dendrogram = NULL
 }
 
+scale = 'none'
+if( options$options$scale ) {
+    scale = 'column'
+}
+
 D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
 svg("/dev/stdout")
-heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram, distfun=dist_na, scale='none')
+heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram, distfun=dist_na, scale=scale)
