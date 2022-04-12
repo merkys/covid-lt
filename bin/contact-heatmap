@@ -29,6 +29,8 @@ library( "optparse" )
 parser <- OptionParser()
 parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
 parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
+parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
+                     type = "double", default = 3)
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -49,4 +51,5 @@ if( options$options$scale ) {
 
 D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
 svg("/dev/stdout")
-heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram, distfun=dist_na, scale=scale)
+heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram, distfun=dist_na, scale=scale,
+        margin=c(2, options$options$row_margin))
