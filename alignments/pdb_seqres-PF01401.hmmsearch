@@ -5,7 +5,6 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # query HMM file:                  alignments/PF01401_full.hmm
 # target sequence database:        -
-# MSA of all hits saved to file:   alignments/pdb_seqres-PF01401.sto
 # show alignments in output:       no
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -31,6 +30,9 @@ Scores for complete sequences (score includes all domains):
           0 1084.5   7.8          0 1084.2   7.8    1.0  1  4c2p_A    mol:protein length:589  ANGIOTENSINCONVERTING ENZYM
           0 1084.5   7.8          0 1084.2   7.8    1.0  1  4c2q_A    mol:protein length:589  ANGIOTENSINCONVERTING ENZYM
           0 1084.2   6.6          0 1083.9   6.6    1.0  1  6zpu_A    mol:protein length:597  Angiotensinconverting enzym
+          0 1084.2   6.6          0 1083.9   6.6    1.0  1  7q27_A    mol:protein length:597  Angiotensinconverting enzym
+          0 1084.2   6.6          0 1083.9   6.6    1.0  1  7q28_A    mol:protein length:597  Angiotensinconverting enzym
+          0 1084.2   6.6          0 1083.9   6.6    1.0  1  7q29_A    mol:protein length:597  Angiotensinconverting enzym
           0 1084.0   8.0          0 1083.8   8.0    1.0  1  4c2r_A    mol:protein length:589  ANGIOTENSINCONVERTING ENZYM
           0 1083.9   7.5          0 1083.6   7.5    1.0  1  4c2o_A    mol:protein length:589  ANGIOTENSINCONVERTING ENZYM
           0 1083.2   7.2          0 1082.9   7.2    1.0  1  3bkk_A    mol:protein length:591  Angiotensinconverting enzym
@@ -105,201 +107,230 @@ Scores for complete sequences (score includes all domains):
           0 1049.3   6.8          0 1048.9   6.8    1.0  1  6zpq_B    mol:protein length:629  Angiotensinconverting enzym
           0 1049.3   6.8          0 1048.9   6.8    1.0  1  6zpq_C    mol:protein length:629  Angiotensinconverting enzym
           0 1049.3   6.8          0 1048.9   6.8    1.0  1  6zpq_D    mol:protein length:629  Angiotensinconverting enzym
-   2.9e-295  986.9  17.3   3.4e-295  986.7  17.3    1.0  1  7dhx_A    mol:protein length:601  pangolin ACE2
+          0 1049.3   6.8          0 1048.9   6.8    1.0  1  7q24_A    mol:protein length:629  Angiotensinconverting enzym
+          0 1049.3   6.8          0 1048.9   6.8    1.0  1  7q24_B    mol:protein length:629  Angiotensinconverting enzym
+          0 1049.3   6.8          0 1048.9   6.8    1.0  1  7q25_A    mol:protein length:629  Angiotensinconverting enzym
+          0 1049.3   6.8          0 1048.9   6.8    1.0  1  7q25_B    mol:protein length:629  Angiotensinconverting enzym
+          0 1049.3   6.8          0 1048.9   6.8    1.0  1  7q26_A    mol:protein length:629  Angiotensinconverting enzym
+          0 1049.3   6.8          0 1048.9   6.8    1.0  1  7q26_B    mol:protein length:629  Angiotensinconverting enzym
+   2.9e-295  986.9  17.3   3.5e-295  986.7  17.3    1.0  1  7dhx_A    mol:protein length:601  pangolin ACE2
    1.5e-294  984.6  10.1   1.8e-294  984.3  10.1    1.0  1  7fc3_A    mol:protein length:595  Angiotensinconverting enzym
    1.7e-294  984.4  17.4   2.3e-294  983.9  17.4    1.0  1  7fdk_A    mol:protein length:621  Angiotensinconverting enzym
-   7.5e-294  982.2  16.8   9.1e-294  981.9  16.8    1.0  1  7c8d_A    mol:protein length:732  Angiotensinconverting enzym
-   4.2e-292  976.4   9.5   5.1e-292  976.2   9.5    1.0  1  7c8k_A    mol:protein length:596  Angiotensinconverting enzym
+   7.7e-294  982.2  16.8   9.3e-294  981.9  16.8    1.0  1  7c8d_A    mol:protein length:732  Angiotensinconverting enzym
+   4.3e-292  976.4   9.5   5.2e-292  976.2   9.5    1.0  1  7c8k_A    mol:protein length:596  Angiotensinconverting enzym
    1.3e-291  974.8  19.2   1.6e-291  974.5  19.2    1.0  1  7e3j_A    mol:protein length:723  ACE2
-   1.7e-291  974.4  13.1     2e-291  974.2  13.1    1.0  1  7c8j_A    mol:protein length:707  Angiotensinconverting enzym
+   1.7e-291  974.4  13.1   2.1e-291  974.2  13.1    1.0  1  7c8j_A    mol:protein length:707  Angiotensinconverting enzym
    1.9e-289  967.7  13.0   2.3e-289  967.4  13.0    1.0  1  7ct5_D    mol:protein length:655  Angiotensinconverting enzym
    1.9e-289  967.7  13.0   2.3e-289  967.4  13.0    1.0  1  7ct5_E    mol:protein length:655  Angiotensinconverting enzym
    1.9e-289  967.7  13.0   2.3e-289  967.4  13.0    1.0  1  7ct5_F    mol:protein length:655  Angiotensinconverting enzym
-     7e-289  965.8  13.5   8.8e-289  965.4  13.5    1.0  1  7kj2_D    mol:protein length:615  Angiotensinconverting enzym
-     7e-289  965.8  13.5   8.8e-289  965.4  13.5    1.0  1  7kj3_D    mol:protein length:615  Angiotensinconverting enzym
-     7e-289  965.8  13.5   8.8e-289  965.4  13.5    1.0  1  7kj3_E    mol:protein length:615  Angiotensinconverting enzym
-     7e-289  965.8  13.5   8.8e-289  965.4  13.5    1.0  1  7kj4_D    mol:protein length:615  Angiotensinconverting enzym
-     7e-289  965.8  13.5   8.8e-289  965.4  13.5    1.0  1  7kj4_E    mol:protein length:615  Angiotensinconverting enzym
-     7e-289  965.8  13.5   8.8e-289  965.4  13.5    1.0  1  7kj4_F    mol:protein length:615  Angiotensinconverting enzym
-   8.4e-289  965.5  12.3     1e-288  965.2  12.3    1.0  1  7bh9_A    mol:protein length:610  Angiotensinconverting enzym
-     1e-288  965.3  17.0   1.3e-288  964.8  17.0    1.1  1  7dwx_B    mol:protein length:817  Angiotensinconverting enzym
-     1e-288  965.3  17.0   1.3e-288  964.8  17.0    1.1  1  7dwx_D    mol:protein length:817  Angiotensinconverting enzym
-     1e-288  965.3  17.0   1.3e-288  964.8  17.0    1.1  1  7dx5_D    mol:protein length:817  Angiotensinconverting enzym
-     1e-288  965.3  17.0   1.3e-288  964.8  17.0    1.1  1  7dx6_D    mol:protein length:817  Angiotensinconverting enzym
-     1e-288  965.3  17.0   1.3e-288  964.8  17.0    1.1  1  7dx7_D    mol:protein length:817  Angiotensinconverting enzym
-     1e-288  965.3  17.0   1.3e-288  964.8  17.0    1.1  1  7dx8_D    mol:protein length:817  Angiotensinconverting enzym
-     1e-288  965.3  17.0   1.3e-288  964.8  17.0    1.1  1  7dx8_E    mol:protein length:817  Angiotensinconverting enzym
-     1e-288  965.3  17.0   1.3e-288  964.8  17.0    1.1  1  7dx9_D    mol:protein length:817  Angiotensinconverting enzym
-     1e-288  965.3  17.0   1.3e-288  964.8  17.0    1.1  1  7dx9_E    mol:protein length:817  Angiotensinconverting enzym
-     1e-288  965.2  14.0   1.4e-288  964.8  14.0    1.0  1  1r42_A    mol:protein length:615  angiotensin I converting en
-     1e-288  965.2  14.0   1.4e-288  964.8  14.0    1.0  1  1r4l_A    mol:protein length:615  angiotensin I converting en
+   7.2e-289  965.8  13.5     9e-289  965.4  13.5    1.0  1  7kj2_D    mol:protein length:615  Angiotensinconverting enzym
+   7.2e-289  965.8  13.5     9e-289  965.4  13.5    1.0  1  7kj3_D    mol:protein length:615  Angiotensinconverting enzym
+   7.2e-289  965.8  13.5     9e-289  965.4  13.5    1.0  1  7kj3_E    mol:protein length:615  Angiotensinconverting enzym
+   7.2e-289  965.8  13.5     9e-289  965.4  13.5    1.0  1  7kj4_D    mol:protein length:615  Angiotensinconverting enzym
+   7.2e-289  965.8  13.5     9e-289  965.4  13.5    1.0  1  7kj4_E    mol:protein length:615  Angiotensinconverting enzym
+   7.2e-289  965.8  13.5     9e-289  965.4  13.5    1.0  1  7kj4_F    mol:protein length:615  Angiotensinconverting enzym
+   8.6e-289  965.5  12.3     1e-288  965.2  12.3    1.0  1  7bh9_A    mol:protein length:610  Angiotensinconverting enzym
+     1e-288  965.3  17.0   1.4e-288  964.8  17.0    1.1  1  7dwx_B    mol:protein length:817  Angiotensinconverting enzym
+     1e-288  965.3  17.0   1.4e-288  964.8  17.0    1.1  1  7dwx_D    mol:protein length:817  Angiotensinconverting enzym
+     1e-288  965.3  17.0   1.4e-288  964.8  17.0    1.1  1  7dx5_D    mol:protein length:817  Angiotensinconverting enzym
+     1e-288  965.3  17.0   1.4e-288  964.8  17.0    1.1  1  7dx6_D    mol:protein length:817  Angiotensinconverting enzym
+     1e-288  965.3  17.0   1.4e-288  964.8  17.0    1.1  1  7dx7_D    mol:protein length:817  Angiotensinconverting enzym
+     1e-288  965.3  17.0   1.4e-288  964.8  17.0    1.1  1  7dx8_D    mol:protein length:817  Angiotensinconverting enzym
+     1e-288  965.3  17.0   1.4e-288  964.8  17.0    1.1  1  7dx8_E    mol:protein length:817  Angiotensinconverting enzym
+     1e-288  965.3  17.0   1.4e-288  964.8  17.0    1.1  1  7dx9_D    mol:protein length:817  Angiotensinconverting enzym
+     1e-288  965.3  17.0   1.4e-288  964.8  17.0    1.1  1  7dx9_E    mol:protein length:817  Angiotensinconverting enzym
+   1.1e-288  965.2  14.0   1.4e-288  964.8  14.0    1.0  1  1r42_A    mol:protein length:615  angiotensin I converting en
+   1.1e-288  965.2  14.0   1.4e-288  964.8  14.0    1.0  1  1r4l_A    mol:protein length:615  angiotensin I converting en
    1.1e-288  965.2  17.1   1.5e-288  964.7  17.1    1.1  1  6m17_B    mol:protein length:814  Angiotensinconverting enzym
    1.1e-288  965.2  17.1   1.5e-288  964.7  17.1    1.1  1  6m17_D    mol:protein length:814  Angiotensinconverting enzym
    1.1e-288  965.2  17.1   1.5e-288  964.7  17.1    1.1  1  6m18_B    mol:protein length:814  Angiotensinconverting enzym
    1.1e-288  965.2  17.1   1.5e-288  964.7  17.1    1.1  1  6m18_D    mol:protein length:814  Angiotensinconverting enzym
    1.1e-288  965.2  17.1   1.5e-288  964.7  17.1    1.1  1  6m1d_B    mol:protein length:814  Angiotensinconverting enzym
    1.1e-288  965.2  17.1   1.5e-288  964.7  17.1    1.1  1  6m1d_D    mol:protein length:814  Angiotensinconverting enzym
-   1.5e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7fdg_A    mol:protein length:621  Angiotensinconverting enzym
-   1.5e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7fdh_A    mol:protein length:621  Angiotensinconverting enzym
-   1.5e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7fdi_A    mol:protein length:621  Angiotensinconverting enzym
-   1.5e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7sn0_A    mol:protein length:621  Angiotensinconverting enzym
-   1.5e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7sn0_B    mol:protein length:621  Angiotensinconverting enzym
+   1.6e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7fdg_A    mol:protein length:621  Angiotensinconverting enzym
+   1.6e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7fdh_A    mol:protein length:621  Angiotensinconverting enzym
+   1.6e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7fdi_A    mol:protein length:621  Angiotensinconverting enzym
+   1.6e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7sn0_A    mol:protein length:621  Angiotensinconverting enzym
+   1.6e-288  964.6  15.1   2.1e-288  964.2  15.1    1.0  1  7sn0_B    mol:protein length:621  Angiotensinconverting enzym
    1.7e-288  964.5  16.1   2.3e-288  964.1  16.1    1.1  1  7dqa_A    mol:protein length:805  Angiotensinconverting enzym
    1.7e-288  964.5  16.1   2.3e-288  964.1  16.1    1.1  1  7l7f_B    mol:protein length:805  Angiotensinconverting enzym
    1.7e-288  964.5  16.1   2.3e-288  964.1  16.1    1.1  1  7l7f_D    mol:protein length:805  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7df4_A    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7vx4_A    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7vx5_A    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7vxa_C    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7vxb_C    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7vxc_C    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7vxd_C    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7vxf_C    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7vxk_C    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7vxm_C    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7w98_D    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7w99_B    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7w9b_A    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7w9c_A    mol:protein length:625  Angiotensinconverting enzym
-     2e-288  964.3  15.4   2.6e-288  963.9  15.4    1.0  1  7w9i_A    mol:protein length:625  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a91_D    mol:protein length:654  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a92_D    mol:protein length:654  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a94_D    mol:protein length:654  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a95_D    mol:protein length:654  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a96_D    mol:protein length:654  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a97_D    mol:protein length:654  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a97_E    mol:protein length:654  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a98_D    mol:protein length:654  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a98_E    mol:protein length:654  Angiotensinconverting enzym
-   2.2e-288  964.1  14.4   2.9e-288  963.7  14.4    1.0  1  7a98_F    mol:protein length:654  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7edj_I    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7edj_J    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7edj_K    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v7z_D    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v7z_E    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v7z_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v80_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v81_D    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v81_E    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v82_D    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v82_E    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v82_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v83_D    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v83_E    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v83_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v84_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v85_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v85_H    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v86_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v86_G    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v86_H    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v87_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v88_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v88_G    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v89_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v89_G    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v89_H    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v8a_F    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v8a_G    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v8a_H    mol:protein length:861  Angiotensinconverting enzym
-   2.9e-288  963.7  14.0   4.2e-288  963.2  14.0    1.0  1  7v8b_F    mol:protein length:861  Angiotensinconverting enzym
-   3.1e-288  963.6  13.6   3.8e-288  963.3  13.6    1.0  1  6cs2_D    mol:protein length:605  Angiotensinconverting enzym
-   4.3e-288  963.2  13.9   5.1e-288  962.9  13.9    1.0  1  6lzg_A    mol:protein length:596  Angiotensinconverting enzym
-   4.3e-288  963.2  13.9   5.1e-288  962.9  13.9    1.0  1  7drv_A    mol:protein length:596  Angiotensinconverting enzym
-   4.3e-288  963.2  13.9   5.1e-288  962.9  13.9    1.0  1  7drv_B    mol:protein length:596  Angiotensinconverting enzym
-   4.3e-288  963.2  13.9   5.1e-288  962.9  13.9    1.0  1  7lo4_A    mol:protein length:596  Processed angiotensinconver
-   4.3e-288  963.2  13.9   5.1e-288  962.9  13.9    1.0  1  7pki_A    mol:protein length:596  Processed angiotensinconver
-   4.3e-288  963.2  13.9   5.1e-288  962.9  13.9    1.0  1  7wbl_A    mol:protein length:596  Angiotensinconverting enzym
-   4.3e-288  963.2  13.9   5.1e-288  962.9  13.9    1.0  1  7wbp_A    mol:protein length:596  Angiotensinconverting enzym
-   4.3e-288  963.2  13.9   5.1e-288  962.9  13.9    1.0  1  7wbq_A    mol:protein length:596  Angiotensinconverting enzym
-   4.3e-288  963.2  13.9   5.1e-288  962.9  13.9    1.0  1  7wbq_C    mol:protein length:596  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  2ajf_A    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  2ajf_B    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  3kbh_A    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  3kbh_B    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  3kbh_C    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  3kbh_D    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  6vw1_A    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  6vw1_B    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7ddo_A    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7ddp_A    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7dx4_A    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kmb_F    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kms_D    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kms_E    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kms_F    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kmz_D    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kmz_E    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7knb_D    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kne_D    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7knh_D    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7knh_E    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kni_D    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kni_E    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7kni_F    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7l0n_E    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7l0n_F    mol:protein length:597  Angiotensinconverting enzym
-   5.6e-288  962.8  14.3   6.7e-288  962.5  14.3    1.0  1  7vx9_C    mol:protein length:597  Angiotensinconverting enzym
-   6.5e-288  962.6  16.8   8.1e-288  962.3  16.8    1.1  1  7fem_D    mol:protein length:729  Angiotensinconverting enzym
-   7.6e-288  962.4  15.4   9.1e-288  962.1  15.4    1.0  1  7nxc_A    mol:protein length:604  Processed angiotensinconver
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  3sci_A    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  3sci_B    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  3scj_A    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  3scj_B    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  6acg_D    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  6acj_D    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  6ack_D    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  6m0j_A    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7ekc_A    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7eke_A    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7ekf_A    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7ekg_A    mol:protein length:603  Angiotensinconverting enzym
-   8.3e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7ekh_A    mol:protein length:603  Angiotensinconverting enzym
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7e7e_A    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7e7e_B    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7mjm_D    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7mjm_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7mjn_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sxx_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sxy_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sxz_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy0_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy1_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy2_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy3_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy4_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy5_D    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy5_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy5_F    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy6_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy7_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy8_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7t9k_D    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7t9k_E    mol:protein length:606  Processed angiotensinconver
-   8.7e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7t9l_D    mol:protein length:606  Processed angiotensinconver
-   4.2e-287  959.9  15.4     5e-287  959.6  15.4    1.0  1  7efp_A    mol:protein length:599  Processed angiotensinconver
+   1.7e-288  964.5  16.1   2.3e-288  964.1  16.1    1.1  1  7wpa_D    mol:protein length:805  Angiotensinconverting enzym
+   1.7e-288  964.5  16.1   2.3e-288  964.1  16.1    1.1  1  7wpb_D    mol:protein length:805  Angiotensinconverting enzym
+   1.7e-288  964.5  16.1   2.3e-288  964.1  16.1    1.1  1  7wpc_D    mol:protein length:805  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7df4_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7vx4_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7vx5_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7vxa_C    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7vxb_C    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7vxc_C    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7vxd_C    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7vxf_C    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7vxk_C    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7vxm_C    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7w98_D    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7w99_B    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7w9b_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7w9c_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7w9i_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7wk4_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7wk5_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7wk6_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7wvp_A    mol:protein length:625  Angiotensinconverting enzym
+     2e-288  964.3  15.4   2.7e-288  963.9  15.4    1.0  1  7wvq_A    mol:protein length:625  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a91_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a92_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a94_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a95_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a96_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a97_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a97_E    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a98_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a98_E    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7a98_F    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7r0z_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7r10_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7r11_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7r12_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7r1a_D    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7r1a_E    mol:protein length:654  Angiotensinconverting enzym
+   2.3e-288  964.1  14.4     3e-288  963.7  14.4    1.0  1  7r1a_F    mol:protein length:654  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7edj_I    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7edj_J    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7edj_K    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v7z_D    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v7z_E    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v7z_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v80_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v81_D    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v81_E    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v82_D    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v82_E    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v82_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v83_D    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v83_E    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v83_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v84_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v85_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v85_H    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v86_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v86_G    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v86_H    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v87_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v88_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v88_G    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v89_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v89_G    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v89_H    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v8a_F    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v8a_G    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v8a_H    mol:protein length:861  Angiotensinconverting enzym
+     3e-288  963.7  14.0   4.3e-288  963.2  14.0    1.0  1  7v8b_F    mol:protein length:861  Angiotensinconverting enzym
+   3.2e-288  963.6  13.6   3.9e-288  963.3  13.6    1.0  1  6cs2_D    mol:protein length:605  Angiotensinconverting enzym
+   4.4e-288  963.2  13.9   5.2e-288  962.9  13.9    1.0  1  6lzg_A    mol:protein length:596  Angiotensinconverting enzym
+   4.4e-288  963.2  13.9   5.2e-288  962.9  13.9    1.0  1  7drv_A    mol:protein length:596  Angiotensinconverting enzym
+   4.4e-288  963.2  13.9   5.2e-288  962.9  13.9    1.0  1  7drv_B    mol:protein length:596  Angiotensinconverting enzym
+   4.4e-288  963.2  13.9   5.2e-288  962.9  13.9    1.0  1  7lo4_A    mol:protein length:596  Processed angiotensinconver
+   4.4e-288  963.2  13.9   5.2e-288  962.9  13.9    1.0  1  7pki_A    mol:protein length:596  Processed angiotensinconver
+   4.4e-288  963.2  13.9   5.2e-288  962.9  13.9    1.0  1  7wbl_A    mol:protein length:596  Angiotensinconverting enzym
+   4.4e-288  963.2  13.9   5.2e-288  962.9  13.9    1.0  1  7wbp_A    mol:protein length:596  Angiotensinconverting enzym
+   4.4e-288  963.2  13.9   5.2e-288  962.9  13.9    1.0  1  7wbq_A    mol:protein length:596  Angiotensinconverting enzym
+   4.4e-288  963.2  13.9   5.2e-288  962.9  13.9    1.0  1  7wbq_C    mol:protein length:596  Angiotensinconverting enzym
+   5.6e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7tn0_E    mol:protein length:601  Angiotensinconverting enzym
+   5.6e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7tn0_F    mol:protein length:601  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  2ajf_A    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  2ajf_B    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  3kbh_A    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  3kbh_B    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  3kbh_C    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  3kbh_D    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  6vw1_A    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  6vw1_B    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7ddo_A    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7ddp_A    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7dx4_A    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kmb_F    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kms_D    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kms_E    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kms_F    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kmz_D    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kmz_E    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7knb_D    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kne_D    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7knh_D    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7knh_E    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kni_D    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kni_E    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7kni_F    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7l0n_E    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7l0n_F    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7u0n_A    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7u0n_B    mol:protein length:597  Angiotensinconverting enzym
+   5.7e-288  962.8  14.3   6.8e-288  962.5  14.3    1.0  1  7vx9_C    mol:protein length:597  Angiotensinconverting enzym
+   6.7e-288  962.6  16.8   8.2e-288  962.3  16.8    1.1  1  7fem_D    mol:protein length:729  Angiotensinconverting enzym
+   7.8e-288  962.4  15.4   9.3e-288  962.1  15.4    1.0  1  7nxc_A    mol:protein length:604  Processed angiotensinconver
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  3sci_A    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  3sci_B    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  3scj_A    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  3scj_B    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  6acg_D    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  6acj_D    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  6ack_D    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  6m0j_A    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7ekc_A    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7eke_A    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7ekf_A    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7ekg_A    mol:protein length:603  Angiotensinconverting enzym
+   8.5e-288  962.2  15.4     1e-287  962.0  15.4    1.0  1  7ekh_A    mol:protein length:603  Angiotensinconverting enzym
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7e7e_A    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7e7e_B    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7mjm_D    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7mjm_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7mjn_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sxx_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sxy_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sxz_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy0_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy1_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy2_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy3_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy4_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy5_D    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy5_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy5_F    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy6_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy7_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7sy8_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7t9k_D    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7t9k_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7t9l_D    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7tew_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7tex_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7tez_E    mol:protein length:606  Processed angiotensinconver
+   8.9e-288  962.2  16.2   1.1e-287  961.9  16.2    1.0  1  7tf0_E    mol:protein length:606  Processed angiotensinconver
+   4.3e-287  959.9  15.4   5.1e-287  959.6  15.4    1.0  1  7efp_A    mol:protein length:599  Processed angiotensinconver
    1.2e-286  958.4  15.3   1.4e-286  958.2  15.3    1.0  1  3sck_A    mol:protein length:603  Angiotensinconverting enzym
    1.2e-286  958.4  15.3   1.4e-286  958.2  15.3    1.0  1  3sck_B    mol:protein length:603  Angiotensinconverting enzym
    1.2e-286  958.4  15.3   1.4e-286  958.2  15.3    1.0  1  3scl_A    mol:protein length:603  Angiotensinconverting enzym
    1.2e-286  958.4  15.3   1.4e-286  958.2  15.3    1.0  1  3scl_B    mol:protein length:603  Angiotensinconverting enzym
-   1.8e-286  957.8  14.5   2.1e-286  957.6  14.5    1.0  1  3d0g_A    mol:protein length:597  Angiotensinconverting enzym
-   1.8e-286  957.8  14.5   2.1e-286  957.6  14.5    1.0  1  3d0g_B    mol:protein length:597  Angiotensinconverting enzym
-   1.8e-286  957.8  14.5   2.1e-286  957.6  14.5    1.0  1  3d0h_A    mol:protein length:597  Angiotensinconverting enzym
-   1.8e-286  957.8  14.5   2.1e-286  957.6  14.5    1.0  1  3d0h_B    mol:protein length:597  Angiotensinconverting enzym
-   1.8e-286  957.8  14.5   2.1e-286  957.6  14.5    1.0  1  3d0i_A    mol:protein length:597  Angiotensinconverting enzym
-   1.8e-286  957.8  14.5   2.1e-286  957.6  14.5    1.0  1  3d0i_B    mol:protein length:597  Angiotensinconverting enzym
-   1.9e-286  957.7  15.3   2.3e-286  957.5  15.3    1.0  1  7efr_A    mol:protein length:599  Processed angiotensinconver
-   5.6e-286  956.2  14.9   6.7e-286  955.9  14.9    1.0  1  7dmu_A    mol:protein length:606  Angiotensinconverting enzym
-   5.6e-286  956.2  14.9   6.7e-286  955.9  14.9    1.0  1  7dmu_C    mol:protein length:606  Angiotensinconverting enzym
-   9.9e-284  948.7  14.1   1.2e-283  948.5  14.1    1.0  1  7rpv_A    mol:protein length:597  Processed angiotensinconver
-   9.9e-284  948.7  14.1   1.2e-283  948.5  14.1    1.0  1  7rpv_B    mol:protein length:597  Processed angiotensinconver
-   9.9e-284  948.7  14.1   1.2e-283  948.5  14.1    1.0  1  7rpv_C    mol:protein length:597  Processed angiotensinconver
-   9.9e-284  948.7  14.1   1.2e-283  948.5  14.1    1.0  1  7rpv_D    mol:protein length:597  Processed angiotensinconver
-   9.5e-282  942.2   8.5   1.1e-281  942.0   8.5    1.0  1  2x92_A    mol:protein length:599  ANGIOTENSIN CONVERTING ENZY
-   9.5e-282  942.2   8.5   1.1e-281  942.0   8.5    1.0  1  2x93_A    mol:protein length:599  ANGIOTENSIN CONVERTING ENZY
-   9.5e-282  942.2   8.5   1.1e-281  942.0   8.5    1.0  1  2x94_A    mol:protein length:599  ANGIOTENSIN CONVERTING ENZY
-   9.5e-282  942.2   8.5   1.1e-281  942.0   8.5    1.0  1  2x95_A    mol:protein length:599  ANGIOTENSIN CONVERTING ENZY
-     1e-281  942.1   8.5   1.1e-281  941.9   8.5    1.0  1  5a2r_A    mol:protein length:598  ANGIOTENSINCONVERTING ENZYM
+   1.8e-286  957.8  14.5   2.2e-286  957.6  14.5    1.0  1  3d0g_A    mol:protein length:597  Angiotensinconverting enzym
+   1.8e-286  957.8  14.5   2.2e-286  957.6  14.5    1.0  1  3d0g_B    mol:protein length:597  Angiotensinconverting enzym
+   1.8e-286  957.8  14.5   2.2e-286  957.6  14.5    1.0  1  3d0h_A    mol:protein length:597  Angiotensinconverting enzym
+   1.8e-286  957.8  14.5   2.2e-286  957.6  14.5    1.0  1  3d0h_B    mol:protein length:597  Angiotensinconverting enzym
+   1.8e-286  957.8  14.5   2.2e-286  957.6  14.5    1.0  1  3d0i_A    mol:protein length:597  Angiotensinconverting enzym
+   1.8e-286  957.8  14.5   2.2e-286  957.6  14.5    1.0  1  3d0i_B    mol:protein length:597  Angiotensinconverting enzym
+     2e-286  957.7  15.3   2.3e-286  957.5  15.3    1.0  1  7efr_A    mol:protein length:599  Processed angiotensinconver
+   5.7e-286  956.2  14.9   6.9e-286  955.9  14.9    1.0  1  7dmu_A    mol:protein length:606  Angiotensinconverting enzym
+   5.7e-286  956.2  14.9   6.9e-286  955.9  14.9    1.0  1  7dmu_C    mol:protein length:606  Angiotensinconverting enzym
+     1e-283  948.7  14.1   1.2e-283  948.5  14.1    1.0  1  7rpv_A    mol:protein length:597  Processed angiotensinconver
+     1e-283  948.7  14.1   1.2e-283  948.5  14.1    1.0  1  7rpv_B    mol:protein length:597  Processed angiotensinconver
+     1e-283  948.7  14.1   1.2e-283  948.5  14.1    1.0  1  7rpv_C    mol:protein length:597  Processed angiotensinconver
+     1e-283  948.7  14.1   1.2e-283  948.5  14.1    1.0  1  7rpv_D    mol:protein length:597  Processed angiotensinconver
+   9.7e-282  942.2   8.5   1.1e-281  942.0   8.5    1.0  1  2x92_A    mol:protein length:599  ANGIOTENSIN CONVERTING ENZY
+   9.7e-282  942.2   8.5   1.1e-281  942.0   8.5    1.0  1  2x93_A    mol:protein length:599  ANGIOTENSIN CONVERTING ENZY
+   9.7e-282  942.2   8.5   1.1e-281  942.0   8.5    1.0  1  2x94_A    mol:protein length:599  ANGIOTENSIN CONVERTING ENZY
+   9.7e-282  942.2   8.5   1.1e-281  942.0   8.5    1.0  1  2x95_A    mol:protein length:599  ANGIOTENSIN CONVERTING ENZY
+   1.1e-281  942.1   8.5   1.2e-281  941.9   8.5    1.0  1  5a2r_A    mol:protein length:598  ANGIOTENSINCONVERTING ENZYM
    1.2e-281  941.9   8.6   1.3e-281  941.8   8.6    1.0  1  2x8y_A    mol:protein length:598  ANGIOTENSIN CONVERTING ENZY
    1.2e-281  941.9   8.6   1.3e-281  941.8   8.6    1.0  1  2x8z_A    mol:protein length:598  ANGIOTENSIN CONVERTING ENZY
    1.2e-281  941.9   8.6   1.3e-281  941.8   8.6    1.0  1  2x90_A    mol:protein length:598  ANGIOTENSIN CONVERTING ENZY
@@ -314,24 +345,24 @@ Scores for complete sequences (score includes all domains):
    1.2e-281  941.9   8.6   1.3e-281  941.8   8.6    1.0  1  4asr_A    mol:protein length:598  ANGIOTENSINCONVERTING ENZYM
    1.2e-281  941.9   8.6   1.3e-281  941.8   8.6    1.0  1  4ca7_A    mol:protein length:598  ANGIOTENSINCONVERTING ENZYM
    1.2e-281  941.9   8.6   1.3e-281  941.8   8.6    1.0  1  4ca8_A    mol:protein length:598  ANGIOTENSINCONVERTING ENZYM
-   2.7e-279  934.1  10.3   3.3e-279  933.8  10.3    1.0  1  1j36_A    mol:protein length:607  angiotensin converting enzy
-   2.7e-279  934.1  10.3   3.3e-279  933.8  10.3    1.0  1  1j36_B    mol:protein length:607  angiotensin converting enzy
-   2.7e-279  934.1  10.3   3.3e-279  933.8  10.3    1.0  1  1j37_A    mol:protein length:607  angiotensin converting enzy
-   2.7e-279  934.1  10.3   3.3e-279  933.8  10.3    1.0  1  1j37_B    mol:protein length:607  angiotensin converting enzy
-   2.7e-279  934.1  10.3   3.3e-279  933.8  10.3    1.0  1  1j38_A    mol:protein length:607  angiotensin converting enzy
-   2.7e-279  934.1  10.3   3.3e-279  933.8  10.3    1.0  1  1j38_B    mol:protein length:607  angiotensin converting enzy
-   7.1e-278  929.4  10.4   7.8e-278  929.2  10.4    1.0  1  6s1y_A    mol:protein length:621  Angiotensinconverting enzym
-   7.1e-278  929.4  10.4   7.8e-278  929.2  10.4    1.0  1  6s1z_A    mol:protein length:621  Angiotensinconverting enzym
-    5.7e-05   26.8   6.2       0.17   15.3   0.8    3.1  3  2h1j_A    mol:protein length:567  Oligoendopeptidase F
-    5.7e-05   26.8   6.2       0.17   15.3   0.8    3.1  3  2h1j_B    mol:protein length:567  Oligoendopeptidase F
-    5.7e-05   26.8   6.2       0.17   15.3   0.8    3.1  3  2h1n_A    mol:protein length:567  Oligoendopeptidase F
-    5.7e-05   26.8   6.2       0.17   15.3   0.8    3.1  3  2h1n_B    mol:protein length:567  Oligoendopeptidase F
-      0.004   20.7   1.4      0.004   20.7   1.4    4.0  1  6yxx_AA   mol:na length:1176  12S ribosomal RNA
-     0.0043   20.6   1.7        3.7   10.9   0.0    2.7  2  5e3x_A    mol:protein length:489  Thermostable carboxypeptida
+   2.8e-279  934.1  10.3   3.4e-279  933.8  10.3    1.0  1  1j36_A    mol:protein length:607  angiotensin converting enzy
+   2.8e-279  934.1  10.3   3.4e-279  933.8  10.3    1.0  1  1j36_B    mol:protein length:607  angiotensin converting enzy
+   2.8e-279  934.1  10.3   3.4e-279  933.8  10.3    1.0  1  1j37_A    mol:protein length:607  angiotensin converting enzy
+   2.8e-279  934.1  10.3   3.4e-279  933.8  10.3    1.0  1  1j37_B    mol:protein length:607  angiotensin converting enzy
+   2.8e-279  934.1  10.3   3.4e-279  933.8  10.3    1.0  1  1j38_A    mol:protein length:607  angiotensin converting enzy
+   2.8e-279  934.1  10.3   3.4e-279  933.8  10.3    1.0  1  1j38_B    mol:protein length:607  angiotensin converting enzy
+   7.3e-278  929.4  10.4     8e-278  929.2  10.4    1.0  1  6s1y_A    mol:protein length:621  Angiotensinconverting enzym
+   7.3e-278  929.4  10.4     8e-278  929.2  10.4    1.0  1  6s1z_A    mol:protein length:621  Angiotensinconverting enzym
+    5.9e-05   26.8   6.2       0.17   15.3   0.8    3.1  3  2h1j_A    mol:protein length:567  Oligoendopeptidase F
+    5.9e-05   26.8   6.2       0.17   15.3   0.8    3.1  3  2h1j_B    mol:protein length:567  Oligoendopeptidase F
+    5.9e-05   26.8   6.2       0.17   15.3   0.8    3.1  3  2h1n_A    mol:protein length:567  Oligoendopeptidase F
+    5.9e-05   26.8   6.2       0.17   15.3   0.8    3.1  3  2h1n_B    mol:protein length:567  Oligoendopeptidase F
+     0.0041   20.7   1.4     0.0041   20.7   1.4    4.0  1  6yxx_AA   mol:na length:1176  12S ribosomal RNA
+     0.0044   20.6   1.7        3.8   10.9   0.0    2.7  2  5e3x_A    mol:protein length:489  Thermostable carboxypeptida
   ------ inclusion threshold ------
-       0.51   13.7   6.1         14    9.0   0.6    2.7  2  7a03_A    mol:protein length:500  M32 carboxypeptidase
-       0.51   13.7   6.1         14    9.0   0.6    2.7  2  7a03_B    mol:protein length:500  M32 carboxypeptidase
-        2.3   11.6  12.7        3.1   11.1  12.7    1.2  1  6poo_A    mol:protein length:273  BibA
+       0.52   13.7   6.1         14    9.0   0.6    2.7  2  7a03_A    mol:protein length:500  M32 carboxypeptidase
+       0.52   13.7   6.1         14    9.0   0.6    2.7  2  7a03_B    mol:protein length:500  M32 carboxypeptidase
+        2.4   11.6  12.7        3.2   11.1  12.7    1.2  1  6poo_A    mol:protein length:273  BibA
 
 
 Domain annotation for each sequence:
@@ -416,6 +447,21 @@ Domain annotation for each sequence:
    1 ! 1084.2   7.8         0         0     161     738 ..       5     584 ..       1     588 [. 0.99
 
 >> 6zpu_A  mol:protein length:597  Angiotensinconverting enzyme
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 ! 1083.9   6.6         0         0     161     740 ..       5     586 ..       1     594 [. 0.99
+
+>> 7q27_A  mol:protein length:597  Angiotensinconverting enzyme
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 ! 1083.9   6.6         0         0     161     740 ..       5     586 ..       1     594 [. 0.99
+
+>> 7q28_A  mol:protein length:597  Angiotensinconverting enzyme
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 ! 1083.9   6.6         0         0     161     740 ..       5     586 ..       1     594 [. 0.99
+
+>> 7q29_A  mol:protein length:597  Angiotensinconverting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
    1 ! 1083.9   6.6         0         0     161     740 ..       5     586 ..       1     594 [. 0.99
@@ -790,1161 +836,1305 @@ Domain annotation for each sequence:
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
    1 ! 1048.9   6.8         0         0     161     738 ..      14     598 ..       5     609 .. 0.99
 
+>> 7q24_A  mol:protein length:629  Angiotensinconverting enzyme
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 ! 1048.9   6.8         0         0     161     738 ..      14     598 ..       5     609 .. 0.99
+
+>> 7q24_B  mol:protein length:629  Angiotensinconverting enzyme
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 ! 1048.9   6.8         0         0     161     738 ..      14     598 ..       5     609 .. 0.99
+
+>> 7q25_A  mol:protein length:629  Angiotensinconverting enzyme
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 ! 1048.9   6.8         0         0     161     738 ..      14     598 ..       5     609 .. 0.99
+
+>> 7q25_B  mol:protein length:629  Angiotensinconverting enzyme
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 ! 1048.9   6.8         0         0     161     738 ..      14     598 ..       5     609 .. 0.99
+
+>> 7q26_A  mol:protein length:629  Angiotensinconverting enzyme
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 ! 1048.9   6.8         0         0     161     738 ..      14     598 ..       5     609 .. 0.99
+
+>> 7q26_B  mol:protein length:629  Angiotensinconverting enzyme
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 ! 1048.9   6.8         0         0     161     738 ..      14     598 ..       5     609 .. 0.99
+
 >> 7dhx_A  mol:protein length:601  pangolin ACE2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  986.7  17.3  1.6e-298  3.4e-295     160     736 ..       4     591 ..       1     600 [. 0.99
+   1 !  986.7  17.3  1.7e-298  3.5e-295     160     736 ..       4     591 ..       1     600 [. 0.99
 
 >> 7fc3_A  mol:protein length:595  Angiotensinconverting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  984.3  10.1  8.3e-298  1.8e-294     162     736 ..       6     590 ..       1     593 [. 0.99
+   1 !  984.3  10.1  9.2e-298  1.8e-294     162     736 ..       6     590 ..       1     593 [. 0.99
 
 >> 7fdk_A  mol:protein length:621  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  983.9  17.4  1.1e-297  2.3e-294     161     738 ..      21     610 ..       9     620 .. 0.98
+   1 !  983.9  17.4  1.2e-297  2.3e-294     161     738 ..      21     610 ..       9     620 .. 0.98
 
 >> 7c8d_A  mol:protein length:732  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  981.9  16.8  4.2e-297  9.1e-294     160     756 ..       7     612 ..       1     651 [. 0.96
+   1 !  981.9  16.8  4.7e-297  9.3e-294     160     756 ..       7     612 ..       1     651 [. 0.96
 
 >> 7c8k_A  mol:protein length:596  Angiotensinconverting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  976.2   9.5  2.4e-295  5.1e-292     161     736 ..       4     590 ..       1     594 [. 0.99
+   1 !  976.2   9.5  2.6e-295  5.2e-292     161     736 ..       4     590 ..       1     594 [. 0.99
 
 >> 7e3j_A  mol:protein length:723  ACE2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  974.5  19.2  7.4e-295  1.6e-291     162     764 ..       7     619 ..       1     650 [. 0.96
+   1 !  974.5  19.2  8.2e-295  1.6e-291     162     764 ..       7     619 ..       1     650 [. 0.96
 
 >> 7c8j_A  mol:protein length:707  Angiotensinconverting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  974.2  13.1  9.4e-295    2e-291     162     761 ..       5     614 ..       1     648 [. 0.96
+   1 !  974.2  13.1    1e-294  2.1e-291     162     761 ..       5     614 ..       1     648 [. 0.96
 
 >> 7ct5_D  mol:protein length:655  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  967.4  13.0  1.1e-292  2.3e-289     162     764 ..       6     618 ..       1     641 [. 0.96
+   1 !  967.4  13.0  1.2e-292  2.3e-289     162     764 ..       6     618 ..       1     641 [. 0.96
 
 >> 7ct5_E  mol:protein length:655  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  967.4  13.0  1.1e-292  2.3e-289     162     764 ..       6     618 ..       1     641 [. 0.96
+   1 !  967.4  13.0  1.2e-292  2.3e-289     162     764 ..       6     618 ..       1     641 [. 0.96
 
 >> 7ct5_F  mol:protein length:655  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  967.4  13.0  1.1e-292  2.3e-289     162     764 ..       6     618 ..       1     641 [. 0.96
+   1 !  967.4  13.0  1.2e-292  2.3e-289     162     764 ..       6     618 ..       1     641 [. 0.96
 
 >> 7kj2_D  mol:protein length:615  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  965.4  13.5  4.1e-292  8.8e-289     159     736 ..      10     598 ..       2     612 .. 0.98
+   1 !  965.4  13.5  4.5e-292    9e-289     159     736 ..      10     598 ..       2     612 .. 0.98
 
 >> 7kj3_D  mol:protein length:615  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  965.4  13.5  4.1e-292  8.8e-289     159     736 ..      10     598 ..       2     612 .. 0.98
+   1 !  965.4  13.5  4.5e-292    9e-289     159     736 ..      10     598 ..       2     612 .. 0.98
 
 >> 7kj3_E  mol:protein length:615  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  965.4  13.5  4.1e-292  8.8e-289     159     736 ..      10     598 ..       2     612 .. 0.98
+   1 !  965.4  13.5  4.5e-292    9e-289     159     736 ..      10     598 ..       2     612 .. 0.98
 
 >> 7kj4_D  mol:protein length:615  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  965.4  13.5  4.1e-292  8.8e-289     159     736 ..      10     598 ..       2     612 .. 0.98
+   1 !  965.4  13.5  4.5e-292    9e-289     159     736 ..      10     598 ..       2     612 .. 0.98
 
 >> 7kj4_E  mol:protein length:615  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  965.4  13.5  4.1e-292  8.8e-289     159     736 ..      10     598 ..       2     612 .. 0.98
+   1 !  965.4  13.5  4.5e-292    9e-289     159     736 ..      10     598 ..       2     612 .. 0.98
 
 >> 7kj4_F  mol:protein length:615  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  965.4  13.5  4.1e-292  8.8e-289     159     736 ..      10     598 ..       2     612 .. 0.98
+   1 !  965.4  13.5  4.5e-292    9e-289     159     736 ..      10     598 ..       2     612 .. 0.98
 
 >> 7bh9_A  mol:protein length:610  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  965.2  12.3  4.8e-292    1e-288     161     736 ..       6     592 ..       1     602 [. 0.99
+   1 !  965.2  12.3  5.2e-292    1e-288     161     736 ..       6     592 ..       1     602 [. 0.99
 
 >> 7dwx_B  mol:protein length:817  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  17.0  6.3e-292  1.3e-288     154     759 ..      26     643 ..      11     679 .. 0.95
+   1 !  964.8  17.0  6.9e-292  1.4e-288     154     759 ..      26     643 ..      11     679 .. 0.95
 
 >> 7dwx_D  mol:protein length:817  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  17.0  6.3e-292  1.3e-288     154     759 ..      26     643 ..      11     679 .. 0.95
+   1 !  964.8  17.0  6.9e-292  1.4e-288     154     759 ..      26     643 ..      11     679 .. 0.95
 
 >> 7dx5_D  mol:protein length:817  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  17.0  6.3e-292  1.3e-288     154     759 ..      26     643 ..      11     679 .. 0.95
+   1 !  964.8  17.0  6.9e-292  1.4e-288     154     759 ..      26     643 ..      11     679 .. 0.95
 
 >> 7dx6_D  mol:protein length:817  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  17.0  6.3e-292  1.3e-288     154     759 ..      26     643 ..      11     679 .. 0.95
+   1 !  964.8  17.0  6.9e-292  1.4e-288     154     759 ..      26     643 ..      11     679 .. 0.95
 
 >> 7dx7_D  mol:protein length:817  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  17.0  6.3e-292  1.3e-288     154     759 ..      26     643 ..      11     679 .. 0.95
+   1 !  964.8  17.0  6.9e-292  1.4e-288     154     759 ..      26     643 ..      11     679 .. 0.95
 
 >> 7dx8_D  mol:protein length:817  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  17.0  6.3e-292  1.3e-288     154     759 ..      26     643 ..      11     679 .. 0.95
+   1 !  964.8  17.0  6.9e-292  1.4e-288     154     759 ..      26     643 ..      11     679 .. 0.95
 
 >> 7dx8_E  mol:protein length:817  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  17.0  6.3e-292  1.3e-288     154     759 ..      26     643 ..      11     679 .. 0.95
+   1 !  964.8  17.0  6.9e-292  1.4e-288     154     759 ..      26     643 ..      11     679 .. 0.95
 
 >> 7dx9_D  mol:protein length:817  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  17.0  6.3e-292  1.3e-288     154     759 ..      26     643 ..      11     679 .. 0.95
+   1 !  964.8  17.0  6.9e-292  1.4e-288     154     759 ..      26     643 ..      11     679 .. 0.95
 
 >> 7dx9_E  mol:protein length:817  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  17.0  6.3e-292  1.3e-288     154     759 ..      26     643 ..      11     679 .. 0.95
+   1 !  964.8  17.0  6.9e-292  1.4e-288     154     759 ..      26     643 ..      11     679 .. 0.95
 
 >> 1r42_A  mol:protein length:615  angiotensin I converting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  14.0  6.4e-292  1.4e-288     158     736 ..      19     608 ..       9     613 .. 0.98
+   1 !  964.8  14.0    7e-292  1.4e-288     158     736 ..      19     608 ..       9     613 .. 0.98
 
 >> 1r4l_A  mol:protein length:615  angiotensin I converting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.8  14.0  6.4e-292  1.4e-288     158     736 ..      19     608 ..       9     613 .. 0.98
+   1 !  964.8  14.0    7e-292  1.4e-288     158     736 ..      19     608 ..       9     613 .. 0.98
 
 >> 6m17_B  mol:protein length:814  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.7  17.1  6.8e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
+   1 !  964.7  17.1  7.5e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
 
 >> 6m17_D  mol:protein length:814  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.7  17.1  6.8e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
+   1 !  964.7  17.1  7.5e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
 
 >> 6m18_B  mol:protein length:814  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.7  17.1  6.8e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
+   1 !  964.7  17.1  7.5e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
 
 >> 6m18_D  mol:protein length:814  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.7  17.1  6.8e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
+   1 !  964.7  17.1  7.5e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
 
 >> 6m1d_B  mol:protein length:814  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.7  17.1  6.8e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
+   1 !  964.7  17.1  7.5e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
 
 >> 6m1d_D  mol:protein length:814  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.7  17.1  6.8e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
+   1 !  964.7  17.1  7.5e-292  1.5e-288     154     759 ..      23     640 ..       9     676 .. 0.95
 
 >> 7fdg_A  mol:protein length:621  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.2  15.1  9.5e-292  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
+   1 !  964.2  15.1  1.1e-291  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
 
 >> 7fdh_A  mol:protein length:621  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.2  15.1  9.5e-292  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
+   1 !  964.2  15.1  1.1e-291  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
 
 >> 7fdi_A  mol:protein length:621  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.2  15.1  9.5e-292  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
+   1 !  964.2  15.1  1.1e-291  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
 
 >> 7sn0_A  mol:protein length:621  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.2  15.1  9.5e-292  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
+   1 !  964.2  15.1  1.1e-291  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
 
 >> 7sn0_B  mol:protein length:621  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.2  15.1  9.5e-292  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
+   1 !  964.2  15.1  1.1e-291  2.1e-288     158     737 ..      19     609 ..       9     620 .. 0.98
 
 >> 7dqa_A  mol:protein length:805  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.1  16.1  1.1e-291  2.3e-288     158     759 ..      19     631 ..       9     667 .. 0.96
+   1 !  964.1  16.1  1.2e-291  2.3e-288     158     759 ..      19     631 ..       9     667 .. 0.96
 
 >> 7l7f_B  mol:protein length:805  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.1  16.1  1.1e-291  2.3e-288     158     759 ..      19     631 ..       9     667 .. 0.96
+   1 !  964.1  16.1  1.2e-291  2.3e-288     158     759 ..      19     631 ..       9     667 .. 0.96
 
 >> 7l7f_D  mol:protein length:805  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  964.1  16.1  1.1e-291  2.3e-288     158     759 ..      19     631 ..       9     667 .. 0.96
+   1 !  964.1  16.1  1.2e-291  2.3e-288     158     759 ..      19     631 ..       9     667 .. 0.96
+
+>> 7wpa_D  mol:protein length:805  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  964.1  16.1  1.2e-291  2.3e-288     158     759 ..      19     631 ..       9     667 .. 0.96
+
+>> 7wpb_D  mol:protein length:805  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  964.1  16.1  1.2e-291  2.3e-288     158     759 ..      19     631 ..       9     667 .. 0.96
+
+>> 7wpc_D  mol:protein length:805  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  964.1  16.1  1.2e-291  2.3e-288     158     759 ..      19     631 ..       9     667 .. 0.96
 
 >> 7df4_A  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7vx4_A  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7vx5_A  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7vxa_C  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7vxb_C  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7vxc_C  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7vxd_C  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7vxf_C  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7vxk_C  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7vxm_C  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7w98_D  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7w99_B  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7w9b_A  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7w9c_A  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7w9i_A  mol:protein length:625  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.9  15.4  1.2e-291  2.6e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+
+>> 7wk4_A  mol:protein length:625  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+
+>> 7wk5_A  mol:protein length:625  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+
+>> 7wk6_A  mol:protein length:625  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+
+>> 7wvp_A  mol:protein length:625  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
+
+>> 7wvq_A  mol:protein length:625  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.9  15.4  1.4e-291  2.7e-288     161     739 ..      22     612 ..      13     624 .. 0.98
 
 >> 7a91_D  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7a92_D  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7a94_D  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7a95_D  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7a96_D  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7a97_D  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7a97_E  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7a98_D  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7a98_E  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7a98_F  mol:protein length:654  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.7  14.4  1.4e-291  2.9e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+
+>> 7r0z_D  mol:protein length:654  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+
+>> 7r10_D  mol:protein length:654  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+
+>> 7r11_D  mol:protein length:654  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+
+>> 7r12_D  mol:protein length:654  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+
+>> 7r1a_D  mol:protein length:654  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+
+>> 7r1a_E  mol:protein length:654  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
+
+>> 7r1a_F  mol:protein length:654  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  963.7  14.4  1.5e-291    3e-288     161     738 ..      24     612 ..      16     632 .. 0.98
 
 >> 7edj_I  mol:protein length:861  Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7edj_J  mol:protein length:861  Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7edj_K  mol:protein length:861  Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v7z_D  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v7z_E  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v7z_F  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v80_F  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v81_D  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v81_E  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v82_D  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v82_E  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v82_F  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v83_D  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v83_E  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v83_F  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v84_F  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v85_F  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v85_H  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v86_F  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v86_G  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v86_H  mol:protein length:861  Angiotensinconverting enzyme 2,Green fluorescent protein
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v87_F  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v88_F  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v88_G  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v89_F  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v89_G  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v89_H  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v8a_F  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v8a_G  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v8a_H  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 7v8b_F  mol:protein length:861  Angiotensinconverting enzyme 2,Angiotensinconverting enzyme 2 (ACE2) ectodomain
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.2  14.0  1.9e-291  4.2e-288     158     736 ..      19     608 ..       9     615 .. 0.98
+   1 !  963.2  14.0  2.1e-291  4.3e-288     158     736 ..      19     608 ..       9     615 .. 0.98
 
 >> 6cs2_D  mol:protein length:605  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  963.3  13.6  1.8e-291  3.8e-288     162     736 ..       6     590 ..       1     599 [. 0.99
+   1 !  963.3  13.6    2e-291  3.9e-288     162     736 ..       6     590 ..       1     599 [. 0.99
 
 >> 6lzg_A  mol:protein length:596  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.9  13.9  2.4e-291  5.1e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+   1 !  962.9  13.9  2.6e-291  5.2e-288     162     735 ..       6     589 ..       1     594 [. 0.99
 
 >> 7drv_A  mol:protein length:596  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.9  13.9  2.4e-291  5.1e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+   1 !  962.9  13.9  2.6e-291  5.2e-288     162     735 ..       6     589 ..       1     594 [. 0.99
 
 >> 7drv_B  mol:protein length:596  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.9  13.9  2.4e-291  5.1e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+   1 !  962.9  13.9  2.6e-291  5.2e-288     162     735 ..       6     589 ..       1     594 [. 0.99
 
 >> 7lo4_A  mol:protein length:596  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.9  13.9  2.4e-291  5.1e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+   1 !  962.9  13.9  2.6e-291  5.2e-288     162     735 ..       6     589 ..       1     594 [. 0.99
 
 >> 7pki_A  mol:protein length:596  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.9  13.9  2.4e-291  5.1e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+   1 !  962.9  13.9  2.6e-291  5.2e-288     162     735 ..       6     589 ..       1     594 [. 0.99
 
 >> 7wbl_A  mol:protein length:596  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.9  13.9  2.4e-291  5.1e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+   1 !  962.9  13.9  2.6e-291  5.2e-288     162     735 ..       6     589 ..       1     594 [. 0.99
 
 >> 7wbp_A  mol:protein length:596  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.9  13.9  2.4e-291  5.1e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+   1 !  962.9  13.9  2.6e-291  5.2e-288     162     735 ..       6     589 ..       1     594 [. 0.99
 
 >> 7wbq_A  mol:protein length:596  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.9  13.9  2.4e-291  5.1e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+   1 !  962.9  13.9  2.6e-291  5.2e-288     162     735 ..       6     589 ..       1     594 [. 0.99
 
 >> 7wbq_C  mol:protein length:596  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.9  13.9  2.4e-291  5.1e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+   1 !  962.9  13.9  2.6e-291  5.2e-288     162     735 ..       6     589 ..       1     594 [. 0.99
+
+>> 7tn0_E  mol:protein length:601  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     596 [. 0.99
+
+>> 7tn0_F  mol:protein length:601  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     596 [. 0.99
 
 >> 2ajf_A  mol:protein length:597  Angiotensinconverting enzymeRelated Carboxypeptidase (Ace2)
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 2ajf_B  mol:protein length:597  Angiotensinconverting enzymeRelated Carboxypeptidase (Ace2)
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 3kbh_A  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 3kbh_B  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 3kbh_C  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 3kbh_D  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 6vw1_A  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 6vw1_B  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7ddo_A  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7ddp_A  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7dx4_A  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kmb_F  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kms_D  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kms_E  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kms_F  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kmz_D  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kmz_E  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7knb_D  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kne_D  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7knh_D  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7knh_E  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kni_D  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kni_E  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7kni_F  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7l0n_E  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7l0n_F  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+
+>> 7u0n_A  mol:protein length:597  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+
+>> 7u0n_B  mol:protein length:597  Angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7vx9_C  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.5  14.3  3.1e-291  6.7e-288     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  962.5  14.3  3.4e-291  6.8e-288     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7fem_D  mol:protein length:729  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.3  16.8  3.7e-291  8.1e-288     161     759 ..       5     614 ..       1     650 [. 0.96
+   1 !  962.3  16.8  4.1e-291  8.2e-288     161     759 ..       5     614 ..       1     650 [. 0.96
 
 >> 7nxc_A  mol:protein length:604  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.1  15.4  4.2e-291  9.1e-288     162     737 ..       6     591 ..       1     603 [. 0.99
+   1 !  962.1  15.4  4.7e-291  9.3e-288     162     737 ..       6     591 ..       1     603 [. 0.99
 
 >> 3sci_A  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 3sci_B  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 3scj_A  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 3scj_B  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 6acg_D  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 6acj_D  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 6ack_D  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 6m0j_A  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 7ekc_A  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 7eke_A  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 7ekf_A  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 7ekg_A  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 7ekh_A  mol:protein length:603  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  962.0  15.4  4.6e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  962.0  15.4  5.1e-291    1e-287     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 7e7e_A  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7e7e_B  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7mjm_D  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7mjm_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7mjn_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sxx_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sxy_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sxz_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy0_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy1_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy2_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy3_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy4_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy5_D  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy5_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy5_F  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy6_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy7_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7sy8_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7t9k_D  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7t9k_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7t9l_D  mol:protein length:606  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  961.9  16.2  4.9e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+
+>> 7tew_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+
+>> 7tex_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+
+>> 7tez_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
+
+>> 7tf0_E  mol:protein length:606  Processed angiotensinconverting enzyme 2
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  961.9  16.2  5.4e-291  1.1e-287     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7efp_A  mol:protein length:599  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  959.6  15.4  2.3e-290    5e-287     161     736 ..       6     592 ..       1     597 [. 0.99
+   1 !  959.6  15.4  2.6e-290  5.1e-287     161     736 ..       6     592 ..       1     597 [. 0.99
 
 >> 3sck_A  mol:protein length:603  Angiotensinconverting enzyme 2 chimera
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  958.2  15.3  6.6e-290  1.4e-286     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  958.2  15.3  7.2e-290  1.4e-286     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 3sck_B  mol:protein length:603  Angiotensinconverting enzyme 2 chimera
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  958.2  15.3  6.6e-290  1.4e-286     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  958.2  15.3  7.2e-290  1.4e-286     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 3scl_A  mol:protein length:603  Angiotensinconverting enzyme 2 chimera
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  958.2  15.3  6.6e-290  1.4e-286     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  958.2  15.3  7.2e-290  1.4e-286     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 3scl_B  mol:protein length:603  Angiotensinconverting enzyme 2 chimera
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  958.2  15.3  6.6e-290  1.4e-286     162     737 ..       6     591 ..       1     602 [. 0.99
+   1 !  958.2  15.3  7.2e-290  1.4e-286     162     737 ..       6     591 ..       1     602 [. 0.99
 
 >> 3d0g_A  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  957.6  14.5  9.8e-290  2.1e-286     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  957.6  14.5  1.1e-289  2.2e-286     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 3d0g_B  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  957.6  14.5  9.8e-290  2.1e-286     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  957.6  14.5  1.1e-289  2.2e-286     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 3d0h_A  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  957.6  14.5  9.8e-290  2.1e-286     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  957.6  14.5  1.1e-289  2.2e-286     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 3d0h_B  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  957.6  14.5  9.8e-290  2.1e-286     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  957.6  14.5  1.1e-289  2.2e-286     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 3d0i_A  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  957.6  14.5  9.8e-290  2.1e-286     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  957.6  14.5  1.1e-289  2.2e-286     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 3d0i_B  mol:protein length:597  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  957.6  14.5  9.8e-290  2.1e-286     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  957.6  14.5  1.1e-289  2.2e-286     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7efr_A  mol:protein length:599  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  957.5  15.3  1.1e-289  2.3e-286     161     736 ..       6     592 ..       1     597 [. 0.99
+   1 !  957.5  15.3  1.2e-289  2.3e-286     161     736 ..       6     592 ..       1     597 [. 0.99
 
 >> 7dmu_A  mol:protein length:606  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  955.9  14.9  3.1e-289  6.7e-286     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  955.9  14.9  3.4e-289  6.9e-286     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7dmu_C  mol:protein length:606  Angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  955.9  14.9  3.1e-289  6.7e-286     161     737 ..       5     592 ..       1     605 [. 0.98
+   1 !  955.9  14.9  3.4e-289  6.9e-286     161     737 ..       5     592 ..       1     605 [. 0.98
 
 >> 7rpv_A  mol:protein length:597  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  948.5  14.1  5.5e-287  1.2e-283     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  948.5  14.1  6.1e-287  1.2e-283     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7rpv_B  mol:protein length:597  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  948.5  14.1  5.5e-287  1.2e-283     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  948.5  14.1  6.1e-287  1.2e-283     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7rpv_C  mol:protein length:597  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  948.5  14.1  5.5e-287  1.2e-283     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  948.5  14.1  6.1e-287  1.2e-283     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 7rpv_D  mol:protein length:597  Processed angiotensinconverting enzyme 2
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  948.5  14.1  5.5e-287  1.2e-283     162     736 ..       6     590 ..       1     595 [. 0.99
+   1 !  948.5  14.1  6.1e-287  1.2e-283     162     736 ..       6     590 ..       1     595 [. 0.99
 
 >> 2x92_A  mol:protein length:599  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  942.0   8.5  4.9e-285  1.1e-281     161     739 ..       6     595 ..       1     599 [] 0.99
+   1 !  942.0   8.5  5.4e-285  1.1e-281     161     739 ..       6     595 ..       1     599 [] 0.99
 
 >> 2x93_A  mol:protein length:599  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  942.0   8.5  4.9e-285  1.1e-281     161     739 ..       6     595 ..       1     599 [] 0.99
+   1 !  942.0   8.5  5.4e-285  1.1e-281     161     739 ..       6     595 ..       1     599 [] 0.99
 
 >> 2x94_A  mol:protein length:599  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  942.0   8.5  4.9e-285  1.1e-281     161     739 ..       6     595 ..       1     599 [] 0.99
+   1 !  942.0   8.5  5.4e-285  1.1e-281     161     739 ..       6     595 ..       1     599 [] 0.99
 
 >> 2x95_A  mol:protein length:599  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  942.0   8.5  4.9e-285  1.1e-281     161     739 ..       6     595 ..       1     599 [] 0.99
+   1 !  942.0   8.5  5.4e-285  1.1e-281     161     739 ..       6     595 ..       1     599 [] 0.99
 
 >> 5a2r_A  mol:protein length:598  ANGIOTENSINCONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.9   8.5  5.3e-285  1.1e-281     161     739 ..       5     594 ..       1     598 [] 0.99
+   1 !  941.9   8.5  5.9e-285  1.2e-281     161     739 ..       5     594 ..       1     598 [] 0.99
 
 >> 2x8y_A  mol:protein length:598  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 2x8z_A  mol:protein length:598  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 2x90_A  mol:protein length:598  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 2x91_A  mol:protein length:598  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 2x96_A  mol:protein length:598  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 2x97_A  mol:protein length:598  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 2xhm_A  mol:protein length:598  ANGIOTENSIN CONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 3zqz_A  mol:protein length:598  ANGIOTENSINCONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 4aa1_A  mol:protein length:598  ANGIOTENSINCONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 4aa2_A  mol:protein length:598  ANGIOTENSINCONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 4asq_A  mol:protein length:598  ANGIOTENSINCONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 4asr_A  mol:protein length:598  ANGIOTENSINCONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 4ca7_A  mol:protein length:598  ANGIOTENSINCONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 4ca8_A  mol:protein length:598  ANGIOTENSINCONVERTING ENZYME
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  941.8   8.6    6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
+   1 !  941.8   8.6  6.6e-285  1.3e-281     161     739 ..       6     595 ..       1     598 [] 0.99
 
 >> 1j36_A  mol:protein length:607  angiotensin converting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  933.8  10.3  1.5e-282  3.3e-279     161     744 ..       9     603 ..       2     607 .] 0.99
+   1 !  933.8  10.3  1.7e-282  3.4e-279     161     744 ..       9     603 ..       2     607 .] 0.99
 
 >> 1j36_B  mol:protein length:607  angiotensin converting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  933.8  10.3  1.5e-282  3.3e-279     161     744 ..       9     603 ..       2     607 .] 0.99
+   1 !  933.8  10.3  1.7e-282  3.4e-279     161     744 ..       9     603 ..       2     607 .] 0.99
 
 >> 1j37_A  mol:protein length:607  angiotensin converting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  933.8  10.3  1.5e-282  3.3e-279     161     744 ..       9     603 ..       2     607 .] 0.99
+   1 !  933.8  10.3  1.7e-282  3.4e-279     161     744 ..       9     603 ..       2     607 .] 0.99
 
 >> 1j37_B  mol:protein length:607  angiotensin converting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  933.8  10.3  1.5e-282  3.3e-279     161     744 ..       9     603 ..       2     607 .] 0.99
+   1 !  933.8  10.3  1.7e-282  3.4e-279     161     744 ..       9     603 ..       2     607 .] 0.99
 
 >> 1j38_A  mol:protein length:607  angiotensin converting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  933.8  10.3  1.5e-282  3.3e-279     161     744 ..       9     603 ..       2     607 .] 0.99
+   1 !  933.8  10.3  1.7e-282  3.4e-279     161     744 ..       9     603 ..       2     607 .] 0.99
 
 >> 1j38_B  mol:protein length:607  angiotensin converting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  933.8  10.3  1.5e-282  3.3e-279     161     744 ..       9     603 ..       2     607 .] 0.99
+   1 !  933.8  10.3  1.7e-282  3.4e-279     161     744 ..       9     603 ..       2     607 .] 0.99
 
 >> 6s1y_A  mol:protein length:621  Angiotensinconverting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  929.2  10.4  3.6e-281  7.8e-278     156     750 ..       8     612 ..       1     621 [] 0.97
+   1 !  929.2  10.4    4e-281    8e-278     156     750 ..       8     612 ..       1     621 [] 0.97
 
 >> 6s1z_A  mol:protein length:621  Angiotensinconverting enzyme
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !  929.2  10.4  3.6e-281  7.8e-278     156     750 ..       8     612 ..       1     621 [] 0.97
+   1 !  929.2  10.4    4e-281    8e-278     156     750 ..       8     612 ..       1     621 [] 0.97
 
 >> 2h1j_A  mol:protein length:567  Oligoendopeptidase F
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 ?    1.7   0.1       1.1   2.3e+03     229     272 ..      21      64 ..       4     113 .. 0.79
-   2 !   11.3   0.1    0.0013       2.8     243     354 ..     126     235 ..     104     263 .. 0.80
-   3 !   15.3   0.8   7.8e-05      0.17     573     699 ..     419     535 ..     411     541 .. 0.77
+   1 ?    1.7   0.1       1.2   2.3e+03     229     272 ..      21      64 ..       4     113 .. 0.79
+   2 !   11.3   0.1    0.0014       2.8     243     354 ..     126     235 ..     104     263 .. 0.80
+   3 !   15.3   0.8   8.5e-05      0.17     573     699 ..     419     535 ..     411     541 .. 0.77
 
 >> 2h1j_B  mol:protein length:567  Oligoendopeptidase F
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 ?    1.7   0.1       1.1   2.3e+03     229     272 ..      21      64 ..       4     113 .. 0.79
-   2 !   11.3   0.1    0.0013       2.8     243     354 ..     126     235 ..     104     263 .. 0.80
-   3 !   15.3   0.8   7.8e-05      0.17     573     699 ..     419     535 ..     411     541 .. 0.77
+   1 ?    1.7   0.1       1.2   2.3e+03     229     272 ..      21      64 ..       4     113 .. 0.79
+   2 !   11.3   0.1    0.0014       2.8     243     354 ..     126     235 ..     104     263 .. 0.80
+   3 !   15.3   0.8   8.5e-05      0.17     573     699 ..     419     535 ..     411     541 .. 0.77
 
 >> 2h1n_A  mol:protein length:567  Oligoendopeptidase F
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 ?    1.7   0.1       1.1   2.3e+03     229     272 ..      21      64 ..       4     113 .. 0.79
-   2 !   11.3   0.1    0.0013       2.8     243     354 ..     126     235 ..     104     263 .. 0.80
-   3 !   15.3   0.8   7.8e-05      0.17     573     699 ..     419     535 ..     411     541 .. 0.77
+   1 ?    1.7   0.1       1.2   2.3e+03     229     272 ..      21      64 ..       4     113 .. 0.79
+   2 !   11.3   0.1    0.0014       2.8     243     354 ..     126     235 ..     104     263 .. 0.80
+   3 !   15.3   0.8   8.5e-05      0.17     573     699 ..     419     535 ..     411     541 .. 0.77
 
 >> 2h1n_B  mol:protein length:567  Oligoendopeptidase F
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 ?    1.7   0.1       1.1   2.3e+03     229     272 ..      21      64 ..       4     113 .. 0.79
-   2 !   11.3   0.1    0.0013       2.8     243     354 ..     126     235 ..     104     263 .. 0.80
-   3 !   15.3   0.8   7.8e-05      0.17     573     699 ..     419     535 ..     411     541 .. 0.77
+   1 ?    1.7   0.1       1.2   2.3e+03     229     272 ..      21      64 ..       4     113 .. 0.79
+   2 !   11.3   0.1    0.0014       2.8     243     354 ..     126     235 ..     104     263 .. 0.80
+   3 !   15.3   0.8   8.5e-05      0.17     573     699 ..     419     535 ..     411     541 .. 0.77
 
 >> 6yxx_AA  mol:na length:1176  12S ribosomal RNA
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 !   20.7   1.4   1.8e-06     0.004      26     155 ..     138     268 ..      32     285 .. 0.40
+   1 !   20.7   1.4     2e-06    0.0041      26     155 ..     138     268 ..      32     285 .. 0.40
 
 >> 5e3x_A  mol:protein length:489  Thermostable carboxypeptidase 1
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 ?    8.0   0.3     0.013        28     168     364 ..       5     170 ..       2     176 .. 0.59
-   2 !   10.9   0.0    0.0017       3.7     590     715 ..     356     476 ..     352     479 .. 0.84
+   1 ?    8.0   0.3     0.014        29     168     364 ..       5     170 ..       2     176 .. 0.59
+   2 !   10.9   0.0    0.0019       3.8     590     715 ..     356     476 ..     352     479 .. 0.84
 
 >> 7a03_A  mol:protein length:500  M32 carboxypeptidase
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 ?    9.0   0.6    0.0063        14     173     362 ..      20     181 ..       4     187 .. 0.69
-   2 ?    7.1   0.1     0.024        53     590     620 ..     371     401 ..     354     441 .. 0.83
+   1 ?    9.0   0.6     0.007        14     173     362 ..      20     181 ..       4     187 .. 0.69
+   2 ?    7.1   0.1     0.027        54     590     620 ..     371     401 ..     354     441 .. 0.83
 
 >> 7a03_B  mol:protein length:500  M32 carboxypeptidase
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 ?    9.0   0.6    0.0063        14     173     362 ..      20     181 ..       4     187 .. 0.69
-   2 ?    7.1   0.1     0.024        53     590     620 ..     371     401 ..     354     441 .. 0.83
+   1 ?    9.0   0.6     0.007        14     173     362 ..      20     181 ..       4     187 .. 0.69
+   2 ?    7.1   0.1     0.027        54     590     620 ..     371     401 ..     354     441 .. 0.83
 
 >> 6poo_A  mol:protein length:273  BibA
    #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
  ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
-   1 ?   11.1  12.7    0.0015       3.1      72     237 ..      44     206 ..       5     227 .. 0.53
+   1 ?   11.1  12.7    0.0016       3.2      72     237 ..      44     206 ..       5     227 .. 0.53
 
 
 
 Internal pipeline statistics summary:
 -------------------------------------
 Query model(s):                            1  (798 nodes)
-Target sequences:                     681332  (181015200 residues searched)
-Passed MSV filter:                     28007  (0.0411062); expected 13626.6 (0.02)
-Passed bias filter:                    15123  (0.0221962); expected 13626.6 (0.02)
-Passed Vit filter:                      1831  (0.00268738); expected 681.3 (0.001)
-Passed Fwd filter:                       331  (0.000485813); expected 6.8 (1e-05)
-Initial search space (Z):             681332  [actual number of targets]
-Domain search space  (domZ):             317  [number of targets reported over threshold]
-# CPU time: 6.94u 0.08s 00:00:07.02 Elapsed: 00:00:03.01
-# Mc/sec: 47847.95
+Target sequences:                     696998  (186202754 residues searched)
+Passed MSV filter:                     28863  (0.0414104); expected 13940.0 (0.02)
+Passed bias filter:                    15594  (0.0223731); expected 13940.0 (0.02)
+Passed Vit filter:                      1875  (0.00269011); expected 697.0 (0.001)
+Passed Fwd filter:                       363  (0.000520805); expected 7.0 (1e-05)
+Initial search space (Z):             696998  [actual number of targets]
+Domain search space  (domZ):             349  [number of targets reported over threshold]
+# CPU time: 9.86u 0.07s 00:00:09.93 Elapsed: 00:00:05.20
+# Mc/sec: 28542.21
 //
-# Alignment of 318 hits satisfying inclusion thresholds saved to: alignments/pdb_seqres-PF01401.sto
 [ok]
