@@ -62,4 +62,5 @@ for atom_seq in atom_seqs:
     pdbid, chain = sequence.id.split(':')
     structure.description = 'structureX:{}:{}:{}:{}:{}::::'.format(pdbid, first[chain], chain, last[chain], chain)
     structure.name = None
+    sequence.id = 'model' + chain
     SeqIO.write([sequence, structure], sys.stdout, 'pir')
