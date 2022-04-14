@@ -31,23 +31,10 @@ for line in open(file, 'r').readlines():
         first[chain] = resno
     last[chain] = resno
 
-atom_seqs_by_chain = {}
-for seq in atom_seqs:
-    atom_seqs_by_chain[seq.id[5]] = seq
-seqres_seqs_by_chain = {}
-for seq in seqres_seqs:
-    chain = seq.id
-    if len(chain) > 1: # This is probably a problem with Bio module
-        chain = chain[5]
-    seqres_seqs_by_chain[chain] = seq
-
-adjustments = {}
-for atom_seq in atom_seqs:
-    seqres_seq = seqres_seqs_by_chain[atom_seq.id[5]]
-    # TODO: Check if such exists
+for i in range(len(atom_seqs)):
     muscle = MuscleCommandline()
     child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
-    SeqIO.write([seqres_seq, atom_seq], child.stdin, 'fasta')
+    SeqIO.write([seqres_seqs[i], atom_seqs[i]], child.stdin, 'fasta')
     child.stdin.close()
     align = AlignIO.read(child.stdout, 'fasta')
     sequence, structure = align
