@@ -31,6 +31,6 @@ for atom_seq in atom_seqs:
     # TODO: Check if such exists
     muscle = MuscleCommandline()
     child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
-    SeqIO.write([atom_seq, seqres_seq], child.stdin, 'fasta')
+    SeqIO.write([seqres_seq, atom_seq], child.stdin, 'fasta')
     child.stdin.close()
     align = AlignIO.convert(child.stdout, 'fasta', sys.stdout, 'pir')
