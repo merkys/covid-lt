@@ -13,32 +13,46 @@ import sys
 file = sys.argv[1] # for now
 
 # Extract sequences from the input file
-atom_seqs = sorted([seq for seq in SeqIO.parse(file, 'pdb-atom')],
-                   key=lambda seq : seq.id[5])
-seqres_seqs = sorted([seq for seq in SeqIO.parse(file, 'pdb-seqres')],
-                     key=lambda seq : seq.id[5] if len(seq.id) > 1 else seq.id)
+atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
+seqres_seqs = [seq for seq in SeqIO.parse(file, 'pdb-seqres')]
 chains = [seq.id[5] for seq in atom_seqs]
 
 # TODO: Check if chains are the same
 
 first = {}
 last = {}
+chains = []
 for line in open(file, 'r').readlines():
     if line[0:6] != 'ATOM  ':
         continue
     chain = line[21]
     resno = int(line[22:26])
+    if not chain in chains:
+        chains.append(chain)
     if not chain in first:
         first[chain] = resno
     last[chain] = resno
 
+atom_seqs_by_chain = {}
+for seq in atom_seqs:
+    atom_seqs_by_chain[seq.id[5]] = seq
+seqres_seqs_by_chain = {}
+for seq in seqres_seqs:
+    chain = seq.id
+    if len(chain) > 1: # This is probably a problem with Bio module
+        chain = chain[5]
+    seqres_seqs_by_chain[chain] = seq
+
 sequence_seq = None
 structure_seq = None
 
-for i in range(len(atom_seqs)):
+for chain in chains:
+    atom_seq = atom_seqs_by_chain[chain]
+    seqres_seq = seqres_seqs_by_chain[chain]
+    # TODO: Check if such exists
     muscle = MuscleCommandline()
     child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
-    SeqIO.write([seqres_seqs[i], atom_seqs[i]], child.stdin, 'fasta')
+    SeqIO.write([seqres_seq, atom_seq], child.stdin, 'fasta')
     child.stdin.close()
     align = AlignIO.read(child.stdout, 'fasta')
     sequence, structure = align
