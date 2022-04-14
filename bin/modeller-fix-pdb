@@ -17,6 +17,7 @@ atom_seqs = sorted([seq for seq in SeqIO.parse(file, 'pdb-atom')],
                    key=lambda seq : seq.id[5])
 seqres_seqs = sorted([seq for seq in SeqIO.parse(file, 'pdb-seqres')],
                      key=lambda seq : seq.id[5] if len(seq.id) > 1 else seq.id)
+chains = [seq.id[5] for seq in atom_seqs]
 
 # TODO: Check if chains are the same
 
@@ -30,6 +31,9 @@ for line in open(file, 'r').readlines():
     if not chain in first:
         first[chain] = resno
     last[chain] = resno
+
+sequence_seq = None
+structure_seq = None
 
 for i in range(len(atom_seqs)):
     muscle = MuscleCommandline()
@@ -52,4 +56,19 @@ for i in range(len(atom_seqs)):
     structure.description = 'structureX:{}:{}:{}:{}:{}::::'.format(pdbid, first[chain], chain, last[chain], chain)
     structure.name = None
     sequence.id = 'model' + chain
-    SeqIO.write([sequence, structure], sys.stdout, 'pir')
+    # SeqIO.write([sequence, structure], sys.stdout, 'pir')
+
+    if sequence_seq:
+        sequence_seq += '/'
+    else:
+        sequence_seq = ''
+    sequence_seq += str(sequence.seq)
+
+    if structure_seq:
+        structure_seq += '/'
+    else:
+        structure_seq = ''
+    structure_seq += str(structure.seq)
+
+print('>P1;model', 'sequence:::::::::', sequence_seq + '*', sep='\n')
+print('>P1;7A5S', 'structureX:7A5S:{}:{}:{}:{}::::'.format(first[chains[0]], chains[0], last[chains[-1]], chains[-1]), structure_seq + '*', sep='\n')
