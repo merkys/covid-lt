@@ -13,10 +13,12 @@ import sys
 file = sys.argv[1] # for now
 
 # Extract sequences from the input file
-atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
-seqres_seqs = [seq for seq in SeqIO.parse(file, 'pdb-seqres')]
+atom_seqs = sorted([seq for seq in SeqIO.parse(file, 'pdb-atom')],
+                   key=lambda seq : seq.id[5])
+seqres_seqs = sorted([seq for seq in SeqIO.parse(file, 'pdb-seqres')],
+                     key=lambda seq : seq.id[5] if len(seq.id) > 1 else seq.id)
 
-# TODO: Check if there is the same number of chains
+# TODO: Check if chains are the same
 
 first = {}
 last = {}
