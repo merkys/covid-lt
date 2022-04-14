@@ -5,6 +5,7 @@
 
 from Bio import AlignIO, SeqIO
 from Bio.Align.Applications import MuscleCommandline
+from Bio.Alphabet import IUPAC
 from Bio.SeqRecord import SeqRecord
 from subprocess import Popen, PIPE
 import sys
@@ -39,4 +40,6 @@ for atom_seq in atom_seqs:
     for pos, aa in enumerate(aligned):
         if aa == 'X':
             aligned[pos] = '-'
+    align[0].seq.alphabet = IUPAC.protein
+    aligned.alphabet = IUPAC.protein
     SeqIO.write([align[0], SeqRecord(aligned.toseq())], sys.stdout, 'pir')
