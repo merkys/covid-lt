@@ -5,6 +5,7 @@
 
 from Bio import AlignIO, SeqIO
 from Bio.Align.Applications import MuscleCommandline
+from Bio.SeqRecord import SeqRecord
 from subprocess import Popen, PIPE
 import sys
 
@@ -33,4 +34,9 @@ for atom_seq in atom_seqs:
     child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
     SeqIO.write([seqres_seq, atom_seq], child.stdin, 'fasta')
     child.stdin.close()
-    align = AlignIO.convert(child.stdout, 'fasta', sys.stdout, 'pir')
+    align = AlignIO.read(child.stdout, 'fasta')
+    aligned = align[1].seq.tomutable()
+    for pos, aa in enumerate(aligned):
+        if aa == 'X':
+            aligned[pos] = '-'
+    SeqIO.write([align[0], SeqRecord(aligned.toseq())], sys.stdout, 'pir')
