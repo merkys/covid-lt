@@ -36,10 +36,13 @@ for atom_seq in atom_seqs:
     SeqIO.write([seqres_seq, atom_seq], child.stdin, 'fasta')
     child.stdin.close()
     align = AlignIO.read(child.stdout, 'fasta')
-    aligned = align[1].seq.tomutable()
-    for pos, aa in enumerate(aligned):
+    sequence, structure = align
+    structure = structure.seq.tomutable()
+    for pos, aa in enumerate(structure):
         if aa == 'X':
-            aligned[pos] = '-'
-    align[0].seq.alphabet = IUPAC.protein
-    aligned.alphabet = IUPAC.protein
-    SeqIO.write([align[0], SeqRecord(aligned.toseq())], sys.stdout, 'pir')
+            structure[pos] = '-'
+    sequence.description = 'sequence:::::::::'
+    sequence.name = None
+    sequence.seq.alphabet = IUPAC.protein
+    structure.alphabet = IUPAC.protein
+    SeqIO.write([sequence, SeqRecord(structure.toseq())], sys.stdout, 'pir')
