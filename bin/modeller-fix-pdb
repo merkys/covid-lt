@@ -8,7 +8,7 @@ from Bio.Align.Applications import MuscleCommandline
 from Bio.Alphabet import IUPAC
 from Bio.SeqRecord import SeqRecord
 from subprocess import Popen, PIPE
-import argparse, sys
+import argparse, re, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -65,6 +65,15 @@ for chain in chains:
     for pos, aa in enumerate(structure):
         if aa == 'X':
             structure[pos] = '-'
+    if args.trim:
+        start = re.search('^(-+)', str(structure))
+        end = re.search('(-+)$', str(structure))
+        if start:
+            start = len(start.group(1))
+        if end:
+            end = -len(end.group(1))
+        structure = structure[start:end]
+        sequence.seq = sequence.seq[start:end]
     sequence.description = 'sequence:::::::::'
     sequence.name = None
     sequence.seq.alphabet = IUPAC.protein
