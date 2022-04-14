@@ -12,10 +12,22 @@ import sys
 
 file = sys.argv[1] # for now
 
+# Extract sequences from the input file
 atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
 seqres_seqs = [seq for seq in SeqIO.parse(file, 'pdb-seqres')]
 
 # TODO: Check if there is the same number of chains
+
+first = {}
+last = {}
+for line in open(file, 'r').readlines():
+    if line[0:6] != 'ATOM  ':
+        continue
+    chain = line[21]
+    resno = int(line[22:26])
+    if not chain in first:
+        first[chain] = resno
+    last[chain] = resno
 
 atom_seqs_by_chain = {}
 for seq in atom_seqs:
@@ -48,6 +60,6 @@ for atom_seq in atom_seqs:
     structure = SeqRecord(structure.toseq())
     structure.id = sequence.id
     pdbid, chain = sequence.id.split(':')
-    structure.description = 'structureX:{}:{}:{}:{}:{}::::'.format(pdbid, 1, chain, 100, chain)
+    structure.description = 'structureX:{}:{}:{}:{}:{}::::'.format(pdbid, first[chain], chain, last[chain], chain)
     structure.name = None
     SeqIO.write([sequence, structure], sys.stdout, 'pir')
