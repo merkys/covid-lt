@@ -8,9 +8,14 @@ from Bio.Align.Applications import MuscleCommandline
 from Bio.Alphabet import IUPAC
 from Bio.SeqRecord import SeqRecord
 from subprocess import Popen, PIPE
-import sys
+import argparse, sys
 
-file = sys.argv[1] # for now
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--trim', action='store_true', help='Trim nonmodelled residues ')
+args = parser.parse_args()
+
+file = args.files[0] # for now
 
 # Extract sequences from the input file
 atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
