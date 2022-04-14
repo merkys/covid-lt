@@ -45,4 +45,9 @@ for atom_seq in atom_seqs:
     sequence.name = None
     sequence.seq.alphabet = IUPAC.protein
     structure.alphabet = IUPAC.protein
-    SeqIO.write([sequence, SeqRecord(structure.toseq())], sys.stdout, 'pir')
+    structure = SeqRecord(structure.toseq())
+    structure.id = sequence.id
+    pdbid, chain = sequence.id.split(':')
+    structure.description = 'structureX:{}:{}:{}:{}:{}::::'.format(pdbid, 1, chain, 100, chain)
+    structure.name = None
+    SeqIO.write([sequence, structure], sys.stdout, 'pir')
