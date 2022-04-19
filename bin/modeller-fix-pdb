@@ -51,6 +51,8 @@ for seq in seqres_seqs:
 sequence_seq = None
 structure_seq = None
 
+pdbid = None
+
 for chain in chains:
     atom_seq = atom_seqs_by_chain[chain]
     seqres_seq = seqres_seqs_by_chain[chain]
@@ -99,4 +101,4 @@ for chain in chains:
     structure_seq += str(structure.seq)
 
 print('>P1;model', 'sequence:::::::::', sequence_seq + '*', sep='\n')
-print('>P1;7A5S', 'structureX:7A5S:{}:{}:{}:{}::::'.format(first[chains[0]], chains[0], last[chains[-1]], chains[-1]), structure_seq + '*', sep='\n')
+print('>P1;{}'.format(pdbid), 'structureX:{}:{}:{}:{}:{}::::'.format(pdbid, first[chains[0]], chains[0], last[chains[-1]], chains[-1]), structure_seq + '*', sep='\n')
