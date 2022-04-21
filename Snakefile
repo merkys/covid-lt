@@ -164,7 +164,7 @@ rule cd_hit:
 
 # Fix missing atoms and residues in PDB using MODELLER.
 # TODO: Preserve original LINK, SSBOND etc. records.
-# FIXME: Out-of-sequence residues (e.g., 7TM0) causes crashes.
+# FIXME: Out-of-sequence residues (e.g., 7TLZ, 7TM0) causes crashes.
 rule fix_pdb:
     input:
         "pdb/pristine/{pdbid}.pdb"
