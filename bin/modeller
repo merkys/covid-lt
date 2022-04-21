@@ -1,8 +1,8 @@
 #! /bin/bash
 #------------------------------------------------------------------------------
 #$Author: andrius $
-#$Date: 2022-04-19 12:52:23 +0300 (An, 19 bal. 2022) $
-#$Revision: 6416 $
+#$Date: 2022-04-21 13:49:22 +0300 (Kt, 21 bal. 2022) $
+#$Revision: 6417 $
 #$URL: svn+ssh://saulius-grazulis.lt/home/andrius/svn-repositories/andrius/paskaitos/bioinformatika/bin/modeller $
 #------------------------------------------------------------------------------
 #*
@@ -121,6 +121,13 @@ do
                                         | sort) \
                                       | perl -e 'print join( ",", map { s/\n$//; "\"$_\"" } <> )' )"
     fi
+
+    if ! grep -v '^>' ${INPFILE} | grep -v : | grep --quiet -F -
+    then
+        setvar MODELLER_CLASS = automodel
+        echo "`basename $0`: no gaps in input, defaulting to automodel" >&2
+    fi
+
 cat > ${SCRIPT} <<END
 from modeller import *
 from modeller.automodel import *
@@ -161,6 +168,8 @@ END
     then
         if [ -n "${BEST}" ]
         then
+            # Modeller objective function has to be minimised, see:
+            # https://salilab.org/modeller/10.2/manual/node493.html
             if [ "${MODELLER_CLASS}" == "loopmodel" ]
             then
                 grep --with-filename 'MODELLER OBJECTIVE FUNCTION' ${TMPDIR}/model.BL*.pdb \
