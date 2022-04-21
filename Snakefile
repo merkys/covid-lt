@@ -162,12 +162,9 @@ rule cd_hit:
         rm -rf $TMP_DIR
         """
 
-# Fix missing atoms and residues in PDB using Jackal.
-# profix -fix 1 will attempt to repair missing residues.
-# Prior to running profix, bin/pdb_align is called to align structure numbering to sequence numbering.
-# PDB 'REMARK 465' lines are removed as Jackal seems to be unable to handle large PDB files (looses SEQRES records), see 7E8C for example.
-# After calling profix, care is taken to preserve original LINK, SSBOND etc. records.
-rule profix:
+# Fix missing atoms and residues in PDB using MODELLER.
+# TODO: Preserve original LINK, SSBOND etc. records.
+rule fix_pdb:
     input:
         "pdb/pristine/{pdbid}.pdb"
     output:
@@ -177,24 +174,14 @@ rule profix:
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/pdb_align {input} 2> {log} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb || true
+        echo -n > {output} # Clear the output initially
+        bin/pdb_align {input} 2> {log} > $TMP_DIR/{wildcards.pdbid}.pdb || true
         if [ ! -s $TMP_DIR/{wildcards.pdbid}.pdb ]
         then
-            echo -n > {output}
             rm -rf $TMP_DIR
             exit
         fi
-        (cd $TMP_DIR && profix -fix 1 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
-        cat $TMP_DIR/{wildcards.pdbid}.log >> {log}
-        if [ -e $TMP_DIR/{wildcards.pdbid}_fix.pdb ] # Jackal succeeded
-        then
-            ORIG_LINES=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}.pdb | head -n 1 | cut -d : -f 1 | xargs -I _ expr _ - 1 || true)
-            NEW_OFFSET=$(grep --line-number '^ATOM  ' $TMP_DIR/{wildcards.pdbid}_fix.pdb | head -n 1 | cut -d : -f 1 || true)
-            head -n  $ORIG_LINES $TMP_DIR/{wildcards.pdbid}.pdb > {output}
-            tail -n +$NEW_OFFSET $TMP_DIR/{wildcards.pdbid}_fix.pdb >> {output}
-        else
-            echo -n > {output}
-        fi
+        bin/modeller-fix-pdb --trim $TMP_DIR/{wildcards.pdbid}.pdb | bin/modeller --loopmodel --best --pdb-path $TMP_DIR > {output} --log-to-stderr 2>> {log} || true
         rm -rf $TMP_DIR
         """
 
