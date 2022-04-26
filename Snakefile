@@ -182,7 +182,7 @@ rule fix_pdb:
             rm -rf $TMP_DIR
             exit
         fi
-        bin/modeller-fix-pdb --trim $TMP_DIR/{wildcards.pdbid}.pdb | bin/modeller --loopmodel --best --repeat 3 --pdb-path $TMP_DIR > {output} --log-to-stderr 2>> {log} || true
+        bin/modeller-fix-pdb --trim $TMP_DIR/{wildcards.pdbid}.pdb | bin/modeller --loopmodel --mdsa-speed very_slow --repeat 3 --best --pdb-path $TMP_DIR > {output} --log-to-stderr 2>> {log} || true
         rm -rf $TMP_DIR
         """
 
