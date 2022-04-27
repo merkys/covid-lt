@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Align peptide sequences in ATOM records to the sequences in SEQRES records.
 # Sometimes they may be off and need to be adjusted in case the further processing software is unable to do that.

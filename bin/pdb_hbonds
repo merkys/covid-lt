@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Adapted from https://github.com/mdtraj/mdtraj/blob/master/examples/hbonds.ipynb
 # mdtraj most likely assumes full-hydrogen model, therefore this method
