@@ -35,3 +35,9 @@ MutaBind2
 * Paper: https://doi.org/10.1016/j.isci.2020.100939
 * Server: https://lilab.jysw.suda.edu.cn/research/mutabind2/
 * Training data and scripts: https://github.com/mutabind-group/MutaBindv2.0
+
+GROMACS
+=======
+
+* Documentation: https://manual.gromacs.org/documentation/current/index.html
+* Tutorials: http://www.mdtutorials.com/gmx/
