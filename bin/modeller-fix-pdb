@@ -1,11 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Modeller needs to know its LD_LIBRARY_PATH
 # LD_LIBRARY_PATH=/usr/local/lib
 
 from Bio import AlignIO, PDB, SeqIO
 from Bio.Align.Applications import MuscleCommandline
-from Bio.Alphabet import IUPAC
 from Bio.SeqRecord import SeqRecord
 from subprocess import Popen, PIPE
 import argparse, re, sys, warnings
