@@ -22,7 +22,8 @@ for line in open(target, 'r'):
     if chain not in target_chains:
         target_chains.append(chain)
 
-# TODO: Check and report if numbers of chains are unequal
+if len(source_chains) != len(target_chains):
+    raise Exception('Chain lists are different in size: ' + str(source_chains) + ' and ' + str(target_chains))
 
 mapping = dict(zip(target_chains, source_chains))
 
