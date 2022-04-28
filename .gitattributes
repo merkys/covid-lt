@@ -1,1 +1,2 @@
 dependencies/voronota/voronota filter=lfs diff=lfs merge=lfs -text
+dependencies/voronota/voronota-resources filter=lfs diff=lfs merge=lfs -text
