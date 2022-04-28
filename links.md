@@ -4,8 +4,6 @@
 
 * Rochman et al. (2022) paper on a similar research: https://journals.asm.org/doi/full/10.1128/mbio.00135-22
 
-* MutaBind2: https://lilab.jysw.suda.edu.cn/research/mutabind2/
-
 Antibody numbering
 ==================
 
@@ -30,3 +28,16 @@ ProteinTools
 
 * Server: https://proteintools.uni-bayreuth.de
 * Paper: https://academic.oup.com/nar/article/49/W1/W559/6279848
+
+MutaBind2
+=========
+
+* Paper: https://doi.org/10.1016/j.isci.2020.100939
+* Server: https://lilab.jysw.suda.edu.cn/research/mutabind2/
+* Training data and scripts: https://github.com/mutabind-group/MutaBindv2.0
+
+GROMACS
+=======
+
+* Documentation: https://manual.gromacs.org/documentation/current/index.html
+* Tutorials: http://www.mdtutorials.com/gmx/
