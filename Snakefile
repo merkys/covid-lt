@@ -297,3 +297,27 @@ rule quality_map:
         cp $TMP_DIR/table.tab {output}
         rm -rf $TMP_DIR
         """
+
+rule voromqa:
+    input:
+        "download_pdb_all.log",
+        pristine_pdbs = expand("pdb/pristine/{pdbid}.pdb", pdbid=downloaded_pdb_files()),
+        fixed_pdbs = expand("pdb/fixed/{pdbid}.pdb", pdbid=downloaded_pdb_files())
+    output:
+        "voromqa.tab"
+    shell:
+        """
+        for PDB in {input.pristine_pdbs}
+        do
+            PRISTINE=$PDB
+            FIXED=pdb/fixed/$(basename $PDB)
+            if [ -s $PRISTINE -a -s $FIXED ]
+            then
+                (
+                    basename $PDB .pdb
+                    bin/voronota-voromqa -i $PRISTINE | cut -d ' ' -f 2-
+                    bin/voronota-voromqa -i $FIXED    | cut -d ' ' -f 2-
+                ) | xargs echo | sed 's/ /\t/g'
+            fi
+        done > {output}
+        """
