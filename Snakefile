@@ -80,7 +80,7 @@ rule vorocontacts_out:
     log:
         "vorocontacts/{pdbid}.log"
     shell:
-        "voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
+        "bin/voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
 
 rule vorocontacts_tab:
     input:
