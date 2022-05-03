@@ -9,6 +9,7 @@ parser.add_argument('--cluster-id', help='Select a particular cluster')
 parser.add_argument('--collate', choices=['most-contacts', 'average', 'most-residues'], default='most-contacts', help='Collation method for a cluster')
 parser.add_argument('--quality-map', help='File containing quality map')
 parser.add_argument('--remove-nonmodelled', action='store_true', help='Remove contacts involving nonmodelled residues')
+parser.add_argument('--no-sort', action='store_true', help='Sort entry IDs')
 args = parser.parse_args()
 
 # Process the cluster file
@@ -117,10 +118,14 @@ for file in files:
                             averaged.append('?')
                     for pdb_id in cluster_ids:
                         contacts.pop(pdb_id)
+                    if not args.no_sort:
+                        cluster_ids = list(sorted(cluster_ids))
                     contacts[','.join(cluster_ids)] = averaged
 
     # Print the filtered contacts
     pdb_ids = [pdb_id for pdb_id in contacts]
+    if not args.no_sort:
+        pdb_ids = list(sorted(pdb_ids))
     print(*pdb_ids, sep='\t')
     if pdb_ids:
         for i in range(len(contacts[pdb_ids[0]])):
