@@ -1,10 +1,7 @@
 S1–ACE2
 =======
 
-* 7RPV: seems OK.
-* 7SY6: incomplete structure is completed by Jackal, resulting in unrealistic intertwining.
-* 7V87: incomplete structure is completed by Jackal, resulting in unrealistic intertwining.
-* 7VX4: incomplete structure is completed by Jackal, resulting in unrealistic intertwining.
+* 7RPV: OK: publication mentions engineered divalent ACE2.
 
 S1–antibody
 ===========
