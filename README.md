@@ -33,4 +33,4 @@ Here <PDB_ID_1>, <PDB_ID_2>, ... correspond to 4-symbol PDB IDs (letters have to
 
 2. Generate the map for the processed PDB files:
 
-    $ bin/S1-antibody-contacts <PDB_ID_1> <PDB_ID_2> ... > map.tab
+    $ bin/S1-contact-map --contacts-with alignments/pdb_seqres-PF07654.hmmsearch <PDB_ID_1> <PDB_ID_2> ... > map.tab

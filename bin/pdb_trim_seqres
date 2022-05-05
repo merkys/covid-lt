@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+
+# Reads PDB file and trims nonexistent residues from starts and ends of SEQRES records.
+# Sequences in SEQRES and ATOM have to be aligned beforehand, otherwise cuts may be imprecise.
+
+from warnings import warn
+import sys
+
+files = sys.argv[1:]
+lines = []
+if len(files) == 0:
+    lines = sys.stdin.readlines()
+else:
+    lines = open(files[0], 'r').readlines() # FIXME: For now, processing only the first file.
+
+# Read in SEQRES for each chain
+seqres = {}
+seqres_order = []
+for line in lines:
+    if line[0:6] != 'SEQRES':
+        continue
+    chain = line[11]
+    if not chain in seqres_order:
+        seqres_order.append(chain)
+    if not chain in seqres:
+        seqres[chain] = []
+    for i in range(0,13):
+        residue = line[19+i*4:22+i*4]
+        if residue != '   ':
+            seqres[chain].append(residue)
+
+# Detect first and last residue of a chain
+first = {}
+last = {}
+for line in lines:
+    if line[0:6] != 'ATOM  ':
+        continue
+    chain = line[21]
+    residue = line[17:20]
+    resno = int(line[22:26])
+    if not chain in first:
+        first[chain] = resno
+        if residue != seqres[chain][resno-1]:
+            warn('SEQRES and ATOM sequences in chain {} are not aligned'.format(chain))
+    last[chain] = resno
+
+for chain in seqres:
+    start = first[chain]-1 if chain in first else None
+    end = last[chain]-1 if chain in last else None
+    seqres[chain] = seqres[chain][start:end]
+
+seqres_seen = False
+for line in lines:
+    if line[0:6] != 'SEQRES':
+        print(line, end='')
+        continue
+    if seqres_seen == False:
+        for chain in seqres_order:
+            sernum = 1
+            for offset in range(0, len(seqres[chain]), 13):
+                residues = seqres[chain][offset:offset+13]
+                while len(residues) < 13:
+                    residues.append('   ')
+                print('SEQRES ',
+                      ('  ' + str(sernum))[-3:],
+                      ' ',
+                      chain,
+                      ' ',
+                      ('   ' + str(len(seqres[chain])))[-4:],
+                      '  ',
+                      ' '.join(residues),
+                      '          ',
+                      sep='')
+                sernum += 1
+    seqres_seen = True

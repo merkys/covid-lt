@@ -1,7 +1,12 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
-from Bio import SeqIO
-import sys
+# NB: FASTA sequences from PDB files with DBREF1/DBREF2 do not get PDB IDs in their headers.
+# See https://github.com/biopython/biopython/issues/3887
+
+from Bio import PDB, SeqIO
+import sys, warnings
+
+warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
 progname = sys.argv[0]
 type = progname[progname.find('_')+1:progname.find('2')]

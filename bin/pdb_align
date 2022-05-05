@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Align peptide sequences in ATOM records to the sequences in SEQRES records.
 # Sometimes they may be off and need to be adjusted in case the further processing software is unable to do that.
@@ -10,11 +10,23 @@
 from Bio import AlignIO, PDB, SeqIO
 from Bio.Align.Applications import MuscleCommandline
 from subprocess import Popen, PIPE
+from tempfile import NamedTemporaryFile
 import re, sys, warnings
 
 warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
-file = sys.argv[1] # for now
+files = sys.argv[1:]
+if len(files) == 0:
+    files = [sys.stdin]
+
+file = files[0] # for now
+
+# A trick to make the script read from STDIN
+if not isinstance(file, str):
+    tempfile = NamedTemporaryFile(mode='w')
+    tempfile.write(file.read())
+    tempfile.seek(0)
+    file = tempfile.name
 
 atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
 seqres_seqs = [seq for seq in SeqIO.parse(file, 'pdb-seqres')]

@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+
+import argparse, re, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+args = parser.parse_args()
+
+files = args.files
+if len(files) == 0:
+    files = [sys.stdin]
+
+for file in files:
+    pdb_id = None
+    molecules = {}
+    molecules_order = []
+    current_molecule = None
+    if isinstance(file, str):
+        file = open(file, 'r')
+    for line in file:
+        # line = re.sub("\s*;?\s*\n$", "", line)
+        if line.startswith("HEADER"):
+            pdb_id = line[62:66]
+        elif line.startswith("COMPND"):
+            line = line[10:].lstrip()
+            match = re.match("([^:]+):\s*([^;\n]+);?", line)
+            if not match:
+                continue
+            key, value = match.groups()
+            value = value.strip()
+            if key == "MOL_ID":
+                current_molecule = value
+                molecules[current_molecule] = { "engineered": "NO", "organism": "?" }
+                molecules_order.append(current_molecule)
+            if key == "MOLECULE":
+                molecules[current_molecule]["molecule"] = value
+            if key == "CHAIN":
+                molecules[current_molecule]["chains"] = re.split("\s*,\s*", value)
+            if key == "ENGINEERED" and value == "YES":
+                molecules[current_molecule]["engineered"] = "YES"
+        elif line.startswith("SOURCE"):
+            line = line[10:].lstrip()
+            match = re.match("([^:]+):\s*([^;\n]+);?", line)
+            if not match:
+                continue
+            key, value = match.groups()
+            value = value.strip()
+            if key == "MOL_ID":
+                current_molecule = value
+            if key == "ORGANISM_SCIENTIFIC":
+                molecules[current_molecule]["organism"] = value
+
+    for current_molecule in molecules:
+        print(pdb_id,
+              current_molecule,
+              "".join(molecules[current_molecule]["chains"]),
+              molecules[current_molecule]["molecule"],
+              molecules[current_molecule]["organism"],
+              molecules[current_molecule]["engineered"],
+              sep="\t")

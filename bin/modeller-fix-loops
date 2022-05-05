@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+
+# Modeller needs to know its LD_LIBRARY_PATH
+# LD_LIBRARY_PATH=/usr/local/lib
+
+from Bio import PDB
+from modeller import *
+from modeller.automodel import *
+import re, sys
+
+log.verbose()
+env = Environ()
+
+for filename in sys.argv[1:]:
+    pdbid = None
+    match = re.search('([A-Z0-9]{4})\.pdb$', filename)
+    if match:
+        pdbid = match.group(1)
+
+    parser = PDB.PDBParser()
+    struct = parser.get_structure(pdbid, filename)
+    for model in struct:
+        gaps = {}
+        last_in_chain = {}
+        for chain in model:
+            for res in chain:
+                if chain.id in last_in_chain:
+                    if res.id[1] != last_in_chain[chain.id]+1:
+                        if chain.id not in gaps:
+                            gaps[chain.id] = []
+                        # Ranges are inclusive
+                        gaps[chain.id].append([last_in_chain[chain.id],
+                                               res.id[1]])
+                last_in_chain[chain.id] = res.id[1]
+
+    print(gaps, file=sys.stderr)
+
+    # Create a new class based on 'LoopModel' so that we can redefine
+    # select_loop_atoms (necessary)
+    class MyLoop(LoopModel):
+        # This routine picks the residues to be refined by loop modeling
+        def select_loop_atoms(self):
+            ranges = []
+            for chain in gaps:
+                for gap in gaps[chain]:
+                    print(str(gap[0]) + ':' + chain, str(gap[1]) + ':' + chain, file=sys.stderr)
+                    ranges.append(self.residue_range(str(gap[0]) + ':' + chain,
+                                                     str(gap[1]) + ':' + chain))
+            return Selection(ranges)
+
+    m = MyLoop(env, pdbid, inimodel=filename) # initial model of the target
+
+    m.loop.starting_model = 1           # index of the first loop model
+    m.loop.ending_model = 10            # index of the last loop model
+    m.loop.md_level = refine.very_fast  # loop refinement method
+
+    m.make()

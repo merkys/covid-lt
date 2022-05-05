@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Renumber PDB chains containing S1 according to its UNIPROT sequence.
 # To do so, first PDB chains containing S1 are identified by its HMM.

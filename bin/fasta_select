@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 from Bio import AlignIO, PDB, SeqIO
 from Bio.Align.Applications import MuscleCommandline
@@ -37,7 +37,9 @@ if len(files) == 0:
 for file in files:
     for sequence in SeqIO.parse(file, 'fasta'):
         if len(sequence.id) == 1:
-            continue # These are entries with DBREF1/DBREF2 records instead of DBREF
+            # These are entries with DBREF1/DBREF2 records instead of DBREF
+            # See https://github.com/biopython/biopython/issues/3887
+            continue
         pdb_id = sequence.id[0:4].upper()
         chain = sequence.id[5]
         if selected and (pdb_id not in selected or chain not in selected[pdb_id]):

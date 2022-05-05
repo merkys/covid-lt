@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+
+# Modeller needs to know its LD_LIBRARY_PATH
+# LD_LIBRARY_PATH=/usr/local/lib
+
+from Bio import AlignIO, PDB, SeqIO
+from Bio.Align.Applications import MuscleCommandline
+from Bio.SeqRecord import SeqRecord
+from subprocess import Popen, PIPE
+import argparse, re, sys, warnings
+
+warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--trim', action='store_true', help='Trim nonmodelled residues')
+args = parser.parse_args()
+
+file = args.files[0] # for now
+
+# Extract sequences from the input file
+atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
+seqres_seqs = [seq for seq in SeqIO.parse(file, 'pdb-seqres')]
+chains = [seq.id[5] for seq in atom_seqs]
+
+# TODO: Check if chains are the same
+
+first = {}
+last = {}
+chains = []
+for line in open(file, 'r').readlines():
+    if line[0:6] != 'ATOM  ':
+        continue
+    chain = line[21]
+    resno = int(line[22:26])
+    if not chain in chains:
+        chains.append(chain)
+    if not chain in first:
+        first[chain] = resno
+    last[chain] = resno
+
+atom_seqs_by_chain = {}
+for seq in atom_seqs:
+    atom_seqs_by_chain[seq.id[5]] = seq
+seqres_seqs_by_chain = {}
+for seq in seqres_seqs:
+    chain = seq.id
+    if len(chain) > 1: # This is probably a problem with Bio module
+        chain = chain[5]
+    seqres_seqs_by_chain[chain] = seq
+
+sequence_seq = None
+structure_seq = None
+
+pdbid = None
+
+for chain in chains:
+    atom_seq = atom_seqs_by_chain[chain]
+    seqres_seq = seqres_seqs_by_chain[chain]
+    # TODO: Check if such exists
+    muscle = MuscleCommandline()
+    child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
+    SeqIO.write([seqres_seq, atom_seq], child.stdin, 'fasta')
+    child.stdin.close()
+    align = AlignIO.read(child.stdout, 'fasta')
+    sequence, structure = align
+    pdbid, chain = sequence.id.split(':')
+
+    sequence = sequence.seq.tomutable()
+    structure = structure.seq.tomutable()
+    pos = 0
+    while pos < len(structure):
+        if structure[pos] == 'X':
+            structure[pos] = '-'
+            if sequence[pos] == '-':
+                del(structure[pos])
+                del(sequence[pos])
+                continue
+        pos += 1
+
+    if args.trim:
+        start = re.search('^(-+)', str(structure))
+        end = re.search('(-+)$', str(structure))
+        if start:
+            start = len(start.group(1))
+        if end:
+            end = -len(end.group(1))
+        structure = structure[start:end]
+        sequence = sequence[start:end]
+
+    if sequence_seq:
+        sequence_seq += '/'
+    else:
+        sequence_seq = ''
+    sequence_seq += str(sequence)
+
+    if structure_seq:
+        structure_seq += '/'
+    else:
+        structure_seq = ''
+    structure_seq += str(structure)
+
+print('>P1;model', 'sequence:::::::::', sequence_seq + '*', sep='\n')
+print('>P1;{}'.format(pdbid), 'structureX:{}:{}:{}:{}:{}::::'.format(pdbid, first[chains[0]], chains[0], last[chains[-1]], chains[-1]), structure_seq + '*', sep='\n')
