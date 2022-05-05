@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--cluster-file', help='A file to extract clustering infomation from')
 parser.add_argument('--cluster-id', help='Select a particular cluster')
+parser.add_argument('--disjoint-clusters', action='store_true', help='Produce disjoint clusters')
 parser.add_argument('--collate', choices=['most-contacts', 'average', 'most-residues'], default='most-contacts', help='Collation method for a cluster')
 parser.add_argument('--quality-map', help='File containing quality map')
 parser.add_argument('--remove-nonmodelled', action='store_true', help='Remove contacts involving nonmodelled residues')
@@ -22,6 +23,22 @@ if args.cluster_file:
         if cluster not in clusters:
             clusters[cluster] = set()
         clusters[cluster].add(pdb_id)
+
+    if args.disjoint_clusters:
+        merged = set()
+        for cluster1 in clusters:
+            if cluster1 in merged:
+                continue
+            for cluster2 in clusters:
+                if cluster1 == cluster2:
+                    continue
+                if cluster2 in merged:
+                    continue
+                if clusters[cluster1].intersection(clusters[cluster2]):
+                    clusters[cluster1] = clusters[cluster1].union(clusters[cluster2])
+                    merged.add(cluster2)
+        for cluster in merged:
+            clusters.pop(cluster)
 
 # Check for the presence of the contact map
 if args.remove_nonmodelled and not args.quality_map:
