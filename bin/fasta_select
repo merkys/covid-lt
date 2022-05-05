@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 
-from Bio import AlignIO, PDB, SeqIO
-from Bio.Align.Applications import MuscleCommandline
+from Bio import SeqIO
 from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
-from Bio.SeqUtils import seq1
-from subprocess import Popen, PIPE
 import argparse, re, sys
 
 parser = argparse.ArgumentParser()
