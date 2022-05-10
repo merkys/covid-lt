@@ -7,6 +7,7 @@ sudo apt-get install \
     muscle \
     python3-biopython \
     python3-networkx \
+    python3-pydot \
     r-base-core \
     r-cran-optparse \
     snakemake \
