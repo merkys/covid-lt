@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--hmmsearch', help='Specify the output log of hmmsearch for selection')
 parser.add_argument('--pdb-ids', help='Specify comma-separated list of PDB IDs for selection. Currently works only with --hmmsearch option.')
+parser.add_argument('--min-length', type=int, help='Specify minimum length of a sequence')
 args = parser.parse_args()
 
 selected = None
@@ -42,6 +43,9 @@ if len(files) == 0:
 
 for file in files:
     for sequence in SeqIO.parse(file, 'fasta'):
+        if args.min_length and len(sequence) < args.min_length:
+            # Skip too short sequences
+            continue
         if len(sequence.id) == 1:
             # These are entries with DBREF1/DBREF2 records instead of DBREF
             # See https://github.com/biopython/biopython/issues/3887
