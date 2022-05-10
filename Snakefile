@@ -145,16 +145,29 @@ rule hmmsearch:
     shell:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
 
+def downloaded_pdb_files():
+    from os.path import exists
+    pdb_ids = set()
+    if exists('download_pdb_all.log'):
+        file = open('download_pdb_all.log', 'r')
+        for line in file:
+            pdb_ids.add(line[23:27])
+        if '    ' in pdb_ids:
+            pdb_ids.remove('    ')
+    return sorted(pdb_ids)
+
 rule cd_hit:
     input:
-        "pdb_seqres.fa",
-        "alignments/{base}.hmmsearch"
+        "download_pdb_all.log",
+        pristine_pdbs = expand("pdb/pristine/{pdbid}.pdb", pdbid=downloaded_pdb_files()),
+        hmmsearch = "alignments/{base}.hmmsearch"
     output:
         "alignments/{base}.clusters"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/fasta_select {input[0]} --hmmsearch {input[1]} > $TMP_DIR/input.fa
+        bin/pdb_seqres2fasta {input.pristine_pdbs} > $TMP_DIR/all.fa
+        bin/fasta_select $TMP_DIR/all.fa --hmmsearch {input.hmmsearch} > $TMP_DIR/input.fa
         cd-hit -i $TMP_DIR/input.fa -o $TMP_DIR/output
         bin/cd-hit2tab $TMP_DIR/output.clstr > {output}
         rm -rf $TMP_DIR
@@ -229,17 +242,6 @@ rule renumber_S1:
         "pdb/P0DTC2/{pdbid}.log"
     shell:
         "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
-
-def downloaded_pdb_files():
-    from os.path import exists
-    pdb_ids = set()
-    if exists('download_pdb_all.log'):
-        file = open('download_pdb_all.log', 'r')
-        for line in file:
-            pdb_ids.add(line[23:27])
-        if '    ' in pdb_ids:
-            pdb_ids.remove('    ')
-    return sorted(pdb_ids)
 
 rule contact_map:
     input:
