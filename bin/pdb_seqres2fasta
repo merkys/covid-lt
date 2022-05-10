@@ -16,4 +16,8 @@ if len(files) == 0:
     files = [sys.stdin]
 
 for file in files:
-    SeqIO.convert(file, 'pdb-' + type, sys.stdout, 'fasta')
+    try:
+        SeqIO.convert(file, 'pdb-' + type, sys.stdout, 'fasta')
+    except ValueError as e:
+        if e.args[0] != "Empty file.":
+            raise e

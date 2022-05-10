@@ -36,6 +36,11 @@ MutaBind2
 * Server: https://lilab.jysw.suda.edu.cn/research/mutabind2/
 * Training data and scripts: https://github.com/mutabind-group/MutaBindv2.0
 
+MODELLER
+========
+
+* Treating missing residues: https://salilab.org/modeller/wiki/Missing%20residues
+
 GROMACS
 =======
 
