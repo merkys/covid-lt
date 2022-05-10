@@ -25,20 +25,14 @@ if args.cluster_file:
         clusters[cluster].add(pdb_id)
 
     if args.disjoint_clusters:
-        merged = set()
-        for cluster1 in clusters:
-            if cluster1 in merged:
-                continue
-            for cluster2 in clusters:
-                if cluster1 == cluster2:
-                    continue
-                if cluster2 in merged:
-                    continue
-                if clusters[cluster1].intersection(clusters[cluster2]):
-                    clusters[cluster1] = clusters[cluster1].union(clusters[cluster2])
-                    merged.add(cluster2)
-        for cluster in merged:
-            clusters.pop(cluster)
+        from networkx import Graph, connected_components
+        graph = Graph()
+        for cluster in clusters:
+            for pdb_id in clusters[cluster]:
+                graph.add_edge(int(cluster), pdb_id)
+        clusters = {}
+        for c in connected_components(graph):
+            clusters[len(clusters)] = [x for x in c if type(x) == str]
 
 # Check for the presence of the contact map
 if args.remove_nonmodelled and not args.quality_map:
