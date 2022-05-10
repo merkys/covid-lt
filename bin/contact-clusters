@@ -11,6 +11,7 @@ parser.add_argument('--collate', choices=['most-contacts', 'average', 'most-resi
 parser.add_argument('--quality-map', help='File containing quality map')
 parser.add_argument('--remove-nonmodelled', action='store_true', help='Remove contacts involving nonmodelled residues')
 parser.add_argument('--no-sort', action='store_true', help='Sort entry IDs')
+parser.add_argument('--output-graph', help='Output the disjoint cluster graph to a file (needs --disjoint-clusters)')
 args = parser.parse_args()
 
 # Process the cluster file
@@ -33,6 +34,11 @@ if args.cluster_file:
         clusters = {}
         for c in connected_components(graph):
             clusters[len(clusters)] = [x for x in c if type(x) == str]
+        if args.output_graph:
+            from networkx import draw, nx_agraph
+            from networkx.drawing.nx_pydot import write_dot
+            draw(graph, pos=nx_agraph.graphviz_layout(graph))
+            write_dot(graph, args.output_graph)
 
 # Check for the presence of the contact map
 if args.remove_nonmodelled and not args.quality_map:
