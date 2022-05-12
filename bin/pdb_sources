@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+
+import argparse, re, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--hmmsearch', action='append', default=[], help='Add output log of hmmsearch to limit the output to certain protein chains (may be multiple)')
+args = parser.parse_args()
+
+files = args.files
+if len(files) == 0:
+    files = [sys.stdin]
+
+hmmsearch_chain_ids = None
+for log in args.hmmsearch:
+    if not hmmsearch_chain_ids:
+        hmmsearch_chain_ids = {}
+    file = open(log, 'r')
+    in_main = False
+    for line in file:
+        if in_main:
+            if re.match('  ------ inclusion threshold', line) or line == '\n':
+                break
+            pdb_id = line[60:64].upper()
+            chain = line[65]
+            if pdb_id not in hmmsearch_chain_ids:
+                hmmsearch_chain_ids[pdb_id] = {}
+            if chain in hmmsearch_chain_ids[pdb_id]:
+                # Rare case when more than one file matches the same chain
+                hmmsearch_chain_ids[pdb_id][chain] += ',' + log
+            else:
+                hmmsearch_chain_ids[pdb_id][chain] = log
+        elif re.match('    ------- ------', line):
+            in_main = True
+
+for file in files:
+    pdb_id = None
+    molecules = {}
+    molecules_order = []
+    current_molecule = None
+    if isinstance(file, str):
+        file = open(file, 'r')
+    for line in file:
+        # line = re.sub("\s*;?\s*\n$", "", line)
+        if line.startswith("HEADER"):
+            pdb_id = line[62:66]
+        elif line.startswith("COMPND"):
+            line = line[10:].lstrip()
+            match = re.match("([^:]+):\s*([^;\n]+);?", line)
+            if not match:
+                continue
+            key, value = match.groups()
+            value = value.strip()
+            if key == "MOL_ID":
+                current_molecule = value
+                molecules[current_molecule] = { "engineered": "NO", "organism": "?" }
+                molecules_order.append(current_molecule)
+            if key == "MOLECULE":
+                molecules[current_molecule]["molecule"] = value
+            if key == "CHAIN":
+                molecules[current_molecule]["chains"] = re.split("\s*,\s*", value)
+            if key == "ENGINEERED" and value == "YES":
+                molecules[current_molecule]["engineered"] = "YES"
+        elif line.startswith("SOURCE"):
+            line = line[10:].lstrip()
+            match = re.match("([^:]+):\s*([^;\n]+);?", line)
+            if not match:
+                continue
+            key, value = match.groups()
+            value = value.strip()
+            if key == "MOL_ID":
+                current_molecule = value
+            if key == "ORGANISM_SCIENTIFIC":
+                molecules[current_molecule]["organism"] = value
+
+    if hmmsearch_chain_ids:
+        if pdb_id not in hmmsearch_chain_ids:
+            continue
+        molecules_now = {}
+        for current_molecule in molecules:
+            needed_chains = set(molecules[current_molecule]["chains"]).intersection(set(hmmsearch_chain_ids[pdb_id]))
+            if needed_chains:
+                molecules_now[current_molecule] = molecules[current_molecule]
+                molecules_now[current_molecule]["chains"] = list(sorted(needed_chains))
+        molecules = molecules_now
+
+    for current_molecule in molecules:
+        print(pdb_id,
+              current_molecule,
+              "".join(molecules[current_molecule]["chains"]),
+              molecules[current_molecule]["molecule"],
+              molecules[current_molecule]["organism"],
+              molecules[current_molecule]["engineered"],
+              sep="\t")

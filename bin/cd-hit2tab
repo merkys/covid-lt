@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import re, sys
 
@@ -14,6 +14,6 @@ for file in files:
         if line.startswith('>Cluster'):
             _, cluster_nr = line.rstrip().split(' ')
         else:
-            match = re.match('\d+\s+\d+aa, >([0-9a-zA-Z]{4})_(.)', line)
+            match = re.match('\d+\s+\d+aa, >([0-9a-zA-Z]{4})[_:](.)', line)
             if match:
                 print(match.group(1).upper(), match.group(2), cluster_nr, sep='\t')

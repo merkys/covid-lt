@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import argparse, sys, warnings
 
@@ -6,9 +6,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--cluster-file', help='A file to extract clustering infomation from')
 parser.add_argument('--cluster-id', help='Select a particular cluster')
+parser.add_argument('--disjoint-clusters', action='store_true', help='Produce disjoint clusters')
 parser.add_argument('--collate', choices=['most-contacts', 'average', 'most-residues'], default='most-contacts', help='Collation method for a cluster')
 parser.add_argument('--quality-map', help='File containing quality map')
 parser.add_argument('--remove-nonmodelled', action='store_true', help='Remove contacts involving nonmodelled residues')
+parser.add_argument('--no-sort', action='store_true', help='Sort entry IDs')
+parser.add_argument('--output-graph', help='Output the disjoint cluster graph to a file (needs --disjoint-clusters)')
 args = parser.parse_args()
 
 # Process the cluster file
@@ -21,6 +24,21 @@ if args.cluster_file:
         if cluster not in clusters:
             clusters[cluster] = set()
         clusters[cluster].add(pdb_id)
+
+    if args.disjoint_clusters:
+        from networkx import Graph, connected_components
+        graph = Graph()
+        for cluster in clusters:
+            for pdb_id in clusters[cluster]:
+                graph.add_edge(int(cluster), pdb_id)
+        clusters = {}
+        for c in connected_components(graph):
+            clusters[len(clusters)] = [x for x in c if type(x) == str]
+        if args.output_graph:
+            from networkx import draw, nx_agraph
+            from networkx.drawing.nx_pydot import write_dot
+            draw(graph, pos=nx_agraph.graphviz_layout(graph))
+            write_dot(graph, args.output_graph)
 
 # Check for the presence of the contact map
 if args.remove_nonmodelled and not args.quality_map:
@@ -117,11 +135,15 @@ for file in files:
                             averaged.append('?')
                     for pdb_id in cluster_ids:
                         contacts.pop(pdb_id)
+                    if not args.no_sort:
+                        cluster_ids = list(sorted(cluster_ids))
                     contacts[','.join(cluster_ids)] = averaged
 
     # Print the filtered contacts
     pdb_ids = [pdb_id for pdb_id in contacts]
+    if not args.no_sort:
+        pdb_ids = list(sorted(pdb_ids))
     print(*pdb_ids, sep='\t')
     if pdb_ids:
         for i in range(len(contacts[pdb_ids[0]])):
-            print(*[contacts[pdb_id][i] for pdb_id in contacts], sep='\t')
+            print(*[contacts[pdb_id][i] for pdb_id in pdb_ids], sep='\t')

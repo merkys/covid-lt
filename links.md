@@ -11,6 +11,7 @@ Antibody numbering
 * Server: http://www.bioinf.org.uk/abs/abnum/
 * Python interface: https://gf712.github.io/AbPyTools/index.html
 * ANARCI, stand-alone software for antibody renumbering: https://github.com/oxpig/ANARCI
+* RosettaAntibody: https://nbviewer.org/github/RosettaCommons/PyRosetta.notebooks/blob/master/notebooks/12.01-RosettaAntibody-Framework-and-SimpleMetrics.ipynb
 
 PDB format
 ==========
@@ -35,3 +36,14 @@ MutaBind2
 * Paper: https://doi.org/10.1016/j.isci.2020.100939
 * Server: https://lilab.jysw.suda.edu.cn/research/mutabind2/
 * Training data and scripts: https://github.com/mutabind-group/MutaBindv2.0
+
+MODELLER
+========
+
+* Treating missing residues: https://salilab.org/modeller/wiki/Missing%20residues
+
+GROMACS
+=======
+
+* Documentation: https://manual.gromacs.org/documentation/current/index.html
+* Tutorials: http://www.mdtutorials.com/gmx/

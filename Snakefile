@@ -22,7 +22,11 @@ rule all:
         "contact-maps/PF07654/..tab",
         "contact-maps/PF07654/hbond.tab",
         "contact-maps/PF07654/hydrophobic.tab",
-        "contact-maps/PF07654/salt.tab"
+        "contact-maps/PF07654/salt.tab",
+        "contact-maps/PF07686/..tab",
+        "contact-maps/PF07686/hbond.tab",
+        "contact-maps/PF07686/hydrophobic.tab",
+        "contact-maps/PF07686/salt.tab"
 
 # Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
 rule download_pdb:
@@ -77,7 +81,7 @@ rule vorocontacts_out:
     log:
         "vorocontacts/{pdbid}.log"
     shell:
-        "voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
+        "bin/voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
 
 rule vorocontacts_tab:
     input:
@@ -147,17 +151,30 @@ rule hmmsearch:
     shell:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
 
+def downloaded_pdb_files():
+    from os.path import exists
+    pdb_ids = set()
+    if exists('download_pdb_all.log'):
+        file = open('download_pdb_all.log', 'r')
+        for line in file:
+            pdb_ids.add(line[23:27])
+        if '    ' in pdb_ids:
+            pdb_ids.remove('    ')
+    return sorted(pdb_ids)
+
 rule cd_hit:
     input:
-        "pdb_seqres.fa",
-        "alignments/{base}.hmmsearch"
+        "download_pdb_all.log",
+        pristine_pdbs = expand("pdb/pristine/{pdbid}.pdb", pdbid=downloaded_pdb_files()),
+        hmmsearch = "alignments/{base}.hmmsearch"
     output:
         "alignments/{base}.clusters"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/fasta_select {input[0]} --hmmsearch {input[1]} > $TMP_DIR/input.fa
-        cd-hit -i $TMP_DIR/input.fa -o $TMP_DIR/output
+        bin/pdb_seqres2fasta {input.pristine_pdbs} > $TMP_DIR/all.fa
+        bin/fasta_select $TMP_DIR/all.fa --hmmsearch {input.hmmsearch} > $TMP_DIR/input.fa
+        cd-hit -c 0.95 -i $TMP_DIR/input.fa -o $TMP_DIR/output
         bin/cd-hit2tab $TMP_DIR/output.clstr > {output}
         rm -rf $TMP_DIR
         """
@@ -232,17 +249,6 @@ rule renumber_S1:
     shell:
         "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
 
-def downloaded_pdb_files():
-    from os.path import exists
-    pdb_ids = set()
-    if exists('download_pdb_all.log'):
-        file = open('download_pdb_all.log', 'r')
-        for line in file:
-            pdb_ids.add(line[23:27])
-        if '    ' in pdb_ids:
-            pdb_ids.remove('    ')
-    return sorted(pdb_ids)
-
 rule contact_map:
     input:
         "download_pdb_all.log",
@@ -302,4 +308,28 @@ rule quality_map:
             done
         cp $TMP_DIR/table.tab {output}
         rm -rf $TMP_DIR
+        """
+
+rule voromqa:
+    input:
+        "download_pdb_all.log",
+        pristine_pdbs = expand("pdb/pristine/{pdbid}.pdb", pdbid=downloaded_pdb_files()),
+        fixed_pdbs = expand("pdb/fixed/{pdbid}.pdb", pdbid=downloaded_pdb_files())
+    output:
+        "voromqa.tab"
+    shell:
+        """
+        for PDB in {input.pristine_pdbs}
+        do
+            PRISTINE=$PDB
+            FIXED=pdb/fixed/$(basename $PDB)
+            if [ -s $PRISTINE -a -s $FIXED ]
+            then
+                (
+                    basename $PDB .pdb
+                    bin/voronota-voromqa -i $PRISTINE | cut -d ' ' -f 2-
+                    bin/voronota-voromqa -i $FIXED    | cut -d ' ' -f 2-
+                ) | xargs echo | sed 's/ /\t/g'
+            fi
+        done > {output}
         """

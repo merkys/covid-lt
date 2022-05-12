@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # NB: FASTA sequences from PDB files with DBREF1/DBREF2 do not get PDB IDs in their headers.
 # See https://github.com/biopython/biopython/issues/3887
@@ -16,4 +16,8 @@ if len(files) == 0:
     files = [sys.stdin]
 
 for file in files:
-    SeqIO.convert(file, 'pdb-' + type, sys.stdout, 'fasta')
+    try:
+        SeqIO.convert(file, 'pdb-' + type, sys.stdout, 'fasta')
+    except ValueError as e:
+        if e.args[0] != "Empty file.":
+            raise e

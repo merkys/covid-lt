@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Reads PDB file and trims nonexistent residues from starts and ends of SEQRES records.
 # Sequences in SEQRES and ATOM have to be aligned beforehand, otherwise cuts may be imprecise.
