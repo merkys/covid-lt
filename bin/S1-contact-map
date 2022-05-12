@@ -69,7 +69,7 @@ do
             echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
 
             cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab \
-                | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
+                | bin/select-contacts --chain ${S1_CHAIN} --chain ${OTHER_CHAIN} --exclude-self --dist min \
                 | grep "${FILTER}" \
                 | while read C1 R1 C2 R2 DIST
                   do
