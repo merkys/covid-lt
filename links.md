@@ -24,6 +24,12 @@ PDB fixing
 
 * Jackal manual: https://honiglab.c2b2.columbia.edu/software/Jackal/Jackalmanual.htm
 
+ProMod3
+=======
+
+* Gap handling: https://openstructure.org/promod3/3.2/modelling/gap_handling/
+* Modelling pipeline: https://openstructure.org/promod3/3.2/modelling/pipeline/
+
 ProteinTools
 ============
 
