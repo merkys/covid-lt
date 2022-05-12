@@ -61,24 +61,28 @@ do
     # Next if no S1 chains found
     test -z "${S1_CHAIN}" && continue
 
-    cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab \
-        | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
-        | grep "${FILTER}" \
-        | while read C1 R1 C2 R2 DIST
-          do
+    for S1_CHAIN in $(echo "${S1_CHAINS}" | grep -o .)
+    do
+        for OTHER_CHAIN in $(cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
+        do
             # Ignore non-antibody chains
-            echo ${C1} ${C2} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
+            echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
 
-            # S1 chain may be either on first or on second column
-            if [ "${C1}" = "${S1_CHAIN}" ]
-            then
-                echo -e "${R1}\t${DIST}"
-            else
-                echo -e "${R2}\t${DIST}"
-            fi
-          done \
-        | sort -nk1.1 \
-        | python3 -c '
+            cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab \
+                | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
+                | grep "${FILTER}" \
+                | while read C1 R1 C2 R2 DIST
+                  do
+                    # S1 chain may be either on first or on second column
+                    if [ "${C1}" = "${S1_CHAIN}" ]
+                    then
+                        echo -e "${R1}\t${DIST}"
+                    else
+                        echo -e "${R2}\t${DIST}"
+                    fi
+                  done \
+                | sort -nk1.1 \
+                | python3 -c '
 import re, sys
 residues = {}
 for line in sys.stdin:
@@ -96,16 +100,21 @@ for i in range(1, 1500): # Assuming S1 is max. 1500 aminoacids long
         print("?")
           ' > "${TMP_DIR}/column.tab"
 
-    if grep --silent . "${TMP_DIR}/column.tab"
-    then
-        echo $PDB_ID | cat - "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/column.tab"
-        if test -e "${TMP_DIR}/output.tab"
-        then
-            paste "${TMP_DIR}/output.tab" "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/output.tab"
-        else
-            mv "${TMP_DIR}/column.tab" "${TMP_DIR}/output.tab"
-        fi
-    fi
+            if grep --silent . "${TMP_DIR}/column.tab"
+            then
+                echo ${PDB_ID}_${S1_CHAIN}${OTHER_CHAIN} | cat - "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/column.tab"
+                if test -e "${TMP_DIR}/output.tab"
+                then
+                    paste "${TMP_DIR}/output.tab" "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/output.tab"
+                else
+                    mv "${TMP_DIR}/column.tab" "${TMP_DIR}/output.tab"
+                fi
+            fi
+        done
+    done
+
+
+
 
 done
 
