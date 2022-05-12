@@ -112,10 +112,6 @@ for i in range(1, 1500): # Assuming S1 is max. 1500 aminoacids long
             fi
         done
     done
-
-
-
-
 done
 
 test -e "${TMP_DIR}/output.tab" && cat "${TMP_DIR}/output.tab"
