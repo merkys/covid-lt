@@ -69,10 +69,13 @@ do
             echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
 
             cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab \
-                | bin/select-contacts --chain ${S1_CHAIN} --chain ${OTHER_CHAIN} --exclude-self --dist min \
+                | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
                 | grep "${FILTER}" \
                 | while read C1 R1 C2 R2 DIST
                   do
+                    # Exclude other chains
+                    test "${C1}" != "${OTHER_CHAIN}" -a "${C2}" != "${OTHER_CHAIN}" && continue
+
                     # S1 chain may be either on first or on second column
                     if [ "${C1}" = "${S1_CHAIN}" ]
                     then
