@@ -23,14 +23,14 @@ if args.cluster_file:
         pdb_id, chain, cluster = line.rstrip().split('\t')
         if cluster not in clusters:
             clusters[cluster] = set()
-        clusters[cluster].add(pdb_id)
+        clusters[cluster].add(pdb_id + '_' + chain)
 
     if args.disjoint_clusters:
         from networkx import Graph, connected_components
         graph = Graph()
         for cluster in clusters:
-            for pdb_id in clusters[cluster]:
-                graph.add_edge(int(cluster), pdb_id)
+            for member in clusters[cluster]:
+                graph.add_edge(int(cluster), member)
         clusters = {}
         for c in connected_components(graph):
             clusters[len(clusters)] = [x for x in c if type(x) == str]
@@ -69,19 +69,19 @@ if len(files) == 0:
 for file in files:
     if isinstance(file, str):
         file = open(file, 'r')
-    pdb_ids = None
+    complex_ids = None
     contacts = None
     for line in file:
-        if pdb_ids is None:
-            pdb_ids = line.rstrip().split('\t')
-            contacts = {pdb_id: [] for pdb_id in pdb_ids}
+        if complex_ids is None:
+            complex_ids = line.rstrip().split('\t')
+            contacts = {complex_id: [] for complex_id in complex_ids}
             continue
         for i, contact in enumerate(line.rstrip().split('\t')):
-            contacts[pdb_ids[i]].append(contact)
+            contacts[complex_ids[i]].append(contact)
 
     # Remove nonmodelled, if requested
     if args.remove_nonmodelled:
-        for pdb_id in pdb_ids:
+        for pdb_id in complex_ids:
             if pdb_id not in quality:
                 warnings.warn(pdb_id + ' not in quality map')
                 continue
@@ -90,60 +90,62 @@ for file in files:
     # Attempt joining clusters
     if clusters:
         if args.cluster_id is not None:
-            for pdb_id in pdb_ids:
+            for pdb_id in complex_ids:
                 if not args.cluster_id in clusters or not pdb_id in clusters[args.cluster_id]:
                     contacts.pop(pdb_id)
         else:
             for cluster in clusters:
                 representative = None
                 cluster_ids = []
-                for pdb_id in clusters[cluster]:
-                    if not pdb_id in contacts:
-                        continue
-                    cluster_ids.append(pdb_id)
-                    if representative:
-                        if args.collate == 'most-contacts':
-                            if contacts[representative].count('?') > contacts[pdb_id].count('?'):
-                                representative = pdb_id
-                        elif args.collate == 'most-residues':
-                            if representative not in quality or pdb_id not in quality:
-                                if representative not in quality:
-                                    warnings.warn(representative + ' not in quality map')
-                                if pdb_id not in quality:
-                                    warnings.warn(pdb_id + ' not in quality map')
-                                continue
-                            if quality[representative].count('Y') > quality[pdb_id].count('Y'):
-                                representative = pdb_id
-                    else:
-                        representative = pdb_id
+                for member in clusters[cluster]:
+                    pdb_id = member[0:4]
+                    chain_id = member[5]
+                    complexes = [c for c in contacts if c.startswith(pdb_id) and c.endswith(chain_id)]
+                    for complex_id in complexes:
+                        cluster_ids.append(complex_id)
+                        if representative:
+                            if args.collate == 'most-contacts':
+                                if contacts[representative].count('?') > contacts[complex_id].count('?'):
+                                    representative = complex_id
+                            elif args.collate == 'most-residues':
+                                if representative not in quality or complex_id not in quality:
+                                    if representative not in quality:
+                                        warnings.warn(representative + ' not in quality map')
+                                    if complex_id not in quality:
+                                        warnings.warn(complex_id + ' not in quality map')
+                                    continue
+                                if quality[representative].count('Y') > quality[complex_id].count('Y'):
+                                    representative = complex_id
+                        else:
+                            representative = complex_id
                 if args.collate in ['most-contacts', 'most-residues']:
                     if not representative:
                         continue
-                    for pdb_id in cluster_ids:
-                        if pdb_id != representative:
-                            contacts.pop(pdb_id)
+                    for complex_id in cluster_ids:
+                        if complex_id != representative:
+                            contacts.pop(complex_id)
                 elif cluster_ids: # 'average'
                     averaged = []
                     for i in range(len(contacts[cluster_ids[0]])):
                         cluster_contacts = []
-                        for pdb_id in cluster_ids:
-                            if contacts[pdb_id][i] != '?':
-                                cluster_contacts.append(float(contacts[pdb_id][i]))
+                        for complex_id in cluster_ids:
+                            if contacts[complex_id][i] != '?':
+                                cluster_contacts.append(float(contacts[complex_id][i]))
                         if cluster_contacts:
                             averaged.append(sum(cluster_contacts)/len(cluster_contacts))
                         else:
                             averaged.append('?')
-                    for pdb_id in cluster_ids:
-                        contacts.pop(pdb_id)
+                    for complex_id in cluster_ids:
+                        contacts.pop(complex_id)
                     if not args.no_sort:
                         cluster_ids = list(sorted(cluster_ids))
                     contacts[','.join(cluster_ids)] = averaged
 
     # Print the filtered contacts
-    pdb_ids = [pdb_id for pdb_id in contacts]
+    complex_ids = [complex_id for complex_id in contacts]
     if not args.no_sort:
-        pdb_ids = list(sorted(pdb_ids))
-    print(*pdb_ids, sep='\t')
-    if pdb_ids:
-        for i in range(len(contacts[pdb_ids[0]])):
-            print(*[contacts[pdb_id][i] for pdb_id in pdb_ids], sep='\t')
+        complex_ids = list(sorted(complex_ids))
+    print(*complex_ids, sep='\t')
+    if complex_ids:
+        for i in range(len(contacts[complex_ids[0]])):
+            print(*[contacts[complex_id][i] for complex_id in complex_ids], sep='\t')
