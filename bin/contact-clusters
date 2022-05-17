@@ -93,7 +93,7 @@ for file in files:
             for complex_id in complex_ids:
                 chain_name = complex_id[0:5] + complex_id[6]
                 if not args.cluster_id in clusters or not chain_name in clusters[args.cluster_id]:
-                    contacts.pop(chain_name)
+                    contacts.pop(complex_id)
         else:
             for cluster in clusters:
                 representative = None
