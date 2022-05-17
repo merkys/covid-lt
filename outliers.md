@@ -1,10 +1,9 @@
 S1–ACE2
 =======
 
-* 7RPV: seems OK.
-* 7SY6: incomplete structure is completed by Jackal, resulting in unrealistic intertwining.
-* 7V87: incomplete structure is completed by Jackal, resulting in unrealistic intertwining.
-* 7VX4: incomplete structure is completed by Jackal, resulting in unrealistic intertwining.
+* 7RPV: seems OK: affinity enhancing and inactive ACE2.
+* 7V82: seems OK: not much meta info.
+* 7WK5: seems OK: Omicron seems to have more contacts.
 
 S1–antibody
 ===========
