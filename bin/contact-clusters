@@ -90,9 +90,10 @@ for file in files:
     # Attempt joining clusters
     if clusters:
         if args.cluster_id is not None:
-            for pdb_id in complex_ids:
-                if not args.cluster_id in clusters or not pdb_id in clusters[args.cluster_id]:
-                    contacts.pop(pdb_id)
+            for complex_id in complex_ids:
+                chain_name = complex_id[0:5] + complex_id[6]
+                if not args.cluster_id in clusters or not chain_name in clusters[args.cluster_id]:
+                    contacts.pop(chain_name)
         else:
             for cluster in clusters:
                 representative = None
