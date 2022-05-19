@@ -334,3 +334,36 @@ rule voromqa_all:
             fi
         done > {output}
         """
+
+rule qmean:
+    input:
+        "{path}/{pdbid}.pdb"
+    output:
+        "{path}/{pdbid}.qmean"
+    log:
+        "{path}/{pdbid}.qmean.log"
+    shell:
+        "bin/qmean {input} > {output} 2> {log} || true"
+
+rule qmean_all:
+    input:
+        "download_pdb_all.log",
+        pristine_pdbs_qmean = expand("pdb/pristine/{pdbid}.qmean", pdbid=downloaded_pdb_files()),
+        fixed_pdbs_qmean = expand("pdb/fixed/{pdbid}.qmean", pdbid=downloaded_pdb_files())
+    output:
+        "qmean.tab"
+    shell:
+        """
+        for QMEAN in {input.pristine_pdbs_qmean}
+        do
+            PRISTINE=$QMEAN
+            FIXED=pdb/fixed/$(basename $QMEAN)
+            if [ -s $PRISTINE -a -s $FIXED ]
+            then
+                (
+                    echo -en $(basename $QMEAN .QMEAN)"\t"
+                    paste $PRISTINE $FIXED
+                ) | xargs echo | sed 's/ /\t/g'
+            fi
+        done > {output}
+        """
