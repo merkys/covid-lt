@@ -1,2 +1,4 @@
 *.pdb
+*.qmean
+*.qmean.log
 *.voromqa
