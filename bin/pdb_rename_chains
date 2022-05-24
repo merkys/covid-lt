@@ -1,48 +1,63 @@
 #!/usr/bin/env python3
 
-# Take two PDB files (source and target) and rename the chains in target.
+# Rename chains in PDB file.
 
-import sys
+import argparse, sys
 
-source, target = sys.argv[1:3]
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--source', help='A file to take chain names from')
+parser.add_argument('--map', action='append', help='Provide two chain names from which to which to rename')
+args = parser.parse_args()
 
-source_chains = []
-for line in open(source, 'r'):
-    if line[0:6] != 'ATOM  ':
-        continue
-    chain = line[21]
-    if chain not in source_chains:
-        source_chains.append(chain)
+mapping = None
+if args.map:
+    mapping = {}
+    for pair in args.map:
+        mapping[pair[0]] = pair[2]
 
-target_chains = []
-for line in open(target, 'r'):
-    if line[0:6] != 'ATOM  ':
-        continue
-    chain = line[21]
-    if chain not in target_chains:
-        target_chains.append(chain)
+source_chains = None
+if args.source:
+    source_chains = []
+    for line in open(args.source, 'r'):
+        if line[0:6] != 'ATOM  ':
+            continue
+        chain = line[21]
+        if chain not in source_chains:
+            source_chains.append(chain)
 
-if len(source_chains) != len(target_chains):
-    raise Exception('Chain lists are different in size: ' + str(source_chains) + ' and ' + str(target_chains))
+for target in args.files:
+    target_chains = []
+    for line in open(target, 'r'):
+        if line[0:6] != 'ATOM  ':
+            continue
+        chain = line[21]
+        if chain not in target_chains:
+            target_chains.append(chain)
 
-mapping = dict(zip(target_chains, source_chains))
+    if source_chains is not None:
+        if len(source_chains) != len(target_chains):
+            raise Exception('Chain lists are different in size: ' + str(source_chains) + ' and ' + str(target_chains))
+        else:
+            mapping = dict(zip(target_chains, source_chains))
 
-renamings = {
-    'ATOM  ': [ 21 ],
-    'CIPSEP': [ 15, 29 ],
-    'DBREF ': [ 12 ],
-    'DBREF1': [ 12 ],
-    'DBREF2': [ 12 ],
-    'HELIX ': [ 19, 31 ],
-    'LINK  ': [ 21, 51 ],
-    'SHEET ': [ 21, 32, 49, 64 ],
-    'SITE  ': [ 22, 33, 44, 55 ],
-    'SEQRES': [ 11 ],
-    'SSBOND': [ 15, 29 ],
-}
+    renamings = {
+        'ATOM  ': [ 21 ],
+        'CIPSEP': [ 15, 29 ],
+        'DBREF ': [ 12 ],
+        'DBREF1': [ 12 ],
+        'DBREF2': [ 12 ],
+        'HELIX ': [ 19, 31 ],
+        'LINK  ': [ 21, 51 ],
+        'SHEET ': [ 21, 32, 49, 64 ],
+        'SITE  ': [ 22, 33, 44, 55 ],
+        'SEQRES': [ 11 ],
+        'SSBOND': [ 15, 29 ],
+    }
 
-for line in open(target, 'r'):
-    if line[0:6] in renamings:
-        for renaming in renamings[line[0:6]]:
-            line = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
-    print(line, end='')
+    mapping[' '] = ' '
+    for line in open(target, 'r'):
+        if line[0:6] in renamings:
+            for renaming in renamings[line[0:6]]:
+                line = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
+        print(line, end='')
