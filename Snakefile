@@ -200,7 +200,7 @@ rule fix_pdb:
             exit
         fi
         bin/promod-fix-pdb $TMP_DIR/{wildcards.pdbid}.pdb > $TMP_DIR/fixed.pdb 2>> {log} || true
-        bin/pdb_rename_chains {input} $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
+        bin/pdb_rename_chains {input} --source $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
         rm -rf $TMP_DIR
         """
 
@@ -315,7 +315,9 @@ rule split_pdb:
                     PDB_ID=$(echo $COMPLEX | cut -d _ -f 1)
                     CHAIN_A=$(echo $COMPLEX | cut -c 6)
                     CHAIN_B=$(echo $COMPLEX | cut -c 7)
-                    bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B pdb/P0DTC2/$PDB_ID.pdb > $(dirname {output})/$COMPLEX.pdb
+                    bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B pdb/P0DTC2/$PDB_ID.pdb \
+                        | bin/pdb_rename_chains --map "$CHAIN_A:A" --map "$CHAIN_B:B" \
+                            > $(dirname {output})/$COMPLEX.pdb
                 done
         touch {output}
         """
