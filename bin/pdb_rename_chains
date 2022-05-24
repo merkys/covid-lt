@@ -30,7 +30,7 @@ mapping = dict(zip(target_chains, source_chains))
 renamings = {
     'ATOM  ': [ 21 ],
     'CIPSEP': [ 15, 29 ],
-    'DBREF' : [ 12 ],
+    'DBREF ': [ 12 ],
     'DBREF1': [ 12 ],
     'DBREF2': [ 12 ],
     'HELIX ': [ 19, 31 ],
