@@ -299,6 +299,27 @@ rule quality_map:
         rm -rf $TMP_DIR
         """
 
+rule split_pdb:
+    input:
+        "download_pdb_all.log",
+        contact_map = "contact-maps/{name}/..tab"
+    output:
+        "pdb/split/{name}/split.log"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        head -n 1 {input.contact_map} \
+            | sed 's/\\t/\\n/g' \
+            | while read COMPLEX
+                do
+                    PDB_ID=$(echo $COMPLEX | cut -d _ -f 1)
+                    CHAIN_A=$(echo $COMPLEX | cut -c 6)
+                    CHAIN_B=$(echo $COMPLEX | cut -c 7)
+                    bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B pdb/P0DTC2/$PDB_ID.pdb > $(dirname {output})/$COMPLEX.pdb
+                done
+        touch {output}
+        """
+
 rule voromqa:
     input:
         "{path}/{pdbid}.pdb"
