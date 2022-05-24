@@ -26,9 +26,18 @@ if args.source:
         if chain not in source_chains:
             source_chains.append(chain)
 
-for target in args.files:
+files = args.files
+if len(files) == 0:
+    files = [sys.stdin]
+
+for target in files:
+    if isinstance(target, str):
+        target = open(file, 'r')
+
     target_chains = []
-    for line in open(target, 'r'):
+    target_lines = []
+    for line in target:
+        target_lines.append(line)
         if line[0:6] != 'ATOM  ':
             continue
         chain = line[21]
@@ -56,7 +65,7 @@ for target in args.files:
     }
 
     mapping[' '] = ' '
-    for line in open(target, 'r'):
+    for line in target_lines:
         if line[0:6] in renamings:
             for renaming in renamings[line[0:6]]:
                 line = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
