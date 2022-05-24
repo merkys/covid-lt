@@ -385,3 +385,13 @@ rule qmean_all:
             fi
         done > {output}
         """
+
+rule prodigy:
+    input:
+        "{path}.pdb"
+    output:
+        "{path}.prodigy"
+    log:
+        "{path}.prodigy.log"
+    shell:
+        "prodigy -q {input} > {output} 2> {log} || true"
