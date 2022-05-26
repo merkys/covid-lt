@@ -301,23 +301,63 @@ rule quality_map:
 
 rule voromqa:
     input:
+        "{path}/{pdbid}.pdb"
+    output:
+        "{path}/{pdbid}.voromqa"
+    shell:
+        "bin/voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || true"
+
+rule voromqa_all:
+    input:
         "download_pdb_all.log",
-        pristine_pdbs = expand("pdb/pristine/{pdbid}.pdb", pdbid=downloaded_pdb_files()),
-        fixed_pdbs = expand("pdb/fixed/{pdbid}.pdb", pdbid=downloaded_pdb_files())
+        pristine_pdbs_voromqa = expand("pdb/pristine/{pdbid}.voromqa", pdbid=downloaded_pdb_files()),
+        fixed_pdbs_voromqa = expand("pdb/fixed/{pdbid}.voromqa", pdbid=downloaded_pdb_files())
     output:
         "voromqa.tab"
     shell:
         """
-        for PDB in {input.pristine_pdbs}
+        for VOROMQA in {input.pristine_pdbs_voromqa}
         do
-            PRISTINE=$PDB
-            FIXED=pdb/fixed/$(basename $PDB)
+            PRISTINE=$VOROMQA
+            FIXED=pdb/fixed/$(basename $VOROMQA)
             if [ -s $PRISTINE -a -s $FIXED ]
             then
                 (
-                    basename $PDB .pdb
-                    bin/voronota-voromqa -i $PRISTINE | cut -d ' ' -f 2-
-                    bin/voronota-voromqa -i $FIXED    | cut -d ' ' -f 2-
+                    echo -en $(basename $VOROMQA .voromqa)"\t"
+                    paste $PRISTINE $FIXED
+                ) | xargs echo | sed 's/ /\t/g'
+            fi
+        done > {output}
+        """
+
+rule qmean:
+    input:
+        "{path}/{pdbid}.pdb"
+    output:
+        "{path}/{pdbid}.qmean"
+    log:
+        "{path}/{pdbid}.qmean.log"
+    shell:
+        "bin/qmean {input} > {output} 2> {log} || true"
+
+rule qmean_all:
+    input:
+        "download_pdb_all.log",
+        pristine_pdbs_qmean = expand("pdb/pristine/{pdbid}.qmean", pdbid=downloaded_pdb_files()),
+        fixed_pdbs_qmean = expand("pdb/fixed/{pdbid}.qmean", pdbid=downloaded_pdb_files())
+    output:
+        "qmean.tab"
+    shell:
+        """
+        for QMEAN in {input.pristine_pdbs_qmean}
+        do
+            PRISTINE=$QMEAN
+            FIXED=pdb/fixed/$(basename $QMEAN)
+            if [ -s $PRISTINE -a -s $FIXED ]
+            then
+                (
+                    echo -en $(basename $QMEAN .QMEAN)"\t"
+                    paste $PRISTINE $FIXED
                 ) | xargs echo | sed 's/ /\t/g'
             fi
         done > {output}
