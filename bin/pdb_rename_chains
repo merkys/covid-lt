@@ -62,11 +62,13 @@ for target in files:
 
             handle.seek(0)
             SeqIO.convert(handle, 'pdb-seqres', child.stdin, 'fasta')
-            child.stdin.close() # Do we really need this?
-            for line in child.stdout.readlines():
+            child.stdin.close()
+            for line in child.stdout:
                 identity = float(line[7:])
                 if identity >= args.identity_threshold:
                     mapping[line[5]] = chain
+            for line in child.stderr:
+                print(line, file=sys.stderr, end='')
 
     if source_chains is not None:
         if len(source_chains) != len(target_chains):
