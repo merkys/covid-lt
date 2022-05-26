@@ -316,7 +316,12 @@ rule split_pdb:
                     CHAIN_A=$(echo $COMPLEX | cut -c 6)
                     CHAIN_B=$(echo $COMPLEX | cut -c 7)
                     bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B pdb/P0DTC2/$PDB_ID.pdb \
-                        | bin/pdb_rename_chains --map "$CHAIN_A:A" --map "$CHAIN_B:B" \
+                        | bin/pdb_rename_chains \
+                            --map "$CHAIN_A:A" \
+                            --map "$CHAIN_B:H" \
+                            --align L:sequences/P01834.fa \
+                            --align L:sequences/P0CG04.fa \
+                            --identity-threshold 80 \
                             > $(dirname {output})/$COMPLEX.pdb
                 done
         touch {output}
