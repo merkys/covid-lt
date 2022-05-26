@@ -2,6 +2,7 @@
 
 # Rename chains in PDB file.
 
+from io import StringIO
 import argparse, sys
 
 parser = argparse.ArgumentParser()
@@ -37,9 +38,9 @@ for target in files:
         target = open(target, 'r')
 
     target_chains = []
-    target_lines = []
+    handle = StringIO()
     for line in target:
-        target_lines.append(line)
+        handle.write(line)
         if line[0:6] != 'ATOM  ':
             continue
         chain = line[21]
@@ -48,7 +49,7 @@ for target in files:
     if mapping is None:
         mapping = dict(zip(target_chains, target_chains))
 
-    if args.align: # This will work only with actual files for now
+    if args.align:
         from Bio import PDB, SeqIO
         from subprocess import Popen, PIPE
         import warnings
@@ -59,8 +60,8 @@ for target in files:
             chain = alignment[0]
             child = Popen('blastp -query ' + alignment[2:] + ' -subject - -outfmt "6 sseqid pident"', stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
 
-            target.seek(0) # Will not work with streams
-            SeqIO.convert(target, 'pdb-seqres', child.stdin, 'fasta')
+            handle.seek(0)
+            SeqIO.convert(handle, 'pdb-seqres', child.stdin, 'fasta')
             child.stdin.close() # Do we really need this?
             for line in child.stdout.readlines():
                 identity = float(line[7:])
@@ -88,8 +89,9 @@ for target in files:
         'SSBOND': [ 15, 29 ],
     }
 
+    handle.seek(0)
     mapping[' '] = ' '
-    for line in target_lines:
+    for line in handle:
         if line[0:6] in renamings:
             for renaming in renamings[line[0:6]]:
                 if line[renaming] in mapping: # Might be a link to HETATM record, see 7Q0H
