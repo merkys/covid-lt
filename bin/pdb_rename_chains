@@ -1,44 +1,97 @@
 #!/usr/bin/env python3
 
-# Take two PDB files (source and target) and rename the chains in target.
+# Rename chains in PDB file.
 
-import sys
+import argparse, sys
 
-source, target = sys.argv[1:3]
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--source', help='A file to take chain names from')
+parser.add_argument('--map', action='append', help='Provide two chain names from which to which to rename (may be several)')
+parser.add_argument('--align', action='append', help='Provide a single letter, \':\' and file name with FASTA sequence to rename if matches')
+parser.add_argument('--identity-threshold', type=float, default=0, help='Specify identity threshold for alignments (default 0)')
+args = parser.parse_args()
 
-source_chains = []
-for line in open(source, 'r'):
-    if line[0:6] != 'ATOM  ':
-        continue
-    chain = line[21]
-    if chain not in source_chains:
-        source_chains.append(chain)
+mapping = None
+if args.map:
+    mapping = {}
+    for pair in args.map:
+        mapping[pair[0]] = pair[2]
 
-target_chains = []
-for line in open(target, 'r'):
-    if line[0:6] != 'ATOM  ':
-        continue
-    chain = line[21]
-    if chain not in target_chains:
-        target_chains.append(chain)
+source_chains = None
+if args.source:
+    source_chains = []
+    for line in open(args.source, 'r'):
+        if line[0:6] != 'ATOM  ':
+            continue
+        chain = line[21]
+        if chain not in source_chains:
+            source_chains.append(chain)
 
-if len(source_chains) != len(target_chains):
-    raise Exception('Chain lists are different in size: ' + str(source_chains) + ' and ' + str(target_chains))
+files = args.files
+if len(files) == 0:
+    files = [sys.stdin]
 
-mapping = dict(zip(target_chains, source_chains))
+for target in files:
+    if isinstance(target, str):
+        target = open(target, 'r')
 
-renamings = {
-    'ATOM  ': [ 21 ],
-    'CIPSEP': [ 15, 29 ],
-    'HELIX ': [ 19, 31 ],
-    'LINK  ': [ 21, 51 ],
-    'SHEET ': [ 21, 32, 49, 64 ],
-    'SITE  ': [ 22, 33, 44, 55 ],
-    'SSBOND': [ 15, 29 ],
-}
+    target_chains = []
+    target_lines = []
+    for line in target:
+        target_lines.append(line)
+        if line[0:6] != 'ATOM  ':
+            continue
+        chain = line[21]
+        if chain not in target_chains:
+            target_chains.append(chain)
+    if mapping is None:
+        mapping = dict(zip(target_chains, target_chains))
 
-for line in open(target, 'r'):
-    if line[0:6] in renamings:
-        for renaming in renamings[line[0:6]]:
-            line = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
-    print(line, end='')
+    if args.align: # This will work only with actual files for now
+        from Bio import PDB, SeqIO
+        from subprocess import Popen, PIPE
+        import warnings
+
+        warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
+
+        for alignment in args.align:
+            chain = alignment[0]
+            child = Popen('blastp -query ' + alignment[2:] + ' -subject - -outfmt "6 sseqid pident"', stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
+
+            target.seek(0) # Will not work with streams
+            SeqIO.convert(target, 'pdb-seqres', child.stdin, 'fasta')
+            child.stdin.close() # Do we really need this?
+            for line in child.stdout.readlines():
+                identity = float(line[7:])
+                if identity >= args.identity_threshold:
+                    mapping[line[5]] = chain
+
+    if source_chains is not None:
+        if len(source_chains) != len(target_chains):
+            raise Exception('Chain lists are different in size: ' + str(source_chains) + ' and ' + str(target_chains))
+        else:
+            mapping = dict(zip(target_chains, source_chains))
+
+    renamings = {
+        'ANISOU': [ 21 ],
+        'ATOM  ': [ 21 ],
+        'CIPSEP': [ 15, 29 ],
+        'DBREF ': [ 12 ],
+        'DBREF1': [ 12 ],
+        'DBREF2': [ 12 ],
+        'HELIX ': [ 19, 31 ],
+        'LINK  ': [ 21, 51 ],
+        'SHEET ': [ 21, 32, 49, 64 ],
+        'SITE  ': [ 22, 33, 44, 55 ],
+        'SEQRES': [ 11 ],
+        'SSBOND': [ 15, 29 ],
+    }
+
+    mapping[' '] = ' '
+    for line in target_lines:
+        if line[0:6] in renamings:
+            for renaming in renamings[line[0:6]]:
+                if line[renaming] in mapping: # Might be a link to HETATM record, see 7Q0H
+                    line = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
+        print(line, end='')
