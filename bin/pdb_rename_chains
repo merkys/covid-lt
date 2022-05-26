@@ -45,7 +45,8 @@ for target in files:
         chain = line[21]
         if chain not in target_chains:
             target_chains.append(chain)
-    mapping = dict(zip(target_chains, target_chains))
+    if mapping is None:
+        mapping = dict(zip(target_chains, target_chains))
 
     if args.align: # This will work only with actual files for now
         from Bio import PDB, SeqIO
