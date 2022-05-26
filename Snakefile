@@ -235,7 +235,7 @@ rule renumber_S1:
     input:
         pdb = "pdb/Chothia/{pdbid}.pdb",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
-        seq = "P0DTC2.fa"
+        seq = "sequences/P0DTC2.fa"
     output:
         "pdb/P0DTC2/{pdbid}.pdb"
     log:
@@ -267,7 +267,7 @@ rule quality_map:
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
         propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
         vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files()),
-        seq = "P0DTC2.fa"
+        seq = "sequences/P0DTC2.fa"
     output:
         "quality-map.tab"
     shell:
