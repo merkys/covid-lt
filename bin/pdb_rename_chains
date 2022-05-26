@@ -73,6 +73,7 @@ for target in files:
             mapping = dict(zip(target_chains, source_chains))
 
     renamings = {
+        'ANISOU': [ 21 ],
         'ATOM  ': [ 21 ],
         'CIPSEP': [ 15, 29 ],
         'DBREF ': [ 12 ],
