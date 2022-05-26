@@ -9,6 +9,7 @@ parser.add_argument('files', nargs='*')
 parser.add_argument('--source', help='A file to take chain names from')
 parser.add_argument('--map', action='append', help='Provide two chain names from which to which to rename (may be several)')
 parser.add_argument('--align', action='append', help='Provide a single letter, \':\' and file name with FASTA sequence to rename if matches')
+parser.add_argument('--identity-threshold', type=float, default=0, help='Specify identity threshold for alignments (default 0)')
 args = parser.parse_args()
 
 mapping = None
@@ -62,7 +63,8 @@ for target in files:
             child.stdin.close() # Do we really need this?
             for line in child.stdout.readlines():
                 identity = float(line[7:])
-                mapping[line[5]] = chain
+                if identity >= args.identity_threshold:
+                    mapping[line[5]] = chain
 
     if source_chains is not None:
         if len(source_chains) != len(target_chains):
