@@ -174,7 +174,7 @@ rule cd_hit:
         TMP_DIR=$(mktemp --directory)
         bin/pdb_seqres2fasta {input.pristine_pdbs} > $TMP_DIR/all.fa
         bin/fasta_select $TMP_DIR/all.fa --hmmsearch {input.hmmsearch} > $TMP_DIR/input.fa
-        cd-hit -c 0.95 -i $TMP_DIR/input.fa -o $TMP_DIR/output
+        cd-hit -c 0.97 -i $TMP_DIR/input.fa -o $TMP_DIR/output
         bin/cd-hit2tab $TMP_DIR/output.clstr > {output}
         rm -rf $TMP_DIR
         """
