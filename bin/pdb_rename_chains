@@ -7,7 +7,7 @@ import argparse, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--source', help='A file to take chain names from')
-parser.add_argument('--map', action='append', help='Provide two chain names from which to which to rename')
+parser.add_argument('--map', action='append', help='Provide two chain names from which to which to rename (may be several)')
 args = parser.parse_args()
 
 mapping = None
