@@ -103,5 +103,5 @@ for chain in chains:
     alignments.append(alignment)
 
 handle = modelling.BuildRawModel(alignments)
-modelling.CloseGaps(handle)
+modelling.FillLoopsByMonteCarlo(handle)
 io.SavePDB(handle.model, '/dev/stdout')
