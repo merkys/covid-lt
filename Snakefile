@@ -315,7 +315,9 @@ rule split_pdb:
                     PDB_ID=$(echo $COMPLEX | cut -d _ -f 1)
                     CHAIN_A=$(echo $COMPLEX | cut -c 6)
                     CHAIN_B=$(echo $COMPLEX | cut -c 7)
-                    bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B pdb/P0DTC2/$PDB_ID.pdb \
+                    grep -e ^HEADER -e ^SEQRES -e ^DBREF pdb/pristine/$PDB_ID.pdb \
+                        | cat - pdb/P0DTC2/$PDB_ID.pdb \
+                        | bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B \
                         | bin/pdb_rename_chains \
                             --map "$CHAIN_A:A" \
                             --map "$CHAIN_B:H" \
