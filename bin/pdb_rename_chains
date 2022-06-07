@@ -3,7 +3,7 @@
 # Rename chains in PDB file.
 
 from io import StringIO
-import argparse, sys
+import argparse, re, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -11,6 +11,7 @@ parser.add_argument('--source', help='A file to take chain names from')
 parser.add_argument('--map', action='append', help='Provide two chain names from which to which to rename (may be several)')
 parser.add_argument('--align', action='append', help='Provide a single letter, \':\' and file name with FASTA sequence to rename if matches')
 parser.add_argument('--identity-threshold', type=float, default=0, help='Specify identity threshold for alignments (default 0)')
+parser.add_argument('--guess', action='store_true', help='Attempt to identify heavy and light antibody chains from their descriptions')
 args = parser.parse_args()
 
 mapping = None
@@ -38,14 +39,20 @@ for target in files:
         target = open(target, 'r')
 
     target_chains = []
+    molecule_descriptions = []
+    molecule_chains = []
     handle = StringIO()
     for line in target:
         handle.write(line)
-        if line[0:6] != 'ATOM  ':
-            continue
-        chain = line[21]
-        if chain not in target_chains:
-            target_chains.append(chain)
+        if line[0:6] == 'ATOM  ':
+            chain = line[21]
+            if chain not in target_chains:
+                target_chains.append(chain)
+        if line[0:6] == 'COMPND':
+            if line[11:20] == 'MOLECULE:':
+                molecule_descriptions.append(line[21:])
+            if line[11:17] == 'CHAIN:':
+                molecule_chains.append(re.split('\s*,\s*', re.sub(';[^;]*\n', '', line[18:])))
     if mapping is None:
         mapping = dict(zip(target_chains, target_chains))
 
@@ -70,6 +77,15 @@ for target in files:
             for line in child.stderr:
                 print(line, file=sys.stderr, end='')
 
+    if args.guess:
+        for description, chains in zip(molecule_descriptions, molecule_chains):
+            if re.search('heavy chain', description, re.IGNORECASE):
+                for chain in chains:
+                    mapping[chain] = 'H'
+            if re.search('light chain', description, re.IGNORECASE):
+                for chain in chains:
+                    mapping[chain] = 'L'
+
     if source_chains is not None:
         if len(source_chains) != len(target_chains):
             raise Exception('Chain lists are different in size: ' + str(source_chains) + ' and ' + str(target_chains))
@@ -87,6 +103,7 @@ for target in files:
         'LINK  ': [ 21, 51 ],
         'SHEET ': [ 21, 32, 49, 64 ],
         'SITE  ': [ 22, 33, 44, 55 ],
+        'SEQADV': [ 16 ],
         'SEQRES': [ 11 ],
         'SSBOND': [ 15, 29 ],
     }
@@ -98,4 +115,6 @@ for target in files:
             for renaming in renamings[line[0:6]]:
                 if line[renaming] in mapping: # Might be a link to HETATM record, see 7Q0H
                     line = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
+        if line[0:6] == 'COMPND' and line[11:16] == 'CHAIN' and line[18] in mapping: # Rename chains in COMPND
+            line = line[0:18] + mapping[line[18]] + line[19:]
         print(line, end='')
