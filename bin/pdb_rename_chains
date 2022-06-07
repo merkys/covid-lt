@@ -75,6 +75,15 @@ for target in files:
                 if identity >= args.identity_threshold:
                     mapping[line[5]] = chain
 
+    if args.guess:
+        for description, chains in zip(molecule_descriptions, molecule_chains):
+            if re.search('heavy chain', description, re.IGNORECASE):
+                for chain in chains:
+                    mapping[chain] = 'H'
+            if re.search('light chain', description, re.IGNORECASE):
+                for chain in chains:
+                    mapping[chain] = 'L'
+
     if source_chains is not None:
         if len(source_chains) != len(target_chains):
             raise Exception('Chain lists are different in size: ' + str(source_chains) + ' and ' + str(target_chains))
