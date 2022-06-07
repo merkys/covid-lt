@@ -85,6 +85,7 @@ for target in files:
         'LINK  ': [ 21, 51 ],
         'SHEET ': [ 21, 32, 49, 64 ],
         'SITE  ': [ 22, 33, 44, 55 ],
+        'SEQADV': [ 16 ],
         'SEQRES': [ 11 ],
         'SSBOND': [ 15, 29 ],
     }
