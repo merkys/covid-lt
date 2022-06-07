@@ -52,7 +52,7 @@ for target in files:
             if line[11:20] == 'MOLECULE:':
                 molecule_descriptions.append(line[21:])
             if line[11:17] == 'CHAIN:':
-                molecule_chains.append(re.split('\s*,\s*', re.sub(';[^;]*\n', '', line[18:])))
+                molecule_chains.append(re.split('\s*,\s*', re.sub('\s*;?\s*\n$', '', line[18:])))
     if mapping is None:
         mapping = dict(zip(target_chains, target_chains))
 
