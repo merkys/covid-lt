@@ -96,4 +96,6 @@ for target in files:
             for renaming in renamings[line[0:6]]:
                 if line[renaming] in mapping: # Might be a link to HETATM record, see 7Q0H
                     line = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
+        if line[0:6] == 'COMPND' and line[11:16] == 'CHAIN' and line[18] in mapping: # Rename chains in COMPND
+            line = line[0:18] + mapping[line[18]] + line[19:]
         print(line, end='')
