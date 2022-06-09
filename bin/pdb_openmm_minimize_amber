@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+from simtk import openmm
+from simtk.openmm import app as openmm_app
+import sys
+
+file = sys.argv[1]
+use_gpu = True
+
+pdb = openmm_app.PDBFile(file)
+
+force_field = openmm_app.ForceField('amber99sb.xml')
+constraints = openmm_app.HBonds
+
+system = force_field.createSystem(pdb.topology, constraints=constraints)
+# stiffness omitted here
+
+integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
+platform = openmm.Platform.getPlatformByName("CUDA" if use_gpu else "CPU")
+simulation = openmm_app.Simulation(
+  pdb.topology, system, integrator, platform)
+simulation.context.setPositions(pdb.positions)
+
+state = simulation.context.getState(getEnergy=True, getPositions=True)
+print(state.getPotentialEnergy())
+print(state.getPositions(asNumpy=True))
+
+simulation.minimizeEnergy(maxIterations=max_iterations, tolerance=tolerance)
+
+state = simulation.context.getState(getEnergy=True, getPositions=True)
+print(state.getPotentialEnergy())
+print(state.getPositions(asNumpy=True))
