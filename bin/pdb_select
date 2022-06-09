@@ -3,6 +3,7 @@
 # Select chain(s) from a PDB file.
 
 chain_identifiers = {
+    'ANISOU': [ 21 ],
     'ATOM  ': [ 21 ],
     'CIPSEP': [ 15, 29 ],
     'DBREF ': [ 12 ],

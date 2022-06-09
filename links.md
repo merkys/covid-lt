@@ -1,7 +1,5 @@
 * S protein: https://www.uniprot.org/uniprot/P0DTC2
 
-* pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/
-
 * Rochman et al. (2022) paper on a similar research: https://journals.asm.org/doi/full/10.1128/mbio.00135-22
 
 Antibody numbering
@@ -53,3 +51,23 @@ GROMACS
 
 * Documentation: https://manual.gromacs.org/documentation/current/index.html
 * Tutorials: http://www.mdtutorials.com/gmx/
+
+Conda
+=====
+
+* Bioconda index: https://bioconda.github.io/conda-package_index.html
+* Conda-Forge index: https://conda-forge.org/feedstock-outputs/
+
+HADDOCK
+=======
+
+* HADDOCK 2.2: https://www.bonvinlab.org/software/haddock2.2/
+* HADDOCK 3: https://www.bonvinlab.org/software/haddock3/
+* HADDOCK 3 GitHub: https://github.com/haddocking/haddock3
+
+Other software
+==============
+
+* CNS: http://cns-online.org/v1.3/
+* pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/
+* PyRosetta: https://www.pyrosetta.org/documentation/tutorials

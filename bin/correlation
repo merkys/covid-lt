@@ -1,0 +1,18 @@
+#!/usr/bin/Rscript --vanilla
+
+# Calculates correlation between two numeric columns in an input file
+
+library( "optparse" )
+parser <- OptionParser()
+parser <- add_option(parser, c( "--first" ),  type = 'double', default = 1)
+parser <- add_option(parser, c( "--second" ), type = 'double', default = 2)
+options = parse_args(parser, positional_arguments = TRUE)
+
+file = '/dev/stdin'
+files = options$args
+if( length(files) != 0 ) {
+    file = files[1]
+}
+
+D = read.csv(file, header=FALSE, sep="\t", quote="")
+cor.test(D[,options$options$first], D[,options$options$second])
