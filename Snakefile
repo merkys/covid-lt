@@ -180,6 +180,7 @@ rule cd_hit:
         """
 
 # Fix missing atoms and residues in PDB using MODELLER.
+# Building all hydrogen models as per https://salilab.org/modeller/10.2/manual/node22.html
 # TODO: Preserve original LINK, SSBOND etc. records.
 # FIXME: Out-of-sequence residues (e.g., 7TLZ, 7TM0) cause crashes.
 rule fix_pdb:
