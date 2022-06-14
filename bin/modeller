@@ -52,6 +52,10 @@ do
         --loopmodel)
             setvar MODELLER_CLASS = loopmodel
             ;;
+        --modeller-class)
+            setvar MODELLER_CLASS = $2
+            shift
+            ;;
         -n|--number)
             setvar NMODELS = $2
             shift

@@ -1,0 +1,55 @@
+#!/usr/bin/python3
+
+from Bio import PDB
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--max-length', default=500, help='Maximum length of S1 chain')
+parser.add_argument('--S1-chain', default='A', help='Specify the S1 chain')
+parser.add_argument('--contacts', help='Specify a file listing contacts between S1 and other chains')
+args = parser.parse_args()
+
+# Cuts are taken from https://pfam.xfam.org/protein/P0DTC2
+S1_domain_cuts = [ 24, 342, 531, 600, 705 ]
+
+contacts = None
+
+# Collect contacts of S1 chain with other chains
+if args.contacts:
+    contacts = {}
+    for line in open(args.contacts, 'r'):
+        atom1, atom2 = {}, {}
+        fields = line.strip().split('\t')
+        atom1['chain'], atom1['res_nr'], atom1['res_type'], atom1['atom_nr'], atom1['atom_type'], \
+            atom2['chain'], atom2['res_nr'], atom2['res_type'], atom2['atom_nr'], atom2['atom_type'], *fields = fields
+        if atom1['chain'] != args.S1_chain and atom2['chain'] != args.S1_chain:
+            pass
+        if atom1['chain'] != args.S1_chain: # Making atom1 the S1 chain atom
+            atom1, atom2 = atom2, atom1
+        if atom2['chain'] == args.S1_chain: # Only interactions with other chains are interesting
+            pass
+        if atom2['chain'] not in contacts:
+            contacts[atom2['chain']] = set()
+        contacts[atom2['chain']].add(int(atom1['res_nr']))
+
+for filename in args.files:
+    pdbid = None
+    match = re.search('^(.*/)?([A-Z0-9]{4})[^/]*$', filename)
+    if match:
+        pdbid = match.group(1)
+
+    contacts_now = set()
+    cut_start = cut_end = None
+
+    parser = PDB.PDBParser()
+    struct = parser.get_structure(pdbid, filename)
+    for model in struct:
+        for chain in model:
+            if chain.id == args.S1_chain and len(chain) <= args.max_length:
+                pass # No cutting is needed, can be used directly
+            if contacts and chain.id in contacts:
+                contacts_now.add(contacts[chain.id])
+
+    if contacts_now and max(contacts_now) - min(contacts_now) <= args.max_length:
+        pass # TODO: Locate the domain
