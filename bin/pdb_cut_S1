@@ -2,7 +2,7 @@
 
 from Bio import PDB
 from numpy import histogram
-import argparse, re
+import argparse, re, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -24,12 +24,10 @@ if args.contacts:
         fields = line.strip().split('\t')
         atom1['chain'], atom1['res_nr'], atom1['res_type'], atom1['atom_nr'], atom1['atom_type'], \
             atom2['chain'], atom2['res_nr'], atom2['res_type'], atom2['atom_nr'], atom2['atom_type'], *fields = fields
-        if atom1['chain'] != args.S1_chain and atom2['chain'] != args.S1_chain:
-            pass
+        if not ((atom1['chain'] == args.S1_chain) ^ (atom2['chain'] == args.S1_chain)):
+            continue
         if atom1['chain'] != args.S1_chain: # Making atom1 the S1 chain atom
             atom1, atom2 = atom2, atom1
-        if atom2['chain'] == args.S1_chain: # Only interactions with other chains are interesting
-            pass
         if atom2['chain'] not in contacts:
             contacts[atom2['chain']] = set()
         contacts[atom2['chain']].add(int(atom1['res_nr']))
@@ -52,11 +50,11 @@ for filename in args.files:
             if contacts and chain.id in contacts:
                 contacts_now.update(contacts[chain.id])
 
-    counts, _ = histogram(contacts_now, S1_domain_cuts)
-    domains_needed = set(range(len(S1_domain_cuts)))
+    counts, _ = histogram(list(contacts_now), S1_domain_cuts)
+    domains_needed = set(range(len(S1_domain_cuts)-1))
     for i in domains_needed:
         if counts[i] == 0:
             domains_needed.remove(i)
 
     if contacts_now and max(contacts_now) - min(contacts_now) > args.max_length:
-        print("Cannot cut S1 chain to the required limits without losing contacts")
+        print("Cannot cut S1 chain to the required limits without losing contacts", file=sys.stderr)
