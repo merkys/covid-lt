@@ -4,8 +4,10 @@ from simtk import openmm
 from simtk.openmm import app as openmm_app
 import sys
 
+max_iterations = 1
+tolerance = 2.39
+
 file = sys.argv[1]
-use_gpu = True
 
 pdb = openmm_app.PDBFile(file)
 
@@ -16,7 +18,7 @@ system = force_field.createSystem(pdb.topology, constraints=constraints)
 # stiffness omitted here
 
 integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
-platform = openmm.Platform.getPlatformByName("CUDA" if use_gpu else "CPU")
+platform = openmm.Platform.getPlatformByName('Reference')
 simulation = openmm_app.Simulation(
   pdb.topology, system, integrator, platform)
 simulation.context.setPositions(pdb.positions)
