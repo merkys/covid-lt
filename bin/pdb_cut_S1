@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from Bio import PDB
+from numpy import histogram
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -51,5 +52,11 @@ for filename in args.files:
             if contacts and chain.id in contacts:
                 contacts_now.add(contacts[chain.id])
 
-    if contacts_now and max(contacts_now) - min(contacts_now) <= args.max_length:
-        pass # TODO: Locate the domain
+    counts, _ = histogram(contacts_now, S1_domain_cuts)
+    domains_needed = set(range(len(S1_domain_cuts)))
+    for i in domains_needed:
+        if counts[i] == 0:
+            domains_needed.remove(i)
+
+    if contacts_now and max(contacts_now) - min(contacts_now) > args.max_length:
+        print("Cannot cut S1 chain to the required limits without losing contacts")
