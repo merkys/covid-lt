@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
-from Bio import PDB
 from numpy import histogram
-import argparse, re, sys
+import argparse, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
