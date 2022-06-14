@@ -199,7 +199,7 @@ rule fix_pdb:
             rm -rf $TMP_DIR
             exit
         fi
-        bin/promod-fix-pdb $TMP_DIR/{wildcards.pdbid}.pdb > $TMP_DIR/fixed.pdb 2>> {log} || true
+        bin/promod-fix-pdb --simulate $TMP_DIR/{wildcards.pdbid}.pdb > $TMP_DIR/fixed.pdb 2>> {log} || true
         bin/pdb_rename_chains --source {input} $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
         rm -rf $TMP_DIR
         """
