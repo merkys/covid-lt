@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Based on AlphaFold Amber minimization code:
+# https://github.com/deepmind/alphafold/blob/197bd19ee371ebac1942951b49a01848d2c9c6fc/alphafold/relax/amber_minimize.py
+
 from simtk import openmm
 from simtk.openmm import app as openmm_app
 import sys
