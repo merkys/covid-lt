@@ -11,7 +11,7 @@ parser.add_argument('--contacts', help='Specify a file listing contacts between 
 args = parser.parse_args()
 
 # Cuts are taken from https://pfam.xfam.org/protein/P0DTC2
-S1_domain_cuts = [ 24, 342, 531, 600, 705 ]
+S1_domain_cuts = [ 0, 24, 342, 531, 600, 705 ]
 
 contacts = None
 
@@ -54,13 +54,11 @@ for filename in args.files:
             else:
                 header.append(line)
 
-    counts, _ = histogram(list(contacts_now), S1_domain_cuts)
-    domains_needed = set(range(len(S1_domain_cuts)-1))
-    for i in domains_needed:
-        if counts[i] == 0:
-            domains_needed.remove(i)
+    S1_domain_cuts_now = S1_domain_cuts + [max(contacts_now)+1]
+    counts, _ = histogram(list(contacts_now), S1_domain_cuts_now)
+    domains_needed = list(filter(lambda i: counts[i] > 0, range(len(counts))))
 
-    cut_range = [S1_domain_cuts[min(domains_needed)], S1_domain_cuts[max(domains_needed)+1]]
+    cut_range = [S1_domain_cuts_now[min(domains_needed)], S1_domain_cuts_now[max(domains_needed)+1]]
 
     if cut_range[1] - cut_range[0] > args.max_length:
         print('Cannot cut S1 chain to the required limits without losing contacts', file=sys.stderr)
