@@ -2,7 +2,7 @@
 
 from Bio import PDB
 from numpy import histogram
-import argparse
+import argparse, re
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -50,7 +50,7 @@ for filename in args.files:
             if chain.id == args.S1_chain and len(chain) <= args.max_length:
                 pass # No cutting is needed, can be used directly
             if contacts and chain.id in contacts:
-                contacts_now.add(contacts[chain.id])
+                contacts_now.update(contacts[chain.id])
 
     counts, _ = histogram(contacts_now, S1_domain_cuts)
     domains_needed = set(range(len(S1_domain_cuts)))
