@@ -54,7 +54,9 @@ for filename in args.files:
             else:
                 header.append(line)
 
-    S1_domain_cuts_now = S1_domain_cuts + [max(contacts_now)+1]
+    S1_domain_cuts_now = S1_domain_cuts
+    if max(contacts_now) >= S1_domain_cuts[-1]:
+        S1_domain_cuts_now.append(max(contacts_now)+1)
     counts, _ = histogram(list(contacts_now), S1_domain_cuts_now)
     domains_needed = list(filter(lambda i: counts[i] > 0, range(len(counts))))
 
