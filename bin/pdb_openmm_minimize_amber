@@ -22,16 +22,17 @@ system = force_field.createSystem(pdb.topology, constraints=constraints)
 
 integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
 platform = openmm.Platform.getPlatformByName('Reference')
-simulation = openmm_app.Simulation(
-  pdb.topology, system, integrator, platform)
+simulation = openmm_app.Simulation(pdb.topology, system, integrator, platform)
 simulation.context.setPositions(pdb.positions)
 
 state = simulation.context.getState(getEnergy=True, getPositions=True)
-print(state.getPotentialEnergy())
-print(state.getPositions(asNumpy=True))
+print(state.getPotentialEnergy(), file=sys.stderr)
+print(state.getPositions(asNumpy=True), file=sys.stderr)
 
 simulation.minimizeEnergy(maxIterations=max_iterations, tolerance=tolerance)
 
 state = simulation.context.getState(getEnergy=True, getPositions=True)
-print(state.getPotentialEnergy())
-print(state.getPositions(asNumpy=True))
+print(state.getPotentialEnergy(), file=sys.stderr)
+print(state.getPositions(asNumpy=True), file=sys.stderr)
+
+openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)

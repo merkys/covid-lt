@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from Bio import PDB
-import argparse
+from numpy import histogram
+import argparse, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -11,7 +11,7 @@ parser.add_argument('--contacts', help='Specify a file listing contacts between 
 args = parser.parse_args()
 
 # Cuts are taken from https://pfam.xfam.org/protein/P0DTC2
-S1_domain_cuts = [ 24, 342, 531, 600, 705 ]
+S1_domain_cuts = [ 0, 24, 342, 531, 600, 705 ]
 
 contacts = None
 
@@ -23,33 +23,55 @@ if args.contacts:
         fields = line.strip().split('\t')
         atom1['chain'], atom1['res_nr'], atom1['res_type'], atom1['atom_nr'], atom1['atom_type'], \
             atom2['chain'], atom2['res_nr'], atom2['res_type'], atom2['atom_nr'], atom2['atom_type'], *fields = fields
-        if atom1['chain'] != args.S1_chain and atom2['chain'] != args.S1_chain:
-            pass
+        if not ((atom1['chain'] == args.S1_chain) ^ (atom2['chain'] == args.S1_chain)):
+            continue
         if atom1['chain'] != args.S1_chain: # Making atom1 the S1 chain atom
             atom1, atom2 = atom2, atom1
-        if atom2['chain'] == args.S1_chain: # Only interactions with other chains are interesting
-            pass
         if atom2['chain'] not in contacts:
             contacts[atom2['chain']] = set()
         contacts[atom2['chain']].add(int(atom1['res_nr']))
 
 for filename in args.files:
-    pdbid = None
-    match = re.search('^(.*/)?([A-Z0-9]{4})[^/]*$', filename)
-    if match:
-        pdbid = match.group(1)
-
+    header = []
+    atoms = None
+    footer = []
     contacts_now = set()
-    cut_start = cut_end = None
 
-    parser = PDB.PDBParser()
-    struct = parser.get_structure(pdbid, filename)
-    for model in struct:
-        for chain in model:
-            if chain.id == args.S1_chain and len(chain) <= args.max_length:
-                pass # No cutting is needed, can be used directly
-            if contacts and chain.id in contacts:
-                contacts_now.add(contacts[chain.id])
+    for line in open(filename, 'r'):
+        if line.startswith('ATOM  '):
+            chain = line[21]
+            residue = int(line[22:26])
+            if not atoms:
+                atoms = {}
+            if chain not in atoms:
+                atoms[chain] = []
+            atoms[chain].append(line)
+            if contacts and chain in contacts:
+                contacts_now.update(contacts[chain])
+        else:
+            if atoms:
+                footer.append(line)
+            else:
+                header.append(line)
 
-    if contacts_now and max(contacts_now) - min(contacts_now) <= args.max_length:
-        pass # TODO: Locate the domain
+    S1_domain_cuts_now = S1_domain_cuts
+    if max(contacts_now) >= S1_domain_cuts[-1]:
+        S1_domain_cuts_now.append(max(contacts_now)+1)
+    counts, _ = histogram(list(contacts_now), S1_domain_cuts_now)
+    domains_needed = list(filter(lambda i: counts[i] > 0, range(len(counts))))
+
+    cut_range = [S1_domain_cuts_now[min(domains_needed)], S1_domain_cuts_now[max(domains_needed)+1]]
+
+    if cut_range[1] - cut_range[0] > args.max_length:
+        print('Cannot cut S1 chain to the required limits without losing contacts', file=sys.stderr)
+
+    print(''.join(header), end='')
+    for chain in sorted(atoms):
+        if chain == args.S1_chain:
+            for line in atoms[chain]:
+                residue = int(line[22:26])
+                if residue >= cut_range[0] and residue <= cut_range[1]:
+                    print(line, end='')
+        else:
+            print(''.join(atoms[chain]), end='')
+    print(''.join(footer), end='')

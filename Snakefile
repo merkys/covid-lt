@@ -204,12 +204,23 @@ rule fix_pdb:
         rm -rf $TMP_DIR
         """
 
+# Optimize structure using AMBER forcefield
+rule optimize:
+    input:
+        "pdb/fixed/{pdbid}.pdb"
+    output:
+        "pdb/optimized/{pdbid}.pdb"
+    log:
+        "pdb/optimized/{pdbid}.log"
+    shell:
+        "bin/pdb_openmm_minimize_amber {input} > {output} 2> {log}"
+
 # Renumber antibody chains using Rosetta
 # FIXME: This might not be working as expected at all; from [1] it seems that Rosetta needs properly numbered antibodies in its input.
 # [1] https://www.rosettacommons.org/docs/latest/application_documentation/antibody/General-Antibody-Options-and-Tips
 rule renumber_antibodies:
     input:
-        "pdb/fixed/{pdbid}.pdb"
+        "pdb/optimized/{pdbid}.pdb"
     output:
         "pdb/Chothia/{pdbid}.pdb"
     log:
@@ -338,7 +349,8 @@ rule voromqa_all:
     input:
         "download_pdb_all.log",
         pristine_pdbs_voromqa = expand("pdb/pristine/{pdbid}.voromqa", pdbid=downloaded_pdb_files()),
-        fixed_pdbs_voromqa = expand("pdb/fixed/{pdbid}.voromqa", pdbid=downloaded_pdb_files())
+        fixed_pdbs_voromqa = expand("pdb/fixed/{pdbid}.voromqa", pdbid=downloaded_pdb_files()),
+        optimized_pdbs_voromqa = expand("pdb/optimized/{pdbid}.voromqa", pdbid=downloaded_pdb_files())
     output:
         "voromqa.tab"
     shell:
@@ -347,11 +359,12 @@ rule voromqa_all:
         do
             PRISTINE=$VOROMQA
             FIXED=pdb/fixed/$(basename $VOROMQA)
+            OPTIMIZED=pdb/optimized/$(basename $VOROMQA)
             if [ -s $PRISTINE -a -s $FIXED ]
             then
                 (
                     echo -en $(basename $VOROMQA .voromqa)"\t"
-                    paste $PRISTINE $FIXED
+                    paste $PRISTINE $FIXED $OPTIMIZED
                 ) | xargs echo | sed 's/ /\t/g'
             fi
         done > {output}
@@ -371,7 +384,8 @@ rule qmean_all:
     input:
         "download_pdb_all.log",
         pristine_pdbs_qmean = expand("pdb/pristine/{pdbid}.qmean", pdbid=downloaded_pdb_files()),
-        fixed_pdbs_qmean = expand("pdb/fixed/{pdbid}.qmean", pdbid=downloaded_pdb_files())
+        fixed_pdbs_qmean = expand("pdb/fixed/{pdbid}.qmean", pdbid=downloaded_pdb_files()),
+        optimized_pdbs_qmean = expand("pdb/optimized/{pdbid}.qmean", pdbid=downloaded_pdb_files())
     output:
         "qmean.tab"
     shell:
@@ -380,11 +394,12 @@ rule qmean_all:
         do
             PRISTINE=$QMEAN
             FIXED=pdb/fixed/$(basename $QMEAN)
+            OPTIMIZED=pdb/optimized/$(basename $QMEAN)
             if [ -s $PRISTINE -a -s $FIXED ]
             then
                 (
                     echo -en $(basename $QMEAN .QMEAN)"\t"
-                    paste $PRISTINE $FIXED
+                    paste $PRISTINE $FIXED $OPTIMIZED
                 ) | xargs echo | sed 's/ /\t/g'
             fi
         done > {output}
