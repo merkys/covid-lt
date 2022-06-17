@@ -10,6 +10,10 @@ parser.add_argument('--S1-chain', default='A', help='Specify the S1 chain')
 parser.add_argument('--contacts', help='Specify a file listing contacts between S1 and other chains')
 args = parser.parse_args()
 
+files = args.files
+if len(files) == 0:
+    files = [sys.stdin]
+
 # Cuts are taken from https://pfam.xfam.org/protein/P0DTC2
 S1_domain_cuts = [ 0, 24, 342, 531, 600, 705 ]
 
@@ -31,13 +35,17 @@ if args.contacts:
             contacts[atom2['chain']] = set()
         contacts[atom2['chain']].add(int(atom1['res_nr']))
 
-for filename in args.files:
+for filename in files:
     header = []
     atoms = None
     footer = []
     contacts_now = set()
 
-    for line in open(filename, 'r'):
+    handle = filename
+    if isinstance(handle, str):
+        handle = open(handle, 'r')
+
+    for line in handle:
         if line.startswith('ATOM  '):
             chain = line[21]
             residue = int(line[22:26])
