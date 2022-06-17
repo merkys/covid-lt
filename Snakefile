@@ -318,6 +318,7 @@ rule split_pdb:
                     grep -e ^HEADER -e ^COMPND -e ^DBREF -e ^SEQRES pdb/pristine/$PDB_ID.pdb \
                         | cat - pdb/P0DTC2/$PDB_ID.pdb \
                         | bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B \
+                        | bin/pdb_cut_S1 --S1-chain $CHAIN_A --contacts vorocontacts/$PDB_ID.tab \
                         | bin/pdb_rename_chains --map "$CHAIN_A:A" --map "$CHAIN_B:H" \
                         | bin/pdb_rename_chains --guess \
                         | bin/pdb_rename_chains --align L:sequences/P01834.fa --align L:sequences/P0CG04.fa --identity-threshold 80 \
