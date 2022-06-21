@@ -213,7 +213,7 @@ rule optimize:
     log:
         "pdb/optimized/{pdbid}.log"
     shell:
-        "bin/pdb_openmm_minimize_amber {input} > {output} 2> {log}"
+        "bin/pdb_openmm_minimize_amber {input} > {output} 2> {log} || echo -n > {output}"
 
 # Renumber antibody chains using Rosetta
 # FIXME: This might not be working as expected at all; from [1] it seems that Rosetta needs properly numbered antibodies in its input.
