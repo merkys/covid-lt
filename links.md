@@ -69,5 +69,6 @@ Other software
 ==============
 
 * CNS: http://cns-online.org/v1.3/
+* OpenMM solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
 * pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/
 * PyRosetta: https://www.pyrosetta.org/documentation/tutorials
