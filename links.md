@@ -34,6 +34,12 @@ ProteinTools
 * Server: https://proteintools.uni-bayreuth.de
 * Paper: https://academic.oup.com/nar/article/49/W1/W559/6279848
 
+Rosetta
+=======
+
+* Comparative modelling demo: https://www.rosettacommons.org/demos/latest/public/legacy_comparative_modeling/comparative_modeling
+* PyRosetta: https://www.pyrosetta.org/documentation/tutorials
+
 MutaBind2
 =========
 
@@ -69,5 +75,5 @@ Other software
 ==============
 
 * CNS: http://cns-online.org/v1.3/
+* OpenMM forcefield and solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
 * pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/
-* PyRosetta: https://www.pyrosetta.org/documentation/tutorials
