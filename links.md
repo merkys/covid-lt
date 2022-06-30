@@ -1,5 +1,3 @@
-* S protein: https://www.uniprot.org/uniprot/P0DTC2
-
 * Rochman et al. (2022) paper on a similar research: https://journals.asm.org/doi/full/10.1128/mbio.00135-22
 
 Antibody numbering
