@@ -5,12 +5,17 @@
 
 from simtk import openmm
 from simtk.openmm import app as openmm_app
-import sys
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--platform', help='Specify the platform to use for the simulation ("Reference" by default)', default='Reference')
+args = parser.parse_args()
 
 max_iterations = 1
 tolerance = 2.39
 
-file = sys.argv[1]
+file = files[1] # for now
 
 pdb = openmm_app.PDBFile(file)
 
@@ -21,7 +26,7 @@ system = force_field.createSystem(pdb.topology, constraints=constraints)
 # stiffness omitted here
 
 integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
-platform = openmm.Platform.getPlatformByName('Reference')
+platform = openmm.Platform.getPlatformByName(args.platform)
 simulation = openmm_app.Simulation(pdb.topology, system, integrator, platform)
 simulation.context.setPositions(pdb.positions)
 
