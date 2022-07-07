@@ -26,7 +26,9 @@ rule all:
         "contact-maps/PF07686/..tab",
         "contact-maps/PF07686/hbond.tab",
         "contact-maps/PF07686/hydrophobic.tab",
-        "contact-maps/PF07686/salt.tab"
+        "contact-maps/PF07686/salt.tab",
+        "pdb/split/PF01401/split.log",
+        "pdb/split/PF07686/split.log"
 
 # Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
 rule download_pdb:
@@ -329,10 +331,11 @@ rule split_pdb:
                     grep -e ^HEADER -e ^COMPND -e ^DBREF -e ^SEQRES pdb/pristine/$PDB_ID.pdb \
                         | cat - pdb/P0DTC2/$PDB_ID.pdb \
                         | bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B \
+                        | bin/pdb_cut_S1 --S1-chain $CHAIN_A --contacts <(bin/select-contacts --cut $CHAIN_B:1-110 vorocontacts/$PDB_ID.tab) \
                         | bin/pdb_rename_chains --map "$CHAIN_A:A" --map "$CHAIN_B:H" \
                         | bin/pdb_rename_chains --guess \
                         | bin/pdb_rename_chains --align L:sequences/P01834.fa --align L:sequences/P0CG04.fa --identity-threshold 80 \
-                            > $(dirname {output})/$COMPLEX.pdb
+                            > $(dirname {output})/$COMPLEX.pdb || true
                 done
         touch {output}
         """
