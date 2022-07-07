@@ -26,7 +26,9 @@ rule all:
         "contact-maps/PF07686/..tab",
         "contact-maps/PF07686/hbond.tab",
         "contact-maps/PF07686/hydrophobic.tab",
-        "contact-maps/PF07686/salt.tab"
+        "contact-maps/PF07686/salt.tab",
+        "pdb/split/PF01401/split.log",
+        "pdb/split/PF07686/split.log"
 
 # Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
 rule download_pdb:
