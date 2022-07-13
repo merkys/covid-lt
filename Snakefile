@@ -1,3 +1,8 @@
+import sys 
+configfile: "configs/default.yaml"
+print(config)
+
+
 wildcard_constraints:
     pdbid = "[A-Z0-9]{4}"
 
@@ -52,12 +57,16 @@ rule pdb_seqres_fa:
 def pdb_entries_of_interest():
     import re
     pdb_ids = set()
-    for PF in ['PF01401', 'PF09408']:
-        file = open('alignments/pdb_seqres-' + PF + '.hmmsearch', 'r')
-        for line in file:
-            match = re.match('>> ([0-9a-zA-Z]{4})', line)
-            if match:
-                pdb_ids.add(match.group(1).upper())
+    if config["testing"]:
+        pdb_ids=set(config["testing_structures"].upper().split())
+    else:
+        for PF in ['PF01401', 'PF09408']:
+            file = open('alignments/pdb_seqres-' + PF + '.hmmsearch', 'r')
+            for line in file:
+                match = re.match('>> ([0-9a-zA-Z]{4})', line)
+                if match:
+                    pdb_ids.add(match.group(1).upper())
+        
     return sorted(pdb_ids)
 
 # Download models of PDB entries of interest.

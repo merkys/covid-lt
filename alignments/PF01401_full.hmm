@@ -1,4 +1,4 @@
-HMMER3/f [3.3 | Nov 2019]
+HMMER3/f [3.3.2 | Nov 2020]
 NAME  PF01401_full
 LENG  798
 ALPH  amino
@@ -7,7 +7,7 @@ MM    no
 CONS  yes
 CS    no
 MAP   yes
-DATE  Fri Jan 28 09:57:18 2022
+DATE  Wed Jul 13 17:17:58 2022
 NSEQ  3688
 EFFN  11.251366
 CKSUM 3622762150

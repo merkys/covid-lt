@@ -1,3 +1,6 @@
 .*.done
 .snakemake
 pdb_seqres.fa
+pdb/*
+download_pdb_all.log
+contact-maps/*
