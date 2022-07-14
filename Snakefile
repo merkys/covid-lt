@@ -62,16 +62,27 @@ def pdb_entries_of_interest():
 
 # Download models of PDB entries of interest.
 # Number of threads is limited to 1 in order not to overload the PDB.
-rule download_pdb_all:
+checkpoint download_pdb_all:
     input:
         "alignments/pdb_seqres-PF01401.hmmsearch",
-        "alignments/pdb_seqres-PF09408.hmmsearch",
-        pdb_files = expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
+        "alignments/pdb_seqres-PF09408.hmmsearch"
     output:
+        directory("pdb/pristine")
+    log:
         "download_pdb_all.log"
     threads: 1
     shell:
-        "grep --no-filename ^REVDAT {input.pdb_files} > {output}"
+        """
+        mkdir pdb/pristine
+        grep --no-filename '^>> ' {input} | cut -c 4-7 | tr '[:lower:]' '[:upper:]' \
+            | while read PDBID
+              do
+                wget https://files.rcsb.org/download/$PDBID.pdb -O pdb/pristine/$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
+                chmod -w pdb/pristine/$PDBID.pdb || true # Intentional
+                sleep 1
+              done
+        grep --no-filename ^REVDAT pdb/pristine/*.pdb > {log}
+        """
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
@@ -146,20 +157,13 @@ rule hmmsearch:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
 
 def downloaded_pdb_files():
-    from os.path import exists
-    pdb_ids = set()
-    if exists('download_pdb_all.log'):
-        file = open('download_pdb_all.log', 'r')
-        for line in file:
-            pdb_ids.add(line[23:27])
-        if '    ' in pdb_ids:
-            pdb_ids.remove('    ')
-    return sorted(pdb_ids)
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    return sorted(glob(checkpoint_output + '/*.pdb'))
 
 rule cd_hit:
     input:
-        "download_pdb_all.log",
-        pristine_pdbs = expand("pdb/pristine/{pdbid}.pdb", pdbid=downloaded_pdb_files()),
+        pristine_pdbs = downloaded_pdb_files,
         hmmsearch = "alignments/{base}.hmmsearch"
     output:
         "alignments/{base}.clusters"
@@ -243,12 +247,21 @@ rule renumber_S1:
     shell:
         "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
 
+def propka_tabs():
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    return expand("propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def vorocontacts_tabs():
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    return expand("vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
 rule contact_map:
     input:
-        "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch",
-        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
-        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files())
+        propka_tabs = propka_tabs,
+        vorocontacts_tabs = vorocontacts_tabs
     output:
         "contact-maps/{pfam}/{search}.tab"
     shell:
@@ -263,10 +276,9 @@ rule contact_map:
 # Identifies which residues in S1 chains are present in the original PDB files.
 rule quality_map:
     input:
-        "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
-        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
-        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files()),
+        propka_tabs = propka_tabs,
+        vorocontacts_tabs = vorocontacts_tabs,
         seq = "sequences/P0DTC2.fa"
     output:
         "quality-map.tab"
@@ -312,11 +324,20 @@ rule voromqa:
     shell:
         "bin/voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || true"
 
+def pristine_pdbs_voromqa():
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    return expand("pdb/pristine/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def fixed_pdbs_voromqa():
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    return expand("pdb/fixed/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
 rule voromqa_all:
     input:
-        "download_pdb_all.log",
-        pristine_pdbs_voromqa = expand("pdb/pristine/{pdbid}.voromqa", pdbid=downloaded_pdb_files()),
-        fixed_pdbs_voromqa = expand("pdb/fixed/{pdbid}.voromqa", pdbid=downloaded_pdb_files())
+        pristine_pdbs_voromqa = pristine_pdbs_voromqa,
+        fixed_pdbs_voromqa = fixed_pdbs_voromqa
     output:
         "voromqa.tab"
     shell:
@@ -345,11 +366,20 @@ rule qmean:
     shell:
         "bin/qmean {input} > {output} 2> {log} || true"
 
+def pristine_pdbs_qmean(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("pdb/pristine/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def fixed_pdbs_qmean(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("pdb/fixed/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
 rule qmean_all:
     input:
-        "download_pdb_all.log",
-        pristine_pdbs_qmean = expand("pdb/pristine/{pdbid}.qmean", pdbid=downloaded_pdb_files()),
-        fixed_pdbs_qmean = expand("pdb/fixed/{pdbid}.qmean", pdbid=downloaded_pdb_files())
+        pristine_pdbs_qmean = pristine_pdbs_qmean,
+        fixed_pdbs_qmean = fixed_pdbs_qmean
     output:
         "qmean.tab"
     shell:
