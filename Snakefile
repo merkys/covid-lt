@@ -122,6 +122,8 @@ rule hmmbuild:
         "{prefix}.msa"
     output:
         "{prefix}.hmm"
+    singularity:
+        "covid-lt.simg"
     shell:
         "hmmbuild {output} {input}"
 
@@ -132,6 +134,8 @@ rule hmmsearch:
         "alignments/{pfam}_full.hmm"
     output:
         "alignments/{fasta}-{pfam}.hmmsearch"
+    singularity:
+        "covid-lt.simg"
     shell:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
 
@@ -146,6 +150,8 @@ rule cd_hit:
         hmmsearch = "alignments/{base}.hmmsearch"
     output:
         "alignments/{base}.clusters"
+    singularity:
+        "covid-lt.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
