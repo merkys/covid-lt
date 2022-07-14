@@ -28,17 +28,6 @@ rule all:
         "contact-maps/PF07686/hydrophobic.tab",
         "contact-maps/PF07686/salt.tab"
 
-# Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
-rule download_pdb:
-    output:
-        "pdb/pristine/{pdbid}.pdb"
-    shell:
-        """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || touch {output}
-        chmod -w {output}
-        sleep 1
-        """
-
 rule pdb_seqres_fa:
     output:
         "pdb_seqres.fa"
@@ -47,18 +36,6 @@ rule pdb_seqres_fa:
         curl https://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt.gz | zcat > {output}
         chmod -w {output}
         """
-
-# Extract PDB IDs of structures of interest from hmmsearch outputs.
-def pdb_entries_of_interest():
-    import re
-    pdb_ids = set()
-    for PF in ['PF01401', 'PF09408']:
-        file = open('alignments/pdb_seqres-' + PF + '.hmmsearch', 'r')
-        for line in file:
-            match = re.match('>> ([0-9a-zA-Z]{4})', line)
-            if match:
-                pdb_ids.add(match.group(1).upper())
-    return sorted(pdb_ids)
 
 # Download models of PDB entries of interest.
 # Number of threads is limited to 1 in order not to overload the PDB.
