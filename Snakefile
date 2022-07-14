@@ -55,7 +55,7 @@ checkpoint download_pdb_all:
             | while read PDBID
               do
                 wget https://files.rcsb.org/download/$PDBID.pdb -O pdb/pristine/$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
-                chmod -w pdb/pristine/$PDBID.pdb || true # Intentional
+                chmod -w pdb/pristine/$PDBID.pdb 2>/dev/null || true # Intentional
                 sleep 1
               done
         grep --no-filename ^REVDAT pdb/pristine/*.pdb > {log}
