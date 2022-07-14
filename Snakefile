@@ -182,6 +182,8 @@ rule fix_pdb:
         "pdb/pristine/{pdbid}.pdb"
     output:
         "pdb/fixed/{pdbid}.pdb"
+    singularity:
+        "covid-lt.simg"
     log:
         "pdb/fixed/{pdbid}.log"
     shell:
