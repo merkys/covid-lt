@@ -251,6 +251,8 @@ rule contact_map:
         vorocontacts_tabs = vorocontacts_tabs
     output:
         "contact-maps/{pfam}/{search}.tab"
+    singularity:
+        "covid-lt.simg"
     shell:
         """
         comm -1 -2 \
@@ -269,6 +271,8 @@ rule quality_map:
         seq = "sequences/P0DTC2.fa"
     output:
         "quality-map.tab"
+    singularity:
+        "covid-lt.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
