@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+# Based on AlphaFold Amber minimization code:
+# https://github.com/deepmind/alphafold/blob/197bd19ee371ebac1942951b49a01848d2c9c6fc/alphafold/relax/amber_minimize.py
+
+from simtk import openmm
+from simtk.openmm import app as openmm_app
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--platform', help='Specify the platform to use for the simulation ("Reference" by default)', default='Reference')
+args = parser.parse_args()
+
+max_iterations = 1
+tolerance = 2.39
+
+file = files[1] # for now
+
+pdb = openmm_app.PDBFile(file)
+
+force_field = openmm_app.ForceField('amber99sb.xml')
+constraints = openmm_app.HBonds
+
+system = force_field.createSystem(pdb.topology, constraints=constraints)
+# stiffness omitted here
+
+integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
+platform = openmm.Platform.getPlatformByName(args.platform)
+simulation = openmm_app.Simulation(pdb.topology, system, integrator, platform)
+simulation.context.setPositions(pdb.positions)
+
+state = simulation.context.getState(getEnergy=True, getPositions=True)
+print(state.getPotentialEnergy(), file=sys.stderr)
+print(state.getPositions(asNumpy=True), file=sys.stderr)
+
+simulation.minimizeEnergy(maxIterations=max_iterations, tolerance=tolerance)
+
+state = simulation.context.getState(getEnergy=True, getPositions=True)
+print(state.getPotentialEnergy(), file=sys.stderr)
+print(state.getPositions(asNumpy=True), file=sys.stderr)
+
+openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
