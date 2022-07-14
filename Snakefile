@@ -94,6 +94,8 @@ rule propka_out:
         "propka/{pdbid}.out"
     log:
         "propka/{pdbid}.log"
+    singularity:
+        "covid-lt.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -252,6 +254,8 @@ rule contact_map:
         vorocontacts_tabs = vorocontacts_tabs
     output:
         "contact-maps/{pfam}/{search}.tab"
+    singularity:
+        "covid-lt.simg"
     shell:
         """
         comm -1 -2 \
@@ -270,6 +274,8 @@ rule quality_map:
         seq = "sequences/P0DTC2.fa"
     output:
         "quality-map.tab"
+    singularity:
+        "covid-lt.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -346,6 +352,7 @@ rule voromqa_all:
         done > {output}
         """
 
+# FIXME: bin/qmean depends on qmean Python module, not yet in Debian.
 rule qmean:
     input:
         "{path}/{pdbid}.pdb"
@@ -353,6 +360,8 @@ rule qmean:
         "{path}/{pdbid}.qmean"
     log:
         "{path}/{pdbid}.qmean.log"
+    singularity:
+        "covid-lt.simg"
     shell:
         "bin/qmean {input} > {output} 2> {log} || true"
 
