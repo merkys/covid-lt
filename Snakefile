@@ -71,8 +71,10 @@ rule vorocontacts_out:
         "vorocontacts/{pdbid}.out"
     log:
         "vorocontacts/{pdbid}.log"
+    singularity:
+        "covid-lt.simg"
     shell:
-        "bin/voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
+        "voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
 
 rule vorocontacts_tab:
     input:
@@ -298,8 +300,10 @@ rule voromqa:
         "{path}/{pdbid}.pdb"
     output:
         "{path}/{pdbid}.voromqa"
+    singularity:
+        "covid-lt.simg"
     shell:
-        "bin/voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || true"
+        "voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || true"
 
 def pristine_pdbs_voromqa():
     from glob import glob
