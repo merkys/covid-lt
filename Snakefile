@@ -343,6 +343,7 @@ rule voromqa_all:
         done > {output}
         """
 
+# FIXME: bin/qmean depends on qmean Python module, not yet in Debian.
 rule qmean:
     input:
         "{path}/{pdbid}.pdb"
@@ -350,6 +351,8 @@ rule qmean:
         "{path}/{pdbid}.qmean"
     log:
         "{path}/{pdbid}.qmean.log"
+    singularity:
+        "covid-lt.simg"
     shell:
         "bin/qmean {input} > {output} 2> {log} || true"
 
