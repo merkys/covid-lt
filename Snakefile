@@ -91,6 +91,8 @@ rule propka_out:
         "propka/{pdbid}.out"
     log:
         "propka/{pdbid}.log"
+    singularity:
+        "covid-lt.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
