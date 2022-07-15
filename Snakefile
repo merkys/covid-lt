@@ -239,14 +239,14 @@ rule renumber_S1:
     shell:
         "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
 
-def propka_tabs():
+def propka_tabs(wildcards):
     from glob import glob
-    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
     return expand("propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
-def vorocontacts_tabs():
+def vorocontacts_tabs(wildcards):
     from glob import glob
-    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
     return expand("vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule contact_map:
@@ -322,14 +322,14 @@ rule voromqa:
     shell:
         "voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || true"
 
-def pristine_pdbs_voromqa():
+def pristine_pdbs_voromqa(wildcards):
     from glob import glob
-    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
     return expand("pdb/pristine/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
-def fixed_pdbs_voromqa():
+def fixed_pdbs_voromqa(wildcards):
     from glob import glob
-    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
     return expand("pdb/fixed/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule voromqa_all:
