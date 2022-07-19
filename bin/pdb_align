@@ -7,9 +7,7 @@
 # - PDB 7AKJ record, chain C. Processing it with Jackal leaves SSBOND pointing to a missing residue.
 # - PDB 6NB4 record, interaction between 104:A and 1:D. Jackal looses LINK record which is important.
 
-from Bio import AlignIO, PDB, SeqIO
-from Bio.Align.Applications import MuscleCommandline
-from subprocess import Popen, PIPE
+from Bio import AlignIO, PDB, SeqIO, pairwise2
 from tempfile import NamedTemporaryFile
 import re, sys, warnings
 
@@ -55,11 +53,7 @@ adjustments = {}
 for atom_seq in atom_seqs:
     seqres_seq = seqres_seqs_by_chain[atom_seq.id[5]]
     # TODO: Check if such exists
-    muscle = MuscleCommandline()
-    child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
-    SeqIO.write([atom_seq, seqres_seq], child.stdin, 'fasta')
-    child.stdin.close()
-    align = AlignIO.read(child.stdout, 'fasta')
+    align = pairwise2.align.globalxx(atom_seq, seqres_seq, one_alignment_only=True)[0]
 
     gaps_atom, gaps_seqres = 0, 0
     while align[0][gaps_atom] == '-':
