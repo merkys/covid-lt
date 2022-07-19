@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from Bio import AlignIO, PDB, SeqIO
-from Bio.Align.Applications import MuscleCommandline
+from Bio import AlignIO, PDB, SeqIO, pairwise2
+from Bio.Seq import MutableSeq
 from Bio.SeqRecord import SeqRecord
 from promod3 import modelling
 from subprocess import Popen, PIPE
@@ -62,16 +62,12 @@ for chain in chains:
     atom_seq = atom_seqs_by_chain[chain]
     seqres_seq = seqres_seqs_by_chain[chain]
     # TODO: Check if such exists
-    muscle = MuscleCommandline()
-    child = Popen(str(muscle), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
-    SeqIO.write([seqres_seq, atom_seq], child.stdin, 'fasta')
-    child.stdin.close()
-    align = AlignIO.read(child.stdout, 'fasta')
-    sequence, structure = align
-    pdbid, chain = sequence.id.split(':')
+    align = pairwise2.align.globalxx(seqres_seq.seq, atom_seq.seq, one_alignment_only=True)[0]
+    print(align, file=sys.stderr)
+    sequence = MutableSeq(align[0])
+    structure = MutableSeq(align[1])
+    pdbid, chain = seqres_seq.id.split(':')
 
-    sequence = sequence.seq.tomutable()
-    structure = structure.seq.tomutable()
     pos = 0
     while pos < len(structure):
         if structure[pos] == 'X':
