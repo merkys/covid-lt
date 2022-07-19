@@ -28,6 +28,14 @@ rule all:
         "contact-maps/PF07686/hydrophobic.tab",
         "contact-maps/PF07686/salt.tab"
 
+rule container:
+    input:
+        "{base}.def"
+    output:
+        "{base}.simg"
+    shell:
+        "sudo singularity build {output} {input}"
+
 rule pdb_seqres_fa:
     output:
         "pdb_seqres.fa"
