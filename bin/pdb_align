@@ -29,7 +29,8 @@ if not isinstance(file, str):
 atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
 seqres_seqs = [seq for seq in SeqIO.parse(file, 'pdb-seqres')]
 
-# TODO: Check if there is the same number of chains
+if len(atom_seqs) != len(seqres_seqs):
+    raise(RuntimeError("Number of chains do not match number of entries in the SEQRES records"))
 
 parser = PDB.PDBParser()
 model = parser.get_structure(atom_seqs[0].id[0:5], file)[0] # There may be more models?
@@ -53,7 +54,7 @@ adjustments = {}
 for atom_seq in atom_seqs:
     seqres_seq = seqres_seqs_by_chain[atom_seq.id[5]]
     # TODO: Check if such exists
-    align = pairwise2.align.globalxx(atom_seq, seqres_seq, one_alignment_only=True)[0]
+    align = pairwise2.align.globalxx(atom_seq.seq, seqres_seq.seq, one_alignment_only=True)[0]
 
     gaps_atom, gaps_seqres = 0, 0
     while align[0][gaps_atom] == '-':
