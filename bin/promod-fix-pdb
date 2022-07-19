@@ -62,7 +62,6 @@ for chain in chains:
     seqres_seq = seqres_seqs_by_chain[chain]
     # TODO: Check if such exists
     align = pairwise2.align.globalxx(seqres_seq.seq, atom_seq.seq, one_alignment_only=True)[0]
-    print(align, file=sys.stderr)
     sequence = MutableSeq(align[0])
     structure = MutableSeq(align[1])
     pdbid, chain = seqres_seq.id.split(':')
