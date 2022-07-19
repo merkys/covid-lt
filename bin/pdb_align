@@ -8,7 +8,6 @@
 # - PDB 6NB4 record, interaction between 104:A and 1:D. Jackal looses LINK record which is important.
 
 from Bio import AlignIO, PDB, SeqIO, pairwise2
-from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile
 import re, sys, warnings
 

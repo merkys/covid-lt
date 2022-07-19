@@ -4,7 +4,6 @@ from Bio import AlignIO, PDB, SeqIO, pairwise2
 from Bio.Seq import MutableSeq
 from Bio.SeqRecord import SeqRecord
 from promod3 import modelling
-from subprocess import Popen, PIPE
 import argparse, re, sys, warnings
 
 warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
