@@ -61,7 +61,6 @@ for atom_seq in atom_seqs:
     while align[1][gaps_seqres] == '-':
         gaps_seqres += 1
     if first_id_of_chain[atom_seq.id[5]] != gaps_atom + 1:
-        # print('Chain ' + atom_seq.id[5] + ' needs adjusting ' + str(gaps_atom + 1 - first_id_of_chain[atom_seq.id[5]]), file=sys.stderr)
         adjustments[atom_seq.id[5]] = gaps_atom + 1 - first_id_of_chain[atom_seq.id[5]]
 
 renumberings = {
