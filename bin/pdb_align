@@ -7,6 +7,9 @@
 # - PDB 7AKJ record, chain C. Processing it with Jackal leaves SSBOND pointing to a missing residue.
 # - PDB 6NB4 record, interaction between 104:A and 1:D. Jackal looses LINK record which is important.
 
+# TODO: Implement an alternative solution using seq.alg.AlignToSEQRES() from OpenStructure:
+# https://openstructure.org/docs/2.3.1/seq/alg/seqalg/
+
 from Bio import AlignIO, PDB, SeqIO, pairwise2
 from tempfile import NamedTemporaryFile
 import re, sys, warnings
