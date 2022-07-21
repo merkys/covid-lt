@@ -53,7 +53,7 @@ adjustments = {}
 for atom_seq in atom_seqs:
     seqres_seq = seqres_seqs_by_chain[atom_seq.id[5]]
     # TODO: Check if such exists
-    align = pairwise2.align.globalxx(atom_seq, seqres_seq, one_alignment_only=True)[0]
+    align = pairwise2.align.globalxx(atom_seq.seq, seqres_seq.seq, one_alignment_only=True)[0]
 
     gaps_atom, gaps_seqres = 0, 0
     while align[0][gaps_atom] == '-':
