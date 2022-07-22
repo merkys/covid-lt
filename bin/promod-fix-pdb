@@ -102,7 +102,6 @@ handle = modelling.BuildRawModel(alignments)
 modelling.CloseGaps(handle)
 modelling.BuildSidechains(handle)
 model = handle.model
-
 if args.simulate:
     from ost.mol import mm
     # Parameters as suggested by Gabriel Studer
