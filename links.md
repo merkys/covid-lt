@@ -75,8 +75,9 @@ HADDOCK
 * HADDOCK 3: https://www.bonvinlab.org/software/haddock3/
 * HADDOCK 3 GitHub: https://github.com/haddocking/haddock3
 
-Other software
-==============
+Other
+=====
 
 * CNS: http://cns-online.org/v1.3/
+* PRODIGY dataset: https://bianca.science.uu.nl/prodigy/dataset
 * pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/
