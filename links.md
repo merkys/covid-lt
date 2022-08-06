@@ -9,6 +9,12 @@ Antibody numbering
 * ANARCI, stand-alone software for antibody renumbering: https://github.com/oxpig/ANARCI
 * RosettaAntibody: https://nbviewer.org/github/RosettaCommons/PyRosetta.notebooks/blob/master/notebooks/12.01-RosettaAntibody-Framework-and-SimpleMetrics.ipynb
 
+OpenMM
+======
+
+* Energy component analysis using forcefields: https://github.com/openmm/openmm/issues/1463
+* Forcefield and solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
+
 PDB format
 ==========
 
@@ -73,5 +79,4 @@ Other software
 ==============
 
 * CNS: http://cns-online.org/v1.3/
-* OpenMM forcefield and solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
 * pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/
