@@ -28,10 +28,9 @@ for chain in pdb.chains():
         if orig_chain != chain:
             return None, None, None
         if number < len(numbered):
-            print(orig_chain, numbered[number-1][0][0], numbered[number-1][0][1])
-            return orig_chain, numbered[number-1][0][0], numbered[number-1][0][1]
+            return None, numbered[number-1][0][0], numbered[number-1][0][1]
         else:
-            return None, None, None
+            return None, numbered[-1][0][0] + (number-len(numbered)), None
 
     pdb.renumber(renumber)
 
