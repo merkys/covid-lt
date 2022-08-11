@@ -18,7 +18,7 @@ for chain in pdb.chains():
     if numbered is None:
         continue
     if len(numbered) > 1:
-        warn('Chain {} has more than one alignments, not sure what to do' % chain)
+        warn('Chain {} has more than one alignments, not sure what to do'.format(chain))
         continue
     numbered = numbered[0][0]
     details = details[0]
