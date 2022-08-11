@@ -1,3 +1,4 @@
 .*.done
 .snakemake
 pdb_seqres.fa
+container.simg

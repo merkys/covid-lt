@@ -30,16 +30,13 @@ rule all:
         "pdb/split/PF01401/split.log",
         "pdb/split/PF07686/split.log"
 
-# Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
-rule download_pdb:
+rule container:
+    input:
+        "{base}.def"
     output:
-        "pdb/pristine/{pdbid}.pdb"
+        "{base}.simg"
     shell:
-        """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || touch {output}
-        chmod -w {output}
-        sleep 1
-        """
+        "sudo singularity build {output} {input}"
 
 rule pdb_seqres_fa:
     output:
@@ -50,27 +47,32 @@ rule pdb_seqres_fa:
         chmod -w {output}
         """
 
-# Extract PDB IDs of structures of interest from blastp outputs.
-def pdb_entries_of_interest():
-    pdb_ids = set()
-    file = open('alignments/pdb_seqres-P0DTC2.blastp', 'r')
-    for line in file:
-        sseqid, evalue, score, length, pident, nident = line.rstrip().split('\t')
-        if int(length) >= 100 and float(pident) >= 90:
-            pdb_ids.add(sseqid[0:4].upper())
-    return sorted(pdb_ids)
-
 # Download models of PDB entries of interest.
 # Number of threads is limited to 1 in order not to overload the PDB.
-rule download_pdb_all:
+checkpoint download_pdb_all:
     input:
-        "alignments/pdb_seqres-P0DTC2.blastp",
-        pdb_files = expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
+        "alignments/pdb_seqres-P0DTC2.blastp"
     output:
+        directory("pdb/pristine")
+    log:
         "download_pdb_all.log"
     threads: 1
     shell:
-        "grep --no-filename ^REVDAT {input.pdb_files} > {output}"
+        """
+        mkdir pdb/pristine
+        awk '{{ if( $4 >= 100 && $5 >= 90 ) {{print}} }}' {input} \
+            | cut -c 1-4 \
+            | tr '[:lower:]' '[:upper:]' \
+            | sort \
+            | uniq \
+            | while read PDBID
+              do
+                wget https://files.rcsb.org/download/$PDBID.pdb -O pdb/pristine/$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
+                chmod -w pdb/pristine/$PDBID.pdb 2>/dev/null || true # Intentional
+                sleep 1
+              done
+        grep --no-filename ^REVDAT pdb/pristine/*.pdb > {log}
+        """
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
@@ -82,8 +84,14 @@ rule vorocontacts_out:
         "vorocontacts/{pdbid}.out"
     log:
         "vorocontacts/{pdbid}.log"
+    singularity:
+        "container.simg"
     shell:
-        "bin/voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
+        """
+        voronota-contacts -i {input} > {output} 2> {log} || echo -n > {output}
+        test -s {output} || echo WARNING: {output}: rule failed >&2
+        test -s {output} || cat {log} >&2
+        """
 
 rule vorocontacts_tab:
     input:
@@ -100,14 +108,18 @@ rule propka_out:
         "propka/{pdbid}.out"
     log:
         "propka/{pdbid}.log"
+    singularity:
+        "container.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
         (cd $TMP_DIR && propka3 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
-        cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        cp $TMP_DIR/{wildcards.pdbid}.pka {output} || touch {output} # propka failures manifest in nonexistent output files
+        mv $TMP_DIR/{wildcards.pdbid}.log {log}
+        mv $TMP_DIR/{wildcards.pdbid}.pka {output} || echo -n > {output} # propka failures manifest in nonexistent output files
         rm -rf $TMP_DIR
+        test -s {output} || echo WARNING: {output}: rule failed >&2
+        test -s {output} || cat {log} >&2
         """
 
 rule propka_tab:
@@ -132,6 +144,8 @@ rule blastp:
         query = "{query}.fa"
     output:
         "alignments/{subject}-{query}.blastp"
+    singularity:
+        "covid-lt.simg"
     shell:
         "blastp -query {input.query} -subject {input.subject} -outfmt '6 sseqid evalue score length pident nident' -max_target_seqs $(wc -l < {input.subject}) -subject_besthit > {output}"
 
@@ -140,6 +154,8 @@ rule hmmbuild:
         "{prefix}.msa"
     output:
         "{prefix}.hmm"
+    singularity:
+        "container.simg"
     shell:
         "hmmbuild {output} {input}"
 
@@ -150,27 +166,24 @@ rule hmmsearch:
         "alignments/{pfam}_full.hmm"
     output:
         "alignments/{fasta}-{pfam}.hmmsearch"
+    singularity:
+        "container.simg"
     shell:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
 
 def downloaded_pdb_files():
-    from os.path import exists
-    pdb_ids = set()
-    if exists('download_pdb_all.log'):
-        file = open('download_pdb_all.log', 'r')
-        for line in file:
-            pdb_ids.add(line[23:27])
-        if '    ' in pdb_ids:
-            pdb_ids.remove('    ')
-    return sorted(pdb_ids)
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    return sorted(glob(checkpoint_output + '/*.pdb'))
 
 rule cd_hit:
     input:
-        "download_pdb_all.log",
-        pristine_pdbs = expand("pdb/pristine/{pdbid}.pdb", pdbid=downloaded_pdb_files()),
+        pristine_pdbs = downloaded_pdb_files,
         hmmsearch = "alignments/{base}.hmmsearch"
     output:
         "alignments/{base}.clusters"
+    singularity:
+        "container.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -189,20 +202,29 @@ rule fix_pdb:
         "pdb/pristine/{pdbid}.pdb"
     output:
         "pdb/fixed/{pdbid}.pdb"
+    singularity:
+        "covid-lt.simg"
     log:
         "pdb/fixed/{pdbid}.log"
     shell:
         """
+        echo -n > {output} # Clear the file if exists
         TMP_DIR=$(mktemp --directory)
         bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb 2> {log} || true
         if [ ! -s $TMP_DIR/{wildcards.pdbid}.pdb ]
         then
-            echo -n > {output}
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
             rm -rf $TMP_DIR
             exit
         fi
         bin/promod-fix-pdb --simulate $TMP_DIR/{wildcards.pdbid}.pdb > $TMP_DIR/fixed.pdb 2>> {log} || true
         bin/pdb_rename_chains --source {input} $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
+        if [ ! -s {output} ]
+        then
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
         rm -rf $TMP_DIR
         """
 
@@ -232,9 +254,14 @@ rule renumber_antibodies:
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
         (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
-        cp $TMP_DIR/{wildcards.pdbid}.log {log}
+        mv $TMP_DIR/{wildcards.pdbid}.log {log}
         test -e $TMP_DIR/ROSETTA_CRASH.log && cat $TMP_DIR/ROSETTA_CRASH.log >> {log}
-        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} || touch {output} # Rosetta failures manifest in nonexistent output files
+        if ! mv $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} # Rosetta failures manifest in nonexistent output files
+        then
+            echo -n > {output}
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
         rm -rf $TMP_DIR
         """
 
@@ -249,16 +276,33 @@ rule renumber_S1:
     log:
         "pdb/P0DTC2/{pdbid}.log"
     shell:
-        "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
+        """
+        if ! bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}
+        then
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
+        """
+
+def propka_tabs(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def vorocontacts_tabs(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule contact_map:
     input:
-        "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch",
-        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
-        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files())
+        propka_tabs = propka_tabs,
+        vorocontacts_tabs = vorocontacts_tabs
     output:
         "contact-maps/{pfam}/{search}.tab"
+    singularity:
+        "container.simg"
     shell:
         """
         comm -1 -2 \
@@ -271,13 +315,14 @@ rule contact_map:
 # Identifies which residues in S1 chains are present in the original PDB files.
 rule quality_map:
     input:
-        "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
-        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
-        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files()),
+        propka_tabs = propka_tabs,
+        vorocontacts_tabs = vorocontacts_tabs,
         seq = "sequences/P0DTC2.fa"
     output:
         "quality-map.tab"
+    singularity:
+        "container.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -345,15 +390,31 @@ rule voromqa:
         "{path}/{pdbid}.pdb"
     output:
         "{path}/{pdbid}.voromqa"
+    singularity:
+        "container.simg"
     shell:
-        "bin/voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || true"
+        "voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || echo WARNING: {output}: rule failed >&2"
+
+def pristine_pdbs_voromqa(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("pdb/pristine/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def fixed_pdbs_voromqa(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("pdb/fixed/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def optimized_pdbs_voromqa(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("pdb/optimized/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule voromqa_all:
     input:
-        "download_pdb_all.log",
-        pristine_pdbs_voromqa = expand("pdb/pristine/{pdbid}.voromqa", pdbid=downloaded_pdb_files()),
-        fixed_pdbs_voromqa = expand("pdb/fixed/{pdbid}.voromqa", pdbid=downloaded_pdb_files()),
-        optimized_pdbs_voromqa = expand("pdb/optimized/{pdbid}.voromqa", pdbid=downloaded_pdb_files())
+        pristine_pdbs_voromqa = pristine_pdbs_voromqa,
+        fixed_pdbs_voromqa = fixed_pdbs_voromqa,
+        optimized_pdbs_voromqa = optimized_pdbs_voromqa
     output:
         "voromqa.tab"
     shell:
@@ -373,6 +434,7 @@ rule voromqa_all:
         done > {output}
         """
 
+# FIXME: bin/qmean depends on qmean Python module, not yet in Debian.
 rule qmean:
     input:
         "{path}/{pdbid}.pdb"
@@ -380,15 +442,37 @@ rule qmean:
         "{path}/{pdbid}.qmean"
     log:
         "{path}/{pdbid}.qmean.log"
+    singularity:
+        "container.simg"
     shell:
-        "bin/qmean {input} > {output} 2> {log} || true"
+        """
+        if ! bin/qmean {input} > {output} 2> {log}
+        then
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
+        """
+
+def pristine_pdbs_qmean(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("pdb/pristine/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def fixed_pdbs_qmean(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("pdb/fixed/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def optimized_pdbs_qmean(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand("pdb/optimized/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule qmean_all:
     input:
-        "download_pdb_all.log",
-        pristine_pdbs_qmean = expand("pdb/pristine/{pdbid}.qmean", pdbid=downloaded_pdb_files()),
-        fixed_pdbs_qmean = expand("pdb/fixed/{pdbid}.qmean", pdbid=downloaded_pdb_files()),
-        optimized_pdbs_qmean = expand("pdb/optimized/{pdbid}.qmean", pdbid=downloaded_pdb_files())
+        pristine_pdbs_qmean = pristine_pdbs_qmean,
+        fixed_pdbs_qmean = fixed_pdbs_qmean,
+        optimized_pdbs_qmean = optimized_pdbs_qmean
     output:
         "qmean.tab"
     shell:
