@@ -197,6 +197,8 @@ rule profix:
         if [ ! -s $TMP_DIR/{wildcards.pdbid}.pdb ]
         then
             echo -n > {output}
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
             rm -rf $TMP_DIR
             exit
         fi
