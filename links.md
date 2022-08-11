@@ -9,6 +9,17 @@ Antibody numbering
 * ANARCI, stand-alone software for antibody renumbering: https://github.com/oxpig/ANARCI
 * RosettaAntibody: https://nbviewer.org/github/RosettaCommons/PyRosetta.notebooks/blob/master/notebooks/12.01-RosettaAntibody-Framework-and-SimpleMetrics.ipynb
 
+Amber
+=====
+
+* Configure command: cmake .. -DCOMPILER=GNU -DDOWNLOAD_MINICONDA=FALSE -DFORCE_EXTERNAL_LIBS=boost -DCMAKE_INSTALL_PREFIX=/usr/local/install/amber/amber-22.0.0
+
+OpenMM
+======
+
+* Energy component analysis using forcefields: https://github.com/openmm/openmm/issues/1463
+* Forcefield and solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
+
 PDB format
 ==========
 
@@ -69,9 +80,9 @@ HADDOCK
 * HADDOCK 3: https://www.bonvinlab.org/software/haddock3/
 * HADDOCK 3 GitHub: https://github.com/haddocking/haddock3
 
-Other software
-==============
+Other
+=====
 
 * CNS: http://cns-online.org/v1.3/
-* OpenMM forcefield and solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
+* PRODIGY dataset: https://bianca.science.uu.nl/prodigy/dataset
 * pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/

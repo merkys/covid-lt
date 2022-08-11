@@ -28,6 +28,14 @@ rule all:
         "contact-maps/PF07686/hydrophobic.tab",
         "contact-maps/PF07686/salt.tab"
 
+rule container:
+    input:
+        "{base}.def"
+    output:
+        "{base}.simg"
+    shell:
+        "sudo singularity build {output} {input}"
+
 rule pdb_seqres_fa:
     output:
         "pdb_seqres.fa"
@@ -75,7 +83,7 @@ rule vorocontacts_out:
     log:
         "vorocontacts/{pdbid}.log"
     singularity:
-        "covid-lt.simg"
+        "container.simg"
     shell:
         "voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
 
@@ -95,7 +103,7 @@ rule propka_out:
     log:
         "propka/{pdbid}.log"
     singularity:
-        "covid-lt.simg"
+        "container.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -139,7 +147,7 @@ rule hmmbuild:
     output:
         "{prefix}.hmm"
     singularity:
-        "covid-lt.simg"
+        "container.simg"
     shell:
         "hmmbuild {output} {input}"
 
@@ -151,7 +159,7 @@ rule hmmsearch:
     output:
         "alignments/{fasta}-{pfam}.hmmsearch"
     singularity:
-        "covid-lt.simg"
+        "container.simg"
     shell:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
 
@@ -167,7 +175,7 @@ rule cd_hit:
     output:
         "alignments/{base}.clusters"
     singularity:
-        "covid-lt.simg"
+        "container.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -257,7 +265,7 @@ rule contact_map:
     output:
         "contact-maps/{pfam}/{search}.tab"
     singularity:
-        "covid-lt.simg"
+        "container.simg"
     shell:
         """
         comm -1 -2 \
@@ -277,7 +285,7 @@ rule quality_map:
     output:
         "quality-map.tab"
     singularity:
-        "covid-lt.simg"
+        "container.simg"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -318,7 +326,7 @@ rule voromqa:
     output:
         "{path}/{pdbid}.voromqa"
     singularity:
-        "covid-lt.simg"
+        "container.simg"
     shell:
         "voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || true"
 
@@ -363,7 +371,7 @@ rule qmean:
     log:
         "{path}/{pdbid}.qmean.log"
     singularity:
-        "covid-lt.simg"
+        "container.simg"
     shell:
         "bin/qmean {input} > {output} 2> {log} || true"
 

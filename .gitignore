@@ -1,4 +1,4 @@
 .*.done
 .snakemake
 pdb_seqres.fa
-covid-lt.simg
+container.simg
