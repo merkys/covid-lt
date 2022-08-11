@@ -9,6 +9,11 @@ Antibody numbering
 * ANARCI, stand-alone software for antibody renumbering: https://github.com/oxpig/ANARCI
 * RosettaAntibody: https://nbviewer.org/github/RosettaCommons/PyRosetta.notebooks/blob/master/notebooks/12.01-RosettaAntibody-Framework-and-SimpleMetrics.ipynb
 
+Amber
+=====
+
+* Configure command: cmake .. -DCOMPILER=GNU -DDOWNLOAD_MINICONDA=FALSE -DFORCE_EXTERNAL_LIBS=boost -DCMAKE_INSTALL_PREFIX=/usr/local/install/amber/amber-22.0.0
+
 OpenMM
 ======
 
