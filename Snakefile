@@ -82,7 +82,11 @@ rule vorocontacts_out:
     singularity:
         "container.simg"
     shell:
-        "voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
+        """
+        voronota-contacts -i {input} > {output} 2> {log} || echo -n > {output}
+        test -s {output} || echo WARNING: {output}: rule failed >&2
+        test -s {output} || cat {log} >&2
+        """
 
 rule vorocontacts_tab:
     input:
@@ -106,9 +110,11 @@ rule propka_out:
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
         (cd $TMP_DIR && propka3 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
-        cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        cp $TMP_DIR/{wildcards.pdbid}.pka {output} || touch {output} # propka failures manifest in nonexistent output files
+        mv $TMP_DIR/{wildcards.pdbid}.log {log}
+        mv $TMP_DIR/{wildcards.pdbid}.pka {output} || echo -n > {output} # propka failures manifest in nonexistent output files
         rm -rf $TMP_DIR
+        test -s {output} || echo WARNING: {output}: rule failed >&2
+        test -s {output} || cat {log} >&2
         """
 
 rule propka_tab:
@@ -204,6 +210,8 @@ rule profix:
             tail -n +$NEW_OFFSET $TMP_DIR/{wildcards.pdbid}_fix.pdb >> {output}
         else
             echo -n > {output}
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
         fi
         rm -rf $TMP_DIR
         """
@@ -223,9 +231,14 @@ rule renumber_antibodies:
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
         (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
-        cp $TMP_DIR/{wildcards.pdbid}.log {log}
+        mv $TMP_DIR/{wildcards.pdbid}.log {log}
         test -e $TMP_DIR/ROSETTA_CRASH.log && cat $TMP_DIR/ROSETTA_CRASH.log >> {log}
-        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} || touch {output} # Rosetta failures manifest in nonexistent output files
+        if ! mv $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} # Rosetta failures manifest in nonexistent output files
+        then
+            echo -n > {output}
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
         rm -rf $TMP_DIR
         """
 
@@ -240,7 +253,13 @@ rule renumber_S1:
     log:
         "pdb/P0DTC2/{pdbid}.log"
     shell:
-        "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
+        """
+        if ! bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}
+        then
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
+        """
 
 def propka_tabs(wildcards):
     from glob import glob
@@ -323,7 +342,7 @@ rule voromqa:
     singularity:
         "container.simg"
     shell:
-        "voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || true"
+        "voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || echo WARNING: {output}: rule failed >&2"
 
 def pristine_pdbs_voromqa(wildcards):
     from glob import glob
@@ -368,7 +387,13 @@ rule qmean:
     singularity:
         "container.simg"
     shell:
-        "bin/qmean {input} > {output} 2> {log} || true"
+        """
+        if ! bin/qmean {input} > {output} 2> {log}
+        then
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
+        """
 
 def pristine_pdbs_qmean(wildcards):
     from glob import glob
