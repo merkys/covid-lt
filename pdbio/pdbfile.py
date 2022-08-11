@@ -6,10 +6,13 @@ class PDBFile:
         elif isinstance(fileobject, file):
             self.file = fileobject
         else:
-            ValueError("Cannot process {}" % type(fileobject))
+            ValueError('Cannot process {}' % type(fileobject))
         self.content = self.file.readlines()
 
     def get(self, keyword):
         while len(keyword) < 6:
             keyword = keyword + ' '
         return filter(lambda x: x.startswith(keyword), self.content)
+
+    def chains(self):
+        return set([x[21] for x in self.get('ATOM')])
