@@ -475,4 +475,9 @@ rule prodigy:
     log:
         "{path}.prodigy.log"
     shell:
-        "prodigy -q {input} > {output} 2> {log} || true"
+        """
+        if ! prodigy -q {input} > {output} 2> {log}
+        then
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
