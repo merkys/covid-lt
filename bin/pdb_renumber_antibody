@@ -20,7 +20,19 @@ for chain in pdb.chains():
     if len(numbered) > 1:
         warn('Chain {} has more than one alignments, not sure what to do' % chain)
         continue
-    numbered = numbered[0]
+    numbered = numbered[0][0]
     details = details[0]
     chain_type = details['chain_type'] # To be somehow stored in the resulting PDB file
-    print(numbered, details)
+
+    def renumber(orig_chain, number, icode):
+        if orig_chain != chain:
+            return None, None, None
+        if number < len(numbered):
+            print(orig_chain, numbered[number-1][0][0], numbered[number-1][0][1])
+            return orig_chain, numbered[number-1][0][0], numbered[number-1][0][1]
+        else:
+            return None, None, None
+
+    pdb.renumber(renumber)
+
+print(pdb, end='')
