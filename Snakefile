@@ -217,7 +217,7 @@ rule fix_pdb:
             exit
         fi
         bin/promod-fix-pdb $TMP_DIR/{wildcards.pdbid}.pdb > $TMP_DIR/fixed.pdb 2>> {log} || true
-        bin/pdb_rename_chains {input} --source $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
+        bin/pdb_rename_chains --source {input} $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
         if [ ! -s {output} ]
         then
             echo WARNING: {output}: rule failed >&2
