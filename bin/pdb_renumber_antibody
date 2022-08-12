@@ -51,10 +51,12 @@ for chain in pdb.chains():
     def renumber(orig_chain, number, icode):
         if orig_chain != chain:
             return None, None, None
-        if number < len(numbered):
-            return None, numbered[number-1][0][0], numbered[number-1][0][1]
+        if number <= details['query_start']:
+            return None, number - details['query_start'], ' '
+        if number > details['query_end']:
+            return None, numbered[-1][0][0] + (number-details['query_end']), ' '
         else:
-            return None, numbered[-1][0][0] + (number-len(numbered)), None
+            return None, numbered[number-details['query_start']-1][0][0], numbered[number-details['query_start']-1][0][1]
 
     pdb.renumber(renumber)
 
