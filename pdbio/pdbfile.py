@@ -1,5 +1,6 @@
 from Bio.Data.SCOPData import protein_letters_3to1
 from io import TextIOWrapper
+from pdbio.chain import Chain
 
 class PDBFile:
 
@@ -12,10 +13,24 @@ class PDBFile:
             ValueError('Cannot process {}' % type(fileobject))
         self.content = self.file.readlines()
 
+    def __iter__(self):
+        self.iterchain = -1
+        return self
+
+    def __next__(self):
+        self.iterchain += 1
+        if self.iterchain < len(self.chains()):
+            return self.chain(sorted(self.chains())[self.iterchain])
+        else:
+            raise StopIteration()
+
     def get(self, keyword):
         while len(keyword) < 6:
             keyword = keyword + ' '
         return filter(lambda x: x.startswith(keyword), self.content)
+
+    def chain(self, chain):
+        return Chain(self, chain)
 
     def chains(self):
         return set([x[21] for x in self.get('ATOM')])

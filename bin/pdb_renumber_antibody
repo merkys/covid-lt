@@ -35,9 +35,9 @@ def unset_insertion_codes(chain, number, icode):
 
 pdb.renumber(unset_insertion_codes)
 
-for chain in pdb.chains():
-    sequence = pdb.sequence(chain)
-    _, numbered, details, _ = run_anarci([(chain, sequence)], scheme='chothia', allow=set(args.chain_types))
+for chain in pdb:
+    sequence = pdb.sequence(chain.name)
+    _, numbered, details, _ = run_anarci([(chain.name, sequence)], scheme='chothia', allow=set(args.chain_types))
     numbered = numbered[0]
     details = details[0]
     if numbered is None:
@@ -49,7 +49,7 @@ for chain in pdb.chains():
     chain_type = details['chain_type'] # To be somehow stored in the resulting PDB file
 
     def renumber(orig_chain, number, icode):
-        if orig_chain != chain:
+        if orig_chain != chain.name:
             return None, None, None
         if number <= details['query_start']:
             return None, number - details['query_start'], ' '
