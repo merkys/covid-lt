@@ -1,11 +1,12 @@
 from Bio.Data.SCOPData import protein_letters_3to1
+from io import TextIOWrapper
 
 class PDBFile:
 
     def __init__(self, fileobject):
         if isinstance(fileobject, str):
             self.file = open(fileobject, 'r')
-        elif isinstance(fileobject, file):
+        elif isinstance(fileobject, TextIOWrapper):
             self.file = fileobject
         else:
             ValueError('Cannot process {}' % type(fileobject))

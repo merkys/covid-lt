@@ -6,14 +6,11 @@ from warnings import warn
 import argparse, sys
 
 parser = argparse.ArgumentParser()
-parser.add_argument('files', nargs='*')
+parser.add_argument('files', nargs='*', default=[sys.stdin])
 parser.add_argument('--chain-types', help='List of chain types that should be recognised by ANARCI', default='HL')
 args = parser.parse_args()
 
-files = args.files
-file = files[0] # for now
-
-pdb = PDBFile(file)
+pdb = PDBFile(args.files[0]) # Only the first file is processed for now
 
 # The following piece of code is used to renumber residues with insertion codes to plain sequential numbers.
 # This is done as some input files may already be renumbered and such files would only confuse the current script.
