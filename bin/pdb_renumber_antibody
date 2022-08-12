@@ -3,9 +3,14 @@
 from anarci import run_anarci
 from pdbio.pdbfile import PDBFile
 from warnings import warn
-import sys
+import argparse, sys
 
-files = sys.argv[1:]
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--chain-types', help='List of chain types that should be recognised by ANARCI', default='HL')
+args = parser.parse_args()
+
+files = args.files
 file = files[0] # for now
 
 pdb = PDBFile(file)
@@ -35,7 +40,7 @@ pdb.renumber(unset_insertion_codes)
 
 for chain in pdb.chains():
     sequence = pdb.sequence(chain)
-    _, numbered, details, _ = run_anarci([(chain, sequence)], scheme='chothia', allow=set(['H', 'L']))
+    _, numbered, details, _ = run_anarci([(chain, sequence)], scheme='chothia', allow=set(args.chain_types))
     numbered = numbered[0]
     details = details[0]
     if numbered is None:
