@@ -10,6 +10,29 @@ file = files[0] # for now
 
 pdb = PDBFile(file)
 
+# The following piece of code is used to renumber residues with insertion codes to plain sequential numbers.
+# This is done as some input files may already be renumbered and such files would only confuse the current script.
+
+last_seen = None
+
+def unset_insertion_codes(chain, number, icode):
+    global last_seen
+    if last_seen and last_seen[0:3] == [chain, number, icode]:
+        number_now = last_seen[3]
+        return None, number_now, ' '
+    if last_seen and last_seen[0:2] == [chain, number]: # Same number, different icode
+        number_now = last_seen[3] + 1
+        last_seen[2:3] = [icode, number_now]
+        return None, number_now, ' '
+    if last_seen and last_seen[0] == chain: # Same chain
+        number_now = last_seen[3] + number - last_seen[1]
+        last_seen = [chain, number, icode, number_now]
+        return None, number_now, ' '
+    last_seen = [chain, number, icode, number]
+    return None, None, ' '
+
+pdb.renumber(unset_insertion_codes)
+
 for chain in pdb.chains():
     sequence = pdb.sequence(chain)
     _, numbered, details, _ = run_anarci([(chain, sequence)], scheme='chothia', allow=set(['H', 'L']))
