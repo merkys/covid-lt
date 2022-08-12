@@ -43,8 +43,7 @@ for chain in pdb.chains():
     if numbered is None:
         continue
     if len(numbered) > 1:
-        warn('Chain {} has more than one alignment, not sure what to do'.format(chain))
-        continue
+        warn('Chain {} has more than one alignment, renumbering according to the first one found'.format(chain))
     numbered = numbered[0][0]
     details = details[0]
     chain_type = details['chain_type'] # To be somehow stored in the resulting PDB file
