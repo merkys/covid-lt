@@ -80,7 +80,7 @@ rule vorocontacts_out:
     log:
         "vorocontacts/{pdbid}.log"
     singularity:
-        "container.simg"
+        "container.sif"
     shell:
         """
         voronota-contacts -i {input} > {output} 2> {log} || echo -n > {output}
@@ -104,7 +104,7 @@ rule propka_out:
     log:
         "propka/{pdbid}.log"
     singularity:
-        "container.simg"
+        "container.sif"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -139,7 +139,7 @@ rule hmmbuild:
     output:
         "{prefix}.hmm"
     singularity:
-        "container.simg"
+        "container.sif"
     shell:
         "hmmbuild {output} {input}"
 
@@ -151,7 +151,7 @@ rule hmmsearch:
     output:
         "alignments/{fasta}-{pfam}.hmmsearch"
     singularity:
-        "container.simg"
+        "container.sif"
     shell:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
 
@@ -167,7 +167,7 @@ rule cd_hit:
     output:
         "alignments/{base}.clusters"
     singularity:
-        "container.simg"
+        "container.sif"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -281,7 +281,7 @@ rule contact_map:
     output:
         "contact-maps/{pfam}/{search}.tab"
     singularity:
-        "container.simg"
+        "container.sif"
     shell:
         """
         comm -1 -2 \
@@ -301,7 +301,7 @@ rule quality_map:
     output:
         "quality-map.tab"
     singularity:
-        "container.simg"
+        "container.sif"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -342,7 +342,7 @@ rule voromqa:
     output:
         "{path}/{pdbid}.voromqa"
     singularity:
-        "container.simg"
+        "container.sif"
     shell:
         "voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || echo WARNING: {output}: rule failed >&2"
 
@@ -387,7 +387,7 @@ rule qmean:
     log:
         "{path}/{pdbid}.qmean.log"
     singularity:
-        "container.simg"
+        "container.sif"
     shell:
         """
         if ! bin/qmean {input} > {output} 2> {log}
