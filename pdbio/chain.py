@@ -14,7 +14,7 @@ class Chain:
     def __next__(self):
         while self.iter_residue_line < len(self.parent.content) and (not self.parent.content[self.iter_residue_line].startswith('ATOM  ') or self.parent.content[self.iter_residue_line][21] != self.name):
             self.iter_residue_line += 1
-        if self.iter_residue_line + 1 == len(self.parent.content): # File end has been reached
+        if self.iter_residue_line + 1 >= len(self.parent.content): # File end has been reached
             raise StopIteration()
         start, end = self.iter_residue_line, self.iter_residue_line
         atom = self.parent.content[start]
