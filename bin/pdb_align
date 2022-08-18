@@ -54,14 +54,27 @@ for seq in seqres_seqs:
 
 adjustments = {}
 for atom_seq in atom_seqs:
-    seqres_seq = seqres_seqs_by_chain[atom_seq.id[5]]
     # TODO: Check if such exists
-    align = pairwise2.align.globalxx(atom_seq.seq, seqres_seq.seq, one_alignment_only=True)[0]
+    seqres_seq = seqres_seqs_by_chain[atom_seq.id[5]]
+
+    # FIXME: Maybe globalxx() does not have the best scoring parameters.
+    align = pairwise2.align.globalxx(str(atom_seq.seq).replace('X', '-'), str(seqres_seq.seq).replace('X', '-'), one_alignment_only=True)[0]
+    print(align, file=sys.stderr)
+
+    atom_seq_aligned = list(align[0])
+    seqres_seq_aligned = list(align[1])
+    pos = 0
+    while pos < len(atom_seq_aligned):
+        if atom_seq_aligned[pos] == '-' and seqres_seq_aligned[pos] == '-':
+            atom_seq_aligned.pop(pos)
+            seqres_seq_aligned.pop(pos)
+        pos += 1
+    print(''.join(atom_seq_aligned), ''.join(seqres_seq_aligned), file=sys.stderr)
 
     gaps_atom, gaps_seqres = 0, 0
-    while align[0][gaps_atom] == '-':
+    while atom_seq_aligned[gaps_atom] == '-':
         gaps_atom += 1
-    while align[1][gaps_seqres] == '-':
+    while seqres_seq_aligned[gaps_seqres] == '-':
         gaps_seqres += 1
     if first_id_of_chain[atom_seq.id[5]] != gaps_atom + 1:
         adjustments[atom_seq.id[5]] = gaps_atom + 1 - first_id_of_chain[atom_seq.id[5]]
