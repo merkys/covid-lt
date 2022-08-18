@@ -5,8 +5,11 @@ class Residue:
         self.start = start
         self.end = end
 
-    def number(self):
-        return int(self.parent.parent[start][22:26])
-
     def icode(self):
-        return self.parent.parent[start][26]
+        return self.parent.parent.content[self.start][26]
+
+    def number(self):
+        return int(self.parent.parent.content[self.start][22:26])
+
+    def resname(self):
+        return self.parent.parent.content[self.start][17:20]
