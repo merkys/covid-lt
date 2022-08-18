@@ -59,7 +59,6 @@ for atom_seq in atom_seqs:
 
     # FIXME: Maybe globalxx() does not have the best scoring parameters.
     align = pairwise2.align.globalxx(str(atom_seq.seq).replace('X', '-'), str(seqres_seq.seq).replace('X', '-'), one_alignment_only=True)[0]
-    print(align, file=sys.stderr)
 
     atom_seq_aligned = list(align[0])
     seqres_seq_aligned = list(align[1])
@@ -69,7 +68,6 @@ for atom_seq in atom_seqs:
             atom_seq_aligned.pop(pos)
             seqres_seq_aligned.pop(pos)
         pos += 1
-    print(''.join(atom_seq_aligned), ''.join(seqres_seq_aligned), file=sys.stderr)
 
     gaps_atom, gaps_seqres = 0, 0
     while atom_seq_aligned[gaps_atom] == '-':
