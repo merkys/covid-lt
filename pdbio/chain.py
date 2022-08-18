@@ -11,14 +11,14 @@ class Chain:
         return self
 
     def __next__(self):
-        while self.iter_residue_line < len(self.parent.content) and not self.parent.content[self.iter_residue_line].startswith('ATOM  ') and self.parent.content[self.iter_residue_line][21] != self.name:
+        while self.iter_residue_line < len(self.parent.content) and (not self.parent.content[self.iter_residue_line].startswith('ATOM  ') or self.parent.content[self.iter_residue_line][21] != self.name):
             self.iter_residue_line += 1
         if self.iter_residue_line == len(self.parent.content): # File end has been reached
-            return None
+            raise StopIteration()
         start, end = self.iter_residue_line, self.iter_residue_line
         atom = self.parent.content[start]
         this_chain, this_number, this_icode = atom[21], int(atom[22:26]), atom[26]
-        while self.iter_residue_line < len(self.parent.content):
+        while self.iter_residue_line + 1 < len(self.parent.content):
             self.iter_residue_line += 1
             if not self.parent.content[self.iter_residue_line].startswith('ATOM  '):
                 continue

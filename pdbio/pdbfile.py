@@ -46,6 +46,11 @@ class PDBFile:
                 residue = line[19+i*4:22+i*4]
                 if residue != '   ':
                     sequence = sequence + protein_letters_3to1[residue]
+        if not sequence: # probably no SEQRES, continue with ATOM
+            for residue in self.chain(chain):
+                if sequence is None:
+                    sequence = ''
+                sequence = sequence + protein_letters_3to1[residue.resname()]
         return sequence
 
     def renumber(self, func):
