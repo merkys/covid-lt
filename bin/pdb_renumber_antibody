@@ -8,6 +8,7 @@ import argparse, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
 parser.add_argument('--chain-types', help='List of chain types that should be recognised by ANARCI', default='HL')
+parser.add_argument('--debug', action='store_true', help='Turn on debug messages')
 args = parser.parse_args()
 
 pdb = PDBFile(args.files[0]) # Only the first file is processed for now
@@ -43,10 +44,12 @@ for chain in pdb:
     if numbered is None:
         continue
     if len(numbered) > 1:
-        warn('Chain {} has more than one alignment, renumbering according to the first one found'.format(chain))
+        warn('Chain {} has more than one alignment, renumbering according to the first one found'.format(chain.name))
     numbered = numbered[0][0]
     details = details[0]
     chain_type = details['chain_type'] # To be somehow stored in the resulting PDB file
+    if args.debug:
+        warn('Chain {} detected as {}'.format(chain.name, chain_type))
 
     def renumber(orig_chain, number, icode):
         if orig_chain != chain.name:
