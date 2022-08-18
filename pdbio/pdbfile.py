@@ -55,18 +55,17 @@ class PDBFile:
 
     def renumber(self, func):
         for i, atom in enumerate(self.content):
-            if not atom.startswith('ATOM  '):
-                continue
-            chain, number, icode = func(atom[21], int(atom[22:26]), atom[26])
-            if chain is not None:
-                self.content[i] = self.content[i][0:21] + chain + self.content[i][22:]
-            if number is not None:
-                number = str(number)
-                while len(number) < 4:
-                    number = ' ' + number
-                self.content[i] = self.content[i][0:22] + number + self.content[i][26:]
-            if icode is not None:
-                self.content[i] = self.content[i][0:26] + icode + self.content[i][27:]
+            if atom.startswith('ATOM  ') or atom.startswith('ANISOU'):
+                chain, number, icode = func(atom[21], int(atom[22:26]), atom[26])
+                if chain is not None:
+                    self.content[i] = self.content[i][0:21] + chain + self.content[i][22:]
+                if number is not None:
+                    number = str(number)
+                    while len(number) < 4:
+                        number = ' ' + number
+                    self.content[i] = self.content[i][0:22] + number + self.content[i][26:]
+                if icode is not None:
+                    self.content[i] = self.content[i][0:26] + icode + self.content[i][27:]
 
     def __str__(self):
         return ''.join(self.content)
