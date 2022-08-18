@@ -1,4 +1,3 @@
-from Bio.Data.SCOPData import protein_letters_3to1
 from io import TextIOWrapper
 from pdbio.chain import Chain
 
@@ -36,22 +35,7 @@ class PDBFile:
         return set([x[21] for x in self.get('ATOM')])
 
     def sequence(self, chain):
-        sequence = None
-        for line in self.get('SEQRES'):
-            if line[11] != chain:
-                continue
-            if sequence is None:
-                sequence = ''
-            for i in range(0,13):
-                residue = line[19+i*4:22+i*4]
-                if residue != '   ':
-                    sequence = sequence + protein_letters_3to1[residue]
-        if not sequence: # probably no SEQRES, continue with ATOM
-            for residue in self.chain(chain):
-                if sequence is None:
-                    sequence = ''
-                sequence = sequence + protein_letters_3to1[residue.resname()]
-        return sequence
+        return self.chain(chain).sequence()
 
     def renumber(self, func):
         for i, atom in enumerate(self.content):

@@ -1,3 +1,4 @@
+from Bio.Data.SCOPData import protein_letters_3to1
 from pdbio.residue import Residue
 
 class Chain:
@@ -39,3 +40,31 @@ class Chain:
             else:
                 last = residue.number()
         return True
+
+    def sequence(self):
+        sequence = self.sequence_seqres()
+        if sequence:
+            return sequence
+        else:
+            return self.sequence_atom()
+
+    def sequence_atom(self):
+        sequence = None
+        for residue in self:
+            if sequence is None:
+                sequence = ''
+            sequence = sequence + protein_letters_3to1[residue.resname()]
+        return sequence
+
+    def sequence_seqres(self):
+        sequence = None
+        for line in self.parent.get('SEQRES'):
+            if line[11] != self.name:
+                continue
+            if sequence is None:
+                sequence = ''
+            for i in range(0,13):
+                residue = line[19+i*4:22+i*4]
+                if residue != '   ':
+                    sequence = sequence + protein_letters_3to1[residue]
+        return sequence
