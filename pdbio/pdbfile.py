@@ -1,6 +1,5 @@
 from io import TextIOWrapper
 from pdbio.chain import Chain
-import sys
 
 class PDBFile:
 

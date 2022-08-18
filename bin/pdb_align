@@ -12,7 +12,7 @@
 
 from Bio import pairwise2
 from pdbio.pdbfile import PDBFile
-import re, sys
+import sys
 
 files = sys.argv[1:]
 if len(files) == 0:
