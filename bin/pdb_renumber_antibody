@@ -14,6 +14,22 @@ args = parser.parse_args()
 pdb = PDBFile(args.files[0]) # Only the first file is processed for now
 
 for chain in pdb:
+    sequence = pdb.sequence(chain.name)
+    _, numbered, details, _ = run_anarci([(chain.name, sequence)], scheme='chothia', allow=set(args.chain_types))
+    numbered = numbered[0]
+    details = details[0]
+    if numbered is None:
+        continue
+
+    if len(numbered) > 1:
+        warn('Chain {} has more than one alignment, renumbering according to the first one found'.format(chain.name))
+    numbered = numbered[0][0]
+    details = details[0]
+    chain_type = details['chain_type'] # To be somehow stored in the resulting PDB file
+    if args.debug:
+        warn('Chain {} detected as {}'.format(chain.name, chain_type))
+    numbered = list(filter(lambda x: x[1] != '-', numbered))
+
     # The following piece of code is used to renumber residues with insertion codes to plain sequential numbers.
     # This is done as some input files may already be renumbered and such files would only confuse the current script.
 
@@ -34,21 +50,6 @@ for chain in pdb:
         last_seen = [number, icode, number]
         return None, ' '
     chain.renumber(unset_insertion_codes)
-
-    sequence = pdb.sequence(chain.name)
-    _, numbered, details, _ = run_anarci([(chain.name, sequence)], scheme='chothia', allow=set(args.chain_types))
-    numbered = numbered[0]
-    details = details[0]
-    if numbered is None:
-        continue
-    if len(numbered) > 1:
-        warn('Chain {} has more than one alignment, renumbering according to the first one found'.format(chain.name))
-    numbered = numbered[0][0]
-    details = details[0]
-    chain_type = details['chain_type'] # To be somehow stored in the resulting PDB file
-    if args.debug:
-        warn('Chain {} detected as {}'.format(chain.name, chain_type))
-    numbered = list(filter(lambda x: x[1] != '-', numbered))
 
     def renumber_antibody(number, icode):
         if number <= details['query_start']:
