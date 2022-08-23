@@ -6,13 +6,18 @@ Antibody numbering
 * Paper on methods: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6198058/
 * Server: http://www.bioinf.org.uk/abs/abnum/
 * Python interface: https://gf712.github.io/AbPyTools/index.html
-* ANARCI, stand-alone software for antibody renumbering: https://github.com/oxpig/ANARCI
 * RosettaAntibody: https://nbviewer.org/github/RosettaCommons/PyRosetta.notebooks/blob/master/notebooks/12.01-RosettaAntibody-Framework-and-SimpleMetrics.ipynb
 
 Amber
 =====
 
 * Configure command: cmake .. -DCOMPILER=GNU -DDOWNLOAD_MINICONDA=FALSE -DFORCE_EXTERNAL_LIBS=boost -DCMAKE_INSTALL_PREFIX=/usr/local/install/amber/amber-22.0.0
+
+ANARCI (tool for antibody renumbering)
+======================================
+
+* Server: http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci/
+* Stand-alone: https://github.com/oxpig/ANARCI
 
 OpenMM
 ======

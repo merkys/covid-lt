@@ -10,79 +10,65 @@
 # TODO: Implement an alternative solution using seq.alg.AlignToSEQRES() from OpenStructure:
 # https://openstructure.org/docs/2.3.1/seq/alg/seqalg/
 
-from Bio import AlignIO, PDB, SeqIO, pairwise2
-from tempfile import NamedTemporaryFile
-import re, sys, warnings
-
-warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
+from Bio import pairwise2
+from pdbio.pdbfile import PDBFile
+import sys
 
 files = sys.argv[1:]
 if len(files) == 0:
     files = [sys.stdin]
 
-file = files[0] # for now
+pdb = PDBFile(files[0]) # for now
 
-# A trick to make the script read from STDIN
-if not isinstance(file, str):
-    tempfile = NamedTemporaryFile(mode='w')
-    tempfile.write(file.read())
-    tempfile.seek(0)
-    file = tempfile.name
+for chain in pdb:
+    atom_seq = chain.sequence_atom()
+    seqres_seq = chain.sequence_seqres() # TODO: Check if not None
 
-atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
-seqres_seqs = [seq for seq in SeqIO.parse(file, 'pdb-seqres')]
+    # FIXME: Maybe globalxx() does not have the best scoring parameters.
+    align = pairwise2.align.globalxx(atom_seq.replace('X', '-'), seqres_seq.replace('X', '-'), one_alignment_only=True)[0]
 
-# TODO: Check if there is the same number of chains
+    atom_seq_aligned = list(align[0])
+    seqres_seq_aligned = list(align[1])
+    pos = 0
+    while pos < len(atom_seq_aligned):
+        if atom_seq_aligned[pos] == '-' and seqres_seq_aligned[pos] == '-':
+            atom_seq_aligned.pop(pos)
+            seqres_seq_aligned.pop(pos)
+        pos += 1
 
-parser = PDB.PDBParser()
-model = parser.get_structure(atom_seqs[0].id[0:5], file)[0] # There may be more models?
+    atom_pos = -1
+    seqres_pos = -1
+    last_insertion_code = ' '
+    alignment = []
+    for pos, _ in enumerate(atom_seq_aligned):
+        if atom_seq_aligned[pos] != '-':
+            atom_pos += 1
+        if seqres_seq_aligned[pos] != '-':
+            seqres_pos += 1
+        if atom_seq_aligned[pos] != '-' and seqres_seq_aligned[pos] != '-':
+            alignment.append((seqres_pos, ' '))
+            last_insertion_code = ' '
+        elif atom_seq_aligned[pos] != '-': # insertion with alternative locator
+            if last_insertion_code == ' ':
+                last_insertion_code = 'A'
+            else:
+                last_insertion_code = chr(ord(last_insertion_code)+1)
+            alignment.append((seqres_pos, last_insertion_code))
+        elif seqres_seq_aligned[pos] != '-': # deletion, missing residue
+            pass # Nothing to do here
 
-first_id_of_chain = {}
-for chain in model:
-    residues = [res for res in chain]
-    first_id_of_chain[chain.id] = residues[0].id[1]
+    residues_seen = 0
+    residue_index = {}
+    for residue in chain:
+        residue_index[str(residue.number()) + residue.icode()] = residues_seen
+        residues_seen += 1
 
-atom_seqs_by_chain = {}
-for seq in atom_seqs:
-    atom_seqs_by_chain[seq.id[5]] = seq
-seqres_seqs_by_chain = {}
-for seq in seqres_seqs:
-    chain = seq.id
-    if len(chain) > 1: # This is probably a problem with Bio module
-        chain = chain[5]
-    seqres_seqs_by_chain[chain] = seq
+    def renumber(orig_chain, number, icode):
+        if orig_chain != chain.name:
+            return None, None, None
+        index = residue_index[str(number) + icode]
+        return None, alignment[index][0]+1, alignment[index][1]
 
-adjustments = {}
-for atom_seq in atom_seqs:
-    seqres_seq = seqres_seqs_by_chain[atom_seq.id[5]]
-    # TODO: Check if such exists
-    align = pairwise2.align.globalxx(atom_seq.seq, seqres_seq.seq, one_alignment_only=True)[0]
+    pdb.renumber(renumber)
 
-    gaps_atom, gaps_seqres = 0, 0
-    while align[0][gaps_atom] == '-':
-        gaps_atom += 1
-    while align[1][gaps_seqres] == '-':
-        gaps_seqres += 1
-    if first_id_of_chain[atom_seq.id[5]] != gaps_atom + 1:
-        adjustments[atom_seq.id[5]] = gaps_atom + 1 - first_id_of_chain[atom_seq.id[5]]
-
-renumberings = {
-    'ATOM  ': [ [ 21, 22, 25 ] ],
-    'CIPSEP': [ [ 15, 17, 20 ], [ 29, 31, 34 ] ],
-    'HELIX ': [ [ 19, 21, 24 ], [ 31, 33, 36 ] ],
-    'LINK  ': [ [ 21, 22, 25 ], [ 51, 52, 55 ] ],
-    'SHEET ': [ [ 21, 22, 25 ], [ 32, 33, 36 ], [ 49, 50, 53 ], [ 64, 65, 68 ] ],
-    'SITE  ': [ [ 22, 23, 26 ], [ 33, 34, 37 ], [ 44, 45, 48 ], [ 55, 56, 59 ] ],
-    'SSBOND': [ [ 15, 17, 20 ], [ 29, 31, 34 ] ],
-}
-
-pdb = open(file, 'r')
-for line in pdb:
-    if line[0:6] in renumberings:
-        for renumbering in renumberings[line[0:6]]:
-            chain, start, end = renumbering
-            end += 1
-            if line[chain] in adjustments:
-                new_residue = '    ' + str(int(line[start:end]) + adjustments[line[chain]])
-                line = line[0:start] + new_residue[-4:] + line[end:]
-    print(line, end='')
+print(pdb, end='')
