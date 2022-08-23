@@ -13,30 +13,28 @@ args = parser.parse_args()
 
 pdb = PDBFile(args.files[0]) # Only the first file is processed for now
 
-# The following piece of code is used to renumber residues with insertion codes to plain sequential numbers.
-# This is done as some input files may already be renumbered and such files would only confuse the current script.
-
-last_seen = None
-
-def unset_insertion_codes(chain, number, icode):
-    global last_seen
-    if last_seen and last_seen[0:3] == [chain, number, icode]:
-        number_now = last_seen[3]
-        return None, number_now, ' '
-    if last_seen and last_seen[0:2] == [chain, number]: # Same number, different icode
-        number_now = last_seen[3] + 1
-        last_seen[2:3] = [icode, number_now]
-        return None, number_now, ' '
-    if last_seen and last_seen[0] == chain: # Same chain
-        number_now = last_seen[3] + number - last_seen[1]
-        last_seen = [chain, number, icode, number_now]
-        return None, number_now, ' '
-    last_seen = [chain, number, icode, number]
-    return None, None, ' '
-
-pdb.renumber(unset_insertion_codes)
-
 for chain in pdb:
+    # The following piece of code is used to renumber residues with insertion codes to plain sequential numbers.
+    # This is done as some input files may already be renumbered and such files would only confuse the current script.
+
+    last_seen = None
+    def unset_insertion_codes(number, icode):
+        global last_seen
+        if last_seen and last_seen[0:2] == [number, icode]:
+            number_now = last_seen[2]
+            return number_now, ' '
+        if last_seen and last_seen[0] == number: # Same number, different icode
+            number_now = last_seen[2] + 1
+            last_seen[1:2] = [icode, number_now]
+            return number_now, ' '
+        if last_seen == chain: # Same chain
+            number_now = last_seen[2] + number - last_seen[0]
+            last_seen = [number, icode, number_now]
+            return number_now, ' '
+        last_seen = [number, icode, number]
+        return None, ' '
+    chain.renumber(unset_insertion_codes)
+
     sequence = pdb.sequence(chain.name)
     _, numbered, details, _ = run_anarci([(chain.name, sequence)], scheme='chothia', allow=set(args.chain_types))
     numbered = numbered[0]
@@ -52,7 +50,7 @@ for chain in pdb:
         warn('Chain {} detected as {}'.format(chain.name, chain_type))
     numbered = list(filter(lambda x: x[1] != '-', numbered))
 
-    def renumber(number, icode):
+    def renumber_antibody(number, icode):
         if number <= details['query_start']:
             return number - details['query_start'], ' '
         if number > details['query_end']:
@@ -60,6 +58,6 @@ for chain in pdb:
         else:
             return numbered[number-details['query_start']-1][0][0], numbered[number-details['query_start']-1][0][1]
 
-    chain.renumber(renumber)
+    chain.renumber(renumber_antibody)
 
 print(pdb, end='')
