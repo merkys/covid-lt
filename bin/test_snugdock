@@ -1,0 +1,30 @@
+#!/bin/bash
+
+INPUT=$1
+CHAINS=$2
+
+OUT_DIR=$(basename $INPUT .pdb)/$CHAINS
+
+mkdir --parents $OUT_DIR
+
+CHAIN_MAIN=$(echo $CHAINS | cut -c 4)
+CHAIN_L=$(echo $CHAINS | cut -c 1)
+CHAIN_H=$(echo $CHAINS | cut -c 2)
+
+bin/pdb_select --chain $CHAIN_MAIN --chain $CHAIN_L --chain $CHAIN_H $INPUT \
+    | bin/pdb_rename_chains --map $CHAIN_MAIN:A --map $CHAIN_L:L --map $CHAIN_H:H > $OUT_DIR/input.pdb
+
+chmod -w $OUT_DIR/input.pdb
+
+mkdir $OUT_DIR/ANARCI $OUT_DIR/Rosetta
+
+bin/pdb_renumber_antibody $OUT_DIR/input.pdb > $OUT_DIR/ANARCI/input.pdb
+convert_pdb_to_antibody_numbering_scheme.py $OUT_DIR/input.pdb $OUT_DIR/Rosetta/input.pdb H L c
+
+diff -c <(bin/pdb_list_residues $OUT_DIR/ANARCI/input.pdb) <(bin/pdb_list_residues $OUT_DIR/Rosetta/input.pdb)
+
+(cd $OUT_DIR/ANARCI  && snugdock -s input.pdb -partners LH_A > snugdock.out 2> snugdock.err) & \
+(cd $OUT_DIR/Rosetta && snugdock -s input.pdb -partners LH_A > snugdock.out 2> snugdock.err)
+
+cp $OUT_DIR/ANARCI/input_0001.pdb $OUT_DIR/ANARCI.pdb
+cp $OUT_DIR/Rosetta/input_0001.pdb $OUT_DIR/Rosetta.pdb
