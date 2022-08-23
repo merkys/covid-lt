@@ -12,6 +12,7 @@
 
 from Bio import pairwise2
 from pdbio.pdbfile import PDBFile
+from warnings import warn
 import sys
 
 files = sys.argv[1:]
@@ -65,6 +66,9 @@ for chain in pdb:
 
     def renumber(orig_chain, number, icode):
         if orig_chain != chain.name:
+            return None, None, None
+        if str(number) + icode not in residue_index:
+            warn('chain {}, residue {}, icode \'{}\' not found in the alignment, maybe they are HETATM?'.format(orig_chain, number, icode))
             return None, None, None
         index = residue_index[str(number) + icode]
         return None, alignment[index][0]+1, alignment[index][1]
