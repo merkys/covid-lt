@@ -33,24 +33,14 @@ for chain in pdb:
     # The following piece of code is used to renumber residues with insertion codes to plain sequential numbers.
     # This is done as some input files may already be renumbered and such files would only confuse the current script.
 
-    last_seen = None
-    def unset_insertion_codes(number, icode):
-        global last_seen
-        if last_seen and last_seen[0:2] == [number, icode]:
-            number_now = last_seen[2]
-            return number_now, ' '
-        if last_seen and last_seen[0] == number: # Same number, different icode
-            number_now = last_seen[2] + 1
-            last_seen[1:2] = [icode, number_now]
-            return number_now, ' '
-        if last_seen: # Same chain
-            number_now = last_seen[2] + number - last_seen[0]
-            last_seen = [number, icode, number_now]
-            return number_now, ' '
-        last_seen = [number, icode, number]
-        return None, ' '
+    residue_map = {}
 
-    chain.renumber(unset_insertion_codes)
+    def renumber_plain(number, icode):
+        if str(number) + icode not in residue_map:
+            residue_map[str(number) + icode] = len(residue_map) + 1
+        return residue_map[str(number) + icode], ' '
+
+    chain.renumber(renumber_plain)
 
     def renumber_antibody(number, icode):
         if number <= details['query_start']:
