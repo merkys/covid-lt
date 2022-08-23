@@ -50,6 +50,7 @@ for chain in pdb:
     chain_type = details['chain_type'] # To be somehow stored in the resulting PDB file
     if args.debug:
         warn('Chain {} detected as {}'.format(chain.name, chain_type))
+    numbered = list(filter(lambda x: x[1] != '-', numbered))
 
     def renumber(orig_chain, number, icode):
         if orig_chain != chain.name:
