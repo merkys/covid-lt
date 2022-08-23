@@ -41,6 +41,14 @@ class Chain:
                 last = residue.number()
         return True
 
+    def renumber(self, func):
+        def _renumber_this_chain(chain, number, icode):
+            if chain != self.name:
+                return None, None, None
+            else:
+                return None, *func(number, icode)
+        self.parent.renumber(_renumber_this_chain)
+
     def sequence(self):
         sequence = self.sequence_seqres()
         if sequence:

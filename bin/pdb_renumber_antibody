@@ -52,16 +52,14 @@ for chain in pdb:
         warn('Chain {} detected as {}'.format(chain.name, chain_type))
     numbered = list(filter(lambda x: x[1] != '-', numbered))
 
-    def renumber(orig_chain, number, icode):
-        if orig_chain != chain.name:
-            return None, None, None
+    def renumber(number, icode):
         if number <= details['query_start']:
-            return None, number - details['query_start'], ' '
+            return number - details['query_start'], ' '
         if number > details['query_end']:
-            return None, numbered[-1][0][0] + (number-details['query_end']), ' '
+            return numbered[-1][0][0] + (number-details['query_end']), ' '
         else:
-            return None, numbered[number-details['query_start']-1][0][0], numbered[number-details['query_start']-1][0][1]
+            return numbered[number-details['query_start']-1][0][0], numbered[number-details['query_start']-1][0][1]
 
-    pdb.renumber(renumber)
+    chain.renumber(renumber)
 
 print(pdb, end='')
