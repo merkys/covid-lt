@@ -34,7 +34,7 @@ rule container:
     input:
         "{base}.def"
     output:
-        "{base}.simg"
+        "{base}.sif"
     shell:
         "sudo singularity build {output} {input}"
 
