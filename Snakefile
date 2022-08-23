@@ -193,7 +193,7 @@ rule profix:
     shell:
         """
         TMP_DIR=$(mktemp --directory)
-        bin/pdb_align {input} 2> {log} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb || true
+        PYTHONPATH=. bin/pdb_align {input} 2> {log} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb || true
         if [ ! -s $TMP_DIR/{wildcards.pdbid}.pdb ]
         then
             echo -n > {output}
