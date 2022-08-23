@@ -374,6 +374,14 @@ rule split_pdb:
         touch {output}
         """
 
+rule renumbered:
+    input:
+        "pdb/split/{pfam}/{name}.pdb"
+    output:
+        "pdb/renumbered/{pfam}/{name}.pdb"
+    shell:
+        "convert_pdb_to_antibody_numbering_scheme.py {input} {output} H L c"
+
 rule voromqa:
     input:
         "{path}/{pdbid}.pdb"
