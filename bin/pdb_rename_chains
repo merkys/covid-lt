@@ -106,6 +106,7 @@ for target in files:
         'SEQADV': [ 16 ],
         'SEQRES': [ 11 ],
         'SSBOND': [ 15, 29 ],
+        'TER   ': [ 21 ],
     }
 
     handle.seek(0)

@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+from anarci import run_anarci
+from pdbio.pdbfile import PDBFile
+from warnings import warn
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--chain-types', help='List of chain types that should be recognised by ANARCI', default='HL')
+parser.add_argument('--debug', action='store_true', help='Turn on debug messages')
+args = parser.parse_args()
+
+pdb = PDBFile(args.files[0]) # Only the first file is processed for now
+
+for chain in pdb:
+    sequence = pdb.sequence(chain.name)
+    _, numbered, details, _ = run_anarci([(chain.name, sequence)], scheme='chothia', allow=set(args.chain_types))
+    numbered = numbered[0]
+    details = details[0]
+    if numbered is None:
+        continue
+
+    if len(numbered) > 1:
+        warn('Chain {} has more than one alignment, renumbering according to the first one found'.format(chain.name))
+    numbered = numbered[0][0]
+    details = details[0]
+    chain_type = details['chain_type'] # To be somehow stored in the resulting PDB file
+    if args.debug:
+        warn('Chain {} detected as {}'.format(chain.name, chain_type))
+    numbered = list(filter(lambda x: x[1] != '-', numbered))
+
+    # The following piece of code is used to renumber residues with insertion codes to plain sequential numbers.
+    # This is done as some input files may already be renumbered and such files would only confuse the current script.
+
+    residue_map = {}
+
+    def renumber_plain(number, icode):
+        if str(number) + icode not in residue_map:
+            residue_map[str(number) + icode] = len(residue_map) + 1
+        return residue_map[str(number) + icode], ' '
+
+    chain.renumber(renumber_plain)
+
+    def renumber_antibody(number, icode):
+        if number <= details['query_start']:
+            return number - details['query_start'], ' '
+        if number > details['query_end']:
+            return numbered[-1][0][0] + (number-details['query_end']), ' '
+        else:
+            return numbered[number-details['query_start']-1][0][0], numbered[number-details['query_start']-1][0][1]
+
+    chain.renumber(renumber_antibody)
+
+print(pdb, end='')
