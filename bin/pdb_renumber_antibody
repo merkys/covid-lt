@@ -43,12 +43,13 @@ for chain in pdb:
             number_now = last_seen[2] + 1
             last_seen[1:2] = [icode, number_now]
             return number_now, ' '
-        if last_seen == chain: # Same chain
+        if last_seen: # Same chain
             number_now = last_seen[2] + number - last_seen[0]
             last_seen = [number, icode, number_now]
             return number_now, ' '
         last_seen = [number, icode, number]
         return None, ' '
+
     chain.renumber(unset_insertion_codes)
 
     def renumber_antibody(number, icode):
