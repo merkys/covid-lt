@@ -45,7 +45,7 @@ for chain in pdb:
     def renumber_antibody(number, icode):
         if number <= details['query_start']:
             return number - details['query_start'], ' '
-        if number > details['query_end']:
+        if number >= details['query_end']-1:
             return numbered[-1][0][0] + (number-details['query_end']), ' '
         else:
             return numbered[number-details['query_start']-1][0][0], numbered[number-details['query_start']-1][0][1]
