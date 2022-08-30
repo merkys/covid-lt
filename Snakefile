@@ -1,3 +1,7 @@
+configfile: "configs/main.yaml"
+
+pdb_inputs_dir = config["pdb_inputs_dir"]
+
 wildcard_constraints:
     pdbid = "[A-Z0-9]{4}"
 
@@ -7,7 +11,7 @@ rule test:
         "download_pdb_all.log"
     shell:
         """
-        PDBID=$(ls -1 pdb/pristine/*.pdb | shuf | head -n 1 | sed 's/pdb\/pristine\///; s/\.pdb//')
+        PDBID=$(ls -1 {pdb_inputs_dir}/*.pdb | shuf | head -n 1 | sed 's/pdb\/pristine\///; s/\.pdb//')
         snakemake propka/$PDBID.tab vorocontacts/$PDBID.tab
         """
 
@@ -52,21 +56,21 @@ checkpoint download_pdb_all:
         "alignments/pdb_seqres-PF01401.hmmsearch",
         "alignments/pdb_seqres-PF09408.hmmsearch"
     output:
-        directory("pdb/pristine")
+        directory(pdb_inputs_dir)
     log:
         "download_pdb_all.log"
     threads: 1
     shell:
         """
-        mkdir pdb/pristine
+        mkdir --parents {pdb_inputs_dir}
         grep --no-filename '^>> ' {input} | cut -c 4-7 | tr '[:lower:]' '[:upper:]' \
             | while read PDBID
               do
-                wget https://files.rcsb.org/download/$PDBID.pdb -O pdb/pristine/$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
-                chmod -w pdb/pristine/$PDBID.pdb 2>/dev/null || true # Intentional
+                wget https://files.rcsb.org/download/$PDBID.pdb -O {pdb_inputs_dir}/$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
+                chmod -w {pdb_inputs_dir}/$PDBID.pdb 2>/dev/null || true # Intentional
                 sleep 1
               done
-        grep --no-filename ^REVDAT pdb/pristine/*.pdb > {log}
+        grep --no-filename ^REVDAT {pdb_inputs_dir}/*.pdb > {log}
         """
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
@@ -127,7 +131,7 @@ rule propka_tab:
 
 rule pdb_seqres2fasta:
     input:
-        "pdb/pristine/{pdbid}.pdb"
+        "{pdb_inputs_dir}/{pdbid}.pdb"
     output:
         "pdb-seqres/{pdbid}.fa"
     shell:
@@ -185,7 +189,7 @@ rule cd_hit:
 # After calling profix, care is taken to preserve original LINK, SSBOND etc. records.
 rule profix:
     input:
-        "pdb/pristine/{pdbid}.pdb"
+        "{pdb_inputs_dir}/{pdbid}.pdb"
     output:
         "pdb/fixed/{pdbid}.pdb"
     log:
@@ -312,7 +316,7 @@ rule quality_map:
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
-                bin/pdb_renumber_S1 pdb/pristine/$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 \
+                bin/pdb_renumber_S1 {pdb_inputs_dir}/$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 \
                     | grep ^ATOM \
                     | cut -c 23-26 \
                     | tr -d ' ' \
@@ -349,7 +353,7 @@ rule voromqa:
 def pristine_pdbs_voromqa(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand("pdb/pristine/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand("{pdb_inputs_dir}/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 def fixed_pdbs_voromqa(wildcards):
     from glob import glob
@@ -400,7 +404,7 @@ rule qmean:
 def pristine_pdbs_qmean(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand("pdb/pristine/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand("{pdb_inputs_dir}/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 def fixed_pdbs_qmean(wildcards):
     from glob import glob
