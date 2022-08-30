@@ -19,18 +19,7 @@ rule test:
 rule all:
     input:
         "quality-map.tab",
-        "contact-maps/PF01401/..tab",
-        "contact-maps/PF01401/hbond.tab",
-        "contact-maps/PF01401/hydrophobic.tab",
-        "contact-maps/PF01401/salt.tab",
-        "contact-maps/PF07654/..tab",
-        "contact-maps/PF07654/hbond.tab",
-        "contact-maps/PF07654/hydrophobic.tab",
-        "contact-maps/PF07654/salt.tab",
-        "contact-maps/PF07686/..tab",
-        "contact-maps/PF07686/hbond.tab",
-        "contact-maps/PF07686/hydrophobic.tab",
-        "contact-maps/PF07686/salt.tab"
+        expand("contact-maps/{pfam}/{contact}.tab", pfam=["PF01401", "PF07654", "PF07686"], contact=[".", "hbond", "hydrophobic", "salt"])
 
 rule container:
     input:
@@ -189,7 +178,7 @@ rule cd_hit:
 # After calling profix, care is taken to preserve original LINK, SSBOND etc. records.
 rule profix:
     input:
-        "{pdb_inputs_dir}/{pdbid}.pdb"
+        pdb_inputs_dir + "/{pdbid}.pdb"
     output:
         "pdb/fixed/{pdbid}.pdb"
     log:
