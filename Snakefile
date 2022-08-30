@@ -19,7 +19,9 @@ rule test:
 rule all:
     input:
         "quality-map.tab",
-        expand("contact-maps/{pfam}/{contact}.tab", pfam=["PF01401", "PF07654", "PF07686"], contact=[".", "hbond", "hydrophobic", "salt"])
+        expand("contact-maps/{pfam}/{contact}.tab", pfam=["PF01401", "PF07654", "PF07686"], contact=[".", "hbond", "hydrophobic", "salt"]),
+        "qmean.tab",
+        "voromqa.tab"
 
 rule container:
     input:
