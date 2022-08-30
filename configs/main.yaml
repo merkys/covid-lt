@@ -1,6 +1,6 @@
 pdb_input_dir: pdb/pristine
 
-output_dir: .
+output_dir: ''
 
 # List of PDB IDs for testing purposes. If empty, all interesting PDB files are processed.
 pdb_id_list: # 7DK2
