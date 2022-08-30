@@ -16,20 +16,20 @@ def pristine_pdbs_voromqa(wildcards):
 def fixed_pdbs_voromqa(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand("pdb/fixed/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(output_dir + "/pdb/fixed/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule voromqa_all:
     input:
         pristine_pdbs_voromqa = pristine_pdbs_voromqa,
         fixed_pdbs_voromqa = fixed_pdbs_voromqa
     output:
-        "voromqa.tab"
+        output_dir + "/voromqa.tab"
     shell:
         """
         for VOROMQA in {input.pristine_pdbs_voromqa}
         do
             PRISTINE=$VOROMQA
-            FIXED=pdb/fixed/$(basename $VOROMQA)
+            FIXED={output_dir}/pdb/fixed/$(basename $VOROMQA)
             if [ -s $PRISTINE -a -s $FIXED ]
             then
                 (
@@ -67,20 +67,20 @@ def pristine_pdbs_qmean(wildcards):
 def fixed_pdbs_qmean(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand("pdb/fixed/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(output_dir + "/pdb/fixed/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule qmean_all:
     input:
         pristine_pdbs_qmean = pristine_pdbs_qmean,
         fixed_pdbs_qmean = fixed_pdbs_qmean
     output:
-        "qmean.tab"
+        output_dir + "/qmean.tab"
     shell:
         """
         for QMEAN in {input.pristine_pdbs_qmean}
         do
             PRISTINE=$QMEAN
-            FIXED=pdb/fixed/$(basename $QMEAN)
+            FIXED={output_dir}/pdb/fixed/$(basename $QMEAN)
             if [ -s $PRISTINE -a -s $FIXED ]
             then
                 (

@@ -3,6 +3,8 @@ configfile: "configs/main.yaml"
 pdb_input_dir = config["pdb_input_dir"]
 pdb_id_list = config["pdb_id_list"]
 
+output_dir = config["output_dir"]
+
 wildcard_constraints:
     pdbid = "[A-Z0-9]{4}"
 
@@ -11,10 +13,10 @@ include: "snakefiles/pdb-model-quality.smk"
 # Top-level 'all' rule:
 rule all:
     input:
-        "quality-map.tab",
-        expand("contact-maps/{pfam}/{contact}.tab", pfam=["PF01401", "PF07654", "PF07686"], contact=[".", "hbond", "hydrophobic", "salt"]),
-        "qmean.tab",
-        "voromqa.tab"
+        output_dir + "/quality-map.tab",
+        expand(output_dir + "/contact-maps/{pfam}/{contact}.tab", pfam=["PF01401", "PF07654", "PF07686"], contact=[".", "hbond", "hydrophobic", "salt"]),
+        output_dir + "/qmean.tab",
+        output_dir + "/voromqa.tab"
 
 rule container:
     input:
@@ -70,15 +72,16 @@ checkpoint download_pdb_all:
 # For this project, of interest are contacts between S1, ACE2 and antibody chains
 rule vorocontacts_out:
     input:
-        "pdb/P0DTC2/{pdbid}.pdb"
+        output_dir + "/pdb/P0DTC2/{pdbid}.pdb"
     output:
-        "vorocontacts/{pdbid}.out"
+        output_dir + "/vorocontacts/{pdbid}.out"
     log:
-        "vorocontacts/{pdbid}.log"
+        output_dir + "/vorocontacts/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
         """
+        mkdir --parents {output_dir}/vorocontacts
         voronota-contacts -i {input} > {output} 2> {log} || echo -n > {output}
         test -s {output} || echo WARNING: {output}: rule failed >&2
         test -s {output} || cat {log} >&2
@@ -86,23 +89,24 @@ rule vorocontacts_out:
 
 rule vorocontacts_tab:
     input:
-        "vorocontacts/{pdbid}.out"
+        output_dir + "/vorocontacts/{pdbid}.out"
     output:
-        "vorocontacts/{pdbid}.tab"
+        output_dir + "/vorocontacts/{pdbid}.tab"
     shell:
         "bin/vorocontacts2tab {input} > {output}"
 
 rule propka_out:
     input:
-        "pdb/P0DTC2/{pdbid}.pdb"
+        output_dir + "/pdb/P0DTC2/{pdbid}.pdb"
     output:
-        "propka/{pdbid}.out"
+        output_dir + "/propka/{pdbid}.out"
     log:
-        "propka/{pdbid}.log"
+        output_dir + "/propka/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
         """
+        mkdir --parents {output_dir}/propka
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
         (cd $TMP_DIR && propka3 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
@@ -115,15 +119,15 @@ rule propka_out:
 
 rule propka_tab:
     input:
-        "propka/{pdbid}.out"
+        output_dir + "/propka/{pdbid}.out"
     output:
-        "propka/{pdbid}.tab"
+        output_dir + "/propka/{pdbid}.tab"
     shell:
         "bin/propka2tab --no-coulombic {input} > {output}"
 
 rule pdb_seqres2fasta:
     input:
-        "{pdb_input_dir}/{pdbid}.pdb"
+        pdb_input_dir + "/{pdbid}.pdb"
     output:
         "pdb-seqres/{pdbid}.fa"
     shell:
@@ -183,11 +187,12 @@ rule profix:
     input:
         pdb_input_dir + "/{pdbid}.pdb"
     output:
-        "pdb/fixed/{pdbid}.pdb"
+        output_dir + "/pdb/fixed/{pdbid}.pdb"
     log:
-        "pdb/fixed/{pdbid}.log"
+        output_dir + "/pdb/fixed/{pdbid}.log"
     shell:
         """
+        mkdir --parents {output_dir}/pdb/fixed
         TMP_DIR=$(mktemp --directory)
         PYTHONPATH=. bin/pdb_align {input} 2> {log} | grep --invert-match '^REMARK 465' > $TMP_DIR/{wildcards.pdbid}.pdb || true
         if [ ! -s $TMP_DIR/{wildcards.pdbid}.pdb ]
@@ -219,11 +224,11 @@ rule profix:
 # [1] https://www.rosettacommons.org/docs/latest/application_documentation/antibody/General-Antibody-Options-and-Tips
 rule renumber_antibodies:
     input:
-        "pdb/fixed/{pdbid}.pdb"
+        output_dir + "/pdb/fixed/{pdbid}.pdb"
     output:
-        "pdb/Chothia/{pdbid}.pdb"
+        output_dir + "/pdb/Chothia/{pdbid}.pdb"
     log:
-        "pdb/Chothia/{pdbid}.log"
+        output_dir + "/pdb/Chothia/{pdbid}.log"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -243,13 +248,13 @@ rule renumber_antibodies:
 # Renumber PDB chains containing S1 according to its UNIPROT sequence.
 rule renumber_S1:
     input:
-        pdb = "pdb/Chothia/{pdbid}.pdb",
+        pdb = output_dir + "/pdb/Chothia/{pdbid}.pdb",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
         seq = "sequences/P0DTC2.fa"
     output:
-        "pdb/P0DTC2/{pdbid}.pdb"
+        output_dir + "/pdb/P0DTC2/{pdbid}.pdb"
     log:
-        "pdb/P0DTC2/{pdbid}.log"
+        output_dir + "/pdb/P0DTC2/{pdbid}.log"
     shell:
         """
         if ! bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}
@@ -262,12 +267,12 @@ rule renumber_S1:
 def propka_tabs(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand("propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(output_dir + "/propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 def vorocontacts_tabs(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand("vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(output_dir + "/vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule contact_map:
     input:
@@ -275,7 +280,7 @@ rule contact_map:
         propka_tabs = propka_tabs,
         vorocontacts_tabs = vorocontacts_tabs
     output:
-        "contact-maps/{pfam}/{search}.tab"
+        output_dir + "/contact-maps/{pfam}/{search}.tab"
     singularity:
         "container.sif"
     shell:
@@ -295,7 +300,7 @@ rule quality_map:
         vorocontacts_tabs = vorocontacts_tabs,
         seq = "sequences/P0DTC2.fa"
     output:
-        "quality-map.tab"
+        output_dir + "/quality-map.tab"
     singularity:
         "container.sif"
     shell:
