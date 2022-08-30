@@ -11,7 +11,7 @@ rule test:
         "download_pdb_all.log"
     shell:
         """
-        PDBID=$(ls -1 {pdb_inputs_dir}/*.pdb | shuf | head -n 1 | sed 's/pdb\/pristine\///; s/\.pdb//')
+        PDBID=$(ls -1 {pdb_inputs_dir}/*.pdb | shuf | head -n 1 | xargs -i basename {} .pdb)
         snakemake propka/$PDBID.tab vorocontacts/$PDBID.tab
         """
 
