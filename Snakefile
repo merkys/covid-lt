@@ -8,16 +8,6 @@ wildcard_constraints:
 
 include: "snakefiles/pdb-model-quality.smk"
 
-# A rule to test the pipeline (so far).
-rule test:
-    input:
-        "download_pdb_all.log"
-    shell:
-        """
-        PDBID=$(ls -1 {pdb_inputs_dir}/*.pdb | shuf | head -n 1 | xargs -i basename {} .pdb)
-        snakemake propka/$PDBID.tab vorocontacts/$PDBID.tab
-        """
-
 # Top-level 'all' rule:
 rule all:
     input:
