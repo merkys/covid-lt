@@ -1,6 +1,7 @@
 configfile: "configs/main.yaml"
 
 pdb_inputs_dir = config["pdb_inputs_dir"]
+pdb_id_list = config["pdb_id_list"]
 
 wildcard_constraints:
     pdbid = "[A-Z0-9]{4}"
@@ -56,7 +57,15 @@ checkpoint download_pdb_all:
     shell:
         """
         mkdir --parents {pdb_inputs_dir}
-        grep --no-filename '^>> ' {input} | cut -c 4-7 | tr '[:lower:]' '[:upper:]' \
+        (
+            if [ -z "{pdb_id_list}" ]
+            then
+                grep --no-filename '^>> ' {input} | cut -c 4-7 | tr '[:lower:]' '[:upper:]'
+            else
+                echo {pdb_id_list} >&2
+                echo {pdb_id_list} | tr ' ' '\n'
+            fi
+        ) \
             | while read PDBID
               do
                 wget https://files.rcsb.org/download/$PDBID.pdb -O {pdb_inputs_dir}/$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
