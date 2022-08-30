@@ -11,7 +11,7 @@ rule voromqa:
 def pristine_pdbs_voromqa(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(pdb_inputs_dir + "/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(pdb_input_dir + "/{pdbid}.voromqa", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 def fixed_pdbs_voromqa(wildcards):
     from glob import glob
@@ -62,7 +62,7 @@ rule qmean:
 def pristine_pdbs_qmean(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(pdb_inputs_dir + "/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(pdb_input_dir + "/{pdbid}.qmean", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 def fixed_pdbs_qmean(wildcards):
     from glob import glob

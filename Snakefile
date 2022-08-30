@@ -1,6 +1,6 @@
 configfile: "configs/main.yaml"
 
-pdb_inputs_dir = config["pdb_inputs_dir"]
+pdb_input_dir = config["pdb_input_dir"]
 pdb_id_list = config["pdb_id_list"]
 
 wildcard_constraints:
@@ -40,13 +40,13 @@ checkpoint download_pdb_all:
         "alignments/pdb_seqres-PF01401.hmmsearch",
         "alignments/pdb_seqres-PF09408.hmmsearch"
     output:
-        directory(pdb_inputs_dir)
+        directory(pdb_input_dir)
     log:
         "download_pdb_all.log"
     threads: 1
     shell:
         """
-        mkdir --parents {pdb_inputs_dir}
+        mkdir --parents {pdb_input_dir}
         (
             if [ -z "{pdb_id_list}" ]
             then
@@ -58,11 +58,11 @@ checkpoint download_pdb_all:
         ) \
             | while read PDBID
               do
-                wget https://files.rcsb.org/download/$PDBID.pdb -O {pdb_inputs_dir}/$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
-                chmod -w {pdb_inputs_dir}/$PDBID.pdb 2>/dev/null || true # Intentional
+                wget https://files.rcsb.org/download/$PDBID.pdb -O {pdb_input_dir}/$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
+                chmod -w {pdb_input_dir}/$PDBID.pdb 2>/dev/null || true # Intentional
                 sleep 1
               done
-        grep --no-filename ^REVDAT {pdb_inputs_dir}/*.pdb > {log}
+        grep --no-filename ^REVDAT {pdb_input_dir}/*.pdb > {log}
         """
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
@@ -123,7 +123,7 @@ rule propka_tab:
 
 rule pdb_seqres2fasta:
     input:
-        "{pdb_inputs_dir}/{pdbid}.pdb"
+        "{pdb_input_dir}/{pdbid}.pdb"
     output:
         "pdb-seqres/{pdbid}.fa"
     shell:
@@ -181,7 +181,7 @@ rule cd_hit:
 # After calling profix, care is taken to preserve original LINK, SSBOND etc. records.
 rule profix:
     input:
-        pdb_inputs_dir + "/{pdbid}.pdb"
+        pdb_input_dir + "/{pdbid}.pdb"
     output:
         "pdb/fixed/{pdbid}.pdb"
     log:
@@ -308,7 +308,7 @@ rule quality_map:
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
-                bin/pdb_renumber_S1 {pdb_inputs_dir}/$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 \
+                bin/pdb_renumber_S1 {pdb_input_dir}/$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 \
                     | grep ^ATOM \
                     | cut -c 23-26 \
                     | tr -d ' ' \
