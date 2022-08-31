@@ -315,9 +315,8 @@ rule quality_map:
         """
         TMP_DIR=$(mktemp --directory)
         comm -1 -2 \
-            <(ls -1 {input.propka_tabs} 2>/dev/null | cut -d / -f 2 | sort) \
-            <(ls -1 {input.vorocontacts_tabs} 2>/dev/null | cut -d / -f 2 | sort) \
-          | sed 's/\.tab//' \
+            <(ls -1 {input.propka_tabs} 2>/dev/null | xargs -i basename {} .tab | sort) \
+            <(ls -1 {input.vorocontacts_tabs} 2>/dev/null | xargs -i basename {} .tab | sort) \
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
