@@ -286,8 +286,8 @@ rule contact_map:
     shell:
         """
         comm -1 -2 \
-            <(ls -1 {output_dir}vorocontacts/*.tab | xargs -i basename {} .tab | sort) \
-            <(ls -1 {output_dir}propka/*.tab | xargs -i basename {} .tab | sort) \
+            <(ls -1 {output_dir}vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" > {output}
         """
 
@@ -306,8 +306,8 @@ rule quality_map:
         """
         TMP_DIR=$(mktemp --directory)
         comm -1 -2 \
-            <(ls -1 {input.propka_tabs} 2>/dev/null | xargs -i basename {} .tab | sort) \
-            <(ls -1 {input.vorocontacts_tabs} 2>/dev/null | xargs -i basename {} .tab | sort) \
+            <(ls -1 {input.propka_tabs} 2>/dev/null | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {input.vorocontacts_tabs} 2>/dev/null | xargs -i basename {{}} .tab | sort) \
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
