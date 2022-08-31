@@ -286,8 +286,8 @@ rule contact_map:
     shell:
         """
         comm -1 -2 \
-            <(ls -1 vorocontacts/*.tab | cut -d / -f 2 | sort) \
-            <(ls -1 propka/*.tab | cut -d / -f 2 | sort) \
+            <(ls -1 {output_dir}vorocontacts/*.tab | cut -d / -f 2 | sort) \
+            <(ls -1 {output_dir}propka/*.tab | cut -d / -f 2 | sort) \
           | sed 's/\.tab//' \
           | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" > {output}
         """
