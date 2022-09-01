@@ -308,10 +308,13 @@ rule quality_map:
         seq = "sequences/P0DTC2.fa"
     output:
         output_dir + "quality-map.tab"
+    log:
+        output_dir + "quality-map.log"
     singularity:
         "container.sif"
     shell:
         """
+        echo -n > {log}
         TMP_DIR=$(mktemp --directory)
         comm -1 -2 \
             <(ls -1 {input.propka_tabs} 2>/dev/null | xargs -i basename {{}} .tab | sort) \
@@ -319,7 +322,7 @@ rule quality_map:
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
-                bin/pdb_renumber_S1 {pdb_input_dir}$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 \
+                bin/pdb_renumber_S1 {pdb_input_dir}$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 2>> {log} \
                     | grep ^ATOM \
                     | cut -c 23-26 \
                     | tr -d ' ' \
