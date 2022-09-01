@@ -34,11 +34,9 @@ class Chain:
     def is_contiguous(self):
         last = None
         for residue in self:
-            if last is not None:
-                if residue.number() - last != 1:
-                    return False
-            else:
-                last = residue.number()
+            if last is not None and residue.number() - last != 1:
+                return False
+            last = residue.number()
         return True
 
     def renumber(self, func):
