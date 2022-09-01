@@ -44,7 +44,7 @@ checkpoint download_pdb_all:
     output:
         directory(pdb_input_dir)
     log:
-        "download_pdb_all.log"
+        output_dir + "download_pdb_all.log"
     threads: 1
     shell:
         """
