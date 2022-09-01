@@ -219,36 +219,10 @@ rule profix:
         rm -rf $TMP_DIR
         """
 
-# Renumber antibody chains using Rosetta
-# FIXME: This might not be working as expected at all; from [1] it seems that Rosetta needs properly numbered antibodies in its input.
-# [1] https://www.rosettacommons.org/docs/latest/application_documentation/antibody/General-Antibody-Options-and-Tips
-rule renumber_antibodies:
-    input:
-        output_dir + "pdb/fixed/{pdbid}.pdb"
-    output:
-        output_dir + "pdb/Chothia/{pdbid}.pdb"
-    log:
-        output_dir + "pdb/Chothia/{pdbid}.log"
-    shell:
-        """
-        TMP_DIR=$(mktemp --directory)
-        cp {input} $TMP_DIR
-        (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
-        mv $TMP_DIR/{wildcards.pdbid}.log {log}
-        test -e $TMP_DIR/ROSETTA_CRASH.log && cat $TMP_DIR/ROSETTA_CRASH.log >> {log}
-        if ! mv $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} # Rosetta failures manifest in nonexistent output files
-        then
-            echo -n > {output}
-            echo WARNING: {output}: rule failed >&2
-            cat {log} >&2
-        fi
-        rm -rf $TMP_DIR
-        """
-
 # Renumber PDB chains containing S1 according to its UNIPROT sequence.
 rule renumber_S1:
     input:
-        pdb = output_dir + "pdb/Chothia/{pdbid}.pdb",
+        pdb = output_dir + "pdb/fixed/{pdbid}.pdb",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
         seq = "sequences/P0DTC2.fa"
     output:
