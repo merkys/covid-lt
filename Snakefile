@@ -288,7 +288,7 @@ rule contact_map:
         comm -1 -2 \
             <(ls -1 {output_dir}vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
             <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
-          | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" > {output}
+          | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" > {output}
         """
 
 # Identifies which residues in S1 chains are present in the original PDB files.
