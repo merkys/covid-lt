@@ -3,7 +3,6 @@
 # Rename chains in PDB file.
 
 from pdbio.pdbfile import PDBFile
-from warnings import filterwarnings
 import argparse, re, sys
 
 parser = argparse.ArgumentParser()
