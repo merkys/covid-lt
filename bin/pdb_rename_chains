@@ -84,9 +84,9 @@ for target in files:
         else:
             mapping = dict(zip(target_chains, source_chains))
 
-    for chain in pdb:
+    for chain in target:
         if not chain.name in mapping:
             continue
         chain.rename(mapping[chain.name])
 
-    print(line, end='')
+    print(target, end='')
