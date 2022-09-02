@@ -11,6 +11,7 @@ parser.add_argument('--source', help='A file to take chain names from')
 parser.add_argument('--map', action='append', help='Provide two chain names from which to which to rename (may be several)')
 parser.add_argument('--align', action='append', help='Provide a single letter, \':\' and file name with FASTA sequence to rename if matches')
 parser.add_argument('--identity-threshold', type=float, default=0, help='Specify identity threshold for alignments (default 0)')
+parser.add_argument('--use-anarci', action='store_true', help='Use ANARCI to identify heavy and light antibody chains')
 parser.add_argument('--guess', action='store_true', help='Attempt to identify heavy and light antibody chains from their descriptions')
 args = parser.parse_args()
 
@@ -63,6 +64,18 @@ for target in files:
                 identity = float(line[7:])
                 if identity >= args.identity_threshold:
                     mapping[line[5]] = chain
+
+    if args.use_anarci:
+        from anarci import run_anarci
+        for chain in target:
+            _, numbered, details, _ = run_anarci([(chain.name, chain.sequence())], scheme='chothia', allow=set(['H', 'L']))
+            numbered = numbered[0]
+            details = details[0]
+            if numbered is None:
+                continue
+            if len(numbered) > 1:
+                warn('{}: more than one H or L fragment was found in chain {}, using the first'.format('', chain.name))
+            mapping[chain.name] = details[0]['chain_type']
 
     if args.guess:
         for description, chains in zip(molecule_descriptions, molecule_chains):
