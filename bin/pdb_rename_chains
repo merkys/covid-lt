@@ -3,6 +3,7 @@
 # Rename chains in PDB file.
 
 from io import StringIO
+from warnings import filterwarnings
 import argparse, re, sys
 
 parser = argparse.ArgumentParser()
@@ -59,9 +60,8 @@ for target in files:
     if args.align:
         from Bio import PDB, SeqIO
         from subprocess import Popen, PIPE
-        import warnings
 
-        warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
+        filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
         for alignment in args.align:
             chain = alignment[0]
