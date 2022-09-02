@@ -34,6 +34,9 @@ class PDBFile:
     def chains(self):
         return [chain.name for chain in self]
 
+    def lines(self):
+        return self.content
+
     def sequence(self, chain):
         return self.chain(chain).sequence()
 

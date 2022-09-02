@@ -32,15 +32,12 @@ if len(files) == 0:
     files = [sys.stdin]
 
 for target in files:
-    if isinstance(target, str):
-        target = open(target, 'r')
+    target = PDBFile(target)
 
     target_chains = []
     molecule_descriptions = []
     molecule_chains = []
-    handle = StringIO()
-    for line in target:
-        handle.write(line)
+    for line in target.lines():
         if line[0:6] == 'ATOM  ':
             chain = line[21]
             if chain not in target_chains:
@@ -63,9 +60,10 @@ for target in files:
             chain = alignment[0]
             child = Popen('blastp -query ' + alignment[2:] + ' -subject - -outfmt "6 sseqid pident"', stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
 
-            handle.seek(0)
-            SeqIO.convert(handle, 'pdb-seqres', child.stdin, 'fasta')
-            child.stdin.close() # Do we really need this?
+            for target_chain in target:
+                child.stdin.write('>' + target_chain.name)
+                child.stdin.write(target_chain.sequence_seqres())
+            child.stdin.close()
             for line in child.stdout.readlines():
                 identity = float(line[7:])
                 if identity >= args.identity_threshold:
@@ -86,30 +84,9 @@ for target in files:
         else:
             mapping = dict(zip(target_chains, source_chains))
 
-    renamings = {
-        'ANISOU': [ 21 ],
-        'ATOM  ': [ 21 ],
-        'CIPSEP': [ 15, 29 ],
-        'DBREF ': [ 12 ],
-        'DBREF1': [ 12 ],
-        'DBREF2': [ 12 ],
-        'HELIX ': [ 19, 31 ],
-        'LINK  ': [ 21, 51 ],
-        'SHEET ': [ 21, 32, 49, 64 ],
-        'SITE  ': [ 22, 33, 44, 55 ],
-        'SEQADV': [ 16 ],
-        'SEQRES': [ 11 ],
-        'SSBOND': [ 15, 29 ],
-        'TER   ': [ 21 ],
-    }
+    for chain in pdb:
+        if not chain.name in mapping:
+            continue
+        chain.rename(mapping[chain.name])
 
-    handle.seek(0)
-    mapping[' '] = ' '
-    for line in handle:
-        if line[0:6] in renamings:
-            for renaming in renamings[line[0:6]]:
-                if line[renaming] in mapping: # Might be a link to HETATM record, see 7Q0H
-                    line = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
-        if line[0:6] == 'COMPND' and line[11:17] == 'CHAIN:':
-            line = line[0:17] + line[17:].translate(str.maketrans(mapping))
-        print(line, end='')
+    print(line, end='')
