@@ -19,7 +19,7 @@ class PDBFile:
     def __next__(self):
         self.iterchain += 1
         if self.iterchain < len(self.chains()):
-            return self.chain(sorted(self.chains())[self.iterchain])
+            return self.chain(self.chains()[self.iterchain])
         else:
             raise StopIteration()
 
@@ -32,7 +32,14 @@ class PDBFile:
         return Chain(self, chain)
 
     def chains(self):
-        return set([x[21] for x in self.get('ATOM')])
+        chains = []
+        for line in self.get('ATOM'):
+            if not line[21] in chains:
+                chains.append(line[21])
+        return chains
+
+    def lines(self):
+        return self.content
 
     def sequence(self, chain):
         return self.chain(chain).sequence()
