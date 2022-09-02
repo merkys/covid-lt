@@ -7,7 +7,7 @@ import argparse, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
-parser.add_argument('--chain-types', help='List of chain types that should be recognised by ANARCI', default='HL')
+parser.add_argument('--chain-types', help='List of chain types that should be recognised by ANARCI', default='HKL')
 parser.add_argument('--debug', action='store_true', help='Turn on debug messages')
 args = parser.parse_args()
 
