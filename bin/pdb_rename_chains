@@ -30,8 +30,8 @@ files = args.files
 if len(files) == 0:
     files = [sys.stdin]
 
-for target in files:
-    target = PDBFile(target)
+for filename in files:
+    target = PDBFile(filename)
 
     target_chains = []
     molecule_descriptions = []
@@ -74,7 +74,7 @@ for target in files:
             if numbered is None:
                 continue
             if len(numbered) > 1:
-                warn('{}: more than one H or L fragment was found in chain {}, using the first'.format('', chain.name))
+                warn('{}: more than one H or L fragment was found in chain {}, using the first'.format(filename, chain.name))
             mapping[chain.name] = details[0]['chain_type']
 
     if args.guess:
