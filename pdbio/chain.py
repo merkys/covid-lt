@@ -39,6 +39,21 @@ class Chain:
             last = residue.number()
         return True
 
+    def rename(self, name):
+        def _rename_this_chain(chain, number, icode):
+            if chain != self.name:
+                return None, None, None
+            else:
+                return name, None, None
+        self.parent.renumber(_rename_this_chain)
+        trans_table = str.maketrans({self.name: name})
+        for i, line in enumerate(self.parent.content):
+            if not line.startswith('COMPND'):
+                continue
+            if not line[11:17] == 'CHAIN:':
+                continue
+            self.parent.content[i] = line[0:17] + line[17:].translate(trans_table)
+
     def renumber(self, func):
         def _renumber_this_chain(chain, number, icode):
             if chain != self.name:
