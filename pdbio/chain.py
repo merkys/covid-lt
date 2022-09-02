@@ -40,37 +40,7 @@ class Chain:
         return True
 
     def rename(self, name):
-        def _rename_this_chain(chain, number, icode):
-            if chain != self.name:
-                return None, None, None
-            else:
-                return name, None, None
-        self.parent.renumber(_rename_this_chain)
-
-        # Rename lines containing chain names only
-        trans_table = str.maketrans({self.name: name})
-        renamings = {
-            'DBREF ': [ 12 ],
-            'DBREF1': [ 12 ],
-            'DBREF2': [ 12 ],
-            'SEQADV': [ 16 ],
-            'SEQRES': [ 11 ],
-            'TER   ': [ 21 ],
-        }
-        for i, line in enumerate(self.parent.content):
-            if not line[0:6] in renamings:
-                continue
-            for renaming in renamings[line[0:6]]:
-                if line[renaming] == self.name:
-                    self.parent.content[i] = line[0:renaming] + name + line[renaming+1:]
-
-        # Rename COMPND CHAIN
-        for i, line in enumerate(self.parent.content):
-            if not line.startswith('COMPND'):
-                continue
-            if not line[11:17] == 'CHAIN:':
-                continue
-            self.parent.content[i] = line[0:17] + line[17:].translate(trans_table)
+        self.parent.rename_chains({self.name: name})
 
     def renumber(self, func):
         def _renumber_this_chain(chain, number, icode):
