@@ -25,7 +25,7 @@ if args.map:
 source_chains = None
 if args.source:
     source_pdb = PDBFile(args.source)
-    source_chains = list(source_pdb.chains())
+    source_chains = source_pdb.chains()
 
 files = args.files
 if len(files) == 0:
