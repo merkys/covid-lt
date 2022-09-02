@@ -3,6 +3,7 @@
 # Rename chains in PDB file.
 
 from io import StringIO
+from pdbio.pdbfile import PDBFile
 from warnings import filterwarnings
 import argparse, re, sys
 
@@ -23,13 +24,8 @@ if args.map:
 
 source_chains = None
 if args.source:
-    source_chains = []
-    for line in open(args.source, 'r'):
-        if line[0:6] != 'ATOM  ':
-            continue
-        chain = line[21]
-        if chain not in source_chains:
-            source_chains.append(chain)
+    source_pdb = PDBFile(args.source)
+    source_chains = list(source_pdb.chains())
 
 files = args.files
 if len(files) == 0:
