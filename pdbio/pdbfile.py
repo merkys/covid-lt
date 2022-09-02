@@ -32,7 +32,11 @@ class PDBFile:
         return Chain(self, chain)
 
     def chains(self):
-        return [chain.name for chain in self]
+        chains = []
+        for line in self.get('ATOM'):
+            if not line[21] in chains:
+                chains.append(line[21])
+        return chains
 
     def lines(self):
         return self.content
