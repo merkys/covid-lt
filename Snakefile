@@ -220,8 +220,6 @@ rule fix_pdb:
         fi
         PYTHONPATH=. bin/promod-fix-pdb $TMP_DIR/{wildcards.pdbid}.pdb > $TMP_DIR/fixed.pdb 2>> {log} || true
         PYTHONPATH=. bin/pdb_rename_chains --source {input} $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
-        PYTHONPATH=. bin/promod-fix-pdb $TMP_DIR/{wildcards.pdbid}.pdb > $TMP_DIR/fixed.pdb 2>> {log} || true
-        PYTHONPATH=. bin/pdb_rename_chains --source {input} $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
         if [ ! -s {output} ]
         then
             echo WARNING: {output}: rule failed >&2
