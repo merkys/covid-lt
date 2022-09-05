@@ -60,13 +60,15 @@ for filename in files:
             child = Popen('blastp -query ' + alignment[2:] + ' -subject - -outfmt "6 sseqid pident"', stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
 
             for target_chain in target:
-                child.stdin.write('>' + target_chain.name)
-                child.stdin.write(target_chain.sequence_seqres())
+                child.stdin.write('> ' + target_chain.name + '\n')
+                child.stdin.write(target_chain.sequence_seqres() + '\n')
             child.stdin.close()
             for line in child.stdout.readlines():
                 identity = float(line[7:])
                 if identity >= args.identity_threshold:
                     mapping[line[5]] = chain
+            for line in child.stderr:
+                print(line, file=sys.stderr, end='')
 
     if args.use_anarci:
         from anarci import run_anarci
