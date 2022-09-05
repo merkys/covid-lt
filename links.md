@@ -1,5 +1,3 @@
-* S protein: https://www.uniprot.org/uniprot/P0DTC2
-
 * Rochman et al. (2022) paper on a similar research: https://journals.asm.org/doi/full/10.1128/mbio.00135-22
 
 Antibody numbering
@@ -8,8 +6,24 @@ Antibody numbering
 * Paper on methods: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6198058/
 * Server: http://www.bioinf.org.uk/abs/abnum/
 * Python interface: https://gf712.github.io/AbPyTools/index.html
-* ANARCI, stand-alone software for antibody renumbering: https://github.com/oxpig/ANARCI
 * RosettaAntibody: https://nbviewer.org/github/RosettaCommons/PyRosetta.notebooks/blob/master/notebooks/12.01-RosettaAntibody-Framework-and-SimpleMetrics.ipynb
+
+Amber
+=====
+
+* Configure command: cmake .. -DCOMPILER=GNU -DDOWNLOAD_MINICONDA=FALSE -DFORCE_EXTERNAL_LIBS=boost -DCMAKE_INSTALL_PREFIX=/usr/local/install/amber/amber-22.0.0
+
+ANARCI (tool for antibody renumbering)
+======================================
+
+* Server: http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci/
+* Stand-alone: https://github.com/oxpig/ANARCI
+
+OpenMM
+======
+
+* Energy component analysis using forcefields: https://github.com/openmm/openmm/issues/1463
+* Forcefield and solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
 
 PDB format
 ==========
@@ -71,9 +85,9 @@ HADDOCK
 * HADDOCK 3: https://www.bonvinlab.org/software/haddock3/
 * HADDOCK 3 GitHub: https://github.com/haddocking/haddock3
 
-Other software
-==============
+Other
+=====
 
 * CNS: http://cns-online.org/v1.3/
-* OpenMM forcefield and solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
+* PRODIGY dataset: https://bianca.science.uu.nl/prodigy/dataset
 * pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/

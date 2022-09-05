@@ -11,9 +11,10 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.SeqUtils import seq1
 from subprocess import Popen, PIPE
-import argparse, re, sys, warnings
+from warnings import filterwarnings, warn
+import argparse, re, sys
 
-warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
+filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -71,7 +72,7 @@ for filename in files:
                 residues = [res for res in chain]
                 for pos, aa in enumerate(align[0]):
                     if aa == '-': # insertion in PDB, not sure what to do
-                        print('Insertion in chain {}, after {}'.format(chain.id, pos_in_P0DTC2), file=sys.stderr)
+                        warn('{}: insertion in chain {}, after {}'.format(filename, chain.id, pos_in_P0DTC2))
                         pos_in_PDB = pos_in_PDB + 1
                     elif align[1][pos] == '-': # deletion in PDB, just skip
                         pos_in_P0DTC2 = pos_in_P0DTC2 + 1

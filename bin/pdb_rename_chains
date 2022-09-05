@@ -2,7 +2,8 @@
 
 # Rename chains in PDB file.
 
-from io import StringIO
+from pdbio.pdbfile import PDBFile
+from warnings import warn
 import argparse, re, sys
 
 parser = argparse.ArgumentParser()
@@ -11,8 +12,11 @@ parser.add_argument('--source', help='A file to take chain names from')
 parser.add_argument('--map', action='append', help='Provide two chain names from which to which to rename (may be several)')
 parser.add_argument('--align', action='append', help='Provide a single letter, \':\' and file name with FASTA sequence to rename if matches')
 parser.add_argument('--identity-threshold', type=float, default=0, help='Specify identity threshold for alignments (default 0)')
+parser.add_argument('--use-anarci', action='store_true', help='Use ANARCI to identify heavy and light antibody chains')
 parser.add_argument('--guess', action='store_true', help='Attempt to identify heavy and light antibody chains from their descriptions')
 args = parser.parse_args()
+
+anarci_chain_types = { 'H': 'H', 'K': 'L', 'L': 'L' }
 
 mapping = None
 if args.map:
@@ -22,28 +26,20 @@ if args.map:
 
 source_chains = None
 if args.source:
-    source_chains = []
-    for line in open(args.source, 'r'):
-        if line[0:6] != 'ATOM  ':
-            continue
-        chain = line[21]
-        if chain not in source_chains:
-            source_chains.append(chain)
+    source_pdb = PDBFile(args.source)
+    source_chains = source_pdb.chains()
 
 files = args.files
 if len(files) == 0:
     files = [sys.stdin]
 
-for target in files:
-    if isinstance(target, str):
-        target = open(target, 'r')
+for filename in files:
+    target = PDBFile(filename)
 
     target_chains = []
     molecule_descriptions = []
     molecule_chains = []
-    handle = StringIO()
-    for line in target:
-        handle.write(line)
+    for line in target.lines():
         if line[0:6] == 'ATOM  ':
             chain = line[21]
             if chain not in target_chains:
@@ -57,23 +53,32 @@ for target in files:
         mapping = dict(zip(target_chains, target_chains))
 
     if args.align:
-        from Bio import PDB, SeqIO
         from subprocess import Popen, PIPE
-        import warnings
-
-        warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
         for alignment in args.align:
             chain = alignment[0]
             child = Popen('blastp -query ' + alignment[2:] + ' -subject - -outfmt "6 sseqid pident"', stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
 
-            handle.seek(0)
-            SeqIO.convert(handle, 'pdb-seqres', child.stdin, 'fasta')
-            child.stdin.close() # Do we really need this?
+            for target_chain in target:
+                child.stdin.write('>' + target_chain.name)
+                child.stdin.write(target_chain.sequence_seqres())
+            child.stdin.close()
             for line in child.stdout.readlines():
                 identity = float(line[7:])
                 if identity >= args.identity_threshold:
                     mapping[line[5]] = chain
+
+    if args.use_anarci:
+        from anarci import run_anarci
+        for chain in target:
+            _, numbered, details, _ = run_anarci([(chain.name, chain.sequence())], scheme='chothia', allow=set(anarci_chain_types.keys()))
+            numbered = numbered[0]
+            details = details[0]
+            if numbered is None:
+                continue
+            if len(numbered) > 1:
+                warn('{}: more than one H or L fragment was found in chain {}, using the first'.format(filename, chain.name))
+            mapping[chain.name] = anarci_chain_types[details[0]['chain_type']]
 
     if args.guess:
         for description, chains in zip(molecule_descriptions, molecule_chains):
@@ -90,29 +95,9 @@ for target in files:
         else:
             mapping = dict(zip(target_chains, source_chains))
 
-    renamings = {
-        'ANISOU': [ 21 ],
-        'ATOM  ': [ 21 ],
-        'CIPSEP': [ 15, 29 ],
-        'DBREF ': [ 12 ],
-        'DBREF1': [ 12 ],
-        'DBREF2': [ 12 ],
-        'HELIX ': [ 19, 31 ],
-        'LINK  ': [ 21, 51 ],
-        'SHEET ': [ 21, 32, 49, 64 ],
-        'SITE  ': [ 22, 33, 44, 55 ],
-        'SEQADV': [ 16 ],
-        'SEQRES': [ 11 ],
-        'SSBOND': [ 15, 29 ],
-    }
+    for chain in target:
+        if not chain.name in mapping:
+            continue
+        chain.rename(mapping[chain.name])
 
-    handle.seek(0)
-    mapping[' '] = ' '
-    for line in handle:
-        if line[0:6] in renamings:
-            for renaming in renamings[line[0:6]]:
-                if line[renaming] in mapping: # Might be a link to HETATM record, see 7Q0H
-                    line = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
-        if line[0:6] == 'COMPND' and line[11:17] == 'CHAIN:':
-            line = line[0:17] + line[17:].translate(str.maketrans(mapping))
-        print(line, end='')
+    print(target, end='')

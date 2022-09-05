@@ -15,9 +15,10 @@ chain_identifiers = {
     'SITE  ': [ 22, 33, 44, 55 ],
     'SEQRES': [ 11 ],
     'SSBOND': [ 15, 29 ],
+    'TER   ': [ 21 ],
 }
 
-import argparse, sys
+import argparse, re, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -31,8 +32,46 @@ if len(files) == 0:
 for file in files:
     if isinstance(file, str):
         file = open(file, 'r')
+    compnd = None
     for line in file:
         keyword = line[0:6]
+        if keyword == 'COMPND': # Read in COMPND records
+            if not compnd:
+                compnd = []
+            if re.match('COMPND.{4,5}MOL_ID:', line):
+                compnd.append({ 'MOLECULE': None, 'CHAIN': set(), 'DATA': [] })
+            elif re.match('COMPND.{5}MOLECULE:', line):
+                compnd[-1]['MOLECULE'] = line[21:]
+            elif re.match('COMPND.{5}CHAIN:', line):
+                compnd[-1]['CHAIN'] = set(re.split('\s*,\s*', re.sub('\s*;?\s*\n$', '', line[18:])))
+            else:
+                compnd[-1]['DATA'].append(line[11:])
+            continue
+        if compnd: # Formulate new COMPND records
+            line_nr = 1
+            mol_nr = 1
+            for mol in range(len(compnd)):
+                if set(args.chain).isdisjoint(compnd[mol]['CHAIN']):
+                    continue
+                if line_nr == 1:
+                    print('COMPND    ', end='')
+                else:
+                    print('COMPND% 4d ' % line_nr, end='')
+                print('MOL_ID: %d;' % mol_nr)
+                mol_nr += 1
+                line_nr += 1
+
+                print('COMPND% 4d MOLECULE: %s' % (line_nr, compnd[mol]['MOLECULE']), end='')
+                line_nr += 1
+
+                compnd[mol]['CHAIN'] = compnd[mol]['CHAIN'] & set(args.chain)
+                print('COMPND% 4d CHAIN: %s;' % (line_nr, ', '.join(compnd[mol]['CHAIN'])))
+                line_nr += 1
+
+                for data_line in compnd[mol]['DATA']:
+                    print('COMPND% 4d %s' % (line_nr, data_line), end='')
+                    line_nr += 1
+            compnd = None
         if keyword not in chain_identifiers or not args.chain:
             print(line, end='')
             continue

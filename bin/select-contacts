@@ -40,6 +40,7 @@ parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append')
 parser.add_argument('--contacting-chains', action='store_true', help='List all contacting pairs of chains, suppress normal output')
 parser.add_argument('--exclude-self', action='store_true', help='Exclude contacts of a chain with itself')
+parser.add_argument('--cut', action='append', help='Select only a range of a specified chain, for example, "A:1-10"', default=[])
 # Minimal distance between any two atoms in residues is taken as the distance between them, just as in ProteinTools, ref:
 # Ferruz et al., doi:10.1093/nar/gkab375
 parser.add_argument('--dist', choices=['min'])
@@ -48,6 +49,13 @@ args = parser.parse_args()
 chains = []
 if args.chain:
     chains = sorted(list(''.join(args.chain)))
+
+cuts = {}
+for cut in args.cut:
+    if cut[0] not in cuts:
+        cuts[cut[0]] = []
+    start, end = re.split('-', cut[2:])
+    cuts[cut[0]].append([int(start), int(end)])
 
 files = args.files
 if len(files) == 0:
@@ -69,6 +77,14 @@ for file in files:
             continue
         if args.exclude_self and atom1['chain'] == atom2['chain']:
             continue
+        if atom1['chain'] in cuts:
+            found = list(filter(lambda cut: int(atom1['res_nr']) >= cut[0] and int(atom1['res_nr']) <= cut[1], cuts[atom1['chain']]))
+            if not found:
+                continue
+        if atom2['chain'] in cuts:
+            found = list(filter(lambda cut: int(atom2['res_nr']) >= cut[0] and int(atom2['res_nr']) <= cut[1], cuts[atom2['chain']]))
+            if not found:
+                continue
         contact = '?'
         # Salt bridge filtering is implemented as in ProteinTools, ref:
         # Ferruz et al., doi:10.1093/nar/gkab375
