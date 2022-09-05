@@ -53,3 +53,15 @@ for filename in args.files:
         graph.add_edge(A, B, label=counts[edge])
     draw(graph, pos=nx_agraph.graphviz_layout(graph))
     write_dot(graph, '/dev/stdout')
+
+    if chain_types:
+        HL_contacts = []
+        for (A, B) in graph.edges():
+            if A in chain_types and B in chain_types:
+                HL_contacts.append((A, B))
+        complexes = []
+        for (A, B) in HL_contacts:
+            A_neighbors = set(graph.neighbors(A))
+            B_neighbors = set(graph.neighbors(B))
+            complexes += list(C + A + B for C in A_neighbors & B_neighbors)
+        print(*sorted(complexes), sep='\n')
