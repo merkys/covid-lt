@@ -59,19 +59,6 @@ do
     # Next if no antibody chains found
     test -z "${ANTIBODY_CHAINS}" && continue
 
-    # Taking S1 chain which has the most contacts with the antibody chains
-    S1_CHAIN=$(cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}vorocontacts/${PDB_ID}.tab \
-        | awk "(\$1 ~ /[${S1_CHAINS}]/ && \$6 ~ /[${ANTIBODY_CHAINS}]/) || (\$1 ~ /[${ANTIBODY_CHAINS}]/ && \$6 ~ /[${S1_CHAINS}]/)" \
-        | awk "{ if( \$1 ~ /[${S1_CHAINS}]/ ) { print \$1 } else { print \$6 } }" \
-        | sort \
-        | uniq -c \
-        | sort -nrk1.1 \
-        | head -n1 \
-        | awk '{print $2}')
-
-    # Next if no S1 chains found
-    test -z "${S1_CHAIN}" && continue
-
     for S1_CHAIN in $(echo "${S1_CHAINS}" | grep -o .)
     do
         for OTHER_CHAIN in $(cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}vorocontacts/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
@@ -79,7 +66,7 @@ do
             # Ignore non-antibody chains
             echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
 
-            cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab \
+            cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}vorocontacts/${PDB_ID}.tab \
                 | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
                 | grep "${FILTER}" \
                 | while read C1 R1 C2 R2 DIST
