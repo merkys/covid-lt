@@ -16,6 +16,8 @@ parser.add_argument('--use-anarci', action='store_true', help='Use ANARCI to ide
 parser.add_argument('--guess', action='store_true', help='Attempt to identify heavy and light antibody chains from their descriptions')
 args = parser.parse_args()
 
+anarci_chain_types = { 'H': 'H', 'K': 'L', 'L': 'L' }
+
 mapping = None
 if args.map:
     mapping = {}
@@ -69,14 +71,14 @@ for filename in files:
     if args.use_anarci:
         from anarci import run_anarci
         for chain in target:
-            _, numbered, details, _ = run_anarci([(chain.name, chain.sequence())], scheme='chothia', allow=set(['H', 'L']))
+            _, numbered, details, _ = run_anarci([(chain.name, chain.sequence())], scheme='chothia', allow=set(anarci_chain_types.keys()))
             numbered = numbered[0]
             details = details[0]
             if numbered is None:
                 continue
             if len(numbered) > 1:
                 warn('{}: more than one H or L fragment was found in chain {}, using the first'.format(filename, chain.name))
-            mapping[chain.name] = details[0]['chain_type']
+            mapping[chain.name] = anarci_chain_types[details[0]['chain_type']]
 
     if args.guess:
         for description, chains in zip(molecule_descriptions, molecule_chains):
