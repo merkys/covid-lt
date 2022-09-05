@@ -336,10 +336,10 @@ rule split_pdb:
                     PDB_ID=$(echo $COMPLEX | cut -d _ -f 1)
                     CHAIN_A=$(echo $COMPLEX | cut -c 6)
                     CHAIN_B=$(echo $COMPLEX | cut -c 7)
-                    grep -e ^HEADER -e ^COMPND -e ^DBREF -e ^SEQRES pdb/pristine/$PDB_ID.pdb \
-                        | cat - pdb/P0DTC2/$PDB_ID.pdb \
+                    grep -e ^HEADER -e ^COMPND -e ^DBREF -e ^SEQRES {pdb_input_dir}$PDB_ID.pdb \
+                        | cat - {output_dir}pdb/P0DTC2/$PDB_ID.pdb \
                         | bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B \
-                        | bin/pdb_cut_S1 --S1-chain $CHAIN_A --contacts <(bin/select-contacts --cut $CHAIN_B:1-110 vorocontacts/$PDB_ID.tab) \
+                        | bin/pdb_cut_S1 --S1-chain $CHAIN_A --contacts <(bin/select-contacts --cut $CHAIN_B:1-110 {output_dir}vorocontacts/$PDB_ID.tab) \
                         | PYTHONPATH=. bin/pdb_rename_chains --map "$CHAIN_A:A" --map "$CHAIN_B:H" \
                         | PYTHONPATH=. bin/pdb_rename_chains --guess \
                         | PYTHONPATH=. bin/pdb_rename_chains --align L:sequences/P01834.fa --align L:sequences/P0CG04.fa --identity-threshold 80 \
