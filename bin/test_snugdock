@@ -23,8 +23,15 @@ convert_pdb_to_antibody_numbering_scheme.py $OUT_DIR/input.pdb $OUT_DIR/Rosetta/
 
 diff -c <(bin/pdb_list_residues $OUT_DIR/ANARCI/input.pdb) <(bin/pdb_list_residues $OUT_DIR/Rosetta/input.pdb)
 
-(cd $OUT_DIR/ANARCI  && snugdock -s input.pdb -partners LH_A > snugdock.out 2> snugdock.err) & \
-(cd $OUT_DIR/Rosetta && snugdock -s input.pdb -partners LH_A > snugdock.out 2> snugdock.err)
+(cd $OUT_DIR/ANARCI  && snugdock -s input.pdb -partners LH_A > snugdock.out 2> snugdock.err) &
+PID1=$!
+(cd $OUT_DIR/Rosetta && snugdock -s input.pdb -partners LH_A > snugdock.out 2> snugdock.err) &
+PID2=$!
+
+wait $PID1
+wait $PID2
 
 cp $OUT_DIR/ANARCI/input_0001.pdb $OUT_DIR/ANARCI.pdb
 cp $OUT_DIR/Rosetta/input_0001.pdb $OUT_DIR/Rosetta.pdb
+
+diff $OUT_DIR/ANARCI/score.sc $OUT_DIR/Rosetta/score.sc

@@ -22,11 +22,15 @@ if len(files) == 0:
 pdb = PDBFile(files[0]) # for now
 
 for chain in pdb:
-    atom_seq = chain.sequence_atom()
-    seqres_seq = chain.sequence_seqres() # TODO: Check if not None
+    atom_seq = chain.sequence_atom().replace('X', '-')
+    seqres_seq = chain.sequence_seqres().replace('X', '-') # TODO: Check if not None
+
+    if atom_seq.count('-') == len(atom_seq) or seqres_seq.count('-') == len(seqres_seq):
+        warn('ATOM and/or SEQRES sequence for chain {} is undefined'.format(chain.name))
+        continue
 
     # FIXME: Maybe globalxx() does not have the best scoring parameters.
-    align = pairwise2.align.globalxx(atom_seq.replace('X', '-'), seqres_seq.replace('X', '-'), one_alignment_only=True)[0]
+    align = pairwise2.align.globalxx(atom_seq, seqres_seq, one_alignment_only=True)[0]
 
     atom_seq_aligned = list(align[0])
     seqres_seq_aligned = list(align[1])
