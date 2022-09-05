@@ -58,6 +58,9 @@ for filename in args.files:
         HL_contacts = []
         for (A, B) in graph.edges():
             if A in chain_types and B in chain_types:
+                # Order is H, L
+                if chain_types[A] == 'L':
+                    A, B = B, A
                 HL_contacts.append((A, B))
         complexes = []
         for (A, B) in HL_contacts:
