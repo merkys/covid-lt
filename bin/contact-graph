@@ -4,11 +4,24 @@
 
 from networkx import Graph, draw, nx_agraph
 from networkx.drawing.nx_pydot import write_dot
-import sys
+from pdbio.pdbfile import PDBFile
+import argparse, sys
 
-graph = Graph()
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--pdb', help='Corresponding PDB file to identify chains')
+args = parser.parse_args()
 
-for filename in sys.argv[1:]:
+chain_types = None
+if args.pdb:
+    pdb = PDBFile(args.pdb)
+    chain_types = {}
+    for chain in pdb:
+        chain_type = chain.antibody_type()
+        if chain_type:
+            chain_types[chain.name] = chain_type
+
+for filename in args.files:
     counts = {}
     for line in open(filename, 'r'):
         atom1, atom2 = {}, {}
@@ -23,6 +36,14 @@ for filename in sys.argv[1:]:
         counts[chains] += 1
     graph = Graph()
     for edge in counts:
+        A, B = list(edge)
+        if chain_types:
+            # Contacts between S1 chains are not interesting:
+            if A not in chain_types and B not in chain_types:
+                continue
+            # Contacts between antibody chains of the same type as well:
+            if A in chain_types and B in chain_types and chain_types[A] == chain_types[B]:
+                continue
         graph.add_edge(edge[0], edge[1], label=counts[edge])
     draw(graph, pos=nx_agraph.graphviz_layout(graph))
     write_dot(graph, '/dev/stdout')
