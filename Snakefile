@@ -231,13 +231,13 @@ rule fix_pdb:
 # Optimize structure using AMBER forcefield
 rule optimize:
     input:
-        "pdb/fixed/{pdbid}.pdb"
+        output_dir + "pdb/fixed/{pdbid}.pdb"
     output:
-        "pdb/optimized/{pdbid}.pdb"
+        output_dir + "pdb/optimized/{pdbid}.pdb"
     log:
-        "pdb/optimized/{pdbid}.log"
+        output_dir + "pdb/optimized/{pdbid}.log"
     shell:
-        "bin/pdb_openmm_minimize_amber {input} > {output} 2> {log} || echo -n > {output}"
+        "bin/pdb_openmm_minimize_amber --platform CUDA {input} > {output} 2> {log} || echo -n > {output}"
 
 # Renumber PDB chains containing S1 according to its UNIPROT sequence.
 rule renumber_S1:
