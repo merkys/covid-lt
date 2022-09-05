@@ -3,10 +3,14 @@
 from Bio import AlignIO, PDB, SeqIO, pairwise2
 from Bio.Seq import MutableSeq
 from Bio.SeqRecord import SeqRecord
+from ost import io, seq
+from pdbio.pdbfile import PDBFile
 from promod3 import modelling
-import argparse, re, sys, warnings
+from tempfile import NamedTemporaryFile
+from warnings import filterwarnings, warn
+import argparse, re, sys
 
-warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
+filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -17,9 +21,9 @@ args = parser.parse_args()
 file = args.files[0] # for now
 
 # Extract sequences from the input file
-atom_seqs = [seq for seq in SeqIO.parse(file, 'pdb-atom')]
-seqres_seqs = [seq for seq in SeqIO.parse(file, 'pdb-seqres')]
-chains = [seq.id[5] for seq in atom_seqs]
+atom_seqs = [s for s in SeqIO.parse(file, 'pdb-atom')]
+seqres_seqs = [s for s in SeqIO.parse(file, 'pdb-seqres')]
+chains = [s.id[5] for s in atom_seqs]
 
 # TODO: Check if chains are the same
 
@@ -38,21 +42,19 @@ for line in open(file, 'r').readlines():
     last[chain] = resno
 
 atom_seqs_by_chain = {}
-for seq in atom_seqs:
-    atom_seqs_by_chain[seq.id[5]] = seq
+for s in atom_seqs:
+    atom_seqs_by_chain[s.id[5]] = s
 seqres_seqs_by_chain = {}
-for seq in seqres_seqs:
-    chain = seq.id
+for s in seqres_seqs:
+    chain = s.id
     if len(chain) > 1: # This is probably a problem with Bio module
         chain = chain[5]
-    seqres_seqs_by_chain[chain] = seq
+    seqres_seqs_by_chain[chain] = s
 
 sequence_seq = None
 structure_seq = None
 
 pdbid = None
-
-from ost import io, seq
 
 pdb = io.LoadPDB(file)
 alignments = seq.AlignmentList()
@@ -114,4 +116,11 @@ if args.simulate:
     simulation = mm.Simulation(model, settings)
     model = simulation.GetEntity()
 
-io.SavePDB(model, '/dev/stdout')
+# Check if the resulting PDB file does not have gaps
+output_pdb_file = NamedTemporaryFile()
+io.SavePDB(model, output_pdb_file.name)
+pdb = PDBFile(output_pdb_file.name)
+for chain in pdb:
+    if not chain.is_contiguous():
+        warn('{}: chain {} is not contiguous after fixing'.format(file, chain.name))
+print(pdb, end='')

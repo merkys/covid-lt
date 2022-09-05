@@ -19,7 +19,7 @@ class PDBFile:
     def __next__(self):
         self.iterchain += 1
         if self.iterchain < len(self.chains()):
-            return self.chain(sorted(self.chains())[self.iterchain])
+            return self.chain(self.chains()[self.iterchain])
         else:
             raise StopIteration()
 
@@ -32,10 +32,51 @@ class PDBFile:
         return Chain(self, chain)
 
     def chains(self):
-        return set([x[21] for x in self.get('ATOM')])
+        chains = []
+        for line in self.get('ATOM'):
+            if not line[21] in chains:
+                chains.append(line[21])
+        return chains
+
+    def lines(self):
+        return self.content
 
     def sequence(self, chain):
         return self.chain(chain).sequence()
+
+    def rename_chains(self, mapping):
+        # Rename chains in ATOM and similar lines
+        def _rename_all_chains(chain, number, icode):
+            if chain in mapping:
+                return mapping[chain], None, None
+            else:
+                return None, None, None
+        self.renumber(_rename_all_chains)
+
+        # Rename lines containing chain names only
+        renamings = {
+            'DBREF ': [ 12 ],
+            'DBREF1': [ 12 ],
+            'DBREF2': [ 12 ],
+            'SEQADV': [ 16 ],
+            'SEQRES': [ 11 ],
+            'TER   ': [ 21 ],
+        }
+        for i, line in enumerate(self.content):
+            if not line[0:6] in renamings:
+                continue
+            for renaming in renamings[line[0:6]]:
+                if line[renaming] in mapping:
+                    self.content[i] = line[0:renaming] + mapping[line[renaming]] + line[renaming+1:]
+
+        # Rename COMPND CHAIN
+        trans_table = str.maketrans(mapping)
+        for i, line in enumerate(self.content):
+            if not line.startswith('COMPND'):
+                continue
+            if not line[11:17] == 'CHAIN:':
+                continue
+            self.content[i] = line[0:17] + line[17:].translate(trans_table)
 
     def renumber(self, func):
         renumberings = {
