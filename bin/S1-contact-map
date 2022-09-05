@@ -66,7 +66,7 @@ do
             # Ignore non-antibody chains
             echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
 
-            cat propka/${PDB_ID}.tab vorocontacts/${PDB_ID}.tab \
+            cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}vorocontacts/${PDB_ID}.tab \
                 | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
                 | grep "${FILTER}" \
                 | while read C1 R1 C2 R2 DIST
