@@ -323,10 +323,9 @@ rule quality_map:
 
 rule split_pdb:
     input:
-        "download_pdb_all.log",
-        contact_map = "contact-maps/{name}/..tab"
+        contact_map = output_dir + "contact-maps/{name}/..tab"
     output:
-        "pdb/split/{name}/split.log"
+        output_dir + "pdb/split/{name}/split.log"
     shell:
         """
         mkdir --parents $(dirname {output})
