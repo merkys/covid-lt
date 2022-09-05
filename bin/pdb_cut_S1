@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from numpy import histogram
+from warnings import warn
 import argparse, sys
 
 parser = argparse.ArgumentParser()
@@ -61,6 +62,10 @@ for filename in files:
                 footer.append(line)
             else:
                 header.append(line)
+
+    if not contacts_now:
+        warn('{}: no contacts with chain {} observed, no output'.format(filename, args.S1_chain))
+        continue
 
     S1_domain_cuts_now = S1_domain_cuts
     if max(contacts_now) >= S1_domain_cuts[-1]:
