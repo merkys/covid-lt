@@ -10,6 +10,7 @@ import argparse, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
 parser.add_argument('--pdb', help='Corresponding PDB file to identify chains')
+parser.add_argument('--output-complexes', action='store_true', help='Print complexes (S1, heavy chain, light chain)')
 args = parser.parse_args()
 
 fill_colors = { 'H': 'black', 'L': 'gray' }
@@ -51,10 +52,10 @@ for filename in args.files:
                 if chain in chain_types:
                     graph.add_node(chain, fillcolor=fill_colors[chain_types[chain]], fontcolor=font_colors[chain_types[chain]], style='filled')
         graph.add_edge(A, B, label=counts[edge])
-    draw(graph, pos=nx_agraph.graphviz_layout(graph))
-    write_dot(graph, '/dev/stdout')
 
-    if chain_types:
+    if args.output_complexes:
+        if chain_types is None:
+            raise ValueError('Contact list is not given via \'--pdb\' option, cannot find complexes')
         HL_contacts = []
         for (A, B) in graph.edges():
             if A in chain_types and B in chain_types:
@@ -68,3 +69,6 @@ for filename in args.files:
             B_neighbors = set(graph.neighbors(B))
             complexes += list(C + A + B for C in A_neighbors & B_neighbors)
         print(*sorted(complexes), sep='\n')
+    else:
+        draw(graph, pos=nx_agraph.graphviz_layout(graph))
+        write_dot(graph, '/dev/stdout')
