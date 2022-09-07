@@ -349,19 +349,6 @@ rule split_pdb:
         touch {output}
         """
 
-rule snugdock:
-    input:
-        output_dir + "pdb/renumbered/{pfam}/{name}.pdb"
-    output:
-        output_dir + "pdb/snugdock/{pfam}/{name}.pdb"
-    shell:
-        """
-        mkdir --parents $(dirname {output})
-        TMP_DIR=$(mktemp --directory)
-        snugdock -s {input} -partners LH_A
-        rm -rf $TMP_DIR
-        """
-
 rule prodigy:
     input:
         "{path}.pdb"
