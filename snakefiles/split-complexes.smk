@@ -27,3 +27,14 @@ rule extract_complex:
         bin/pdb_select --chain $(echo {wildcards.chains} | cut -c 1) --chain $(echo {wildcards.chains} | cut -c 2) --chain $(echo {wildcards.chains} | cut -c 3) {input} \
             | PYTHONPATH=. bin/pdb_rename_chains --map $(echo {wildcards.chains} | cut -c 1):A --map $(echo {wildcards.chains} | cut -c 2):H --map $(echo {wildcards.chains} | cut -c 3):L > {output}
         """
+
+rule renumbered:
+    input:
+        output_dir + "pdb/antibodies/complexes/{name}.pdb"
+    output:
+        output_dir + "pdb/antibodies/renumbered/{name}.pdb"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        convert_pdb_to_antibody_numbering_scheme.py {input} {output} H L c
+        """

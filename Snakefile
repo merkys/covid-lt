@@ -349,17 +349,6 @@ rule split_pdb:
         touch {output}
         """
 
-rule renumbered:
-    input:
-        output_dir + "pdb/split/{pfam}/{name}.pdb"
-    output:
-        output_dir + "pdb/renumbered/{pfam}/{name}.pdb"
-    shell:
-        """
-        mkdir --parents $(dirname {output})
-        convert_pdb_to_antibody_numbering_scheme.py {input} {output} H L c
-        """
-
 rule snugdock:
     input:
         output_dir + "pdb/renumbered/{pfam}/{name}.pdb"
