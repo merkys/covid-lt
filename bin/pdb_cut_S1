@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from numpy import histogram
+from pdbio.pdbfile import PDBFile
 from warnings import warn
 import argparse, sys
 
@@ -37,31 +38,13 @@ if args.contacts:
         contacts[atom2['chain']].add(int(atom1['res_nr']))
 
 for filename in files:
-    header = []
-    atoms = None
-    footer = []
+    pdb = PDBFile(filename)
+
+    # Find contacts that are visible in the PDB file
     contacts_now = set()
-
-    handle = filename
-    if isinstance(handle, str):
-        handle = open(handle, 'r')
-
-    for line in handle:
-        if line.startswith('ATOM  '):
-            chain = line[21]
-            residue = int(line[22:26])
-            if not atoms:
-                atoms = {}
-            if chain not in atoms:
-                atoms[chain] = []
-            atoms[chain].append(line)
-            if contacts and chain in contacts:
-                contacts_now.update(contacts[chain])
-        else:
-            if atoms:
-                footer.append(line)
-            else:
-                header.append(line)
+    for chain in pdb:
+        if contacts and chain.name in contacts:
+            contacts_now.update(contacts[chain.name])
 
     if not contacts_now:
         warn('{}: no contacts with chain {} observed, no output'.format(filename, args.S1_chain))
@@ -76,15 +59,10 @@ for filename in files:
     cut_range = [S1_domain_cuts_now[min(domains_needed)], S1_domain_cuts_now[max(domains_needed)+1]]
 
     if cut_range[1] - cut_range[0] > args.max_length:
-        print('Cannot cut S1 chain to the required limits without losing contacts', file=sys.stderr)
+        warn('{}: cannot cut S1 chain to the required limits without losing contacts'.format(filename))
 
-    print(''.join(header), end='')
-    for chain in sorted(atoms):
-        if chain == args.S1_chain:
-            for line in atoms[chain]:
-                residue = int(line[22:26])
-                if residue >= cut_range[0] and residue <= cut_range[1]:
-                    print(line, end='')
-        else:
-            print(''.join(atoms[chain]), end='')
-    print(''.join(footer), end='')
+    for residue in pdb.chain(args.S1_chain):
+        if residue.number() < cut_range[0] or residue.number() > cut_range[1]:
+            residue.delete()
+
+    print(pdb, end='')
