@@ -8,8 +8,8 @@ output_dir = config["output_dir"]
 wildcard_constraints:
     pdbid = "[A-Z0-9]{4}"
 
+include: "snakefiles/antibody-complexes.smk"
 include: "snakefiles/pdb-model-quality.smk"
-include: "snakefiles/split-complexes.smk"
 
 # Top-level 'all' rule:
 rule all:
