@@ -13,3 +13,8 @@ class Residue:
 
     def resname(self):
         return self.parent.parent.content[self.start][17:20]
+
+    def delete(self):
+        # FIXME: Other fields should as well be updated to reflect the removal of this residue
+        # FIXME: There may be other fields between start and end
+        self.parent.parent.content = self.parent.parent.content[:self.start] + self.parent.parent.content[self.end+1]

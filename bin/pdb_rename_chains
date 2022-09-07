@@ -60,8 +60,8 @@ for filename in files:
             child = Popen('blastp -query ' + alignment[2:] + ' -subject - -outfmt "6 sseqid pident"', stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, text=True)
 
             for target_chain in target:
-                child.stdin.write('>' + target_chain.name)
-                child.stdin.write(target_chain.sequence_seqres())
+                child.stdin.write('> ' + target_chain.name + '\n')
+                child.stdin.write(target_chain.sequence_seqres() + '\n')
             child.stdin.close()
             for line in child.stdout.readlines():
                 identity = float(line[7:])
