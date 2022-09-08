@@ -8,6 +8,7 @@ output_dir = config["output_dir"]
 wildcard_constraints:
     pdbid = "[A-Z0-9]{4}"
 
+include: "snakefiles/antibody-complexes.smk"
 include: "snakefiles/pdb-model-quality.smk"
 
 # Top-level 'all' rule:
@@ -15,7 +16,6 @@ rule all:
     input:
         output_dir + "quality-map.tab",
         expand(output_dir + "contact-maps/{pfam}/{contact}.tab", pfam=["PF01401", "PF07654", "PF07686"], contact=[".", "hbond", "hydrophobic", "salt"]),
-        expand(output_dir + "pdb/split/{pfam}/split.log", pfam=["PF01401", "PF07686"]),
         output_dir + "qmean.tab",
         output_dir + "voromqa.tab"
 
@@ -329,57 +329,6 @@ rule quality_map:
                 fi
             done
         cp $TMP_DIR/table.tab {output}
-        rm -rf $TMP_DIR
-        """
-
-rule split_pdb:
-    input:
-        contact_map = output_dir + "contact-maps/{name}/..tab"
-    output:
-        output_dir + "pdb/split/{name}/split.log"
-    shell:
-        """
-        mkdir --parents $(dirname {output})
-        head -n 1 {input.contact_map} \
-            | sed 's/\\t/\\n/g' \
-            | while read COMPLEX
-                do
-                    PDB_ID=$(echo $COMPLEX | cut -d _ -f 1)
-                    CHAIN_A=$(echo $COMPLEX | cut -c 6)
-                    CHAIN_B=$(echo $COMPLEX | cut -c 7)
-                    grep -e ^HEADER -e ^COMPND -e ^DBREF -e ^SEQRES {pdb_input_dir}$PDB_ID.pdb \
-                        | cat - {output_dir}pdb/P0DTC2/$PDB_ID.pdb \
-                        | bin/pdb_select --chain $CHAIN_A --chain $CHAIN_B \
-                        | PYTHONPATH=. bin/pdb_cut_S1 --S1-chain $CHAIN_A --contacts <(bin/select-contacts --cut $CHAIN_B:1-110 {output_dir}vorocontacts/$PDB_ID.tab) \
-                        | PYTHONPATH=. bin/pdb_rename_chains --map "$CHAIN_A:A" --map "$CHAIN_B:H" \
-                        | PYTHONPATH=. bin/pdb_rename_chains --guess \
-                        | PYTHONPATH=. bin/pdb_rename_chains --align L:sequences/P01834.fa --align L:sequences/P0CG04.fa --identity-threshold 80 \
-                            > $(dirname {output})/$COMPLEX.pdb || true
-                done
-        touch {output}
-        """
-
-rule renumbered:
-    input:
-        output_dir + "pdb/split/{pfam}/{name}.pdb"
-    output:
-        output_dir + "pdb/renumbered/{pfam}/{name}.pdb"
-    shell:
-        """
-        mkdir --parents $(dirname {output})
-        convert_pdb_to_antibody_numbering_scheme.py {input} {output} H L c
-        """
-
-rule snugdock:
-    input:
-        output_dir + "pdb/renumbered/{pfam}/{name}.pdb"
-    output:
-        output_dir + "pdb/snugdock/{pfam}/{name}.pdb"
-    shell:
-        """
-        mkdir --parents $(dirname {output})
-        TMP_DIR=$(mktemp --directory)
-        snugdock -s {input} -partners LH_A
         rm -rf $TMP_DIR
         """
 
