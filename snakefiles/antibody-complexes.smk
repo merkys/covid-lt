@@ -21,6 +21,8 @@ rule extract_complex:
         output_dir + "pdb/P0DTC2/{pdbid}.pdb"
     output:
         output_dir + "pdb/antibodies/complexes/{pdbid}_{chains}.pdb"
+    singularity:
+        "container.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
