@@ -44,11 +44,13 @@ rule snugdock:
         output_dir + "pdb/antibodies/renumbered/{name}.pdb"
     output:
         output_dir + "pdb/antibodies/snugdock/{name}.pdb"
+    log:
+        output_dir + "pdb/antibodies/snugdock/{name}.log"
     shell:
         """
         mkdir --parents $(dirname {output})
         TMP_DIR=$(mktemp --directory)
-        (cd $TMP_DIR && snugdock -s {input} -partners LH_A)
+        (cd $TMP_DIR && snugdock -s {input} -partners LH_A) > {log}
         mv $TMP_DIR/{wildcards.name}_0001.pdb {output}
         rm -rf $TMP_DIR
         """
