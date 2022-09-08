@@ -53,6 +53,7 @@ Rosetta
 
 * Comparative modelling demo: https://www.rosettacommons.org/demos/latest/public/legacy_comparative_modeling/comparative_modeling
 * PyRosetta: https://www.pyrosetta.org/documentation/tutorials
+* SnugDock: https://www.rosettacommons.org/docs/latest/application_documentation/antibody/snugdock
 
 MutaBind2
 =========
