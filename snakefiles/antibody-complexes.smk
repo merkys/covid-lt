@@ -48,6 +48,7 @@ rule snugdock:
         """
         mkdir --parents $(dirname {output})
         TMP_DIR=$(mktemp --directory)
-        snugdock -s {input} -partners LH_A
+        (cd $TMP_DIR && snugdock -s {input} -partners LH_A)
+        mv $TMP_DIR/{wildcards.name}_0001.pdb {output}
         rm -rf $TMP_DIR
         """
