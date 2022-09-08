@@ -16,7 +16,6 @@ rule all:
     input:
         output_dir + "quality-map.tab",
         expand(output_dir + "contact-maps/{pfam}/{contact}.tab", pfam=["PF01401", "PF07654", "PF07686"], contact=[".", "hbond", "hydrophobic", "salt"]),
-        expand(output_dir + "pdb/split/{pfam}/split.log", pfam=["PF01401", "PF07686"]),
         output_dir + "qmean.tab",
         output_dir + "voromqa.tab"
 
