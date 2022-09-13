@@ -34,6 +34,9 @@ class Chain:
                 break
         return Residue(self, start, end)
 
+    def __len__(self):
+        return len([residue for residue in self])
+
     def antibody_type(self):
         from anarci import run_anarci
         _, numbered, details, _ = run_anarci([(self.name, self.sequence())], scheme='chothia', allow=set(self.anarci_chain_types.keys()))
