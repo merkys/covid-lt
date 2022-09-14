@@ -45,7 +45,8 @@ rule snugdock:
     input:
         output_dir + "pdb/antibodies/renumbered/{name}.pdb"
     output:
-        output_dir + "pdb/antibodies/snugdock/{name}.pdb"
+        pdb = output_dir + "pdb/antibodies/snugdock/{name}.pdb",
+        score = output_dir + "pdb/antibodies/snugdock/{name}.score"
     log:
         output_dir + "pdb/antibodies/snugdock/{name}.log"
     shell:
@@ -53,6 +54,7 @@ rule snugdock:
         mkdir --parents $(dirname {output})
         TMP_DIR=$(mktemp --directory)
         (cd $TMP_DIR && snugdock -s {input} -partners LH_A) > {log}
-        mv $TMP_DIR/{wildcards.name}_0001.pdb {output}
+        mv $TMP_DIR/{wildcards.name}_0001.pdb {output.pdb}
+        mv $TMP_DIR/score.sc {output.score}
         rm -rf $TMP_DIR
         """
