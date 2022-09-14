@@ -22,6 +22,7 @@ ANARCI (tool for antibody renumbering)
 OpenMM
 ======
 
+* Complex binding free energy calculation: https://github.com/openmm/openmm/issues/2880
 * Energy component analysis using forcefields: https://github.com/openmm/openmm/issues/1463
 * Forcefield and solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
 
