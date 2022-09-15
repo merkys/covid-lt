@@ -29,5 +29,5 @@ rule merge_dG_datasets:
     shell:
         """
         tail -n +2 {input.prodigy} | cut -d , -f 1,2,4 | sed 's/.pdb//' | sed 's/:/,/g' | sed 's/,/\t/g' > {output}
-        tail -n +2 {input.skempi} | cut -d ';' -f 1,9 | sed 's/_/;/g' | sed 's/;/\t/g' >> {output}
+        tail -n +2 {input.skempi} | cut -d ';' -f 1,9 | sed 's/_/;/g' | sed 's/;/\t/g' | awk '{{print $1 "\t" $2 "\t" $3 "\t" (8.314/4184) * (273.15 + 25.0) * log($4)}}' >> {output}
         """
