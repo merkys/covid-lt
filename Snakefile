@@ -9,6 +9,7 @@ wildcard_constraints:
     pdbid = "[A-Z0-9]{4}"
 
 include: "snakefiles/pdb-model-quality.smk"
+include: "snakefiles/dG-datasets.smk"
 
 # Top-level 'all' rule:
 rule all:
