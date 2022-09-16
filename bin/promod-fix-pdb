@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--trim', action='store_true', help='Trim nonmodelled residues')
 parser.add_argument('--simulate', action='store_true', help='Perform a simulation on resulting model')
-parser.add_argument('--forcefield', help='Specify the forcefield ("AMBER" by default)', choices=['AMBER', 'CHARMM'] default='CHARMM')
+parser.add_argument('--forcefield', help='Specify the forcefield ("AMBER" by default)', choices=['AMBER', 'CHARMM'], default='CHARMM')
 args = parser.parse_args()
 
 file = args.files[0] # for now
