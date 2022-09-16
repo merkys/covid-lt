@@ -109,14 +109,22 @@ if args.simulate:
     from ost.mol import mm
     # Parameters as suggested by Gabriel Studer
     settings = mm.Settings()
+
+    # Attempt to use CUDA
+    settings.platform = mm.Platform.CUDA
+    if not mm.Simulation.IsPlatformAvailable(settings):
+        settings.platform = mm.Platform.Reference
+
     settings.integrator = mm.LangevinIntegrator(310, 1, 0.002)
     settings.init_temperature = 0
     settings.nonbonded_method = mm.NonbondedMethod.CutoffNonPeriodic
     settings.keep_ff_specific_naming = False
+
     if args.forcefield == 'AMBER':
         settings.forcefield = mm.LoadAMBERForcefield()
     if args.forcefield == 'CHARMM':
         settings.forcefield = mm.LoadCHARMMForcefield()
+
     simulation = mm.Simulation(model, settings)
     model = simulation.GetEntity()
 
