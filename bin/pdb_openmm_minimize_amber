@@ -18,7 +18,7 @@ def print_forces(system, simulation):
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--platform', help='Specify the platform to use for the simulation ("Reference" by default)', default='Reference')
-parser.add_argument('--forcefield', help='Specify the forcefield ("amber99sb.xml")', default='amber99sb.xml')
+parser.add_argument('--forcefield', help='Specify the forcefield ("amber99sb.xml" by default)', default='amber99sb.xml')
 args = parser.parse_args()
 
 max_iterations = 1
