@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--trim', action='store_true', help='Trim nonmodelled residues')
 parser.add_argument('--simulate', action='store_true', help='Perform a simulation on resulting model')
+parser.add_argument('--forcefield', help='Specify the forcefield (default "AMBER")', choices=['AMBER', 'CHARMM'] default='CHARMM')
 args = parser.parse_args()
 
 file = args.files[0] # for now
@@ -112,7 +113,10 @@ if args.simulate:
     settings.init_temperature = 0
     settings.nonbonded_method = mm.NonbondedMethod.CutoffNonPeriodic
     settings.keep_ff_specific_naming = False
-    settings.forcefield = mm.LoadCHARMMForcefield()
+    if args.forcefield == 'AMBER':
+        settings.forcefield = mm.LoadAMBERForcefield()
+    if args.forcefield == 'CHARMM':
+        settings.forcefield = mm.LoadCHARMMForcefield()
     simulation = mm.Simulation(model, settings)
     model = simulation.GetEntity()
 
