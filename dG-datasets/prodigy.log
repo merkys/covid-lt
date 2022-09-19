@@ -1,0 +1,12 @@
+2022-09-15 08:24:40+03:00
+--2022-09-15 08:24:40--  https://bianca.science.uu.nl/prodigy/static/PRODIGY_dataset.csv
+Resolving bianca.science.uu.nl (bianca.science.uu.nl)... 131.211.55.120
+Connecting to bianca.science.uu.nl (bianca.science.uu.nl)|131.211.55.120|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 6487 (6,3K) [text/csv]
+Saving to: ‘dG-datasets/prodigy.csv’
+
+     0K ......                                                100% 2,45G=0s
+
+2022-09-15 08:24:40 (2,45 GB/s) - ‘dG-datasets/prodigy.csv’ saved [6487/6487]
+

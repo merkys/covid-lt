@@ -97,9 +97,6 @@ for filename in files:
         else:
             mapping = dict(zip(target_chains, source_chains))
 
-    for chain in target:
-        if not chain.name in mapping:
-            continue
-        chain.rename(mapping[chain.name])
+    target.rename_chains(mapping)
 
     print(target, end='')

@@ -10,6 +10,7 @@ wildcard_constraints:
 
 include: "snakefiles/antibody-complexes.smk"
 include: "snakefiles/pdb-model-quality.smk"
+include: "snakefiles/dG-datasets.smk"
 
 # Top-level 'all' rule:
 rule all:

@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--trim', action='store_true', help='Trim nonmodelled residues')
 parser.add_argument('--simulate', action='store_true', help='Perform a simulation on resulting model')
+parser.add_argument('--forcefield', help='Specify the forcefield ("AMBER" by default)', choices=['AMBER', 'CHARMM'], default='CHARMM')
 args = parser.parse_args()
 
 file = args.files[0] # for now
@@ -108,11 +109,22 @@ if args.simulate:
     from ost.mol import mm
     # Parameters as suggested by Gabriel Studer
     settings = mm.Settings()
+
+    # Attempt to use CUDA
+    settings.platform = mm.Platform.CUDA
+    if not mm.Simulation.IsPlatformAvailable(settings):
+        settings.platform = mm.Platform.Reference
+
     settings.integrator = mm.LangevinIntegrator(310, 1, 0.002)
     settings.init_temperature = 0
     settings.nonbonded_method = mm.NonbondedMethod.CutoffNonPeriodic
     settings.keep_ff_specific_naming = False
-    settings.forcefield = mm.LoadCHARMMForcefield()
+
+    if args.forcefield == 'AMBER':
+        settings.forcefield = mm.LoadAMBERForcefield()
+    if args.forcefield == 'CHARMM':
+        settings.forcefield = mm.LoadCHARMMForcefield()
+
     simulation = mm.Simulation(model, settings)
     model = simulation.GetEntity()
 
