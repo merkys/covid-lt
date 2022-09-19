@@ -61,9 +61,12 @@ checkpoint download_pdb_all:
         ) \
             | while read PDBID
               do
-                wget https://files.rcsb.org/download/$PDBID.pdb -O {pdb_input_dir}$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
-                chmod -w {pdb_input_dir}$PDBID.pdb 2>/dev/null || true # Intentional
-                sleep 1
+                if [ ! -e {pdb_input_dir}$PDBID.pdb ]
+                then
+                  wget https://files.rcsb.org/download/$PDBID.pdb -O {pdb_input_dir}$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
+                  chmod -w {pdb_input_dir}$PDBID.pdb 2>/dev/null || true # Intentional
+                  sleep 1
+                fi
               done
         grep --no-filename ^REVDAT {pdb_input_dir}*.pdb > {log}
         """
