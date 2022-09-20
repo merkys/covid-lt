@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 
-from Bio import AlignIO, PDB, SeqIO, pairwise2
+from Bio import pairwise2
 from Bio.Seq import MutableSeq
-from Bio.SeqRecord import SeqRecord
 from ost import io, seq
 from pdbio.pdbfile import PDBFile
 from promod3 import modelling
 from tempfile import NamedTemporaryFile
 from warnings import filterwarnings, warn
 import argparse, re, sys
-
-filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -19,55 +16,26 @@ parser.add_argument('--simulate', action='store_true', help='Perform a simulatio
 parser.add_argument('--forcefield', help='Specify the forcefield ("AMBER" by default)', choices=['AMBER', 'CHARMM'], default='CHARMM')
 args = parser.parse_args()
 
-file = args.files[0] # for now
-
-# Extract sequences from the input file
-atom_seqs = [s for s in SeqIO.parse(file, 'pdb-atom')]
-seqres_seqs = [s for s in SeqIO.parse(file, 'pdb-seqres')]
-chains = [s.id[5] for s in atom_seqs]
-
-# TODO: Check if chains are the same
-
-first = {}
-last = {}
-chains = []
-for line in open(file, 'r').readlines():
-    if line[0:6] != 'ATOM  ':
-        continue
-    chain = line[21]
-    resno = int(line[22:26])
-    if not chain in chains:
-        chains.append(chain)
-    if not chain in first:
-        first[chain] = resno
-    last[chain] = resno
-
-atom_seqs_by_chain = {}
-for s in atom_seqs:
-    atom_seqs_by_chain[s.id[5]] = s
-seqres_seqs_by_chain = {}
-for s in seqres_seqs:
-    chain = s.id
-    if len(chain) > 1: # This is probably a problem with Bio module
-        chain = chain[5]
-    seqres_seqs_by_chain[chain] = s
-
-sequence_seq = None
-structure_seq = None
-
-pdbid = None
+file = None
+if len(args.files):
+    file = args.files[0] # for now
+else:
+    temporary_file = NamedTemporaryFile('w+')
+    temporary_file.write(sys.stdin.read())
+    file = temporary_file.name
 
 pdb = io.LoadPDB(file)
+pdbfile = PDBFile(file)
+
 alignments = seq.AlignmentList()
 
-for chain in chains:
-    atom_seq = atom_seqs_by_chain[chain]
-    seqres_seq = seqres_seqs_by_chain[chain]
+for chain in pdbfile:
+    atom_seq = chain.sequence_atom()
+    seqres_seq = chain.sequence_seqres()
     # TODO: Check if such exists
-    align = pairwise2.align.globalxx(seqres_seq.seq, atom_seq.seq, one_alignment_only=True)[0]
+    align = pairwise2.align.globalxx(seqres_seq, atom_seq, one_alignment_only=True)[0]
     sequence = MutableSeq(align[0])
     structure = MutableSeq(align[1])
-    pdbid, chain = seqres_seq.id.split(':')
 
     pos = 0
     while pos < len(structure):
@@ -89,13 +57,13 @@ for chain in chains:
         structure = structure[start:end]
         sequence = sequence[start:end]
 
-    alignment = seq.CreateAlignment(seq.CreateSequence('trg_' + chain, str(sequence)),
-                                    seq.CreateSequence('tpl_' + chain, str(structure)))
+    alignment = seq.CreateAlignment(seq.CreateSequence('trg_' + chain.name, str(sequence)),
+                                    seq.CreateSequence('tpl_' + chain.name, str(structure)))
 
     # There must be an easier way to do this...
     view = pdb.CreateFullView()
     for ch in view.chains:
-        if str(ch) != chain:
+        if str(ch) != chain.name:
             view.RemoveChain(ch)
     alignment.AttachView(1, view)
     alignments.append(alignment)
