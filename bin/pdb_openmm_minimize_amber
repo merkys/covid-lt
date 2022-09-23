@@ -18,8 +18,12 @@ def print_forces(system, simulation):
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--platform', help='Specify the platform to use for the simulation ("Reference" by default)', default='Reference')
-parser.add_argument('--forcefield', nargs='*', help='Specify the forcefield, may be multiple (["amber99sb.xml"] by default)', default=['amber99sb.xml'])
+parser.add_argument('--forcefield', action='append', help='Specify the forcefield, may be multiple (["amber99sb.xml"] by default)', default=[])
 args = parser.parse_args()
+
+forcefields = args.forcefield
+if not len(forcefields):
+    forcefields = ['amber99sb.xml']
 
 max_iterations = 1
 tolerance = 2.39
@@ -28,7 +32,7 @@ file = args.files[0] # for now
 
 pdb = openmm_app.PDBFile(file)
 
-force_field = openmm_app.ForceField(*args.forcefield)
+force_field = openmm_app.ForceField(*forcefields)
 constraints = openmm_app.HBonds
 
 system = force_field.createSystem(pdb.topology, constraints=constraints)
