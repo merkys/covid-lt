@@ -26,6 +26,11 @@ OpenMM
 * Energy component analysis using forcefields: https://github.com/openmm/openmm/issues/1463
 * Forcefield and solvent: http://docs.openmm.org/latest/userguide/application/02_running_sims.html
 
+OpenStructure
+=============
+
+* Simulation parameters: https://openstructure.org/docs/2.3.1/mol/mm/simulation/#ost.mol.mm.Simulation
+
 PDB format
 ==========
 
@@ -74,6 +79,11 @@ GROMACS
 * Documentation: https://manual.gromacs.org/documentation/current/index.html
 * Tutorials: http://www.mdtutorials.com/gmx/
 
+g_mmpbsa
+========
+
+* Paper: https://pubs.acs.org/doi/10.1021/ci500020m
+
 Conda
 =====
 
@@ -86,6 +96,11 @@ HADDOCK
 * HADDOCK 2.2: https://www.bonvinlab.org/software/haddock2.2/
 * HADDOCK 3: https://www.bonvinlab.org/software/haddock3/
 * HADDOCK 3 GitHub: https://github.com/haddocking/haddock3
+
+YANK
+====
+
+* Binding energy calculation example: http://getyank.org/latest/examples/p-xylene-explicit.html
 
 Other
 =====
