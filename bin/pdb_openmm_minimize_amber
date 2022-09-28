@@ -41,6 +41,10 @@ constraints = openmm_app.HBonds
 system = force_field.createSystem(pdb.topology, constraints=constraints)
 # stiffness omitted here
 
+# Splitting forces one force per group in order to be able to access them later
+for i, f in enumerate(system.getForces()):
+    f.setForceGroup(i)
+
 integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
 platform = openmm.Platform.getPlatformByName(args.platform)
 simulation = openmm_app.Simulation(pdb.topology, system, integrator, platform)
