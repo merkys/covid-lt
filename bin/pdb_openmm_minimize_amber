@@ -8,11 +8,14 @@ from simtk.openmm import app as openmm_app
 import argparse, sys
 
 def print_forces(system, simulation):
+    """
+    Based on https://openmm.github.io/openmm-cookbook/dev/notebooks/cookbook/Analyzing%20Energy%20Contributions.html
+    """
     state = simulation.context.getState(getEnergy=True, getPositions=True)
     print('PotentialEnergy', state.getPotentialEnergy(), file=sys.stderr)
     # print(state.getPositions(asNumpy=True), file=sys.stderr)
     for i, force in enumerate(system.getForces()):
-        state = simulation.context.getState(getEnergy=True, groups=i)
+        state = simulation.context.getState(getEnergy=True, groups={i})
         print(force.__class__.__name__, state.getPotentialEnergy(), file=sys.stderr)
 
 parser = argparse.ArgumentParser()
