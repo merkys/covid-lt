@@ -8,18 +8,25 @@ from simtk.openmm import app as openmm_app
 import argparse, sys
 
 def print_forces(system, simulation):
+    """
+    Based on https://openmm.github.io/openmm-cookbook/dev/notebooks/cookbook/Analyzing%20Energy%20Contributions.html
+    """
     state = simulation.context.getState(getEnergy=True, getPositions=True)
     print('PotentialEnergy', state.getPotentialEnergy(), file=sys.stderr)
     # print(state.getPositions(asNumpy=True), file=sys.stderr)
     for i, force in enumerate(system.getForces()):
-        state = simulation.context.getState(getEnergy=True, groups=i)
+        state = simulation.context.getState(getEnergy=True, groups={i})
         print(force.__class__.__name__, state.getPotentialEnergy(), file=sys.stderr)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--platform', help='Specify the platform to use for the simulation ("Reference" by default)', default='Reference')
-parser.add_argument('--forcefield', help='Specify the forcefield ("amber99sb.xml" by default)', default='amber99sb.xml')
+parser.add_argument('--forcefield', action='append', help='Specify the forcefield, may be multiple (["amber99sb.xml"] by default)', default=[])
 args = parser.parse_args()
+
+forcefields = args.forcefield
+if not len(forcefields):
+    forcefields = ['amber99sb.xml']
 
 max_iterations = 1
 tolerance = 2.39
@@ -28,11 +35,15 @@ file = args.files[0] # for now
 
 pdb = openmm_app.PDBFile(file)
 
-force_field = openmm_app.ForceField(args.forcefield)
+force_field = openmm_app.ForceField(*forcefields)
 constraints = openmm_app.HBonds
 
 system = force_field.createSystem(pdb.topology, constraints=constraints)
 # stiffness omitted here
+
+# Splitting forces one force per group in order to be able to access them later
+for i, f in enumerate(system.getForces()):
+    f.setForceGroup(i)
 
 integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
 platform = openmm.Platform.getPlatformByName(args.platform)
