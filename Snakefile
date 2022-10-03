@@ -71,6 +71,15 @@ checkpoint download_pdb_all:
         grep --no-filename ^REVDAT {pdb_input_dir}*.pdb > {log}
         """
 
+rule download_pdb:
+    output:
+        pdb_input_dir + "{pdbid}.pdb"
+    shell:
+        """
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {pdb_input_dir}{wildcards.pdbid}.pdb || echo PDB file for {wildcards.pdbid} cannot be downloaded >&2
+        chmod -w {pdb_input_dir}{wildcards.pdbid}.pdb 2>/dev/null || true # Intentional
+        """
+
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
 # For this project, of interest are contacts between S1, ACE2 and antibody chains
