@@ -52,3 +52,13 @@ rule snugdock:
         mv $TMP_DIR/score.sc {output.score}
         rm -rf $TMP_DIR
         """
+
+rule ff_amoeba:
+    input:
+        output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
+    output:
+        output_dir + "pdb/antibodies/complexes/{pdbid}.amoeba.log"
+    shell:
+        """
+        bin/pdb_openmm_minimize {input} --platform CUDA --forcefield amoeba2013.xml --forcefield amoeba2013_gk.xml --max-iterations 0 > /dev/null 2> {output} || true
+        """
