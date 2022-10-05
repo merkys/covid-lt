@@ -103,4 +103,10 @@ pdb = PDBFile(output_pdb_file.name)
 for chain in pdb:
     if not chain.is_contiguous():
         warn('{}: chain {} is not contiguous after fixing'.format(file, chain.name))
+
+    # Not sure why, but ProMod3 adds OXT atoms as H, not O.
+    for residue in chain:
+        for atom in residue:
+            if atom.name() == 'OXT':
+                atom.element('O')
 print(pdb, end='')
