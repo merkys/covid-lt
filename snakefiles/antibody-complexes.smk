@@ -79,3 +79,12 @@ rule ff_two:
         mkdir --parents $(dirname {output})
         bin/pdb_openmm_minimize {input} --platform CUDA --forcefield {wildcards.ff1}.xml --forcefield {wildcards.ff2}.xml --max-iterations 0 > /dev/null 2> {output} || true
         """
+
+def complexes_ff(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand(output_dir + "pdb/antibodies/complexes/ff/" + config["ff"] + "/{pdbid}.log", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+rule ff_all:
+    input:
+        complexes_ff
