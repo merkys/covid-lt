@@ -1,3 +1,8 @@
+wildcard_constraints:
+    ff = "[a-zA-Z0-9_]+",
+    ff1 = "[a-zA-Z0-9_]+",
+    ff2 = "[a-zA-Z0-9_]+"
+
 def complexes(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
@@ -53,12 +58,24 @@ rule snugdock:
         rm -rf $TMP_DIR
         """
 
-rule ff_amoeba:
+rule ff_one:
     input:
         output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
     output:
-        output_dir + "pdb/antibodies/complexes/{pdbid}.amoeba.log"
+        output_dir + "pdb/antibodies/complexes/ff/{ff}/{pdbid}.log"
     shell:
         """
-        bin/pdb_openmm_minimize {input} --platform CUDA --forcefield amoeba2013.xml --forcefield amoeba2013_gk.xml --max-iterations 0 > /dev/null 2> {output} || true
+        mkdir --parents $(dirname {output})
+        bin/pdb_openmm_minimize {input} --platform CUDA --forcefield {wildcards.ff}.xml --max-iterations 0 > /dev/null 2> {output} || true
+        """
+
+rule ff_two:
+    input:
+        output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
+    output:
+        output_dir + "pdb/antibodies/complexes/ff/{ff1}/{ff2}/{pdbid}.log"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        bin/pdb_openmm_minimize {input} --platform CUDA --forcefield {wildcards.ff1}.xml --forcefield {wildcards.ff2}.xml --max-iterations 0 > /dev/null 2> {output} || true
         """
