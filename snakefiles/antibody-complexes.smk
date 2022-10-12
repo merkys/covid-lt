@@ -113,6 +113,24 @@ rule ff_table:
                 | cut -d ' ' -f 1,3 \
                 | sort) \
         | join -o auto -a 1 -a 2 -e NULL - \
+            <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/amber10/*.log \
+                | awk --field-separator / '{{print $(NF-1)}}' \
+                | sed 's/\.log:/ /g' \
+                | cut -d ' ' -f 1,3 \
+                | sort) \
+        | join -o auto -a 1 -a 2 -e NULL - \
+            <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/amber10/amber10_obc/*.log \
+                | awk --field-separator / '{{print $(NF-1)}}' \
+                | sed 's/\.log:/ /g' \
+                | cut -d ' ' -f 1,3 \
+                | sort) \
+        | join -o auto -a 1 -a 2 -e NULL - \
+            <(grep ^GBSAOBCForce {output_dir}/pdb/antibodies/complexes/ff/amber10/amber10_obc/*.log \
+                | awk --field-separator / '{{print $(NF-1)}}' \
+                | sed 's/\.log:/ /g' \
+                | cut -d ' ' -f 1,3 \
+                | sort) \
+        | join -o auto -a 1 -a 2 -e NULL - \
             <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/amoeba2013/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
