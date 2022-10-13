@@ -96,60 +96,60 @@ rule ff_table:
     shell:
         """
         join -o auto -a 1 -a 2 -e NULL \
-            <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/amber99sbildn/*.log \
+            <(grep ^PotentialEnergy {output_dir}pdb/antibodies/complexes/ff/amber99sbildn/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
                 | cut -d ' ' -f 1,3 \
                 | sort) \
-            <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/amber99sbildn/amber99_obc/*.log \
-                | awk --field-separator / '{{print $(NF-1)}}' \
-                | sed 's/\.log:/ /g' \
-                | cut -d ' ' -f 1,3 \
-                | sort) \
-        | join -o auto -a 1 -a 2 -e NULL - \
-            <(grep ^GBSAOBCForce {output_dir}/pdb/antibodies/complexes/ff/amber99sbildn/amber99_obc/*.log \
+            <(grep ^PotentialEnergy {output_dir}pdb/antibodies/complexes/ff/amber99sbildn/amber99_obc/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
                 | cut -d ' ' -f 1,3 \
                 | sort) \
         | join -o auto -a 1 -a 2 -e NULL - \
-            <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/amber10/*.log \
+            <(grep ^GBSAOBCForce {output_dir}pdb/antibodies/complexes/ff/amber99sbildn/amber99_obc/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
                 | cut -d ' ' -f 1,3 \
                 | sort) \
         | join -o auto -a 1 -a 2 -e NULL - \
-            <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/amber10/amber10_obc/*.log \
+            <(grep ^PotentialEnergy {output_dir}pdb/antibodies/complexes/ff/amber10/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
                 | cut -d ' ' -f 1,3 \
                 | sort) \
         | join -o auto -a 1 -a 2 -e NULL - \
-            <(grep ^GBSAOBCForce {output_dir}/pdb/antibodies/complexes/ff/amber10/amber10_obc/*.log \
+            <(grep ^PotentialEnergy {output_dir}pdb/antibodies/complexes/ff/amber10/amber10_obc/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
                 | cut -d ' ' -f 1,3 \
                 | sort) \
         | join -o auto -a 1 -a 2 -e NULL - \
-            <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/amoeba2013/*.log \
+            <(grep ^GBSAOBCForce {output_dir}pdb/antibodies/complexes/ff/amber10/amber10_obc/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
                 | cut -d ' ' -f 1,3 \
                 | sort) \
         | join -o auto -a 1 -a 2 -e NULL - \
-            <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/amoeba2013/amoeba2013_gk/*.log \
+            <(grep ^PotentialEnergy {output_dir}pdb/antibodies/complexes/ff/amoeba2013/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
                 | cut -d ' ' -f 1,3 \
                 | sort) \
         | join -o auto -a 1 -a 2 -e NULL - \
-            <(grep ^AmoebaWcaDispersionForce {output_dir}/pdb/antibodies/complexes/ff/amoeba2013/amoeba2013_gk/*.log \
+            <(grep ^PotentialEnergy {output_dir}pdb/antibodies/complexes/ff/amoeba2013/amoeba2013_gk/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
                 | cut -d ' ' -f 1,3 \
                 | sort) \
         | join -o auto -a 1 -a 2 -e NULL - \
-            <(grep ^PotentialEnergy {output_dir}/pdb/antibodies/complexes/ff/charmm36/*.log \
+            <(grep ^AmoebaWcaDispersionForce {output_dir}pdb/antibodies/complexes/ff/amoeba2013/amoeba2013_gk/*.log \
+                | awk --field-separator / '{{print $(NF-1)}}' \
+                | sed 's/\.log:/ /g' \
+                | cut -d ' ' -f 1,3 \
+                | sort) \
+        | join -o auto -a 1 -a 2 -e NULL - \
+            <(grep ^PotentialEnergy {output_dir}pdb/antibodies/complexes/ff/charmm36/*.log \
                 | awk --field-separator / '{{print $(NF-1)}}' \
                 | sed 's/\.log:/ /g' \
                 | cut -d ' ' -f 1,3 \
