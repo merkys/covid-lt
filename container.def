@@ -3,4 +3,6 @@ From: debian:testing
 
 %post
     apt-get update
-    apt-get install --yes cd-hit hhsuite hmmer muscle python3-biopython python3-networkx python3-ost python3-propka python3-pydot python3-simtk r-base-core r-cran-optparse voronota
+    apt-get install --yes bsdmainutils cd-hit hhsuite hmmer muscle python3-biopython python3-networkx python3-ost python3-pip python3-propka python3-pydot python3-simtk r-base-core r-cran-optparse voronota
+
+    pip3 install git+https://github.com/oxpig/ANARCI.git
