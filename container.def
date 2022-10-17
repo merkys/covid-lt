@@ -6,7 +6,7 @@ From: debian:testing
     apt-get install --yes bsdmainutils cd-hit hhsuite hmmer muscle python3-biopython python3-networkx python3-ost python3-propka python3-pydot python3-simtk r-base-core r-cran-optparse voronota
 
     apt-get install --yes git python3-pip
-    pip3 install git+https://github.com/oxpig/ANARCI.git
+    pip3 install git+https://github.com/merkys/ANARCI.git@fix-install
 
     echo libcifpp-data libcifpp/update boolean false | debconf-set-selections
     apt-get install --yes python3-promod3
