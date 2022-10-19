@@ -17,17 +17,17 @@ def print_forces(system, simulation):
     Based on https://openmm.github.io/openmm-cookbook/dev/notebooks/cookbook/Analyzing%20Energy%20Contributions.html
     """
     state = simulation.context.getState(getEnergy=True, getPositions=True)
-    print('PotentialEnergy', state.getPotentialEnergy(), file=sys.stderr)
-    # print(state.getPositions(asNumpy=True), file=sys.stderr)
+    print('PotentialEnergy', state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
     for i, force in enumerate(system.getForces()):
         state = simulation.context.getState(getEnergy=True, groups={i})
-        print(force.__class__.__name__, state.getPotentialEnergy(), file=sys.stderr)
+        print(force.__class__.__name__, state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--platform', help='Specify the platform to use for the simulation (by default the fastest available is used)')
 parser.add_argument('--forcefield', action='append', help='Specify the forcefield, may be multiple (["amber99sb.xml"] by default)', default=[])
 parser.add_argument('--max-iterations', type=int, help='Maximum number of iterations', default=1)
+parser.add_argument('--print-forces', action='store_true', help='Suppress normal output, print forces instead')
 args = parser.parse_args()
 
 forcefields = args.forcefield
@@ -66,12 +66,14 @@ integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
 simulation = openmm_app.Simulation(pdb.topology, system, integrator, platform)
 simulation.context.setPositions(pdb.positions)
 
-print_forces(system, simulation)
+if args.print_forces:
+    print_forces(system, simulation)
 
 if args.max_iterations:
     simulation.minimizeEnergy(maxIterations=args.max_iterations, tolerance=tolerance)
 
-    print_forces(system, simulation)
-
-    state = simulation.context.getState(getEnergy=True, getPositions=True)
-    openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
+    if args.print_forces:
+        print_forces(system, simulation)
+    else:
+        state = simulation.context.getState(getEnergy=True, getPositions=True)
+        openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
