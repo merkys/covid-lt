@@ -64,6 +64,8 @@ rule ff_one:
         output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
     output:
         output_dir + "pdb/antibodies/complexes/ff/{ff}/{pdbid}.log"
+    singularity:
+        "container.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -75,6 +77,8 @@ rule ff_two:
         output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
     output:
         output_dir + "pdb/antibodies/complexes/ff/{ff1}/{ff2}/{pdbid}.log"
+    singularity:
+        "container.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
