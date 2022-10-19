@@ -4,11 +4,11 @@
 # https://github.com/deepmind/alphafold/blob/197bd19ee371ebac1942951b49a01848d2c9c6fc/alphafold/relax/amber_minimize.py
 
 try:
-    from openmm import app as openmm_app
+    from openmm import OpenMMException, app as openmm_app
     import openmm
 except ModuleNotFoundError:
     from simtk import openmm
-    from simtk.openmm import app as openmm_app
+    from simtk.openmm import OpenMMException, app as openmm_app
 
 import argparse, sys
 
@@ -25,7 +25,7 @@ def print_forces(system, simulation):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
-parser.add_argument('--platform', help='Specify the platform to use for the simulation ("Reference" by default)', default='Reference')
+parser.add_argument('--platform', help='Specify the platform to use for the simulation (by default the fastest available is used)')
 parser.add_argument('--forcefield', action='append', help='Specify the forcefield, may be multiple (["amber99sb.xml"] by default)', default=[])
 parser.add_argument('--max-iterations', type=int, help='Maximum number of iterations', default=1)
 args = parser.parse_args()
@@ -50,8 +50,19 @@ system = force_field.createSystem(pdb.topology, constraints=constraints)
 for i, f in enumerate(system.getForces()):
     f.setForceGroup(i)
 
+# Find the most suitable platform
+platform = None
+if args.platform:
+    platform = openmm.Platform.getPlatformByName(args.platform)
+else:
+    for platform_name in ['CUDA', 'OpenCL', 'CPU', 'Reference']:
+        try:
+            platform = openmm.Platform.getPlatformByName(platform_name)
+            break
+        except OpenMMException:
+            pass # try next until something is found
+
 integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
-platform = openmm.Platform.getPlatformByName(args.platform)
 simulation = openmm_app.Simulation(pdb.topology, system, integrator, platform)
 simulation.context.setPositions(pdb.positions)
 
