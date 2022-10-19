@@ -71,7 +71,7 @@ rule ff_one:
     shell:
         """
         mkdir --parents $(dirname {output})
-        bin/pdb_openmm_minimize {input} --forcefield {wildcards.ff}.xml --max-iterations 0 > {output} 2> {log} || true
+        bin/pdb_openmm_minimize {input} --forcefield {wildcards.ff}.xml --max-iterations 0 --print-forces > {output} 2> {log} || true
         """
 
 rule ff_two:
@@ -86,7 +86,7 @@ rule ff_two:
     shell:
         """
         mkdir --parents $(dirname {output})
-        bin/pdb_openmm_minimize {input} --forcefield {wildcards.ff1}.xml --forcefield {wildcards.ff2}.xml --max-iterations 0 > {output} 2> {log} || true
+        bin/pdb_openmm_minimize {input} --forcefield {wildcards.ff1}.xml --forcefield {wildcards.ff2}.xml --max-iterations 0 --print-forces > {output} 2> {log} || true
         """
 
 def complexes_ff(wildcards):
