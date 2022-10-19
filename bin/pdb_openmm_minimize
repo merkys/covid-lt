@@ -3,8 +3,13 @@
 # Based on AlphaFold Amber minimization code:
 # https://github.com/deepmind/alphafold/blob/197bd19ee371ebac1942951b49a01848d2c9c6fc/alphafold/relax/amber_minimize.py
 
-from simtk import openmm
-from simtk.openmm import app as openmm_app
+try:
+    from openmm import app as openmm_app
+    import openmm
+except ModuleNotFoundError:
+    from simtk import openmm
+    from simtk.openmm import app as openmm_app
+
 import argparse, sys
 
 def print_forces(system, simulation):
