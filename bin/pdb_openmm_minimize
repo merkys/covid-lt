@@ -17,11 +17,10 @@ def print_forces(system, simulation):
     Based on https://openmm.github.io/openmm-cookbook/dev/notebooks/cookbook/Analyzing%20Energy%20Contributions.html
     """
     state = simulation.context.getState(getEnergy=True, getPositions=True)
-    print('PotentialEnergy', state.getPotentialEnergy(), file=sys.stderr)
-    # print(state.getPositions(asNumpy=True), file=sys.stderr)
+    print('PotentialEnergy', state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
     for i, force in enumerate(system.getForces()):
         state = simulation.context.getState(getEnergy=True, groups={i})
-        print(force.__class__.__name__, state.getPotentialEnergy())
+        print(force.__class__.__name__, state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
