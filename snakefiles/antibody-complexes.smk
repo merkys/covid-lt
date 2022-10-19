@@ -63,26 +63,30 @@ rule ff_one:
     input:
         output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
     output:
+        output_dir + "pdb/antibodies/complexes/ff/{ff}/{pdbid}.tsv"
+    log:
         output_dir + "pdb/antibodies/complexes/ff/{ff}/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
-        bin/pdb_openmm_minimize {input} --forcefield {wildcards.ff}.xml --max-iterations 0 > /dev/null 2> {output} || true
+        bin/pdb_openmm_minimize {input} --forcefield {wildcards.ff}.xml --max-iterations 0 > {output} 2> {log} || true
         """
 
 rule ff_two:
     input:
         output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
     output:
+        output_dir + "pdb/antibodies/complexes/ff/{ff1}/{ff2}/{pdbid}.tsv"
+    log:
         output_dir + "pdb/antibodies/complexes/ff/{ff1}/{ff2}/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
-        bin/pdb_openmm_minimize {input} --forcefield {wildcards.ff1}.xml --forcefield {wildcards.ff2}.xml --max-iterations 0 > /dev/null 2> {output} || true
+        bin/pdb_openmm_minimize {input} --forcefield {wildcards.ff1}.xml --forcefield {wildcards.ff2}.xml --max-iterations 0 > {output} 2> {log} || true
         """
 
 def complexes_ff(wildcards):
