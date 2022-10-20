@@ -40,11 +40,25 @@ file = args.files[0] # for now
 
 pdb = openmm_app.PDBFile(file)
 
-force_field = openmm_app.ForceField(*forcefields)
-constraints = openmm_app.HBonds
+system = None
+if len(forcefields) == 1 and forcefields[0].endswith('.prm'): # CHARMM, use ParmEd to read
+    from io import StringIO
+    from parmed.charmm import CharmmParameterSet, CharmmPsfFile
+    import parmed
 
-system = force_field.createSystem(pdb.topology, constraints=constraints)
-# stiffness omitted here
+    force_field = CharmmParameterSet(forcefields[0])
+
+    # From https://bioinformaticsreview.com/20220829/how-to-convert-the-pdb-file-to-psf-format/
+    psf_tmp_file = StringIO()
+    parmed.load_file(file).write_psf(psf_tmp_file, vmd=True)
+    psf_tmp_file.seek(0)
+    psf = CharmmPsfFile(psf_tmp_file)
+
+    system = psf.createSystem(force_field, nonbondedMethod=openmm_app.NoCutoff, constraints=openmm_app.HBonds, implicitSolvent=openmm_app.HCT)
+else:
+    force_field = openmm_app.ForceField(*forcefields)
+    system = force_field.createSystem(pdb.topology, constraints=openmm_app.HBonds)
+    # stiffness omitted here
 
 # Splitting forces one force per group in order to be able to access them later
 for i, f in enumerate(system.getForces()):
