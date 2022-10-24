@@ -34,17 +34,21 @@ forcefields = args.forcefield
 if not len(forcefields):
     forcefields = ['amber99sb.xml']
 
+constraints = openmm_app.HBonds
 tolerance = 2.39
 
-file = args.files[0] # for now
-
-pdb = openmm_app.PDBFile(file)
-
-force_field = openmm_app.ForceField(*forcefields)
-constraints = openmm_app.HBonds
-
-system = force_field.createSystem(pdb.topology, constraints=constraints)
-# stiffness omitted here
+struct = None
+system = None
+if len(args.files) == 2: # Assume prmtop and inpcrd pair
+    from parmed import load_file
+    struct = load_file(*args.files)
+    system = struct.createSystem(constraints=constraints)
+else: # Assume plain PDB
+    file = args.files[0] # for now
+    struct = openmm_app.PDBFile(file)
+    force_field = openmm_app.ForceField(*forcefields)
+    system = force_field.createSystem(struct.topology, constraints=constraints)
+    # stiffness omitted here
 
 # Splitting forces one force per group in order to be able to access them later
 for i, f in enumerate(system.getForces()):
@@ -63,8 +67,8 @@ else:
             pass # try next until something is found
 
 integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
-simulation = openmm_app.Simulation(pdb.topology, system, integrator, platform)
-simulation.context.setPositions(pdb.positions)
+simulation = openmm_app.Simulation(struct.topology, system, integrator, platform)
+simulation.context.setPositions(struct.positions)
 
 if args.print_forces:
     print_forces(system, simulation)
