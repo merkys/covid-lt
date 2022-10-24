@@ -26,6 +26,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--platform', help='Specify the platform to use for the simulation (by default the fastest available is used)')
 parser.add_argument('--forcefield', action='append', help='Specify the forcefield, may be multiple (["amber99sb.xml"] by default)', default=[])
+parser.add_argument('--implicit-solvent', help='Implicit solvent to use')
 parser.add_argument('--max-iterations', type=int, help='Maximum number of iterations', default=1)
 parser.add_argument('--print-forces', action='store_true', help='Suppress normal output, print forces instead')
 args = parser.parse_args()
@@ -42,7 +43,11 @@ system = None
 if len(args.files) == 2: # Assume prmtop and inpcrd pair
     from parmed import load_file
     struct = load_file(*args.files)
-    system = struct.createSystem(constraints=constraints)
+    implicit_solvent = None
+    if args.implicit_solvent:
+        import importlib
+        implicit_solvent = getattr(importlib.import_module('openmm.app.amberprmtopfile'), args.implicit_solvent)
+    system = struct.createSystem(constraints=constraints, implicitSolvent=implicit_solvent)
 else: # Assume plain PDB
     file = args.files[0] # for now
     struct = openmm_app.PDBFile(file)
