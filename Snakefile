@@ -6,6 +6,7 @@ pdb_id_list = config["pdb_id_list"]
 output_dir = config["output_dir"]
 
 wildcard_constraints:
+    dirname = "[^\/]+",
     pdbid = "[A-Z0-9]{4}"
 
 include: "snakefiles/pdb-model-quality.smk"
@@ -85,16 +86,16 @@ rule download_pdb:
 # For this project, of interest are contacts between S1, ACE2 and antibody chains
 rule vorocontacts_out:
     input:
-        output_dir + "pdb/P0DTC2/{pdbid}.pdb"
+        output_dir + "pdb/{dirname}/{pdbid}.pdb"
     output:
-        output_dir + "vorocontacts/{pdbid}.out"
+        output_dir + "pdb/{dirname}/vorocontacts/{pdbid}.out"
     log:
-        output_dir + "vorocontacts/{pdbid}.log"
+        output_dir + "pdb/{dirname}/vorocontacts/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
         """
-        mkdir --parents {output_dir}vorocontacts
+        mkdir --parents $(dirname {output})
         voronota-contacts -i {input} > {output} 2> {log} || echo -n > {output}
         test -s {output} || echo WARNING: {output}: rule failed >&2
         test -s {output} || cat {log} >&2
@@ -102,9 +103,9 @@ rule vorocontacts_out:
 
 rule vorocontacts_tab:
     input:
-        output_dir + "vorocontacts/{pdbid}.out"
+        output_dir + "pdb/{dirname}/vorocontacts/{pdbid}.out"
     output:
-        output_dir + "vorocontacts/{pdbid}.tab"
+        output_dir + "pdb/{dirname}/vorocontacts/{pdbid}.tab"
     shell:
         "bin/vorocontacts2tab {input} > {output}"
 
@@ -259,7 +260,7 @@ def propka_tabs(wildcards):
 def vorocontacts_tabs(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(output_dir + "vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(output_dir + "pdb/P0DTC2/vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule contact_map:
     input:
@@ -273,7 +274,7 @@ rule contact_map:
     shell:
         """
         comm -1 -2 \
-            <(ls -1 {output_dir}vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
             <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" > {output}
         """
