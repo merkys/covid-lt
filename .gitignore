@@ -1,4 +1,5 @@
 .*.done
+.nv
 .snakemake
 pdb_seqres.fa
 container.sif

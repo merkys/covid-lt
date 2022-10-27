@@ -3,8 +3,13 @@
 # Based on AlphaFold Amber minimization code:
 # https://github.com/deepmind/alphafold/blob/197bd19ee371ebac1942951b49a01848d2c9c6fc/alphafold/relax/amber_minimize.py
 
-from simtk import openmm
-from simtk.openmm import app as openmm_app
+try:
+    from openmm import OpenMMException, app as openmm_app
+    import openmm
+except ModuleNotFoundError:
+    from simtk import openmm
+    from simtk.openmm import OpenMMException, app as openmm_app
+
 import argparse, sys
 
 def print_forces(system, simulation):
@@ -12,50 +17,72 @@ def print_forces(system, simulation):
     Based on https://openmm.github.io/openmm-cookbook/dev/notebooks/cookbook/Analyzing%20Energy%20Contributions.html
     """
     state = simulation.context.getState(getEnergy=True, getPositions=True)
-    print('PotentialEnergy', state.getPotentialEnergy(), file=sys.stderr)
-    # print(state.getPositions(asNumpy=True), file=sys.stderr)
+    print('PotentialEnergy', state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
     for i, force in enumerate(system.getForces()):
         state = simulation.context.getState(getEnergy=True, groups={i})
-        print(force.__class__.__name__, state.getPotentialEnergy(), file=sys.stderr)
+        print(force.__class__.__name__, state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
-parser.add_argument('--platform', help='Specify the platform to use for the simulation ("Reference" by default)', default='Reference')
+parser.add_argument('--platform', help='Specify the platform to use for the simulation (by default the fastest available is used)')
 parser.add_argument('--forcefield', action='append', help='Specify the forcefield, may be multiple (["amber99sb.xml"] by default)', default=[])
+parser.add_argument('--implicit-solvent', help='Implicit solvent to use')
 parser.add_argument('--max-iterations', type=int, help='Maximum number of iterations', default=1)
+parser.add_argument('--print-forces', action='store_true', help='Suppress normal output, print forces instead')
 args = parser.parse_args()
 
 forcefields = args.forcefield
 if not len(forcefields):
     forcefields = ['amber99sb.xml']
 
+constraints = openmm_app.HBonds
 tolerance = 2.39
 
-file = args.files[0] # for now
-
-pdb = openmm_app.PDBFile(file)
-
-force_field = openmm_app.ForceField(*forcefields)
-constraints = openmm_app.HBonds
-
-system = force_field.createSystem(pdb.topology, constraints=constraints)
-# stiffness omitted here
+struct = None
+system = None
+if len(args.files) == 2: # Assume prmtop and inpcrd pair
+    from parmed import load_file
+    struct = load_file(*args.files)
+    implicit_solvent = None
+    if args.implicit_solvent:
+        import importlib
+        implicit_solvent = getattr(importlib.import_module('openmm.app.amberprmtopfile'), args.implicit_solvent)
+    system = struct.createSystem(constraints=constraints, implicitSolvent=implicit_solvent)
+else: # Assume plain PDB
+    file = args.files[0] # for now
+    struct = openmm_app.PDBFile(file)
+    force_field = openmm_app.ForceField(*forcefields)
+    system = force_field.createSystem(struct.topology, constraints=constraints)
+    # stiffness omitted here
 
 # Splitting forces one force per group in order to be able to access them later
 for i, f in enumerate(system.getForces()):
     f.setForceGroup(i)
 
-integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
-platform = openmm.Platform.getPlatformByName(args.platform)
-simulation = openmm_app.Simulation(pdb.topology, system, integrator, platform)
-simulation.context.setPositions(pdb.positions)
+# Find the most suitable platform
+platform = None
+if args.platform:
+    platform = openmm.Platform.getPlatformByName(args.platform)
+else:
+    for platform_name in ['CUDA', 'OpenCL', 'CPU', 'Reference']:
+        try:
+            platform = openmm.Platform.getPlatformByName(platform_name)
+            break
+        except OpenMMException:
+            pass # try next until something is found
 
-print_forces(system, simulation)
+integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
+simulation = openmm_app.Simulation(struct.topology, system, integrator, platform)
+simulation.context.setPositions(struct.positions)
+
+if args.print_forces:
+    print_forces(system, simulation)
 
 if args.max_iterations:
     simulation.minimizeEnergy(maxIterations=args.max_iterations, tolerance=tolerance)
 
-    print_forces(system, simulation)
-
-    state = simulation.context.getState(getEnergy=True, getPositions=True)
-    openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
+    if args.print_forces:
+        print_forces(system, simulation)
+    else:
+        state = simulation.context.getState(getEnergy=True, getPositions=True)
+        openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
