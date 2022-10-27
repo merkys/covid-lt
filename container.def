@@ -3,7 +3,7 @@ From: debian:testing
 
 %post
     apt-get update
-    apt-get install --yes bsdmainutils cd-hit hhsuite hmmer libopenmm-plugins muscle python3-biopython python3-networkx python3-ost python3-parmed python3-propka python3-pydot python3-simtk r-base-core r-cran-optparse voronota
+    apt-get install --yes bsdmainutils cd-hit hhsuite hmmer libopenmm-plugins moreutils muscle python3-biopython python3-networkx python3-ost python3-parmed python3-propka python3-pydot python3-simtk r-base-core r-cran-optparse voronota
 
     apt-get install --yes git python3-pip
     pip3 install git+https://github.com/merkys/ANARCI.git@fix-install
