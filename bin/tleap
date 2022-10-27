@@ -1,0 +1,26 @@
+#!/bin/bash
+
+PDB=$1
+shift
+
+PRMTOP_FILE=$1
+shift
+
+INPCRD_FILE=$1
+shift
+
+TMP_DIR=$(mktemp --directory)
+
+cp $PDB "${TMP_DIR}"
+
+(
+    cd "${TMP_DIR}"
+    echo mol = loadpdb $PDB > tleap.in
+    echo saveamberparm mol $PRMTOP_FILE $INPCRD_FILE >> tleap.in
+    echo quit >> tleap.in
+
+    sed 's/%/$*/g' tleap.in.template | tleap -s -f tleap.in >&2
+    cat leap.log >&2
+)
+
+rm -rf "${TMP_DIR}"
