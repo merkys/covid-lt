@@ -42,7 +42,10 @@ struct = None
 system = None
 if len(args.files) == 2: # Assume prmtop and inpcrd pair
     from parmed import load_file
-    struct = load_file(*args.files)
+    files = args.files
+    if files[1].endswith('.prmtop'): # order must be: prmtop, inpcrd
+        files[0], files[1] = files[1], files[0]
+    struct = load_file(*files)
     implicit_solvent = None
     if args.implicit_solvent:
         import importlib
