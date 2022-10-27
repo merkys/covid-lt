@@ -15,7 +15,14 @@ cp $PDB "${TMP_DIR}"
 
 (
     cd "${TMP_DIR}"
-    echo mol = loadpdb $PDB > tleap.in
+
+    while [ $# -gt 0 ]
+    do
+        echo source $1 >> tleap.in
+        shift
+    done
+
+    echo mol = loadpdb $PDB >> tleap.in
     echo saveamberparm mol $PRMTOP_FILE $INPCRD_FILE >> tleap.in
     echo quit >> tleap.in
 
