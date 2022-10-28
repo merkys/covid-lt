@@ -26,7 +26,7 @@ cp $PDB "${TMP_DIR}"
     echo saveamberparm mol PRMTOP_FILE INPCRD_FILE >> tleap.in
     echo quit >> tleap.in
 
-    sed 's/%/$*/g' tleap.in.template | tleap -s -f tleap.in >&2
+    tleap -s -f tleap.in >&2
     cat leap.log >&2
 )
 
