@@ -336,5 +336,5 @@ rule_tleap:
         "{prefix}.tleap.log"
     shell:
         """
-        bin/tleap {input} {output.prmtop} {output.inpcrd} leaprc.protein.ff19SB
+        bin/tleap {input} {output.prmtop} {output.inpcrd} leaprc.protein.ff19SB 2> {log}
         """
