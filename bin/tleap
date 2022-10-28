@@ -22,12 +22,15 @@ cp $PDB "${TMP_DIR}"
         shift
     done
 
-    echo mol = loadpdb $PDB >> tleap.in
-    echo saveamberparm mol $PRMTOP_FILE $INPCRD_FILE >> tleap.in
+    echo mol = loadpdb $(basename $PDB) >> tleap.in
+    echo saveamberparm mol PRMTOP_FILE INPCRD_FILE >> tleap.in
     echo quit >> tleap.in
 
     sed 's/%/$*/g' tleap.in.template | tleap -s -f tleap.in >&2
     cat leap.log >&2
 )
+
+cp "${TMP_DIR}"/PRMTOP_FILE $PRMTOP_FILE
+cp "${TMP_DIR}"/INPCRD_FILE $INPCRD_FILE
 
 rm -rf "${TMP_DIR}"
