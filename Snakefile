@@ -325,3 +325,16 @@ rule quality_map:
         cp $TMP_DIR/table.tab {output}
         rm -rf $TMP_DIR
         """
+
+rule_tleap:
+    input:
+        "{prefix}.pdb"
+    output:
+        prmtop = "{prefix}.prmtop",
+        inpcrd = "{prefix}.inpcrd"
+    log:
+        "{prefix}.tleap.log"
+    shell:
+        """
+        bin/tleap {input} {output.prmtop} {output.inpcrd} leaprc.protein.ff19SB
+        """
