@@ -78,10 +78,11 @@ if args.simulate:
     # Parameters as suggested by Gabriel Studer
     settings = mm.Settings()
 
-    # Attempt to use CUDA
-    settings.platform = mm.Platform.CUDA
-    if not mm.Simulation.IsPlatformAvailable(settings):
-        settings.platform = mm.Platform.Reference
+    # Find the most suitable platform
+    for platform in [mm.Platform.CUDA, mm.Platform.OpenCL, mm.Platform.CPU, mm.Platform.Reference]:
+        settings.platform = platform
+        if mm.Simulation.IsPlatformAvailable(settings):
+            break
 
     settings.integrator = mm.LangevinIntegrator(310, 1, 0.002)
     settings.init_temperature = 0

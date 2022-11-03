@@ -61,12 +61,12 @@ do
 
     for S1_CHAIN in $(echo "${S1_CHAINS}" | grep -o .)
     do
-        for OTHER_CHAIN in $(cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}vorocontacts/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
+        for OTHER_CHAIN in $(cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}pdb/P0DTC2/vorocontacts/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
         do
             # Ignore non-antibody chains
             echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
 
-            cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}vorocontacts/${PDB_ID}.tab \
+            cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}pdb/P0DTC2/vorocontacts/${PDB_ID}.tab \
                 | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
                 | grep "${FILTER}" \
                 | while read C1 R1 C2 R2 DIST

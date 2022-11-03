@@ -3,8 +3,29 @@ From: debian:testing
 
 %post
     apt-get update
-    apt-get install --yes bsdmainutils cd-hit hhsuite hmmer libopenmm-plugins muscle python3-biopython python3-networkx python3-ost python3-propka python3-pydot python3-simtk r-base-core r-cran-optparse voronota
 
+    # Build QMEAN
+    apt-get install --yes dctrl-tools git git-buildpackage
+
+    git clone https://salsa.debian.org/debichem-team/qmean
+    cd qmean
+    tbl-dctrl --no-heading -d , debian/control | cut -d , -f 5 | cut -d ' ' -f 2 | xargs apt-get install --yes
+    uscan --download-current-version
+
+    DEB_BUILD_OPTIONS=nocheck gbp buildpackage -uc -us --git-overlay --git-export-dir=.. --git-no-pristine-tar
+
+    # Remove unneeded packages after QMEAN is built
+    apt-get install --yes sudo # Must not be removed
+    tbl-dctrl --no-heading -d , debian/control | cut -d , -f 5 | cut -d ' ' -f 2 | xargs apt-get autoremove --yes
+    apt-get autoremove --yes dctrl-tools git git-buildpackage
+
+    # Install QMEAN and its dependencies
+    apt-get install --yes ../libqmean-dev_*.deb ../python3-qmean_*.deb ../qmean-data_*.deb
+
+    # Install project dependencies from Debian repositories
+    apt-get install --yes bsdmainutils cd-hit hhsuite hmmer libopenmm-plugins moreutils muscle python3-biopython python3-networkx python3-ost python3-parmed python3-propka python3-pydot python3-simtk r-base-core r-cran-optparse voronota
+
+    # Install ANARCI
     apt-get install --yes git python3-pip
     pip3 install git+https://github.com/merkys/ANARCI.git@fix-install
 
