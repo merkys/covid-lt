@@ -6,6 +6,10 @@ dist_na <- function(m) {
     distances = matrix( nrow=nrow, ncol=nrow )
     for (i in 1:nrow) {
         for (j in 1:nrow) {
+            if( i >= j ) {
+                next
+            }
+
             row1 = m[i,]
             row2 = m[j,]
 
@@ -20,6 +24,8 @@ dist_na <- function(m) {
             } else {
                 distances[i,j] = 1e6 # Sufficiently large number
             }
+
+            distances[j,i] = distances[i,j]
         }
     }
     return(as.dist(distances))
