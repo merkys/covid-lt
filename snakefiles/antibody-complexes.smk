@@ -15,7 +15,7 @@ rule extract_complexes:
 rule extract_complex:
     input:
         pdb = output_dir + "pdb/P0DTC2/{pdbid}.pdb",
-        vorocontacts = output_dir + "vorocontacts/{pdbid}.tab"
+        vorocontacts = output_dir + "pdb/P0DTC2/vorocontacts/{pdbid}.tab"
     output:
         output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
     singularity:
