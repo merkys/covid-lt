@@ -350,6 +350,7 @@ rule prodigy:
             echo WARNING: {output}: rule failed >&2
             cat {log} >&2
         fi
+        """
 
 rule tleap:
     input:
