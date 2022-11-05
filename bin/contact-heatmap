@@ -28,7 +28,8 @@ dist_na <- function(m) {
             distances[j,i] = distances[i,j]
         }
     }
-    return(as.dist(distances))
+    distances = data.frame( distances, row.names=row.names( m ) )
+    return( as.dist( distances ) )
 }
 
 library( "optparse" )
