@@ -37,25 +37,28 @@ do
     shift
 done
 
-if [ -z "${CONTACTS_WITH}" ]
-then
-    echo "`basename $0`:: need hmmsearch results to identify the contacting chains, should be given with '--contacts-with' CLI option" >&2
-    exit 1
-fi
-
 TMP_DIR=$(mktemp --directory)
 
 for PDB_ID in ${PDB_IDS}
 do
-    # Select all S1 chains
-    S1_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --hmmsearch alignments/pdb_seqres-PF09408.hmmsearch | grep PF09408 | cut -f 2 | xargs | sed 's/ //g')"
+    S1_CHAINS=
+    ANTIBODY_CHAINS=
+
+    if [ -n "${CONTACTS_WITH}" ]
+    then
+        # Select all S1 chains
+        S1_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --hmmsearch alignments/pdb_seqres-PF09408.hmmsearch | grep PF09408 | cut -f 2 | xargs | sed 's/ //g')"
+        # Selecting antibody chains
+        ANTIBODY_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --hmmsearch "${CONTACTS_WITH}" | grep -F "${CONTACTS_WITH}" | cut -f 2 | xargs | sed 's/ //g')"
+    else
+        # Detect complex using bin/contact-graph
+        COMPLEX=$(PYTHONPATH=. bin/contact-graph ${OUTPUT_DIR}pdb/P0DTC2/vorocontacts/${PDB_ID}.tab --pdb ${OUTPUT_DIR}pdb/P0DTC2/${PDB_ID}.pdb --output-complexes --most-contacts | grep -v ^Limiting)
+        S1_CHAINS=$(echo ${COMPLEX} | cut -c 1)
+        ANTIBODY_CHAINS=$(echo ${COMPLEX} | cut -c 2-)
+    fi
 
     # Next if no S1 chains found
     test -z "${S1_CHAINS}" && continue
-
-    # Selecting antibody chains
-    ANTIBODY_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --hmmsearch "${CONTACTS_WITH}" | grep -F "${CONTACTS_WITH}" | cut -f 2 | xargs | sed 's/ //g')"
-
     # Next if no antibody chains found
     test -z "${ANTIBODY_CHAINS}" && continue
 
