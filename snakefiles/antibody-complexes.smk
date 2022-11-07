@@ -176,3 +176,30 @@ rule ff_table:
                 | sort) \
         | cat > {output}
         """
+
+def propka_tabs(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand(output_dir + "propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def vorocontacts_tabs(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand(output_dir + "pdb/P0DTC2/vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+rule complex_contact_map:
+    input:
+        propka_tabs = propka_tabs,
+        vorocontacts_tabs = vorocontacts_tabs
+    output:
+        output_dir + "pdb/antibodies/complexes/contact-maps/{search}.tab"
+    singularity:
+        "container.sif"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        comm -1 -2 \
+            <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
+          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" > {output}
+        """
