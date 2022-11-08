@@ -40,7 +40,7 @@ library( "optparse" )
 parser <- OptionParser()
 parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
 parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
-parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NaN)
+parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
 parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
                      type = "double", default = 3)
 options = parse_args(parser, positional_arguments = TRUE)
@@ -63,7 +63,7 @@ if( options$options$scale ) {
 
 D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
 
-if( options$options$na_replace ) {
+if( !is.na(options$options$na_replace) ) {
     D[is.na(D)] = options$options$na_replace
 }
 
