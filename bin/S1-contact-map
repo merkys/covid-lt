@@ -7,6 +7,8 @@ FILTER=.
 PDB_INPUT_DIR=./
 OUTPUT_DIR=./
 
+MERGE_ANTIBODY_CHAINS=false
+
 while [ $# -gt 0 ]
 do
     case $1 in
@@ -17,6 +19,9 @@ do
         --contacts-with)
             CONTACTS_WITH=$2
             shift
+            ;;
+        --merge-antibody-chains)
+            MERGE_ANTIBODY_CHAINS=true
             ;;
         --pdb-input-dir)
             PDB_INPUT_DIR=$2
@@ -38,6 +43,46 @@ do
 done
 
 TMP_DIR=$(mktemp --directory)
+
+function chain_contacts() {
+    S1_CHAIN=$1
+    OTHER_CHAIN=$2
+
+    cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}pdb/P0DTC2/vorocontacts/${PDB_ID}.tab \
+        | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
+        | grep "${FILTER}" \
+        | while read C1 R1 C2 R2 DIST
+          do
+            # Exclude other chains
+            echo "${OTHER_CHAIN}" | grep --silent -e "${C1}" -e "${C2}" || continue
+
+            # S1 chain may be either on first or on second column
+            if [ "${C1}" = "${S1_CHAIN}" ]
+            then
+                echo -e "${R1}\t${DIST}"
+            else
+                echo -e "${R2}\t${DIST}"
+            fi
+          done \
+        | sort -nk1.1 \
+        | python3 -c '
+import re, sys
+residues = {}
+for line in sys.stdin:
+    match = re.match("(\d+)\t(\S+)", line)
+    if not match:
+        continue
+    residue = int(match.group(1))
+    dist = float(match.group(2))
+    if residue not in residues or dist < residues[residue]:
+        residues[residue] = dist
+for i in range(1, 1500): # Assuming S1 is max. 1500 aminoacids long
+    if i in residues:
+        print(residues[i])
+    else:
+        print("?")
+        ' > "${TMP_DIR}/column.tab"
+}
 
 for PDB_ID in ${PDB_IDS}
 do
@@ -64,49 +109,12 @@ do
 
     for S1_CHAIN in $(echo "${S1_CHAINS}" | grep -o .)
     do
-        for OTHER_CHAIN in $(cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}pdb/P0DTC2/vorocontacts/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
-        do
-            # Ignore non-antibody chains
-            echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
-
-            cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}pdb/P0DTC2/vorocontacts/${PDB_ID}.tab \
-                | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
-                | grep "${FILTER}" \
-                | while read C1 R1 C2 R2 DIST
-                  do
-                    # Exclude other chains
-                    test "${C1}" != "${OTHER_CHAIN}" -a "${C2}" != "${OTHER_CHAIN}" && continue
-
-                    # S1 chain may be either on first or on second column
-                    if [ "${C1}" = "${S1_CHAIN}" ]
-                    then
-                        echo -e "${R1}\t${DIST}"
-                    else
-                        echo -e "${R2}\t${DIST}"
-                    fi
-                  done \
-                | sort -nk1.1 \
-                | python3 -c '
-import re, sys
-residues = {}
-for line in sys.stdin:
-    match = re.match("(\d+)\t(\S+)", line)
-    if not match:
-        continue
-    residue = int(match.group(1))
-    dist = float(match.group(2))
-    if residue not in residues or dist < residues[residue]:
-        residues[residue] = dist
-for i in range(1, 1500): # Assuming S1 is max. 1500 aminoacids long
-    if i in residues:
-        print(residues[i])
-    else:
-        print("?")
-          ' > "${TMP_DIR}/column.tab"
-
+        if $MERGE_ANTIBODY_CHAINS
+        then
+            chain_contacts ${S1_CHAIN} ${ANTIBODY_CHAINS}
             if grep --silent . "${TMP_DIR}/column.tab"
             then
-                echo ${PDB_ID}_${S1_CHAIN}${OTHER_CHAIN} | cat - "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/column.tab"
+                echo ${PDB_ID}_${S1_CHAIN}${ANTIBODY_CHAINS} | cat - "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/column.tab"
                 if test -e "${TMP_DIR}/output.tab"
                 then
                     paste "${TMP_DIR}/output.tab" "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/output.tab"
@@ -114,7 +122,26 @@ for i in range(1, 1500): # Assuming S1 is max. 1500 aminoacids long
                     mv "${TMP_DIR}/column.tab" "${TMP_DIR}/output.tab"
                 fi
             fi
-        done
+        else
+            for OTHER_CHAIN in $(cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}pdb/P0DTC2/vorocontacts/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
+            do
+                # Ignore non-antibody chains
+                echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
+
+                chain_contacts ${S1_CHAIN} ${OTHER_CHAIN}
+
+                if grep --silent . "${TMP_DIR}/column.tab"
+                then
+                    echo ${PDB_ID}_${S1_CHAIN}${OTHER_CHAIN} | cat - "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/column.tab"
+                    if test -e "${TMP_DIR}/output.tab"
+                    then
+                        paste "${TMP_DIR}/output.tab" "${TMP_DIR}/column.tab" | sponge "${TMP_DIR}/output.tab"
+                    else
+                        mv "${TMP_DIR}/column.tab" "${TMP_DIR}/output.tab"
+                    fi
+                fi
+            done
+        fi
     done
 done
 
