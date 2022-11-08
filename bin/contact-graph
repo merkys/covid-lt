@@ -78,8 +78,12 @@ for filename in args.files:
                     continue
                 most_contacts = cmplx
                 n_contacts = current_n_contacts
-            complexes = [most_contacts]
-        print(*sorted(complexes), sep='\n')
+            if most_contacts:
+                complexes = [most_contacts]
+            else:
+                complexes = []
+        if complexes:
+            print(*sorted(complexes), sep='\n')
     else:
         draw(graph, pos=nx_agraph.graphviz_layout(graph))
         write_dot(graph, '/dev/stdout')
