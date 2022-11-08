@@ -32,6 +32,10 @@ dist_na <- function(m) {
     return( as.dist( distances ) )
 }
 
+hclustfun <- function(d) {
+    return( hclust( d, method = 'ward.D2' ) )
+}
+
 library( "optparse" )
 parser <- OptionParser()
 parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
@@ -64,6 +68,7 @@ if( options$options$na_replace ) {
 }
 
 svg("/dev/stdout")
-heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram, distfun=dist_na, scale=scale,
+heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram,
+        distfun=dist_na, hclustfun=hclustfun, scale=scale,
         margin=c(2, options$options$row_margin),
         cexRow = 0.5 + 1/length(D))
