@@ -1,6 +1,19 @@
 #!/usr/bin/Rscript --vanilla
 
+library( "optparse" )
+parser <- OptionParser()
+parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
+parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
+parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
+parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
+                     type = "double", default = 3)
+options = parse_args(parser, positional_arguments = TRUE)
+
 dist_na <- function(m) {
+    if( !is.na(options$options$na_replace) ) {
+        m[is.na(m)] = options$options$na_replace
+    }
+
     nrow = dim(m)[1]
 
     distances = matrix( nrow=nrow, ncol=nrow )
@@ -36,15 +49,6 @@ hclustfun <- function(d) {
     return( hclust( d, method = 'ward.D2' ) )
 }
 
-library( "optparse" )
-parser <- OptionParser()
-parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
-parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
-parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
-parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
-                     type = "double", default = 3)
-options = parse_args(parser, positional_arguments = TRUE)
-
 file = '/dev/stdin'
 files = options$args
 if( length(files) != 0 ) {
@@ -62,10 +66,6 @@ if( options$options$scale ) {
 }
 
 D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
-
-if( !is.na(options$options$na_replace) ) {
-    D[is.na(D)] = options$options$na_replace
-}
 
 svg("/dev/stdout")
 heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram,
