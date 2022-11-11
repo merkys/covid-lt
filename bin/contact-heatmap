@@ -8,6 +8,7 @@ parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FA
 parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
 parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
                      type = "double", default = 3)
+parser <- add_option(parser, c( "--RData" ), dest = "RData", type = "character")
 options = parse_args(parser, positional_arguments = TRUE)
 
 dist_na <- function(m) {
@@ -46,8 +47,10 @@ dist_na <- function(m) {
     return( as.dist( distances ) )
 }
 
+clust = NULL
 hclustfun <- function(d) {
-    return( hclust( d, method = options$options$cluster_method ) )
+    clust <<- hclust( d, method = options$options$cluster_method )
+    return( clust )
 }
 
 file = '/dev/stdin'
@@ -73,3 +76,7 @@ heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram,
         distfun=dist_na, hclustfun=hclustfun, scale=scale,
         margin=c(2, options$options$row_margin),
         cexRow = 0.5 + 1/length(D))
+
+if( !is.na(options$options$RData) ) {
+    save(clust, file=options$options$RData)
+}
