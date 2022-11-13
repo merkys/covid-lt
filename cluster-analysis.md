@@ -8,11 +8,11 @@
 
 * 2:
 
-    * 7TLY: epitope: S1 helices 340 (with H) and 440 (with L).
-    * 7TC9: epitope: L contacts with 378 sheet, some contacts with antiparallel sheets connected with loop culminating at 482 (mostly L).
-    * 7S0E: epitope: H/L contact with 558 loop.
-    * 7SOC: epitope: S1 helices 340 (with H) and 440 (with L).
-    * 7E3B: epitope: no L contacts, H contacts with antiparallel sheets 450 & 490, loop 347.
+    * 7TLY: epitope: S1 helices 340 (with H) and 440 (with L), no RBM or beta sheet contacts.
+    * 7TC9: epitope: L contacts with RBM, H contacts with 348 (sheet?)
+    * 7S0E: epitope: H/L contact mostly with CTD1.
+    * 7SOC: epitope: S1 helices 340 (with H) and 440 (with L), no RBM or beta sheet contacts.
+    * 7E3B: epitope: H contacts with antiparallel sheets 450 & 490 of RBM, loop 347.
 
 * 3:
 
