@@ -16,18 +16,18 @@
 
 * 3:
 
-    * 7R8L: epitope: L/S1 quite far from sheet 495 (rather short sheet), H/S1 mainly at antiparallel sheets connected with loop culminating at 482.
-    * 7NEG: epitope: L/S1 quite far from sheet 495 (rather short sheet), H/S1 mainly at antiparallel sheets connected with loop culminating at 482.
-    * 7NX8: epitope: L/S1 quite far from sheet 495 (rather short sheet), H/S1 mainly at antiparallel sheets connected with loop culminating at 482.
-    * 7CZT: S1 NTD poorly modelled, epitope: H/S1 sheet 495, L/S1 mainly at antiparallel sheets connected with loop culminating at 482.
+    * 7R8L: epitope: L/S1 intersheet loops, H/S1 sheets of RBM.
+    * 7NEG: epitope: L/S1 intersheet loops, H/S1 sheets of RBM.
+    * 7NX8: epitope: L/S1 intersheet loops, H/S1 sheets of RBM.
+    * 7CZT: S1 NTD poorly modelled, epitope: H/S1 and L/S1 sheets of RBM.
 
 * 4:
 
-    * 7WEB: epitope: H contacts with antiparallel sheets connected with loop culminating at 482.
-    * 7E3O: epitope: H contacts with sheets 490 and 495, loop 482.
-    * 7NY5: H/S1 mainly at antiparallel sheets connected with loop culminating at 482.
-    * 7WD0: H/S1 mainly at antiparallel sheets connected with loop culminating at 482.
-    * 7K8Y: H/S1 not far from sheet 495 (rather short sheet), H/S1 mainly at antiparallel sheets connected with loop culminating at 482.
+    * 7WEB: epitope: H/S1 sheets of RBM.
+    * 7E3O: epitope: H and L with sheets of RBM.
+    * 7NY5: epitope: H and L with RBM, far removed from the rest.
+    * 7WD0: epitope: H and L with RBM, far removed from the rest.
+    * 7K8Y: epitope: H/S1 sheets of RBM.
 
 * 5 (NTD):
 
