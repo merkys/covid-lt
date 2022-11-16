@@ -53,6 +53,22 @@ hclustfun <- function(d) {
     return( clust )
 }
 
+blur <- function(m) {
+    output = data.frame(m)
+    for (i in 1:dim(m)[1]) {
+        for (j in 1:dim(m)[2]) {
+            if( j == 1 ) {
+                output[i][j] = mean( m[i][1:2], na.rm = TRUE )
+            } else if( j == dim(m)[2] ) {
+                output[i][j] = mean( m[i][dim(m)[2]-1:dim(m)[2], na.rm = TRUE )
+            } else {
+                output[i][j] = mean( m[i][j-1:j+1], na.rm = TRUE )
+            }
+        }
+    }
+    return( output )
+}
+
 file = '/dev/stdin'
 files = options$args
 if( length(files) != 0 ) {
