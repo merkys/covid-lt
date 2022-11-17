@@ -51,7 +51,7 @@
     * 7TM0: epitope: contacts with H only, S1 sheet 85 (NTD). H is enveloped by S1.
     * 7WD8: S1 CTD1 only, epitope: H with 535 loop, L with 555.
 
-* Some other entries (identified as group 4 when largest possible contact distance is allowed)
+* Some other entries (identified as group 4 when largest possible contact distance is allowed):
 
     * 7PRY: H/L with 355 sheet. RBM is pushed sideways, almost no interaction with H/L.
     * 7K9Z: H with RBM, L with 355 sheet.
