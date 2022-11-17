@@ -101,7 +101,13 @@ rule vorocontacts_out:
     shell:
         """
         mkdir --parents $(dirname {output})
-        voronota-contacts -i {input} > {output} 2> {log} || echo -n > {output}
+        echo -n > {log}
+        cat {input} \
+            | voronota get-balls-from-atoms-file --input-format detect --annotated --radii-file <(voronota-resources radii) --include-heteroatoms 2>>{log} \
+            | voronota query-balls --drop-altloc-indicators 2>>{log} \
+            | voronota calculate-contacts --annotated --tag-centrality --probe 14 2>>{log} \
+            | voronota query-contacts --match-min-seq-sep 1 --preserve-graphics 2>>{log} \
+            | column -t > {output} || echo -n > {output}
         test -s {output} || echo WARNING: {output}: rule failed >&2
         test -s {output} || cat {log} >&2
         """
