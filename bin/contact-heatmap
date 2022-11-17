@@ -3,12 +3,13 @@
 library( "optparse" )
 parser <- OptionParser()
 parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
+parser <- add_option(parser, c( "--smooth-window" ), dest = "smooth_window", type = "double", default = 1)
 parser <- add_option(parser, c( "--cluster-method" ), dest = "cluster_method", type = "character", default = "ward.D2")
 parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
 parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
 parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
                      type = "double", default = 3)
-parser <- add_option(parser, c( "--RData" ), dest = "RData", type = "character")
+parser <- add_option(parser, c( "--RData" ), dest = "RData", type = "character", default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
 dist_na <- function(m) {
@@ -53,17 +54,16 @@ hclustfun <- function(d) {
     return( clust )
 }
 
-blur <- function(m) {
-    output = data.frame(m)
+smooth_filter <- function(m, window=3) {
+    output = as.matrix(m)
+    half_window = (window-1)/2
     for (i in 1:dim(m)[1]) {
         for (j in 1:dim(m)[2]) {
-            if( j == 1 ) {
-                output[i][j] = mean( m[i][1:2], na.rm = TRUE )
-            } else if( j == dim(m)[2] ) {
-                output[i][j] = mean( m[i][dim(m)[2]-1:dim(m)[2], na.rm = TRUE )
-            } else {
-                output[i][j] = mean( m[i][j-1:j+1], na.rm = TRUE )
+            average = mean( m[i,max( j-half_window, 1 ):min( j+half_window, dim(m)[2] )], na.rm = TRUE )
+            if( is.nan( average ) ) {
+                average = NA
             }
+            output[i,j] = average
         }
     }
     return( output )
@@ -85,11 +85,15 @@ if( options$options$scale ) {
     scale = 'column'
 }
 
-D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
+D = t(as.matrix(read.csv(file, header=TRUE, sep="\t", na.strings="?")))
+
+if( options$options$smooth_window > 1 ) {
+    D = smooth_filter( D, window = options$options$smooth_window )
+}
 
 svg("/dev/stdout")
-heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram,
-        distfun=dist_na, hclustfun=hclustfun, scale=scale,
+heatmap(D, Colv=NA, Rowv=dendrogram, distfun=dist_na, hclustfun=hclustfun,
+        scale=scale,
         margin=c(2, options$options$row_margin),
         cexRow = 0.5 + 1/length(D))
 
