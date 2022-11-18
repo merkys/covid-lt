@@ -208,3 +208,14 @@ rule complex_contact_map:
             <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --merge-antibody-chains > {output}
         """
+
+rule complex_contact_clusters:
+    input:
+        "{prefix}/contact-maps/{base}.tab"
+    output:
+        RData = "{prefix}/contact-maps/{base}.RData",
+        plot = "{prefix}/contact-maps/{base}.svg"
+    shell:
+        """
+        bin/contact-heatmap {input} --dendrogram --replace-NA-with 20 --cluster-method complete --smooth-window 3 --RData {output.RData} > {output.plot}
+        """
