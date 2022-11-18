@@ -32,19 +32,26 @@ dist_na <- function(m) {
             row1_filtered = row1[!is.na(row1) & !is.na(row2)]
             row2_filtered = row2[!is.na(row1) & !is.na(row2)]
 
-            # Weighting as suggested in https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.nan_euclidean_distances.html
-            weight = length(row1)/length(row1_filtered)
+            if( is.na(options$options$na_replace) ) {
+                # Weighting as suggested in https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.nan_euclidean_distances.html
+                weight = length(row1)/length(row1_filtered)
 
-            if( !is.infinite(weight) ) {
-                distances[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
+                if( !is.infinite(weight) ) {
+                    distances[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
+                } else {
+                    distances[i,j] = 1e6 # Sufficiently large number
+                }
             } else {
-                distances[i,j] = 1e6 # Sufficiently large number
+                distances[i,j] = sqrt( sum((row1_filtered - row2_filtered)^2) +
+                                       sum((options$options$na_replace - row1[!is.na(row1) &  is.na(row2)])^2) +
+                                       sum((options$options$na_replace - row2[ is.na(row1) & !is.na(row2)])^2) +
+                                       options$options$na_replace^2 * length(row1[is.na(row1) & is.na(row2)]) )
             }
 
             distances[j,i] = distances[i,j]
         }
     }
-    distances = data.frame( distances, row.names=row.names( m ) )
+    distances = data.frame( distances - min(distances, na.rm=TRUE), row.names=row.names( m ) )
     return( as.dist( distances ) )
 }
 
