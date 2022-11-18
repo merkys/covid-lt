@@ -1,0 +1,37 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+
+options = parse_args(parser, positional_arguments = TRUE)
+parser <- add_option(parser, c( "-n", "--number" ), dest = "number", type = "double", default = 8)
+options = parse_args(parser, positional_arguments = TRUE)
+
+clusters = options$args[1]
+descriptions = options$args[2]
+
+load(clusters)
+descr = read.csv(descriptions, header=FALSE, sep="\t", quote="", as.is=TRUE)
+
+tree = cutree(clust, k = options$options$number)
+
+for (i in 1:options$options$number) {
+    cluster = tree[tree == i]
+
+    cat( "Cluster", i, "size:", length(cluster), "\n" )
+    cat( "----------------------------------------\n" )
+
+    pdb_ids = substr(labels(cluster), 2, 5)
+
+    cat( pdb_ids, "\n\n" )
+
+    for (pdb_id in pdb_ids) {
+        if( pdb_id %in% descr[,1] ) {
+            cat( paste( descr[descr[,1] == pdb_id,], sep=": " ), "\n" )
+        }
+    }
+
+    cat( "\n" )
+
+    # cat( paste( descr[(descr[,1] %in% pdb_ids), 2] ), "\n\n" )
+}
