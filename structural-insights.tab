@@ -32,7 +32,18 @@
 6XKP	H with RBM.
 7RXD	H well aligned with 495 sheet, but large portion of RBD is missing in pristine PDB and is poorly modelled.
 7EJ4	L mainly with RBM
-7TP4	no RBM contacts, H mainly with intersheet loops
+7TP4	H/L with loops connecting RBD sheet with RBM
 6YM0	H with 380 sheet
 7QNW	H/L with 380 sheet
 6ZER	H/L with 380 sheet
+7RBV	H binds to S1 by inserting loop 105 into beta barrel-like structure at NTD
+7LY3	H/L contacts with outside of NTD
+7RBU	H binds to S1 by inserting loop 105 into beta barrel-like structure at NTD
+7WK9	epitope at CTD1
+7E88	H and L are separate, H contacts with RBM, L with sheet 375
+7N5H	H contacts with sheet 375
+7E9N	H contacts both with RBM and strand 355
+7EAM	H contacts both with RBM and strand 355
+7WE9	H/L with loops connecting RBD sheet with RBM
+7A5R	H/L mainly with loop 380, S1 has breaks, CTD1 contacts are likely due to poor modelling
+7CYH	H/L with loops connecting RBD sheet with RBM
