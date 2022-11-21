@@ -12,6 +12,6 @@ if( length(files) != 0 ) {
 
 D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
 
-for (i in 1:length(D)) {
+for (i in 1:dim(D)[1]) {
     cat(length(D[i,!is.na(D[i,])]) / length(D[i,]), "\n")
 }

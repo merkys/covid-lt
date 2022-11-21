@@ -5,6 +5,7 @@ parser <- OptionParser()
 
 options = parse_args(parser, positional_arguments = TRUE)
 parser <- add_option(parser, c( "-n", "--number" ), dest = "number", type = "double", default = 8)
+parser <- add_option(parser, '--tab', action = "store_true", default = FALSE)
 options = parse_args(parser, positional_arguments = TRUE)
 
 clusters = options$args[1]
@@ -17,21 +18,26 @@ tree = cutree(clust, k = options$options$number)
 
 for (i in 1:options$options$number) {
     cluster = tree[tree == i]
-
-    cat( "Cluster", i, "size:", length(cluster), "\n" )
-    cat( "----------------------------------------\n" )
-
     pdb_ids = substr(labels(cluster), 2, 5)
 
-    cat( pdb_ids, "\n\n" )
+    if( options$options$tab ) {
+        cat( 'SIZE', i, length(cluster), sep="\t" )
+        cat( "\n" )
+        cat( 'INDICES', i, which(tree == i), sep="\t" )
+        cat( "\n" )
+        cat( 'LABELS', i, pdb_ids, sep="\t" )
+        cat( "\n" )
+    } else {
+        cat( "Cluster", i, "size:", length(cluster), "\n" )
+        cat( "----------------------------------------\n" )
+        cat( pdb_ids, "\n\n" )
 
-    for (pdb_id in pdb_ids) {
-        if( pdb_id %in% descr[,1] ) {
-            cat( paste( descr[descr[,1] == pdb_id,], sep=": " ), "\n" )
+        for (pdb_id in pdb_ids) {
+            if( pdb_id %in% descr[,1] ) {
+                cat( paste( descr[descr[,1] == pdb_id,], sep=": " ), "\n" )
+            }
         }
+
+        cat( "\n" )
     }
-
-    cat( "\n" )
-
-    # cat( paste( descr[(descr[,1] %in% pdb_ids), 2] ), "\n\n" )
 }
