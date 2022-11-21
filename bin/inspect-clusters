@@ -2,9 +2,8 @@
 
 library( "optparse" )
 parser <- OptionParser()
-
-options = parse_args(parser, positional_arguments = TRUE)
 parser <- add_option(parser, c( "-n", "--number" ), dest = "number", type = "double", default = 8)
+parser <- add_option(parser, c( "--height" ), dest = "height", type = "double", default = NA)
 parser <- add_option(parser, '--tab', action = "store_true", default = FALSE)
 options = parse_args(parser, positional_arguments = TRUE)
 
@@ -14,9 +13,14 @@ descriptions = options$args[2]
 load(clusters)
 descr = read.csv(descriptions, header=FALSE, sep="\t", quote="", as.is=TRUE)
 
-tree = cutree(clust, k = options$options$number)
+tree = NULL
+if( is.na(options$options$height) ) {
+    tree = cutree(clust, k = options$options$number)
+} else {
+    tree = cutree(clust, h = options$options$height)
+}
 
-for (i in 1:options$options$number) {
+for (i in sort(unique(tree))) {
     cluster = tree[tree == i]
     pdb_ids = substr(labels(cluster), 2, 5)
 
