@@ -41,3 +41,60 @@ Cluster 6
 
 Antibodies in Cluster 6 contact with S1 NTD, specifically, with strands containing residues 145 and 250.
 Cluster is composed of many different antibodies.
+
+Cluster 7
+---------
+
+Antibodies in Cluster 7 contact with beta strand containing S1 position 378.
+Cluster is composed of many different antibodies.
+Cluster contains antibody H014 which was extracted from mice and humanized [https://www.science.org/doi/10.1126/science.abc5881].
+
+Cluster 8
+---------
+
+Contacts are mostly concentrated at the loops joining S1's RBD beta sheet with the RBM.
+RBM contacts are also observed.
+Cluster is composed of many different antibodies.
+
+Cluster 9
+---------
+
+Contacts are concentrated at S1's NTD.
+Cluster is composed of different antibodies.
+
+Cluster 10
+----------
+
+Cluster is composed of different antibodies.
+
+Cluster 11
+----------
+
+Cluster is composed of a single complex containing DH1052 antibody which is described as non-neutralizing, albeit reducing virus concentrations in infected mice [https://www.news-medical.net/news/20210106/Are-SARS-CoV-2-antibodies-associated-with-disease-enhancement.aspx].
+
+Cluster 12
+----------
+
+Cluster is made of two complexes containing different antibodies.
+This cluster contains a complex with antibody PVI.V6-14 which is as well seen in Cluster 14.
+
+Cluster 13
+----------
+
+All complexes in the cluster contain non-neutralizing antibody S2L20 [https://www.science.org/doi/10.1126/science.abl8506].
+
+Cluster 14
+----------
+
+Cluster is made of two complexes containing different antibodies.
+This cluster contains a complex with antibody PVI.V6-14 which is as well seen in Cluster 12.
+
+Cluster 15
+----------
+
+Cluster is made of two complexes containing different antibodies.
+
+Cluster 16
+----------
+
+All complexes in the cluster contain antibody S3H3 which is effective against Omicron variant [https://www.nature.com/articles/s41586-022-04581-9].
