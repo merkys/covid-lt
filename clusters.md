@@ -65,36 +65,45 @@ Cluster is composed of different antibodies.
 Cluster 10
 ----------
 
+Both antibody chains in Cluster 10 contact with inter-sheet loops at S1's NTD.
 Cluster is composed of different antibodies.
 
 Cluster 11
 ----------
 
 Cluster is composed of a single complex containing DH1052 antibody which is described as non-neutralizing, albeit reducing virus concentrations in infected mice [https://www.news-medical.net/news/20210106/Are-SARS-CoV-2-antibodies-associated-with-disease-enhancement.aspx].
+The epitope of this complex lacks many residues in the original PDB file.
 
 Cluster 12
 ----------
 
 Cluster is made of two complexes containing different antibodies.
 This cluster contains a complex with antibody PVI.V6-14 which is as well seen in Cluster 14.
+In one of the structures, 7LY3, both antibody chains contact with the outside of S1's NTD.
+In 7RBU, heavy chain of the antibody binds to S1 by inserting a loop into beta barrel structure at S1's NTD.
 
 Cluster 13
 ----------
 
+In the complexes of Cluster 13 heavy chains of antibodies contact with S1's NTD strand containing position 85.
 All complexes in the cluster contain non-neutralizing antibody S2L20 [https://www.science.org/doi/10.1126/science.abl8506].
 
 Cluster 14
 ----------
 
 Cluster is made of two complexes containing different antibodies.
+In both complexes, heavy chain of the antibody binds to S1 by inserting a loop into beta barrel structure at S1's NTD.
 This cluster contains a complex with antibody PVI.V6-14 which is as well seen in Cluster 12.
 
 Cluster 15
 ----------
 
 Cluster is made of two complexes containing different antibodies.
+In one of the structures, 7RXD, antibody's heavy chain is contacting with S1's beta strand containing position 495, but large portion of S1's RBD is missing in the original structure.
+In 7S0E, antibody chains contact mostly with CTD1.
 
 Cluster 16
 ----------
 
 All complexes in the cluster contain antibody S3H3 which is effective against Omicron variant [https://www.nature.com/articles/s41586-022-04581-9].
+Epitopes in this cluster are concentrated at S1's CTD1.
