@@ -219,3 +219,26 @@ rule complex_contact_clusters:
         """
         bin/contact-heatmap {input} --dendrogram --replace-NA-with 20 --cluster-method complete --smooth-window 3 --RData {output.RData} > {output.plot}
         """
+
+rule conserved_contacts:
+    input:
+        RData = "{prefix}/contact-maps/{base}.RData",
+        tab = "{prefix}/contact-maps/{base}.tab",
+        insights = "structural-insights.tab"
+    output:
+        "{prefix}/contact-maps/{base}-contacts.tab"
+    shell:
+        """
+        bin/inspect-clusters {input.RData} {input.insights} --height 140 --tab \
+            | grep ^INDICES \
+            | cut -f 3- \
+            | sed 's/\t/,/g' \
+            | while read LINE
+              do
+                cut {input.tab} -f $LINE \
+                    | bin/conserved-contacts \
+                    | paste - <(seq 1 1499) \
+                    | awk '{{if( $1 > 0.9 ) {{ print $2 }}}}' \
+                    | xargs echo
+              done > {output}
+        """
