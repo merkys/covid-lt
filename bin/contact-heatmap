@@ -12,6 +12,7 @@ parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
 parser <- add_option(parser, c( "--RData" ), dest = "RData", type = "character", default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
+distances = NULL
 dist_na <- function(m) {
     if( !is.na(options$options$na_replace) ) {
         m[is.na(m)] = options$options$na_replace
@@ -19,7 +20,7 @@ dist_na <- function(m) {
 
     nrow = dim(m)[1]
 
-    distances = matrix( nrow=nrow, ncol=nrow )
+    D = matrix( nrow=nrow, ncol=nrow )
     for (i in 1:nrow) {
         for (j in 1:nrow) {
             if( i >= j ) {
@@ -37,22 +38,22 @@ dist_na <- function(m) {
                 weight = length(row1)/length(row1_filtered)
 
                 if( !is.infinite(weight) ) {
-                    distances[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
+                    D[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
                 } else {
-                    distances[i,j] = 1e6 # Sufficiently large number
+                    D[i,j] = 1e6 # Sufficiently large number
                 }
             } else {
-                distances[i,j] = sqrt( sum((row1_filtered - row2_filtered)^2) +
-                                       sum((options$options$na_replace - row1[!is.na(row1) &  is.na(row2)])^2) +
-                                       sum((options$options$na_replace - row2[ is.na(row1) & !is.na(row2)])^2) +
-                                       options$options$na_replace^2 * length(row1[is.na(row1) & is.na(row2)]) )
+                D[i,j] = sqrt( sum((row1_filtered - row2_filtered)^2) +
+                               sum((options$options$na_replace - row1[!is.na(row1) &  is.na(row2)])^2) +
+                               sum((options$options$na_replace - row2[ is.na(row1) & !is.na(row2)])^2) +
+                               options$options$na_replace^2 * length(row1[is.na(row1) & is.na(row2)]) )
             }
 
-            distances[j,i] = distances[i,j]
+            D[j,i] = D[i,j]
         }
     }
-    distances = data.frame( distances - min(distances, na.rm=TRUE), row.names=row.names( m ) )
-    return( as.dist( distances ) )
+    distances <<- as.dist( data.frame( D - min(D, na.rm=TRUE), row.names=row.names( m ) ) )
+    return( distances )
 }
 
 clust = NULL
@@ -105,5 +106,5 @@ heatmap(D, Colv=NA, Rowv=dendrogram, distfun=dist_na, hclustfun=hclustfun,
         cexRow = 0.5 + 1/length(D))
 
 if( !is.na(options$options$RData) ) {
-    save(clust, file=options$options$RData)
+    save(distances, clust, file=options$options$RData)
 }
