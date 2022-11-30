@@ -20,9 +20,18 @@ if( is.na(options$options$height) ) {
     tree = cutree(clust, h = options$options$height)
 }
 
+dist_matrix = as.matrix(distances)
+
 for (i in sort(unique(tree))) {
     cluster = tree[tree == i]
     pdb_ids = substr(labels(cluster), 2, 5)
+
+    original_ids = which(tree == i)
+    inner_distances = vector(length=length(original_ids))
+    for (j in 1:length(original_ids)) {
+        inner_distances[j] = sum(dist_matrix[original_ids[j],original_ids])
+    }
+    dist_order = order(inner_distances)
 
     if( options$options$tab ) {
         cat( 'SIZE', i, length(cluster), sep="\t" )
@@ -30,6 +39,9 @@ for (i in sort(unique(tree))) {
         cat( 'INDICES', i, which(tree == i), sep="\t" )
         cat( "\n" )
         cat( 'LABELS', i, pdb_ids, sep="\t" )
+        cat( "\n" )
+        cat( 'CENTROID', i, pdb_ids[dist_order[1]], inner_distances[dist_order[1]],
+                            pdb_ids[dist_order[2]], inner_distances[dist_order[2]], sep="\t" )
         cat( "\n" )
     } else {
         cat( "Cluster", i, "size:", length(cluster), "\n" )
