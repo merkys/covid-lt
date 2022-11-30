@@ -226,7 +226,7 @@ rule conserved_contacts:
         tab = "{prefix}/contact-maps/{base}.tab",
         insights = "structural-insights.tab"
     output:
-        "{prefix}/contact-maps/{base}-contacts.tab"
+        "{prefix}/contact-maps/{base}-contacts.lst"
     shell:
         """
         bin/inspect-clusters {input.RData} {input.insights} --height 140 --tab \
@@ -238,7 +238,7 @@ rule conserved_contacts:
                 cut {input.tab} -f $LINE \
                     | bin/conserved-contacts \
                     | paste - <(seq 1 1499) \
-                    | awk '{{if( $1 > 0.9 ) {{ print $2 }}}}' \
+                    | awk '{{if( $1 > 0.49 ) {{ print $2 }}}}' \
                     | xargs echo
               done > {output}
         """
