@@ -33,6 +33,8 @@ Cluster 5
 
 Cluster is defined mostly by antibody contacts with beta strand containing S1 position 355.
 However, the same is observed in Cluster 4 too.
+S1 structures in this cluster are very well aligned, some variation is observed in antibody structures.
+There are contacts with RBM, but these do not seem to be conserved.
 Antibody COVOX-45 is found in this cluster and nowhere else.
 No sources seem to mention the origin of COVOX-45.
 
@@ -59,14 +61,14 @@ Cluster is composed of many different antibodies.
 Cluster 9
 ---------
 
-Contacts are concentrated at S1's NTD.
-Cluster is composed of different antibodies.
+Contacts are concentrated at S1's NTD, mainly at loop containing residue 90 and protruding beta hairpin of 180-200.
+Cluster is composed of different antibodies, but they align well.
 
 Cluster 10
 ----------
 
 Both antibody chains in Cluster 10 contact with inter-sheet loops at S1's NTD.
-Cluster is composed of different antibodies.
+Cluster is composed of different antibodies, but they align well.
 
 Cluster 11
 ----------
@@ -81,11 +83,13 @@ Cluster is made of two complexes containing different antibodies.
 This cluster contains a complex with antibody PVI.V6-14 which is as well seen in Cluster 14.
 In one of the structures, 7LY3, both antibody chains contact with the outside of S1's NTD.
 In 7RBU, heavy chain of the antibody binds to S1 by inserting a loop into beta barrel structure at S1's NTD.
+Complexes in this cluster do not share any physical contacts, must be an artifact.
 
 Cluster 13
 ----------
 
 In the complexes of Cluster 13 heavy chains of antibodies contact with S1's NTD strand containing position 85.
+S1 chains in these complexes "wrap" themselves around the antibodies.
 All complexes in the cluster contain non-neutralizing antibody S2L20 [https://www.science.org/doi/10.1126/science.abl8506].
 
 Cluster 14
@@ -101,9 +105,12 @@ Cluster 15
 Cluster is made of two complexes containing different antibodies.
 In one of the structures, 7RXD, antibody's heavy chain is contacting with S1's beta strand containing position 495, but large portion of S1's RBD is missing in the original structure.
 In 7S0E, antibody chains contact mostly with CTD1.
+This cluster is an aberration as S1 chains do not align at all.
 
 Cluster 16
 ----------
 
 All complexes in the cluster contain antibody S3H3 which is effective against Omicron variant [https://www.nature.com/articles/s41586-022-04581-9].
 Epitopes in this cluster are concentrated at S1's CTD1.
+Contacts are well conserved in this cluster.
+Model of PDB entry 7WD9 has a weird looking loop at around 625.
