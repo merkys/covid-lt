@@ -5,6 +5,7 @@ parser <- OptionParser()
 parser <- add_option(parser, c( "-n", "--number" ), dest = "number", type = "double", default = 8)
 parser <- add_option(parser, c( "--height" ), dest = "height", type = "double", default = NA)
 parser <- add_option(parser, '--tab', action = "store_true", default = FALSE)
+parser <- add_option(parser, '--avgrmsd', action = "store_true", default = FALSE)
 options = parse_args(parser, positional_arguments = TRUE)
 
 clusters = options$args[1]
@@ -33,6 +34,27 @@ for (i in sort(unique(tree))) {
     }
     dist_order = order(inner_distances)
 
+    rmsd = NULL
+    if( options$options$avgrmsd ) {
+        files = paste0( 'results/pdb/antibodies/complexes/', pdb_ids, '.pdb', collapse = " " )
+        commands = vector( mode = "character", length = (length(cluster)^2 - length(cluster)) / 2 )
+        current = 1
+        for (j in 1:length(cluster)) {
+            for (k in 1:length(cluster)) {
+                if( j >= k ) {
+                    next
+                }
+                command = paste0( 'align ', pdb_ids[j], ' and chain A, ', pdb_ids[k], ' and chain A' )
+                commands[current] = command
+                current = current + 1
+            }
+        }
+        rmsds = system( paste0( 'pymol -cp ', files, ' 2>/dev/null',
+                                ' | grep "^ Executive: RMSD" ',
+                                ' | awk "{print \\$4}"' ), intern = TRUE, input = commands )
+        rmsd = mean( as.double( rmsds ) )
+    }
+
     if( options$options$tab ) {
         cat( 'SIZE', i, length(cluster), sep="\t" )
         cat( "\n" )
@@ -42,6 +64,8 @@ for (i in sort(unique(tree))) {
         cat( "\n" )
         cat( 'CENTROID', i, pdb_ids[dist_order[1]], inner_distances[dist_order[1]],
                             pdb_ids[dist_order[2]], inner_distances[dist_order[2]], sep="\t" )
+        cat( "\n" )
+        cat( 'RMSD', i, rmsd, sep="\t" )
         cat( "\n" )
     } else {
         cat( "Cluster", i, "size:", length(cluster), "\n" )
