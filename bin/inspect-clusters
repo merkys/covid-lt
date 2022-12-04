@@ -82,16 +82,20 @@ for (i in sort(unique(tree))) {
         cat( "\n" )
         cat( 'LABELS', i, pdb_ids, sep="\t" )
         cat( "\n" )
-        cat( 'CENTROID', i, pdb_ids[dist_order[1]], inner_distances[dist_order[1]],
-                            pdb_ids[dist_order[2]], inner_distances[dist_order[2]],
-                            pdb_ids[dist_order[3]], inner_distances[dist_order[3]], sep="\t" )
+        cat( 'CENTROID-BY-CONTACTS', i,
+             pdb_ids[dist_order[1]], inner_distances[dist_order[1]],
+             pdb_ids[dist_order[2]], inner_distances[dist_order[2]],
+             pdb_ids[dist_order[3]], inner_distances[dist_order[3]],
+             sep="\t" )
         cat( "\n" )
         if( options$options$avgrmsd ) {
             cat( 'RMSD', i, rmsd, sep="\t" )
             cat( "\n" )
-            cat( 'CENTROID-BY-CONFORMATION', i, pdb_ids[rmsd_order[1]], rmsd_per_entry[rmsd_order[1]],
-                                                pdb_ids[rmsd_order[2]], rmsd_per_entry[rmsd_order[2]],
-                                                pdb_ids[rmsd_order[3]], rmsd_per_entry[rmsd_order[3]], sep="\t" )
+            cat( 'CENTROID-BY-CONFORMATION', i,
+                 pdb_ids[rmsd_order[1]], rmsd_per_entry[rmsd_order[1]],
+                 pdb_ids[rmsd_order[2]], rmsd_per_entry[rmsd_order[2]],
+                 pdb_ids[rmsd_order[3]], rmsd_per_entry[rmsd_order[3]],
+                 sep="\t" )
             cat( "\n" )
         }
     } else {
