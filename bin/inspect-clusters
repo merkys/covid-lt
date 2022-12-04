@@ -35,6 +35,8 @@ for (i in sort(unique(tree))) {
     dist_order = order(inner_distances)
 
     rmsd = NULL
+    rmsd_per_entry = NULL
+    rmsd_order = NULL
     if( options$options$avgrmsd ) {
         files = paste0( 'results/pdb/antibodies/complexes/', pdb_ids, '.pdb', collapse = " " )
         commands = vector( mode = "character", length = (length(cluster)^2 - length(cluster)) / 2 )
@@ -49,10 +51,28 @@ for (i in sort(unique(tree))) {
                 current = current + 1
             }
         }
-        rmsds = system( paste0( 'pymol -cp ', files, ' 2>/dev/null',
-                                ' | grep "^ Executive: RMSD" ',
-                                ' | awk "{print \\$4}"' ), intern = TRUE, input = commands )
-        rmsd = mean( as.double( rmsds ) )
+        rmsds = as.double( system( paste0( 'pymol -cp ', files, ' 2>/dev/null',
+                                           ' | grep "^ Executive: RMSD" ',
+                                           ' | awk "{print \\$4}"' ), intern = TRUE, input = commands ) )
+        rmsd = mean( rmsds )
+        rmsd_dist = matrix( nrow=length(cluster), ncol=length(cluster) )
+        current = 1
+        for (j in 1:length(cluster)) {
+            for (k in 1:length(cluster)) {
+                if( j >= k ) {
+                    next
+                }
+                rmsd_dist[j,k] = rmsds[current]
+                rmsd_dist[k,j] = rmsds[current]
+                current = current + 1
+            }
+        }
+
+        rmsd_per_entry = vector(length=length(cluster))
+        for (j in 1:length(cluster)) {
+            rmsd_per_entry[j] = mean(rmsd_dist[j,], na.rm = TRUE)
+        }
+        rmsd_order = order(rmsd_per_entry)
     }
 
     if( options$options$tab ) {
@@ -62,11 +82,22 @@ for (i in sort(unique(tree))) {
         cat( "\n" )
         cat( 'LABELS', i, pdb_ids, sep="\t" )
         cat( "\n" )
-        cat( 'CENTROID', i, pdb_ids[dist_order[1]], inner_distances[dist_order[1]],
-                            pdb_ids[dist_order[2]], inner_distances[dist_order[2]], sep="\t" )
+        cat( 'CENTROID-BY-CONTACTS', i,
+             pdb_ids[dist_order[1]], inner_distances[dist_order[1]],
+             pdb_ids[dist_order[2]], inner_distances[dist_order[2]],
+             pdb_ids[dist_order[3]], inner_distances[dist_order[3]],
+             sep="\t" )
         cat( "\n" )
-        cat( 'RMSD', i, rmsd, sep="\t" )
-        cat( "\n" )
+        if( options$options$avgrmsd ) {
+            cat( 'RMSD', i, rmsd, sep="\t" )
+            cat( "\n" )
+            cat( 'CENTROID-BY-CONFORMATION', i,
+                 pdb_ids[rmsd_order[1]], rmsd_per_entry[rmsd_order[1]],
+                 pdb_ids[rmsd_order[2]], rmsd_per_entry[rmsd_order[2]],
+                 pdb_ids[rmsd_order[3]], rmsd_per_entry[rmsd_order[3]],
+                 sep="\t" )
+            cat( "\n" )
+        }
     } else {
         cat( "Cluster", i, "size:", length(cluster), "\n" )
         cat( "----------------------------------------\n" )
