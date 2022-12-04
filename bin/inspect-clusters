@@ -63,7 +63,8 @@ for (i in sort(unique(tree))) {
         cat( 'LABELS', i, pdb_ids, sep="\t" )
         cat( "\n" )
         cat( 'CENTROID', i, pdb_ids[dist_order[1]], inner_distances[dist_order[1]],
-                            pdb_ids[dist_order[2]], inner_distances[dist_order[2]], sep="\t" )
+                            pdb_ids[dist_order[2]], inner_distances[dist_order[2]],
+                            pdb_ids[dist_order[3]], inner_distances[dist_order[3]], sep="\t" )
         cat( "\n" )
         cat( 'RMSD', i, rmsd, sep="\t" )
         cat( "\n" )
