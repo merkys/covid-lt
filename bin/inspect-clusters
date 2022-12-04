@@ -36,21 +36,24 @@ for (i in sort(unique(tree))) {
 
     rmsd = NULL
     if( options$options$avgrmsd ) {
-        rmsd = 0
+        files = vector( mode = "character", length = length(cluster) )
+        commands = vector( mode = "character", length = (length(cluster)^2 - length(cluster)) / 2 )
+        current = 1
         for (j in 1:length(cluster)) {
+            files[j] = paste0( 'results/pdb/antibodies/complexes/', pdb_ids[j], '.pdb' )
             for (k in 1:length(cluster)) {
                 if( j >= k ) {
                     next
                 }
-                rmsd = rmsd +
-                       as.double( system( paste0( 'echo align ', pdb_ids[j], ' and chain A, ', pdb_ids[k], ' and chain A ',
-                                                  '| pymol -cp results/pdb/antibodies/complexes/', pdb_ids[j], '.pdb ',
-                                                  '            results/pdb/antibodies/complexes/', pdb_ids[k], '.pdb 2>/dev/null ',
-                                                  '| grep "^ Executive: RMSD" ',
-                                                  '| awk "{print \\$4}"' ), intern = TRUE ) )
+                command = paste0( 'align ', pdb_ids[j], ' and chain A, ', pdb_ids[k], ' and chain A' )
+                commands[current] = command
+                current = current + 1
             }
         }
-        rmsd = rmsd / ((length(cluster)^2 - length(cluster)) / 2)
+        rmsds = system( paste0( 'pymol -cp ', paste( files, collapse = " " ), ' 2>/dev/null',
+                                ' | grep "^ Executive: RMSD" ',
+                                ' | awk "{print \\$4}"' ), intern = TRUE, input = commands )
+        rmsd = mean( as.double( rmsds ) )
     }
 
     if( options$options$tab ) {
