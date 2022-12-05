@@ -8,6 +8,7 @@ PDB_INPUT_DIR=./
 OUTPUT_DIR=./
 
 MERGE_ANTIBODY_CHAINS=false
+OUTPUT_VALUES=dist-min
 
 while [ $# -gt 0 ]
 do
@@ -49,9 +50,9 @@ function chain_contacts() {
     OTHER_CHAIN=$2
 
     cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}pdb/P0DTC2/vorocontacts/${PDB_ID}.tab \
-        | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --merge dist-min \
+        | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --merge ${OUTPUT_VALUES} \
         | grep "${FILTER}" \
-        | while read C1 R1 C2 R2 DIST
+        | while read C1 R1 C2 R2 VALUE
           do
             # Exclude other chains
             echo "${OTHER_CHAIN}" | grep --silent -e "${C1}" -e "${C2}" || continue
@@ -59,9 +60,9 @@ function chain_contacts() {
             # S1 chain may be either on first or on second column
             if [ "${C1}" = "${S1_CHAIN}" ]
             then
-                echo -e "${R1}\t${DIST}"
+                echo -e "${R1}\t${VALUE}"
             else
-                echo -e "${R2}\t${DIST}"
+                echo -e "${R2}\t${VALUE}"
             fi
           done \
         | sort -nk1.1 \
