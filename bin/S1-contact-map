@@ -32,6 +32,12 @@ do
             OUTPUT_DIR=$2
             shift
             ;;
+        --output-areas
+            OUTPUT_VALUES=area-sum
+            ;;
+        --output-distances
+            OUTPUT_VALUES=dist-min
+            ;;
         -*)
             echo "`basename $0`:: ERROR, unknown option '$1'." >&2
             exit 1
