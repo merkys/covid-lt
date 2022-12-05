@@ -326,7 +326,7 @@ rule quality_map:
         rm -rf $TMP_DIR
         """
 
-rule_tleap:
+rule tleap:
     input:
         "{prefix}.pdb"
     output:
