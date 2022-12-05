@@ -75,8 +75,13 @@ for line in sys.stdin:
         continue
     residue = int(match.group(1))
     dist = float(match.group(2))
-    if residue not in residues or dist < residues[residue]:
+    if residue not in residues:
         residues[residue] = dist
+    else:
+        if "'${OUTPUT_VALUES}'" == "area-sum":
+            residues[residue] = residues[residue] + dist
+        elif "'${OUTPUT_VALUES}'" == "dist-min" and dist < residues[residue]:
+            residues[residue] = dist
 for i in range(1, 1500): # Assuming S1 is max. 1500 aminoacids long
     if i in residues:
         print(residues[i])
