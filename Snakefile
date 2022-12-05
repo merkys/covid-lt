@@ -86,11 +86,11 @@ rule download_pdb:
 # For this project, of interest are contacts between S1, ACE2 and antibody chains
 rule vorocontacts_out:
     input:
-        output_dir + "pdb/{dirname}/{pdbid}.pdb"
+        "{prefix}/{pdbid}.pdb"
     output:
-        output_dir + "pdb/{dirname}/vorocontacts/{pdbid}.out"
+        "{prefix}/vorocontacts/{pdbid}.out"
     log:
-        output_dir + "pdb/{dirname}/vorocontacts/{pdbid}.log"
+        "{prefix}/vorocontacts/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
@@ -103,9 +103,9 @@ rule vorocontacts_out:
 
 rule vorocontacts_tab:
     input:
-        output_dir + "pdb/{dirname}/vorocontacts/{pdbid}.out"
+        "{prefix}/vorocontacts/{pdbid}.out"
     output:
-        output_dir + "pdb/{dirname}/vorocontacts/{pdbid}.tab"
+        "{prefix}/vorocontacts/{pdbid}.tab"
     shell:
         "bin/vorocontacts2tab {input} > {output}"
 
