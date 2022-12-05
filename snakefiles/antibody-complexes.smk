@@ -23,7 +23,7 @@ rule extract_complex:
     shell:
         """
         mkdir --parents $(dirname {output})
-        COMPLEX=$(PYTHONPATH=. bin/contact-graph {input.vorocontacts} --pdb {input.pdb} --output-complexes --most-contacts | grep -v ^Limiting)
+        COMPLEX=$(PYTHONPATH=. bin/contact-graph {input.vorocontacts} --pdb {input.pdb} --output-complexes --most-contacts | grep -v ^Limiting || true)
         if [ -z "$COMPLEX" ]
         then
             echo -n > {output}
