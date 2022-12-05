@@ -73,7 +73,7 @@ do
     test -z "${S1_CHAIN}" && continue
 
     cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}pdb/P0DTC2/vorocontacts/${PDB_ID}.tab \
-        | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --dist min \
+        | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --merge dist-min \
         | grep "${FILTER}" \
         | while read C1 R1 C2 R2 DIST
           do
