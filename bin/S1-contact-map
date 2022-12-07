@@ -32,10 +32,10 @@ do
             OUTPUT_DIR=$2
             shift
             ;;
-        --output-areas
+        --output-areas)
             OUTPUT_VALUES=area-sum
             ;;
-        --output-distances
+        --output-distances)
             OUTPUT_VALUES=dist-min
             ;;
         -*)
