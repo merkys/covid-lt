@@ -84,6 +84,7 @@ This cluster contains a complex with antibody PVI.V6-14 which is as well seen in
 In one of the structures, 7LY3, both antibody chains contact with the outside of S1's NTD.
 In 7RBU, heavy chain of the antibody binds to S1 by inserting a loop into beta barrel structure at S1's NTD.
 Complexes in this cluster do not share any physical contacts, must be an artifact.
+RMSDs of S1 chains are low (1.6 angstrom), but low TM-score of 0.14 indicates poor alignment.
 
 Cluster 13
 ----------
@@ -105,7 +106,7 @@ Cluster 15
 Cluster is made of two complexes containing different antibodies.
 In one of the structures, 7RXD, antibody's heavy chain is contacting with S1's beta strand containing position 495, but large portion of S1's RBD is missing in the original structure.
 In 7S0E, antibody chains contact mostly with CTD1.
-This cluster is an aberration as S1 chains do not align at all.
+This cluster is an aberration as S1 chains do not align at all, as indicated by high RMSD of 12 angstroms and low TM-score of 0.12.
 
 Cluster 16
 ----------
