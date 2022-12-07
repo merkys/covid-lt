@@ -364,3 +364,10 @@ rule prodigy:
             cat {log} >&2
         fi
         """
+run build_TMscore:
+    input:
+        "externals/TMscore/TMscore.cpp"
+    output:
+        "bin/TMscore"
+    shell:
+        "g++ -static -O3 -ffast-math -lm -o {output} {input}"
