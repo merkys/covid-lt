@@ -364,6 +364,7 @@ rule prodigy:
             cat {log} >&2
         fi
         """
+
 run build_TMscore:
     input:
         "externals/TMscore/TMscore.cpp"
