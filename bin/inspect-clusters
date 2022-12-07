@@ -100,7 +100,7 @@ for (i in sort(unique(tree))) {
         for (j in 1:length(cluster)) {
             tmscore_per_entry[j] = mean(tmscore_dist[j,], na.rm = TRUE)
         }
-        tmscore_order = order(tmscore_per_entry)
+        tmscore_order = rev(order(tmscore_per_entry))
     }
 
     if( options$options$tab ) {
@@ -119,7 +119,7 @@ for (i in sort(unique(tree))) {
         if( options$options$rmsd ) {
             cat( 'RMSD', i, rmsd, sep="\t" )
             cat( "\n" )
-            cat( 'CENTROID-BY-CONFORMATION', i,
+            cat( 'CENTROID-BY-RMSD', i,
                  pdb_ids[rmsd_order[1]], rmsd_per_entry[rmsd_order[1]],
                  pdb_ids[rmsd_order[2]], rmsd_per_entry[rmsd_order[2]],
                  pdb_ids[rmsd_order[3]], rmsd_per_entry[rmsd_order[3]],
@@ -128,6 +128,12 @@ for (i in sort(unique(tree))) {
         }
         if( options$options$tmscore ) {
             cat( 'TM-SCORE', i, tmscore, sep="\t" )
+            cat( "\n" )
+            cat( 'CENTROID-BY-TMSCORE', i,
+                 pdb_ids[tmscore_order[1]], tmscore_per_entry[tmscore_order[1]],
+                 pdb_ids[tmscore_order[2]], tmscore_per_entry[tmscore_order[2]],
+                 pdb_ids[tmscore_order[3]], tmscore_per_entry[tmscore_order[3]],
+                 sep="\t" )
             cat( "\n" )
         }
     } else {
