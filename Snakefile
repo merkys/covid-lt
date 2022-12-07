@@ -338,3 +338,11 @@ rule tleap:
         """
         bin/tleap {input} {output.prmtop} {output.inpcrd} leaprc.protein.ff19SB 2> {log}
         """
+
+run build_TMscore:
+    input:
+        "externals/TMscore/TMscore.cpp"
+    output:
+        "bin/TMscore"
+    shell:
+        "g++ -static -O3 -ffast-math -lm -o {output} {input}"
