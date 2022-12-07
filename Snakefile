@@ -365,7 +365,7 @@ rule prodigy:
         fi
         """
 
-run build_TMscore:
+rule build_TMscore:
     input:
         "externals/TMscore/TMscore.cpp"
     output:
