@@ -197,7 +197,7 @@ rule complex_contact_map:
         propka_tabs = propka_tabs,
         vorocontacts_tabs = vorocontacts_tabs
     output:
-        output_dir + "pdb/antibodies/complexes/contact-maps/{search}.tab"
+        output_dir + "pdb/antibodies/complexes/contact-maps/{dirname}/{search}.tab"
     singularity:
         "container.sif"
     shell:
@@ -206,15 +206,15 @@ rule complex_contact_map:
         comm -1 -2 \
             <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
             <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
-          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --merge-antibody-chains > {output}
+          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --output-{wildcards.dirname} --merge-antibody-chains > {output}
         """
 
 rule complex_contact_clusters:
     input:
-        "{prefix}/contact-maps/{base}.tab"
+        "{prefix}/contact-maps/{dirname}/{base}.tab"
     output:
-        RData = "{prefix}/contact-maps/{base}.RData",
-        plot = "{prefix}/contact-maps/{base}.svg"
+        RData = "{prefix}/contact-maps/{dirname}/{base}.RData",
+        plot = "{prefix}/contact-maps/{dirname}/{base}.svg"
     shell:
         """
         bin/contact-heatmap {input} --dendrogram --replace-NA-with 20 --cluster-method complete --smooth-window 3 --RData {output.RData} > {output.plot}
@@ -222,11 +222,11 @@ rule complex_contact_clusters:
 
 rule conserved_contacts:
     input:
-        RData = "{prefix}/contact-maps/{base}.RData",
-        tab = "{prefix}/contact-maps/{base}.tab",
+        RData = "{prefix}/contact-maps/{dirname}/{base}.RData",
+        tab = "{prefix}/contact-maps/{dirname}/{base}.tab",
         insights = "structural-insights.tab"
     output:
-        "{prefix}/contact-maps/{base}-contacts.lst"
+        "{prefix}/contact-maps/{dirname}/{base}-contacts.lst"
     shell:
         """
         bin/inspect-clusters {input.RData} {input.insights} --height 140 --tab \
