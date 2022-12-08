@@ -251,5 +251,6 @@ rule TMscore_matrix:
         output_dir + "pdb/antibodies/complexes/dist-matrices/TMscore.m"
     shell:
         """
+        mkdir --parents $(dirname {output})
         find {output_dir}pdb/antibodies/complexes/ -maxdepth 1 -name '*.pdb' -a -size +0 | sort | xargs bin/TMscore-matrix > {output}
         """
