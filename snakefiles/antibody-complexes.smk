@@ -242,3 +242,14 @@ rule conserved_contacts:
                     | xargs echo
               done > {output}
         """
+
+rule TMscore_matrix:
+    input:
+        complexes,
+        "bin/TMscore"
+    output:
+        output_dir + "pdb/antibodies/complexes/dist-matrices/TMscore.m"
+    shell:
+        """
+        find {output_dir}pdb/antibodies/complexes/ -maxdepth 1 -name '*.pdb' -a -size +0 | sort | xargs bin/TMscore-matrix > {output}
+        """
