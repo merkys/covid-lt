@@ -1,0 +1,43 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+options = parse_args(parser, positional_arguments = TRUE)
+
+files = options$args
+bases = substr( basename( files ), 0, 4 )
+
+commands = vector( mode = "character", length = length(files) * (length(files)-1) / 2 )
+current = 1
+for (i in 1:length(files)) {
+    for (j in 1:length(files)) {
+        if( i >= j ) {
+            next
+        }
+        command = paste0( 'align ', bases[i], ' and chain A, ', bases[j], ' and chain A' )
+        commands[current] = command
+        current = current + 1
+    }
+}
+
+rmsds = as.double( system( paste0( 'pymol -cp ', paste( files, collapse = " "), ' 2>/dev/null',
+                                   ' | grep "^ Executive: RMSD" ',
+                                   ' | awk "{print \\$4}"' ), intern = TRUE, input = commands ) )
+
+distances = matrix( 0, nrow = length(files), ncol = length(files) )
+current = 1
+for (i in 1:length(files)) {
+    for (j in 1:length(files)) {
+        if( i >= j ) {
+            next
+        }
+        distances[i,j] = rmsds[current]
+        distances[j,i] = rmsds[current]
+        current = current + 1
+    }
+}
+
+distances = data.frame( bases, distances, row.names = 1 )
+names(distances) = bases
+
+suppressWarnings( write.table( distances, file="/dev/stdout", quote=FALSE ) )
