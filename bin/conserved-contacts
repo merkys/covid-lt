@@ -14,7 +14,7 @@ if( length(files) != 0 ) {
     file = files[1]
 }
 
-D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
+suppressWarnings( D <- read.csv( file, header = TRUE, sep = "\t", na.strings = "?" ) )
 
 # Calculate the number of contacts per column
 n_contacts = vector( length=dim(D)[2] )
