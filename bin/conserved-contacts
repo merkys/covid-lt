@@ -1,5 +1,9 @@
 #!/usr/bin/Rscript --vanilla
 
+# Script reads a matrix of contacts, where columns are complexes and rows are positions in the aligned chain within a complex.
+# Script then outputs the most conserved contacts.
+# The number of such contacts is equal to the average number of contacts in complexes.
+
 library( "optparse" )
 parser <- OptionParser()
 options = parse_args(parser, positional_arguments = TRUE)
