@@ -1,0 +1,115 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
+parser <- add_option(parser, c( "--smooth-window" ), dest = "smooth_window", type = "double", default = 1)
+parser <- add_option(parser, c( "--cluster-method" ), dest = "cluster_method", type = "character", default = "ward.D2")
+parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
+parser <- add_option(parser, c( "--input-type" ), dest = "input_type", type = "character", default = "distances")
+parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
+parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
+                     type = "double", default = 3)
+parser <- add_option(parser, c( "--RData" ), dest = "RData", type = "character", default = NA)
+options = parse_args(parser, positional_arguments = TRUE)
+
+distances = NULL
+dist_na <- function(m) {
+    if( !is.na(options$options$na_replace) ) {
+        m[is.na(m)] = options$options$na_replace
+    }
+
+    nrow = dim(m)[1]
+
+    D = NULL
+    if( options$options$input_type == "distances" ) {
+        D = matrix( 1e6, nrow=nrow, ncol=nrow ) # Fill with sufficiently large numbers
+    } else {
+        D = matrix( 0, nrow=nrow, ncol=nrow )
+    }
+
+    for (i in 1:nrow) {
+        for (j in 1:nrow) {
+            if( i >= j ) {
+                next
+            }
+
+            row1 = m[i,]
+            row2 = m[j,]
+
+            row1_filtered = row1[!is.na(row1) & !is.na(row2)]
+            row2_filtered = row2[!is.na(row1) & !is.na(row2)]
+
+            if( is.na(options$options$na_replace) ) {
+                # Weighting as suggested in https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.nan_euclidean_distances.html
+                weight = length(row1)/length(row1_filtered)
+
+                if( !is.infinite(weight) ) {
+                    D[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
+                }
+            } else {
+                D[i,j] = sqrt( sum((row1_filtered - row2_filtered)^2) +
+                               sum((options$options$na_replace - row1[!is.na(row1) &  is.na(row2)])^2) +
+                               sum((options$options$na_replace - row2[ is.na(row1) & !is.na(row2)])^2) +
+                               options$options$na_replace^2 * length(row1[is.na(row1) & is.na(row2)]) )
+            }
+
+            D[j,i] = D[i,j]
+        }
+    }
+    distances <<- as.dist( data.frame( D - min(D, na.rm=TRUE), row.names=row.names( m ) ) )
+    return( distances )
+}
+
+clust = NULL
+hclustfun <- function(d) {
+    clust <<- hclust( d, method = options$options$cluster_method )
+    return( clust )
+}
+
+smooth_filter <- function(m, window=3) {
+    output = as.matrix(m)
+    half_window = (window-1)/2
+    for (i in 1:dim(m)[1]) {
+        for (j in 1:dim(m)[2]) {
+            average = mean( m[i,max( j-half_window, 1 ):min( j+half_window, dim(m)[2] )], na.rm = TRUE )
+            if( is.nan( average ) ) {
+                average = NA
+            }
+            output[i,j] = average
+        }
+    }
+    return( output )
+}
+
+file = '/dev/stdin'
+files = options$args
+if( length(files) != 0 ) {
+    file = files[1]
+}
+
+dendrogram = NA
+if( options$options$dendrogram ) {
+    dendrogram = NULL
+}
+
+scale = 'none'
+if( options$options$scale ) {
+    scale = 'column'
+}
+
+D = t(as.matrix(read.csv(file, header=TRUE, sep="\t", na.strings="?")))
+
+if( options$options$smooth_window > 1 ) {
+    D = smooth_filter( D, window = options$options$smooth_window )
+}
+
+svg("/dev/stdout")
+heatmap(D, Colv=NA, Rowv=dendrogram, distfun=dist_na, hclustfun=hclustfun,
+        scale=scale,
+        margin=c(2, options$options$row_margin),
+        cexRow = 0.5 + 1/length(D))
+
+if( !is.na(options$options$RData) ) {
+    save(distances, clust, file=options$options$RData)
+}
