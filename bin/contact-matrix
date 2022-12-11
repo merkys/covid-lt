@@ -1,0 +1,87 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+parser <- add_option(parser, c( "--smooth-window" ), dest = "smooth_window", type = "double", default = 1)
+parser <- add_option(parser, c( "--input-type" ), dest = "input_type", type = "character", default = "distances")
+parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
+options = parse_args(parser, positional_arguments = TRUE)
+
+file = '/dev/stdin'
+files = options$args
+if( length(files) != 0 ) {
+    file = files[1]
+}
+
+D = t( as.matrix( read.csv( file, header = TRUE, sep = "\t", na.strings = "?" ) ) )
+
+smooth_filter <- function( m, window=3 ) {
+    output = as.matrix(m)
+    half_window = (window-1)/2
+    for (i in 1:dim(m)[1]) {
+        for (j in 1:dim(m)[2]) {
+            average = mean( m[i,max( j-half_window, 1 ):min( j+half_window, dim(m)[2] )], na.rm = TRUE )
+            if( is.nan( average ) ) {
+                average = NA
+            }
+            output[i,j] = average
+        }
+    }
+    return( output )
+}
+
+if( options$options$smooth_window > 1 ) {
+    D = smooth_filter( D, window = options$options$smooth_window )
+}
+
+if( !is.na( options$options$na_replace ) ) {
+    D[is.na(D)] = options$options$na_replace
+}
+
+nrow = dim(D)[1]
+
+distances = NULL
+if( options$options$input_type == "distances" ) {
+    distances = matrix( 1e6, nrow=nrow, ncol=nrow ) # Fill with sufficiently large numbers
+} else {
+    distances = matrix( 0, nrow=nrow, ncol=nrow )
+}
+
+for (i in 1:nrow) {
+    for (j in 1:nrow) {
+        if( i >= j ) {
+            next
+        }
+
+        row1 = D[i,]
+        row2 = D[j,]
+
+        row1_filtered = row1[!is.na(row1) & !is.na(row2)]
+        row2_filtered = row2[!is.na(row1) & !is.na(row2)]
+
+        if( is.na(options$options$na_replace) ) {
+            # Weighting as suggested in https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.nan_euclidean_distances.html
+            weight = length(row1)/length(row1_filtered)
+
+            if( !is.infinite(weight) ) {
+                distances[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
+            }
+        } else {
+            distances[i,j] = sqrt( sum((row1_filtered - row2_filtered)^2) +
+                                   sum((options$options$na_replace - row1[!is.na(row1) &  is.na(row2)])^2) +
+                                   sum((options$options$na_replace - row2[ is.na(row1) & !is.na(row2)])^2) +
+                                        options$options$na_replace^2 * length(row1[is.na(row1) & is.na(row2)]) )
+        }
+
+        distances[j,i] = distances[i,j]
+    }
+}
+
+names = row.names( D )
+for (i in 1:length(names)) {
+    names[i] = substr( names[i], 2, nchar( names[i] ) )
+}
+
+distances = data.frame( distances - min( distances, na.rm = TRUE ), row.names = names )
+names(distances) = names
+suppressWarnings( write.table( distances, file = "/dev/stdout", quote = FALSE ) )
