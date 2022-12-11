@@ -3,7 +3,6 @@
 library( "optparse" )
 parser <- OptionParser()
 parser <- add_option(parser, c( "--smooth-window" ), dest = "smooth_window", type = "double", default = 1)
-parser <- add_option(parser, c( "--cluster-method" ), dest = "cluster_method", type = "character", default = "ward.D2")
 parser <- add_option(parser, c( "--input-type" ), dest = "input_type", type = "character", default = "distances")
 parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
@@ -54,12 +53,6 @@ dist_na <- function(m) {
     }
     distances <<- as.dist( data.frame( D - min(D, na.rm=TRUE), row.names=row.names( m ) ) )
     return( distances )
-}
-
-clust = NULL
-hclustfun <- function(d) {
-    clust <<- hclust( d, method = options$options$cluster_method )
-    return( clust )
 }
 
 smooth_filter <- function(m, window=3) {
