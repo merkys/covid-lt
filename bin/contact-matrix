@@ -53,8 +53,8 @@ for (i in 1:nrow) {
             next
         }
 
-        row1 = m[i,]
-        row2 = m[j,]
+        row1 = D[i,]
+        row2 = D[j,]
 
         row1_filtered = row1[!is.na(row1) & !is.na(row2)]
         row2_filtered = row2[!is.na(row1) & !is.na(row2)]
@@ -64,16 +64,16 @@ for (i in 1:nrow) {
             weight = length(row1)/length(row1_filtered)
 
             if( !is.infinite(weight) ) {
-                D[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
+                distances[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
             }
         } else {
-            D[i,j] = sqrt( sum((row1_filtered - row2_filtered)^2) +
-                           sum((options$options$na_replace - row1[!is.na(row1) &  is.na(row2)])^2) +
-                           sum((options$options$na_replace - row2[ is.na(row1) & !is.na(row2)])^2) +
-                           options$options$na_replace^2 * length(row1[is.na(row1) & is.na(row2)]) )
+            distances[i,j] = sqrt( sum((row1_filtered - row2_filtered)^2) +
+                                   sum((options$options$na_replace - row1[!is.na(row1) &  is.na(row2)])^2) +
+                                   sum((options$options$na_replace - row2[ is.na(row1) & !is.na(row2)])^2) +
+                                        options$options$na_replace^2 * length(row1[is.na(row1) & is.na(row2)]) )
         }
 
-        D[j,i] = D[i,j]
+        distances[j,i] = distances[i,j]
     }
 }
 
