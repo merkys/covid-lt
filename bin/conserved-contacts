@@ -1,5 +1,9 @@
 #!/usr/bin/Rscript --vanilla
 
+# Script reads a matrix of contacts, where columns are complexes and rows are positions in the aligned chain within a complex.
+# Script then outputs the most conserved contacts.
+# The number of such contacts is equal to the average number of contacts in complexes.
+
 library( "optparse" )
 parser <- OptionParser()
 options = parse_args(parser, positional_arguments = TRUE)
@@ -12,6 +16,42 @@ if( length(files) != 0 ) {
 
 D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
 
+# Calculate the number of contacts per column
+n_contacts = vector( length=dim(D)[2] )
+for (i in 1:dim(D)[2]) {
+    n_contacts[i] = length(D[!is.na(D[,i]),i])
+}
+
+# Calculate the abundance of each of the contacts in the group
+contact_abundance = vector( length=dim(D)[1] )
 for (i in 1:dim(D)[1]) {
-    cat(length(D[i,!is.na(D[i,])]) / length(D[i,]), "\n")
+    contact_abundance[i] = length( D[i,!is.na(D[i,])] ) / length( D[i,] )
+}
+
+# Perform a binary search to select a threshold percentage
+low_bound = 0
+high_bound = 1
+
+last_mid = NULL
+
+while (TRUE) {
+    mid = mean( c( low_bound, high_bound ) )
+    if( length( contact_abundance[contact_abundance > mid] ) > mean( n_contacts ) ) {
+        low_bound = mid
+    } else {
+        high_bound = mid
+    }
+    if( !is.null(last_mid) && abs( last_mid - mid ) < 1e-6 ) {
+        break
+    }
+    last_mid = mid
+}
+
+# Filtering out "rare" contacts
+for (i in 1:dim(D)[1]) {
+    if( contact_abundance[i] > last_mid ) {
+        cat( mean( as.double( D[i,] ), na.rm = TRUE ), "\n" )
+    } else {
+        cat( "?\n" )
+    }
 }
