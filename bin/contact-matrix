@@ -2,15 +2,10 @@
 
 library( "optparse" )
 parser <- OptionParser()
-parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
 parser <- add_option(parser, c( "--smooth-window" ), dest = "smooth_window", type = "double", default = 1)
 parser <- add_option(parser, c( "--cluster-method" ), dest = "cluster_method", type = "character", default = "ward.D2")
-parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
 parser <- add_option(parser, c( "--input-type" ), dest = "input_type", type = "character", default = "distances")
 parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
-parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
-                     type = "double", default = 3)
-parser <- add_option(parser, c( "--RData" ), dest = "RData", type = "character", default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
 distances = NULL
@@ -88,16 +83,6 @@ if( length(files) != 0 ) {
     file = files[1]
 }
 
-dendrogram = NA
-if( options$options$dendrogram ) {
-    dendrogram = NULL
-}
-
-scale = 'none'
-if( options$options$scale ) {
-    scale = 'column'
-}
-
 D = t(as.matrix(read.csv(file, header=TRUE, sep="\t", na.strings="?")))
 
 if( options$options$smooth_window > 1 ) {
@@ -105,11 +90,3 @@ if( options$options$smooth_window > 1 ) {
 }
 
 svg("/dev/stdout")
-heatmap(D, Colv=NA, Rowv=dendrogram, distfun=dist_na, hclustfun=hclustfun,
-        scale=scale,
-        margin=c(2, options$options$row_margin),
-        cexRow = 0.5 + 1/length(D))
-
-if( !is.na(options$options$RData) ) {
-    save(distances, clust, file=options$options$RData)
-}
