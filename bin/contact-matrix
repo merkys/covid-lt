@@ -82,6 +82,6 @@ for (i in 1:length(names)) {
     names[i] = substr( names[i], 2, nchar( names[i] ) )
 }
 
-distances = data.frame( D - min( D, na.rm = TRUE ), row.names = names )
+distances = data.frame( distances - min( distances, na.rm = TRUE ), row.names = names )
 names(distances) = names
 suppressWarnings( write.table( distances, file = "/dev/stdout", quote = FALSE ) )
