@@ -77,5 +77,11 @@ for (i in 1:nrow) {
     }
 }
 
-distances = data.frame( D - min( D, na.rm = TRUE ), row.names = row.names( D ) )
+names = row.names( D )
+for (i in 1:length(names)) {
+    names[i] = substr( names[i], 2, nchar( names[i] ) )
+}
+
+distances = data.frame( D - min( D, na.rm = TRUE ), row.names = names )
+names(distances) = names
 suppressWarnings( write.table( distances, file = "/dev/stdout", quote = FALSE ) )
