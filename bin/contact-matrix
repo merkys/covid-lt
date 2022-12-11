@@ -7,55 +7,15 @@ parser <- add_option(parser, c( "--input-type" ), dest = "input_type", type = "c
 parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
-distances = NULL
-dist_na <- function(m) {
-    if( !is.na(options$options$na_replace) ) {
-        m[is.na(m)] = options$options$na_replace
-    }
-
-    nrow = dim(m)[1]
-
-    D = NULL
-    if( options$options$input_type == "distances" ) {
-        D = matrix( 1e6, nrow=nrow, ncol=nrow ) # Fill with sufficiently large numbers
-    } else {
-        D = matrix( 0, nrow=nrow, ncol=nrow )
-    }
-
-    for (i in 1:nrow) {
-        for (j in 1:nrow) {
-            if( i >= j ) {
-                next
-            }
-
-            row1 = m[i,]
-            row2 = m[j,]
-
-            row1_filtered = row1[!is.na(row1) & !is.na(row2)]
-            row2_filtered = row2[!is.na(row1) & !is.na(row2)]
-
-            if( is.na(options$options$na_replace) ) {
-                # Weighting as suggested in https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.nan_euclidean_distances.html
-                weight = length(row1)/length(row1_filtered)
-
-                if( !is.infinite(weight) ) {
-                    D[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
-                }
-            } else {
-                D[i,j] = sqrt( sum((row1_filtered - row2_filtered)^2) +
-                               sum((options$options$na_replace - row1[!is.na(row1) &  is.na(row2)])^2) +
-                               sum((options$options$na_replace - row2[ is.na(row1) & !is.na(row2)])^2) +
-                               options$options$na_replace^2 * length(row1[is.na(row1) & is.na(row2)]) )
-            }
-
-            D[j,i] = D[i,j]
-        }
-    }
-    distances <<- as.dist( data.frame( D - min(D, na.rm=TRUE), row.names=row.names( m ) ) )
-    return( distances )
+file = '/dev/stdin'
+files = options$args
+if( length(files) != 0 ) {
+    file = files[1]
 }
 
-smooth_filter <- function(m, window=3) {
+D = t( as.matrix( read.csv( file, header = TRUE, sep = "\t", na.strings = "?" ) ) )
+
+smooth_filter <- function( m, window=3 ) {
     output = as.matrix(m)
     half_window = (window-1)/2
     for (i in 1:dim(m)[1]) {
@@ -70,16 +30,52 @@ smooth_filter <- function(m, window=3) {
     return( output )
 }
 
-file = '/dev/stdin'
-files = options$args
-if( length(files) != 0 ) {
-    file = files[1]
-}
-
-D = t(as.matrix(read.csv(file, header=TRUE, sep="\t", na.strings="?")))
-
 if( options$options$smooth_window > 1 ) {
     D = smooth_filter( D, window = options$options$smooth_window )
 }
 
-svg("/dev/stdout")
+if( !is.na( options$options$na_replace ) ) {
+    D[is.na(D)] = options$options$na_replace
+}
+
+nrow = dim(D)[1]
+
+distances = NULL
+if( options$options$input_type == "distances" ) {
+    distances = matrix( 1e6, nrow=nrow, ncol=nrow ) # Fill with sufficiently large numbers
+} else {
+    distances = matrix( 0, nrow=nrow, ncol=nrow )
+}
+
+for (i in 1:nrow) {
+    for (j in 1:nrow) {
+        if( i >= j ) {
+            next
+        }
+
+        row1 = m[i,]
+        row2 = m[j,]
+
+        row1_filtered = row1[!is.na(row1) & !is.na(row2)]
+        row2_filtered = row2[!is.na(row1) & !is.na(row2)]
+
+        if( is.na(options$options$na_replace) ) {
+            # Weighting as suggested in https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.nan_euclidean_distances.html
+            weight = length(row1)/length(row1_filtered)
+
+            if( !is.infinite(weight) ) {
+                D[i,j] = sqrt(weight * sum((row1_filtered-row2_filtered)^2))
+            }
+        } else {
+            D[i,j] = sqrt( sum((row1_filtered - row2_filtered)^2) +
+                           sum((options$options$na_replace - row1[!is.na(row1) &  is.na(row2)])^2) +
+                           sum((options$options$na_replace - row2[ is.na(row1) & !is.na(row2)])^2) +
+                           options$options$na_replace^2 * length(row1[is.na(row1) & is.na(row2)]) )
+        }
+
+        D[j,i] = D[i,j]
+    }
+}
+
+distances = data.frame( D - min( D, na.rm = TRUE ), row.names = row.names( D ) )
+suppressWarnings( write.table( distances, file = "/dev/stdout", quote = FALSE ) )
