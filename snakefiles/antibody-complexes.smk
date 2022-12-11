@@ -229,6 +229,7 @@ rule conserved_contacts:
         "{prefix}/contact-maps/{dirname}/{base}-contacts.lst"
     shell:
         """
+        echo -n > {output}
         bin/inspect-clusters {input.RData} {input.insights} --height 140 --tab \
             | grep ^INDICES \
             | cut -f 3- \
@@ -237,10 +238,10 @@ rule conserved_contacts:
               do
                 cut {input.tab} -f $LINE \
                     | bin/conserved-contacts \
-                    | paste - <(seq 1 1499) \
-                    | awk '{{if( $1 > 0.49 ) {{ print $2 }}}}' \
-                    | xargs echo
+                    | paste {output} - \
+                    | sponge {output}
               done > {output}
+        cut -f 2- {output} | sponge {output}
         """
 
 rule complex_dist_matrix:
