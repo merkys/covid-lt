@@ -1,0 +1,22 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+options = parse_args(parser, positional_arguments = TRUE)
+
+file = '/dev/stdin'
+files = options$args
+if( length(files) != 0 ) {
+    file = files[1]
+}
+
+input = read.table( file )
+distances = as.dist( input )
+MDS = cmdscale( distances )
+
+kmeans_out = kmeans( MDS, 10 )
+
+for (i in sort(unique(kmeans_out$cluster))) {
+    ids = names(kmeans_out$cluster[kmeans_out$cluster==i])
+    cat( substr( ids, 1, 4 ), "\n" )
+}
