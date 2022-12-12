@@ -1,0 +1,31 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+parser <- add_option(parser, "--method", type = "character", default = "kmeans")
+parser <- add_option(parser, c( "-n", "--number" ), dest = "number", type = "double", default = 10)
+options = parse_args(parser, positional_arguments = TRUE)
+
+file = '/dev/stdin'
+files = options$args
+if( length(files) != 0 ) {
+    file = files[1]
+}
+
+input = read.table( file )
+distances = as.dist( input )
+MDS = cmdscale( distances )
+
+clusters = NULL
+if(        options$options$method == "kmeans" ) {
+    kmeans_out = kmeans( MDS, options$options$number )
+    clusters = kmeans_out$cluster
+} else if( options$options$method == "hclust" ) {
+    hclust_out = hclust( distances )
+    clusters = cutree( hclust_out, k = options$options$number )
+}
+
+for (i in sort(unique(clusters))) {
+    ids = names(clusters[clusters==i])
+    cat( substr( ids, 1, 4 ), "\n" )
+}
