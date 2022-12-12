@@ -1,0 +1,15 @@
+#!/bin/bash
+
+FIRST=$1
+shift
+
+(
+    for PDB in $*
+    do
+        echo align $PDB and chain A, $FIRST and chain A
+    done
+    echo center
+    echo select s1, all and chain A
+    echo color white, s1
+) \
+    | pymol $(echo $FIRST $* | tr ' ' '\n' | xargs -i echo outputs/pdb/antibodies/complexes/{}.pdb) -u /dev/stdin > /dev/null
