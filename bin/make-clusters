@@ -2,6 +2,7 @@
 
 library( "optparse" )
 parser <- OptionParser()
+parser <- add_option(parser, c( "-n", "--number" ), dest = "number", type = "double", default = 10)
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -14,7 +15,7 @@ input = read.table( file )
 distances = as.dist( input )
 MDS = cmdscale( distances )
 
-kmeans_out = kmeans( MDS, 10 )
+kmeans_out = kmeans( MDS, options$options$number )
 
 for (i in sort(unique(kmeans_out$cluster))) {
     ids = names(kmeans_out$cluster[kmeans_out$cluster==i])
