@@ -15,7 +15,7 @@ for (i in 1:length(files)) {
             next
         }
 
-        distances[i,j] = 1 - as.double( system( paste( 'bin/TMscore', files[i], files[j],
+        distances[i,j] = 1 - as.double( system( paste( 'bin/TMscore -c -ter 1', files[i], files[j],
                                                        '| grep "^TM-score" | awk "{print \\$3}"', sep = ' ' ),
                                                 intern = TRUE ) )
         distances[j,i] = distances[i,j]
