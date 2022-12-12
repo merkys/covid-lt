@@ -2,6 +2,7 @@
 
 library( "optparse" )
 parser <- OptionParser()
+parser <- add_option(parser, "--method", type = "character", default = "kmeans")
 parser <- add_option(parser, c( "-n", "--number" ), dest = "number", type = "double", default = 10)
 options = parse_args(parser, positional_arguments = TRUE)
 
@@ -15,9 +16,16 @@ input = read.table( file )
 distances = as.dist( input )
 MDS = cmdscale( distances )
 
-kmeans_out = kmeans( MDS, options$options$number )
+clusters = NULL
+if(        options$options$method == "kmeans" ) {
+    kmeans_out = kmeans( MDS, options$options$number )
+    clusters = kmeans_out$cluster
+} else if( options$options$method == "hclust" ) {
+    hclust_out = hclust( distances )
+    clusters = cutree( hclust_out, k = options$options$number )
+}
 
-for (i in sort(unique(kmeans_out$cluster))) {
-    ids = names(kmeans_out$cluster[kmeans_out$cluster==i])
+for (i in sort(unique(clusters))) {
+    ids = names(clusters[clusters==i])
     cat( substr( ids, 1, 4 ), "\n" )
 }
