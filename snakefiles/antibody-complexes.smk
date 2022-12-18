@@ -189,8 +189,11 @@ def propka_tabs(wildcards):
 
 def vorocontacts_tabs(wildcards):
     from glob import glob
+    path = output_dir + "pdb/P0DTC2/vorocontacts/{pdbid}.tab"
+    if wildcards.get("probe"):
+        path = output_dir + "pdb/P0DTC2/vorocontacts/probe-" + wildcards.get("probe") + "/{pdbid}.tab"
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(output_dir + "pdb/P0DTC2/vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(path, pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule complex_contact_map:
     input:
@@ -205,6 +208,23 @@ rule complex_contact_map:
         mkdir --parents $(dirname {output})
         comm -1 -2 \
             <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
+          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --output-{wildcards.dirname} --merge-antibody-chains > {output}
+        """
+
+rule complex_contact_map_custom_probe:
+    input:
+        propka_tabs = propka_tabs,
+        vorocontacts_tabs = vorocontacts_tabs
+    output:
+        output_dir + "pdb/antibodies/complexes/contact-maps/probe-{probe}/{dirname}/{search}.tab"
+    singularity:
+        "container.sif"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        comm -1 -2 \
+            <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/probe-{wildcards.probe}/*.tab | xargs -i basename {{}} .tab | sort) \
             <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --output-{wildcards.dirname} --merge-antibody-chains > {output}
         """
