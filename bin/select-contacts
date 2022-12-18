@@ -43,7 +43,7 @@ parser.add_argument('--exclude-self', action='store_true', help='Exclude contact
 parser.add_argument('--cut', action='append', help='Select only a range of a specified chain, for example, "A:1-10"', default=[])
 # Minimal distance between any two atoms in residues is taken as the distance between them, just as in ProteinTools, ref:
 # Ferruz et al., doi:10.1093/nar/gkab375
-parser.add_argument('--dist', choices=['min'])
+parser.add_argument('--merge', choices=['area-sum', 'dist-min'])
 args = parser.parse_args()
 
 chains = []
@@ -71,7 +71,7 @@ for file in files:
         atom1['chain'], atom1['res_nr'], atom1['res_type'], atom1['atom_nr'], atom1['atom_type'], \
             atom2['chain'], atom2['res_nr'], atom2['res_type'], atom2['atom_nr'], atom2['atom_type'], *fields = fields
         area, distance, comment = fields
-        area = float(area) if area != '?' else None
+        area = float(area) if area != '?' else 0
         distance = float(distance) if distance != '?' else float('inf')
         if chains and atom1['chain'] not in chains and atom2['chain'] not in chains:
             continue
@@ -98,7 +98,7 @@ for file in files:
         if comment == '?':
             fields[2] = contact
         register_contact(contacts, atom1, atom2, distance, area, fields[2])
-        if not args.dist and not args.contacting_chains:
+        if not args.merge and not args.contacting_chains:
             print(write_atom(atom1), write_atom(atom2), *fields, sep='\t')
     if args.contacting_chains:
         contacting_chains = {}
@@ -114,7 +114,7 @@ for file in files:
         for chain in contacting_chains:
             if contacting_chains[chain]:
                 print(chain, ','.join(sorted(contacting_chains[chain])), sep='\t')
-    if args.dist:
+    if args.merge:
         for c1 in contacts:
             for r1 in contacts[c1]:
                 for c2 in contacts[c1][r1]:
@@ -123,4 +123,7 @@ for file in files:
                         if len(comments) > 1 and '?' in comments:
                             comments.remove('?')
                         comments = ','.join(comments)
-                        print(c1, r1, c2, r2, min([contact[2] for contact in contacts[c1][r1][c2][r2]]), comments, sep='\t')
+                        if args.merge == 'area-sum':
+                            print(c1, r1, c2, r2, sum([contact[3] for contact in contacts[c1][r1][c2][r2]]), comments, sep='\t')
+                        elif args.merge == 'dist-min':
+                            print(c1, r1, c2, r2, min([contact[2] for contact in contacts[c1][r1][c2][r2]]), comments, sep='\t')

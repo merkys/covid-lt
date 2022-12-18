@@ -23,7 +23,7 @@ rule extract_complex:
     shell:
         """
         mkdir --parents $(dirname {output})
-        COMPLEX=$(PYTHONPATH=. bin/contact-graph {input.vorocontacts} --pdb {input.pdb} --output-complexes --most-contacts | grep -v ^Limiting)
+        COMPLEX=$(PYTHONPATH=. bin/contact-graph {input.vorocontacts} --pdb {input.pdb} --output-complexes --most-contacts | grep -v ^Limiting || true)
         if [ -z "$COMPLEX" ]
         then
             echo -n > {output}
@@ -197,7 +197,7 @@ rule complex_contact_map:
         propka_tabs = propka_tabs,
         vorocontacts_tabs = vorocontacts_tabs
     output:
-        output_dir + "pdb/antibodies/complexes/contact-maps/{search}.tab"
+        output_dir + "pdb/antibodies/complexes/contact-maps/{dirname}/{search}.tab"
     singularity:
         "container.sif"
     shell:
@@ -206,5 +206,61 @@ rule complex_contact_map:
         comm -1 -2 \
             <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
             <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
-          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --merge-antibody-chains > {output}
+          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --output-{wildcards.dirname} --merge-antibody-chains > {output}
+        """
+
+# TODO: This should be phased out and replaced by the following rule, 'complex_contact_main'
+rule complex_contact_clusters:
+    input:
+        "{prefix}/contact-maps/{dirname}/{base}.tab"
+    output:
+        RData = "{prefix}/contact-maps/{dirname}/{base}.RData",
+        plot = "{prefix}/contact-maps/{dirname}/{base}.svg"
+    shell:
+        """
+        bin/contact-heatmap {input} --dendrogram --replace-NA-with 20 --cluster-method complete --smooth-window 3 --RData {output.RData} > {output.plot}
+        """
+
+# TODO: Find a better name
+rule complex_contact_main:
+    input:
+        output_dir + "pdb/antibodies/complexes/dist-matrices/contact.m"
+    output:
+        output_dir + "pdb/antibodies/complexes/clusters/clusters.lst"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        bin/make-clusters {input} --method hclust --hclust-method complete --cut-height 140 > {output}
+        """
+
+rule conserved_contacts:
+    input:
+        clusters = "{prefix}/clusters/clusters.lst",
+        tab = "{prefix}/contact-maps/distances/{base}.tab"
+    output:
+        "{prefix}/clusters/{base}-contacts.lst"
+    shell:
+        """
+        echo -n > {output}
+        sed 's/ /\\\\\\\\|/g' {input.clusters} \
+            | while read LINE
+              do
+                bin/grep-columns "^\\($LINE\\)" {input.tab} \
+                    | bin/conserved-contacts \
+                    | paste {output} - \
+                    | sponge {output}
+              done
+        cut -f 2- {output} | sponge {output}
+        """
+
+rule complex_dist_matrix:
+    input:
+        complexes,
+        distances = output_dir + "pdb/antibodies/complexes/contact-maps/distances/..tab"
+    output:
+        output_dir + "pdb/antibodies/complexes/dist-matrices/{base}.m"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        find {output_dir}pdb/antibodies/complexes/ -maxdepth 1 -name '*.pdb' -a -size +0 | sort | xargs bin/{wildcards.base}-matrix {input.distances} > {output}
         """

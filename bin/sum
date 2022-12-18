@@ -1,0 +1,14 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+options = parse_args(parser, positional_arguments = TRUE)
+
+file = '/dev/stdin'
+files = options$args
+if( length(files) != 0 ) {
+    file = files[1]
+}
+
+suppressWarnings( D <- read.csv(file, header=FALSE, sep="\t") )
+cat( sum( D[,1] ), sep="\n" )
