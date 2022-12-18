@@ -242,11 +242,10 @@ rule conserved_contacts:
     shell:
         """
         echo -n > {output}
-        cat {input.clusters} \
-            | sed 's/,/\|/g' \
+        sed 's/ /\\\\\\\\|/g' {input.clusters} \
             | while read LINE
               do
-                bin/grep-columns "^\($LINE\)" {input.tab} \
+                bin/grep-columns "^\\($LINE\\)" {input.tab} \
                     | bin/conserved-contacts \
                     | paste {output} - \
                     | sponge {output}
