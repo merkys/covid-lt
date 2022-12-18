@@ -258,11 +258,12 @@ rule conserved_contacts:
 
 rule complex_dist_matrix:
     input:
-        complexes
+        complexes,
+        distances = output_dir + "pdb/antibodies/complexes/contact-maps/distances/..tab"
     output:
         output_dir + "pdb/antibodies/complexes/dist-matrices/{base}.m"
     shell:
         """
         mkdir --parents $(dirname {output})
-        find {output_dir}pdb/antibodies/complexes/ -maxdepth 1 -name '*.pdb' -a -size +0 | sort | xargs bin/{wildcards.base}-matrix > {output}
+        find {output_dir}pdb/antibodies/complexes/ -maxdepth 1 -name '*.pdb' -a -size +0 | sort | xargs bin/{wildcards.base}-matrix {input.distances} > {output}
         """
