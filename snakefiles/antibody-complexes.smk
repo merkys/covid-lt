@@ -209,6 +209,7 @@ rule complex_contact_map:
           | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --output-{wildcards.dirname} --merge-antibody-chains > {output}
         """
 
+# TODO: This should be phased out and replaced by the following rule, 'complex_contact_main'
 rule complex_contact_clusters:
     input:
         "{prefix}/contact-maps/{dirname}/{base}.tab"
