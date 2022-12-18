@@ -1,0 +1,41 @@
+#!/bin/bash
+
+PATTERN="$1"
+shift
+
+cat $@ | \
+(
+    read -a LINE
+
+    CONTINUE=true
+    POS=0
+    FIELDS=""
+
+    while $CONTINUE
+    do
+        if [ -n "${LINE[$POS]}" ]
+        then
+            if echo "${LINE[$POS]}" | grep --quiet "$PATTERN"
+            then
+                POS=$(echo $POS + 1 | bc)
+                if [ -n "$FIELDS" ]
+                then
+                    echo -en "\t${LINE[$POS]}"
+                    FIELDS=$FIELDS,$POS
+                else
+                    echo -n "${LINE[$POS]}"
+                    FIELDS=$POS
+                fi
+            else
+                POS=$(echo $POS + 1 | bc)
+            fi
+        else
+            CONTINUE=false
+        fi
+    done
+
+    test -z "$FIELDS" && exit
+
+    echo
+    cut -f "$FIELDS"
+)
