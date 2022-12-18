@@ -4,7 +4,7 @@ library( "optparse" )
 parser <- OptionParser()
 options = parse_args(parser, positional_arguments = TRUE)
 
-files = options$args
+files = options$args[2:] # First file is the contact matrix
 bases = substr( basename( files ), 0, 4 )
 
 distances = matrix( 0, nrow = length(files), ncol = length(files) )
