@@ -235,25 +235,22 @@ rule complex_contact_main:
 
 rule conserved_contacts:
     input:
-        RData = "{prefix}/contact-maps/{dirname}/{base}.RData",
-        tab = "{prefix}/contact-maps/{dirname}/{base}.tab",
-        insights = "structural-insights.tab"
+        clusters = "{prefix}/clusters/clusters.lst",
+        tab = "{prefix}/contact-maps/distances/{base}.tab"
     output:
-        "{prefix}/contact-maps/{dirname}/{base}-contacts.lst"
+        "{prefix}/clusters/{base}-contacts.lst"
     shell:
         """
         echo -n > {output}
-        bin/inspect-clusters {input.RData} {input.insights} --height 140 --tab \
-            | grep ^INDICES \
-            | cut -f 3- \
-            | sed 's/\t/,/g' \
+        cat {input.clusters} \
+            | sed 's/,/\|/g' \
             | while read LINE
               do
-                cut {input.tab} -f $LINE \
+                bin/grep-columns "^\($LINE\)" {input.tab} \
                     | bin/conserved-contacts \
                     | paste {output} - \
                     | sponge {output}
-              done > {output}
+              done
         cut -f 2- {output} | sponge {output}
         """
 
