@@ -34,5 +34,6 @@ if(        options$options$method == "kmeans" ) {
 
 for (i in sort(unique(clusters))) {
     ids = names(clusters[clusters==i])
-    cat( substr( ids, 1, 4 ), "\n" )
+    cat( substr( ids, 1, 4 ) )
+    cat( "\n" )
 }
