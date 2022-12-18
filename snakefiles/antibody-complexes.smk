@@ -220,6 +220,18 @@ rule complex_contact_clusters:
         bin/contact-heatmap {input} --dendrogram --replace-NA-with 20 --cluster-method complete --smooth-window 3 --RData {output.RData} > {output.plot}
         """
 
+# TODO: Find a better name
+rule complex_contact_main:
+    input:
+        output_dir + "pdb/antibodies/complexes/dist-matrices/contact.m"
+    output:
+        output_dir + "pdb/antibodies/complexes/clusters/clusters.lst"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        bin/make-clusters {input} --method hclust --hclust-method complete --cut-height 140 > {output}
+        """
+
 rule conserved_contacts:
     input:
         RData = "{prefix}/contact-maps/{dirname}/{base}.RData",
