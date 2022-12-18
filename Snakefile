@@ -6,9 +6,10 @@ pdb_id_list = config["pdb_id_list"]
 output_dir = config["output_dir"]
 
 wildcard_constraints:
-    dirname = "[^\/]+",
-    integer = "[0-9]+",
-    pdbid = "[A-Z0-9]{4}"
+    dirname = "[^/]+",
+    pdbid = "[A-Z0-9]{4}",
+    probe = "[0-9]+",
+    search = "[^/]+"
 
 include: "snakefiles/pdb-model-quality.smk"
 include: "snakefiles/dG-datasets.smk"
@@ -106,9 +107,9 @@ rule vorocontacts_custom_probe_out:
     input:
         "{prefix}/{pdbid}.pdb"
     output:
-        "{prefix}/vorocontacts/probe-{integer}/{pdbid}.out"
+        "{prefix}/vorocontacts/probe-{probe}/{pdbid}.out"
     log:
-        "{prefix}/vorocontacts/probe-{integer}/{pdbid}.log"
+        "{prefix}/vorocontacts/probe-{probe}/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
@@ -118,7 +119,7 @@ rule vorocontacts_custom_probe_out:
         cat {input} \
             | voronota get-balls-from-atoms-file --input-format detect --annotated --radii-file <(voronota-resources radii) --include-heteroatoms 2>>{log} \
             | voronota query-balls --drop-altloc-indicators 2>>{log} \
-            | voronota calculate-contacts --annotated --tag-centrality --probe {wildcards.integer} 2>>{log} \
+            | voronota calculate-contacts --annotated --tag-centrality --probe {wildcards.probe} 2>>{log} \
             | voronota query-contacts --match-min-seq-sep 1 --preserve-graphics 2>>{log} \
             | column -t > {output} || echo -n > {output}
         test -s {output} || echo WARNING: {output}: rule failed >&2
@@ -135,9 +136,9 @@ rule vorocontacts_tab:
 
 rule vorocontacts_custom_probe_tab:
     input:
-        "{prefix}/vorocontacts/probe-{integer}/{pdbid}.out"
+        "{prefix}/vorocontacts/probe-{probe}/{pdbid}.out"
     output:
-        "{prefix}/vorocontacts/probe-{integer}/{pdbid}.tab"
+        "{prefix}/vorocontacts/probe-{probe}/{pdbid}.tab"
     shell:
         "bin/vorocontacts2tab {input} > {output}"
 
