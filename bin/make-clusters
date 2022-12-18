@@ -4,6 +4,7 @@ library( "optparse" )
 parser <- OptionParser()
 parser <- add_option(parser, "--method", type = "character", default = "kmeans")
 parser <- add_option(parser, c( "-n", "--number" ), dest = "number", type = "double", default = 10)
+parser <- add_option(parser, c( "--hclust-method" ), dest = "hclust_method", type = "character", default = "complete")
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -22,7 +23,9 @@ if(        options$options$method == "kmeans" ) {
     clusters = kmeans_out$cluster
 } else if( options$options$method == "hclust" ) {
     hclust_out = hclust( distances )
-    clusters = cutree( hclust_out, k = options$options$number )
+    clusters = cutree( hclust_out,
+                       k = options$options$number,
+                       method = options$options$hclust_method )
 }
 
 for (i in sort(unique(clusters))) {
