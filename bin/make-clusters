@@ -5,6 +5,7 @@ parser <- OptionParser()
 parser <- add_option(parser, "--method", type = "character", default = "kmeans")
 parser <- add_option(parser, c( "-n", "--number" ), dest = "number", type = "double", default = 10)
 parser <- add_option(parser, c( "--hclust-method" ), dest = "hclust_method", type = "character", default = "complete")
+parser <- add_option(parser, c( "--cut-height" ), dest = "cut_height", type = "double", default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -22,10 +23,13 @@ if(        options$options$method == "kmeans" ) {
     kmeans_out = kmeans( MDS, options$options$number )
     clusters = kmeans_out$cluster
 } else if( options$options$method == "hclust" ) {
-    hclust_out = hclust( distances )
-    clusters = cutree( hclust_out,
-                       k = options$options$number,
-                       method = options$options$hclust_method )
+    hclust_out = hclust( distances,
+                         method = options$options$hclust_method )
+    if( is.na(options$options$cut_height) ) {
+        clusters = cutree( hclust_out, k = options$options$number )
+    } else {
+        clusters = cutree( hclust_out, h = options$options$cut_height )
+    }
 }
 
 for (i in sort(unique(clusters))) {
