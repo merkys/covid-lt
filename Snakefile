@@ -7,6 +7,7 @@ output_dir = config["output_dir"]
 
 wildcard_constraints:
     dirname = "[^\/]+",
+    integer = "[0-9]+",
     pdbid = "[A-Z0-9]{4}"
 
 include: "snakefiles/antibody-complexes.smk"
@@ -106,11 +107,42 @@ rule vorocontacts_out:
         test -s {output} || cat {log} >&2
         """
 
+rule vorocontacts_custom_probe_out:
+    input:
+        "{prefix}/{pdbid}.pdb"
+    output:
+        "{prefix}/vorocontacts/probe-{integer}/{pdbid}.out"
+    log:
+        "{prefix}/vorocontacts/probe-{integer}/{pdbid}.log"
+    singularity:
+        "container.sif"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        echo -n > {log}
+        cat {input} \
+            | voronota get-balls-from-atoms-file --input-format detect --annotated --radii-file <(voronota-resources radii) --include-heteroatoms 2>>{log} \
+            | voronota query-balls --drop-altloc-indicators 2>>{log} \
+            | voronota calculate-contacts --annotated --tag-centrality --probe {wildcards.integer} 2>>{log} \
+            | voronota query-contacts --match-min-seq-sep 1 --preserve-graphics 2>>{log} \
+            | column -t > {output} || echo -n > {output}
+        test -s {output} || echo WARNING: {output}: rule failed >&2
+        test -s {output} || cat {log} >&2
+        """
+
 rule vorocontacts_tab:
     input:
         "{prefix}/vorocontacts/{pdbid}.out"
     output:
         "{prefix}/vorocontacts/{pdbid}.tab"
+    shell:
+        "bin/vorocontacts2tab {input} > {output}"
+
+rule vorocontacts_custom_probe_tab:
+    input:
+        "{prefix}/vorocontacts/probe-{integer}/{pdbid}.out"
+    output:
+        "{prefix}/vorocontacts/probe-{integer}/{pdbid}.tab"
     shell:
         "bin/vorocontacts2tab {input} > {output}"
 
