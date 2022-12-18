@@ -2,9 +2,9 @@
 
 library( "optparse" )
 parser <- OptionParser()
-parser <- add_option(parser, c( "--smooth-window" ), dest = "smooth_window", type = "double", default = 1)
+parser <- add_option(parser, c( "--smooth-window" ), dest = "smooth_window", type = "double", default = 3)
 parser <- add_option(parser, c( "--input-type" ), dest = "input_type", type = "character", default = "distances")
-parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
+parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = 20)
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
