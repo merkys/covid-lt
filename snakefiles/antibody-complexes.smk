@@ -261,6 +261,28 @@ rule conserved_contacts:
         "{prefix}/clusters/{base}-contacts.lst"
     shell:
         """
+        mkdir --parents $(dirname {output})
+        echo -n > {output}
+        sed 's/ /\\\\\\\\|/g' {input.clusters} \
+            | while read LINE
+              do
+                bin/grep-columns "^\\($LINE\\)" {input.tab} \
+                    | bin/conserved-contacts \
+                    | paste {output} - \
+                    | sponge {output}
+              done
+        cut -f 2- {output} | sponge {output}
+        """
+
+rule conserved_contacts_custom_probe:
+    input:
+        clusters = "{prefix}/clusters/clusters.lst",
+        tab = "{prefix}/contact-maps/probe-{probe}/distances/{base}.tab"
+    output:
+        "{prefix}/clusters/probe-{probe}/{base}-contacts.lst"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
         echo -n > {output}
         sed 's/ /\\\\\\\\|/g' {input.clusters} \
             | while read LINE
