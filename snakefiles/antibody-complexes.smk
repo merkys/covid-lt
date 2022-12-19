@@ -226,7 +226,8 @@ rule complex_contact_map_custom_probe:
         comm -1 -2 \
             <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/probe-{wildcards.probe}/*.tab | xargs -i basename {{}} .tab | sort) \
             <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
-          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --output-{wildcards.dirname} --merge-antibody-chains > {output}
+          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" \
+            --output-dir "{output_dir}" --vorocontacts-dir pdb/P0DTC2/vorocontacts/probe-{wildcards.probe} --output-{wildcards.dirname} --merge-antibody-chains > {output}
         """
 
 # TODO: This should be phased out and replaced by the following rule, 'complex_contact_main'
