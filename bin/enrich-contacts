@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+# Enrich contacts of a PDB file
+
+from pdbio.pdbfile import PDBFile
+import argparse
+
+def dist(a, b):
+    return sum([(a[x]-b[x])**2 for x in [0, 1, 2]])**(0.5)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--pdb', help='PDB file')
+parser.add_argument('--contacts', help='List of contacts to be enriched')
+parser.add_argument('--radius', type=float, help='Enrichment radius', default=5)
+args = parser.parse_args()
+
+initial_contacts = [int(x) for x in args.contacts.split(',')]
+
+pdb = PDBFile(args.pdb)
+for chain in pdb:
+    CAs = {}        
+    for residue in chain:
+        CA = None
+        for atom in residue:
+            if atom.name() == 'CA':
+                CA = atom
+                break
+        if CA:
+            CAs[residue.number()] = CA
+    found_contacts = set()
+    for contact in initial_contacts:
+        if contact not in CAs:
+            continue
+        found_contacts.add(contact)
+        for residue in CAs:
+            if residue == contact:
+                continue
+            if dist(CAs[residue].coords(), CAs[contact].coords()) < args.radius:
+                found_contacts.add(residue)
+    print(",".join([str(x) for x in sorted(found_contacts)]))
