@@ -144,16 +144,16 @@ rule vorocontacts_custom_probe_tab:
 
 rule propka_out:
     input:
-        output_dir + "pdb/P0DTC2/{pdbid}.pdb"
+        "{prefix}/{pdbid}.pdb"
     output:
-        output_dir + "propka/{pdbid}.out"
+        "{prefix}/propka/{pdbid}.out"
     log:
-        output_dir + "propka/{pdbid}.log"
+        "{prefix}/propka/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
         """
-        mkdir --parents {output_dir}propka
+        mkdir --parents $(dirname {output})
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
         (cd $TMP_DIR && propka3 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
@@ -288,7 +288,7 @@ rule renumber_S1:
 def propka_tabs(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(output_dir + "propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(output_dir + "pdb/P0DTC2/propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 def vorocontacts_tabs(wildcards):
     from glob import glob
@@ -308,7 +308,7 @@ rule contact_map:
         """
         comm -1 -2 \
             <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
-            <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}pdb/P0DTC2/propka/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" > {output}
         """
 
