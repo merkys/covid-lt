@@ -15,5 +15,10 @@ class Atom:
             self.parent.parent.parent.content[self.line] = self.parent.parent.parent.content[self.line][:76] + element + self.parent.parent.parent.content[self.line][78:]
         return(old_element)
 
+    def coords(self):
+        return [float(self.parent.parent.parent.content[self.line][30:38]),
+                float(self.parent.parent.parent.content[self.line][38:46]),
+                float(self.parent.parent.parent.content[self.line][46:54])]
+
     def name(self):
         return self.parent.parent.parent.content[self.line][12:16].strip()
