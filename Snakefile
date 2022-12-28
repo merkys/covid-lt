@@ -166,9 +166,9 @@ rule propka_out:
 
 rule propka_tab:
     input:
-        output_dir + "propka/{pdbid}.out"
+        "{prefix}/propka/{pdbid}.out"
     output:
-        output_dir + "propka/{pdbid}.tab"
+        "{prefix}/propka/{pdbid}.tab"
     shell:
         "bin/propka2tab --no-coulombic {input} > {output}"
 
