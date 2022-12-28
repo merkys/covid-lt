@@ -37,4 +37,4 @@ for chain in pdb:
                 continue
             if dist(CAs[residue].coords(), CAs[contact].coords()) < args.radius:
                 found_contacts.add(residue)
-    print(",".join([str(x) for x in sorted(found_contacts)]))
+    print(chain.name, ",".join([str(x) for x in sorted(found_contacts)]), sep="\t")
