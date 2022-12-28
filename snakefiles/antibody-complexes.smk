@@ -259,7 +259,7 @@ rule conserved_contacts:
         clusters = "{prefix}/clusters/clusters.lst",
         tab = "{prefix}/contact-maps/distances/{base}.tab"
     output:
-        "{prefix}/clusters/{base}-contacts.lst"
+        "{prefix}/clusters/contacts-{base}.tab"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -280,7 +280,7 @@ rule conserved_contacts_custom_probe:
         clusters = "{prefix}/clusters/clusters.lst",
         tab = "{prefix}/contact-maps/probe-{probe}/distances/{base}.tab"
     output:
-        "{prefix}/clusters/probe-{probe}/{base}-contacts.lst"
+        "{prefix}/clusters/probe-{probe}/contacts-{base}.tab"
     shell:
         """
         mkdir --parents $(dirname {output})
