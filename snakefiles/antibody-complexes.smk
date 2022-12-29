@@ -185,7 +185,7 @@ rule ff_table:
 def propka_tabs(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(output_dir + "propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(output_dir + "pdb/P0DTC2/propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 def vorocontacts_tabs(wildcards):
     from glob import glob
@@ -208,7 +208,7 @@ rule complex_contact_map:
         mkdir --parents $(dirname {output})
         comm -1 -2 \
             <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
-            <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}pdb/P0DTC2/propka/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --output-{wildcards.dirname} --merge-antibody-chains > {output}
         """
 
@@ -225,7 +225,7 @@ rule complex_contact_map_custom_probe:
         mkdir --parents $(dirname {output})
         comm -1 -2 \
             <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/probe-{wildcards.probe}/*.tab | xargs -i basename {{}} .tab | sort) \
-            <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}pdb/P0DTC2/propka/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" \
             --output-dir "{output_dir}" --vorocontacts-dir pdb/P0DTC2/vorocontacts/probe-{wildcards.probe} --output-{wildcards.dirname} --merge-antibody-chains > {output}
         """
