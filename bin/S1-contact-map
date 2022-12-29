@@ -7,6 +7,7 @@ FILTER=.
 PDB_INPUT_DIR=./
 OUTPUT_DIR=./
 
+PROPKA_DIR=pdb/P0DTC2/propka
 VOROCONTACTS_DIR=pdb/P0DTC2/vorocontacts
 
 MERGE_ANTIBODY_CHAINS=false
@@ -61,7 +62,7 @@ function chain_contacts() {
     S1_CHAIN=$1
     OTHER_CHAIN=$2
 
-    cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}${VOROCONTACTS_DIR}/${PDB_ID}.tab \
+    cat ${OUTPUT_DIR}${PROPKA_DIR}/${PDB_ID}.tab ${OUTPUT_DIR}${VOROCONTACTS_DIR}/${PDB_ID}.tab \
         | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --merge ${OUTPUT_VALUES} \
         | grep "${FILTER}" \
         | while read C1 R1 C2 R2 VALUE
@@ -141,7 +142,7 @@ do
                 fi
             fi
         else
-            for OTHER_CHAIN in $(cat ${OUTPUT_DIR}propka/${PDB_ID}.tab ${OUTPUT_DIR}${VOROCONTACTS_DIR}/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
+            for OTHER_CHAIN in $(cat ${OUTPUT_DIR}${PROPKA_DIR}/${PDB_ID}.tab ${OUTPUT_DIR}${VOROCONTACTS_DIR}/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
             do
                 # Ignore non-antibody chains
                 echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
