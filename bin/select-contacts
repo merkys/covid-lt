@@ -70,6 +70,10 @@ for file in files:
         fields = line.strip().split('\t')
         atom1['chain'], atom1['res_nr'], atom1['res_type'], atom1['atom_nr'], atom1['atom_type'], \
             atom2['chain'], atom2['res_nr'], atom2['res_type'], atom2['atom_nr'], atom2['atom_type'], *fields = fields
+        if atom1['chain'] > atom2['chain']:
+            atom1, atom2 = atom2, atom1
+        elif atom1['chain'] == atom2['chain'] and int(atom1['res_nr']) > int(atom2['res_nr']):
+            atom1, atom2 = atom2, atom1
         area, distance, comment = fields
         area = float(area) if area != '?' else 0
         distance = float(distance) if distance != '?' else float('inf')
