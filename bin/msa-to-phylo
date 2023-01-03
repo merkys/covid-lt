@@ -1,5 +1,8 @@
 #!/usr/bin/Rscript --vanilla
 
+# Depict a multiple sequence alignment via an unrooted phylogenetic tree.
+# Implemented according to https://a-little-book-of-r-for-bioinformatics.readthedocs.io/en/latest/src/chapter5.html
+
 library('ape')
 library('seqinr')
 
