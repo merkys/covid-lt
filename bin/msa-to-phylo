@@ -13,4 +13,4 @@ msa_dist = dist.alignment(msa)
 T = nj(msa_dist)
 
 svg("/dev/stdout")
-plot.phylo(T, type="u")
+plot.phylo(T, type="unrooted", no.margin=TRUE)
