@@ -51,4 +51,4 @@ if( !is.na(options$options$clusters) ) {
 }
 
 svg("/dev/stdout")
-plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=colors)
+plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=colors, cex=0.5)
