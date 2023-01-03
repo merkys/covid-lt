@@ -1,0 +1,13 @@
+#!/usr/bin/Rscript --vanilla
+
+library('ape')
+library('seqinr')
+
+file = '/dev/stdin'
+
+msa = read.alignment(file, format="fasta")
+msa_dist = dist.alignment(msa)
+T = nj(msa_dist)
+
+svg("/dev/stdout")
+plot.phylo(T, type="u")
