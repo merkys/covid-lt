@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+# Extract CDRs of antibodies
+
+from pdbio.pdbfile import PDBFile
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--chain-type', help='Select antibody chain by type (default \'H\')', default='H')
+args = parser.parse_args()
+
+pdb = PDBFile(args.files[0]) # Only the first file is processed for now
+
+CDRs = {
+    'L': [ [26, 33], [50, 53], [91,  97] ],
+    'H': [ [26, 33], [52, 57], [95, 103] ],
+}
+
+for chain in pdb:
+    type = chain.antibody_type()
+    if not type or type != args.chain_type:
+        continue
+    # print(chain.name)
+    numbered = chain.antibody_numbering()
+    for CDR in CDRs[type]:
+        print(*list(pos[1] for pos in filter(lambda x: x[0][0] >= CDR[0] and x[0][0] < CDR[1], numbered[0])), sep='', end='')
+    print()
