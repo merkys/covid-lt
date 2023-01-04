@@ -43,7 +43,7 @@ parser.add_argument('--exclude-self', action='store_true', help='Exclude contact
 parser.add_argument('--cut', action='append', help='Select only a range of a specified chain, for example, "A:1-10"', default=[])
 # Minimal distance between any two atoms in residues is taken as the distance between them, just as in ProteinTools, ref:
 # Ferruz et al., doi:10.1093/nar/gkab375
-parser.add_argument('--merge', choices=['area-sum', 'dist-min'])
+parser.add_argument('--merge', choices=['area-sum', 'dist-median', 'dist-min'])
 args = parser.parse_args()
 
 chains = []
@@ -129,5 +129,8 @@ for file in files:
                         comments = ','.join(comments)
                         if args.merge == 'area-sum':
                             print(c1, r1, c2, r2, sum([contact[3] for contact in contacts[c1][r1][c2][r2]]), comments, sep='\t')
+                        elif args.merge == 'dist-median':
+                            from statistics import median
+                            print(c1, r1, c2, r2, median([contact[2] for contact in contacts[c1][r1][c2][r2]]), comments, sep='\t')
                         elif args.merge == 'dist-min':
                             print(c1, r1, c2, r2, min([contact[2] for contact in contacts[c1][r1][c2][r2]]), comments, sep='\t')

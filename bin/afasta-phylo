@@ -1,0 +1,55 @@
+#!/usr/bin/Rscript --vanilla
+
+# Depict a multiple sequence alignment via an unrooted phylogenetic tree.
+# Implemented according to https://a-little-book-of-r-for-bioinformatics.readthedocs.io/en/latest/src/chapter5.html
+
+Kelly_colors = c(
+    rgb( 243, 195, 0, max = 255 ),
+    rgb( 135, 86, 146, max = 255 ),
+    rgb( 243, 132, 0, max = 255 ),
+    rgb( 161, 202, 241, max = 255 ),
+    rgb( 190, 0, 50, max = 255 ),
+    rgb( 194, 178, 128, max = 255 ),
+    rgb( 132, 132, 130, max = 255 ),
+    rgb( 0, 136, 86, max = 255 ),
+    rgb( 230, 143, 172, max = 255 ),
+    rgb( 0, 103, 165, max = 255 ),
+    rgb( 249, 147, 121, max = 255 ),
+    rgb( 96, 78, 151, max = 255 ),
+    rgb( 246, 166, 0, max = 255 ),
+    rgb( 179, 68, 108, max = 255 ),
+    rgb( 220, 211, 0, max = 255 ),
+    rgb( 136, 45, 23, max = 255 ),
+    rgb( 141, 182, 0, max = 255 ),
+    rgb( 101, 69, 34, max = 255 ),
+    rgb( 226, 88, 34, max = 255 ),
+    rgb( 43, 61, 38, max = 255 ),
+    rgb( 34, 34, 34, max = 255 )
+)
+
+library('ape')
+library('optparse')
+library('seqinr')
+
+parser <- OptionParser()
+parser <- add_option(parser, c( '--clusters' ), dest = 'clusters', type = "character", default = NA)
+parser <- add_option(parser, c( '--matrix' ), dest = 'matrix', type = "character", default = 'similarity')
+options = parse_args(parser, positional_arguments = TRUE)
+
+file = '/dev/stdin'
+
+msa = read.alignment(file, format="fasta")
+msa_dist = dist.alignment(msa, matrix=options$options$matrix)
+T = nj(msa_dist)
+
+colors = replicate(length(msa$seq), "black")
+if( !is.na(options$options$clusters) ) {
+    lines = readLines(options$options$clusters)
+    for (i in 1:length(lines)) {
+        ids = as.vector(strsplit(lines[i], ' ')[[1]])
+        colors[which( msa$nam %in% ids )] = Kelly_colors[i]
+    }
+}
+
+svg("/dev/stdout")
+plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=colors, cex=0.5)
