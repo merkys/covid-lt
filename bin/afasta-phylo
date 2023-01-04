@@ -33,12 +33,13 @@ library('seqinr')
 
 parser <- OptionParser()
 parser <- add_option(parser, c( '--clusters' ), dest = 'clusters', type = "character", default = NA)
+parser <- add_option(parser, c( '--matrix' ), dest = 'matrix', type = "character", default = 'similarity')
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
 
 msa = read.alignment(file, format="fasta")
-msa_dist = dist.alignment(msa)
+msa_dist = dist.alignment(msa, matrix=options$options$matrix)
 T = nj(msa_dist)
 
 colors = replicate(length(msa$seq), "black")
