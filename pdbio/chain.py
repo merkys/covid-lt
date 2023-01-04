@@ -37,6 +37,17 @@ class Chain:
     def __len__(self):
         return len([residue for residue in self])
 
+    def antibody_numbering(self):
+        from anarci import run_anarci
+        _, numbered, details, _ = run_anarci([(self.name, self.sequence())], scheme='chothia', allow=set(self.anarci_chain_types.keys()))
+        numbered = numbered[0]
+        details = details[0]
+        if numbered is None:
+            return None
+        if len(numbered) > 1:
+            warn('more than one H or L fragment was found in chain {}, using the first'.format(self.name))
+        return numbered[0]
+
     def antibody_type(self):
         from anarci import run_anarci
         _, numbered, details, _ = run_anarci([(self.name, self.sequence())], scheme='chothia', allow=set(self.anarci_chain_types.keys()))
