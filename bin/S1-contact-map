@@ -111,7 +111,7 @@ do
     if [ -n "${CONTACTS_WITH}" ]
     then
         # Select all S1 chains
-        S1_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --hmmsearch alignments/pdb_seqres-PF09408.hmmsearch | grep PF09408 | cut -f 2 | xargs | sed 's/ //g')"
+        S1_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --blastp alignments/pdb_seqres-P0DTC2.blastp | grep P0DTC2 | cut -f 2 | xargs | sed 's/ //g')"
         # Selecting antibody chains
         ANTIBODY_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --hmmsearch "${CONTACTS_WITH}" | grep -F "${CONTACTS_WITH}" | cut -f 2 | xargs | sed 's/ //g')"
     else

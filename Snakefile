@@ -280,7 +280,7 @@ rule fix_pdb:
 rule renumber_S1:
     input:
         pdb = output_dir + "pdb/fixed/{pdbid}.pdb",
-        hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
+        blastp = "alignments/pdb_seqres-P0DTC2.blastp",
         seq = "sequences/P0DTC2.fa"
     output:
         output_dir + "pdb/P0DTC2/{pdbid}.pdb"
@@ -288,7 +288,7 @@ rule renumber_S1:
         output_dir + "pdb/P0DTC2/{pdbid}.log"
     shell:
         """
-        if ! bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}
+        if ! bin/pdb_renumber_S1 {input.pdb} --blastp {input.blastp} --align-with {input.seq} > {output} 2> {log}
         then
             echo WARNING: {output}: rule failed >&2
             cat {log} >&2
@@ -325,7 +325,7 @@ rule contact_map:
 # Identifies which residues in S1 chains are present in the original PDB files.
 rule quality_map:
     input:
-        hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
+        blastp = "alignments/pdb_seqres-P0DTC2.blastp",
         propka_tabs = propka_tabs,
         vorocontacts_tabs = vorocontacts_tabs,
         seq = "sequences/P0DTC2.fa"
@@ -345,7 +345,7 @@ rule quality_map:
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
-                bin/pdb_renumber_S1 {pdb_input_dir}$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 2>> {log} \
+                bin/pdb_renumber_S1 {pdb_input_dir}$PDB_ID.pdb --blastp {input.blastp} --align-with {input.seq} --output-only-S1 2>> {log} \
                     | grep ^ATOM \
                     | cut -c 23-26 \
                     | tr -d ' ' \
