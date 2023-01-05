@@ -15,7 +15,7 @@ args = parser.parse_args()
 max_iterations = 1
 tolerance = 2.39
 
-file = files[1] # for now
+file = args.files[0] # for now
 
 pdb = openmm_app.PDBFile(file)
 

@@ -1,43 +1,30 @@
+configfile: "configs/main.yaml"
+
+pdb_input_dir = config["pdb_input_dir"]
+pdb_id_list = config["pdb_id_list"]
+
+output_dir = config["output_dir"]
+
 wildcard_constraints:
     pdbid = "[A-Z0-9]{4}"
 
-# A rule to test the pipeline (so far).
-rule test:
-    input:
-        "download_pdb_all.log"
-    shell:
-        """
-        PDBID=$(ls -1 pdb/pristine/*.pdb | shuf | head -n 1 | sed 's/pdb\/pristine\///; s/\.pdb//')
-        snakemake propka/$PDBID.tab vorocontacts/$PDBID.tab
-        """
+include: "snakefiles/pdb-model-quality.smk"
 
 # Top-level 'all' rule:
 rule all:
     input:
-        "quality-map.tab",
-        "contact-maps/PF01401/..tab",
-        "contact-maps/PF01401/hbond.tab",
-        "contact-maps/PF01401/hydrophobic.tab",
-        "contact-maps/PF01401/salt.tab",
-        "contact-maps/PF07654/..tab",
-        "contact-maps/PF07654/hbond.tab",
-        "contact-maps/PF07654/hydrophobic.tab",
-        "contact-maps/PF07654/salt.tab",
-        "contact-maps/PF07686/..tab",
-        "contact-maps/PF07686/hbond.tab",
-        "contact-maps/PF07686/hydrophobic.tab",
-        "contact-maps/PF07686/salt.tab"
+        output_dir + "quality-map.tab",
+        expand(output_dir + "contact-maps/{pfam}/{contact}.tab", pfam=["PF01401", "PF07654", "PF07686"], contact=[".", "hbond", "hydrophobic", "salt"]),
+        output_dir + "qmean.tab",
+        output_dir + "voromqa.tab"
 
-# Nonexistent files (i.e., when structures do not fit into PDB format) are retained as empty.
-rule download_pdb:
+rule container:
+    input:
+        "{base}.def"
     output:
-        "pdb/pristine/{pdbid}.pdb"
+        "{base}.sif"
     shell:
-        """
-        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {output} || touch {output}
-        chmod -w {output}
-        sleep 1
-        """
+        "sudo singularity build {output} {input}"
 
 rule pdb_seqres_fa:
     output:
@@ -48,77 +35,102 @@ rule pdb_seqres_fa:
         chmod -w {output}
         """
 
-# Extract PDB IDs of structures of interest from blastp outputs.
-def pdb_entries_of_interest():
-    pdb_ids = set()
-    file = open('alignments/pdb_seqres-P0DTC2.blastp', 'r')
-    for line in file:
-        sseqid, evalue, score, length, pident, nident = line.rstrip().split('\t')
-        if int(length) >= 100 and float(pident) >= 90:
-            pdb_ids.add(sseqid[0:4].upper())
-    return sorted(pdb_ids)
-
 # Download models of PDB entries of interest.
 # Number of threads is limited to 1 in order not to overload the PDB.
-rule download_pdb_all:
+checkpoint download_pdb_all:
     input:
-        "alignments/pdb_seqres-P0DTC2.blastp",
-        pdb_files = expand("pdb/pristine/{pdbid}.pdb", pdbid=pdb_entries_of_interest())
+        "alignments/pdb_seqres-P0DTC2.blastp"
     output:
-        "download_pdb_all.log"
+        directory(pdb_input_dir)
+    log:
+        output_dir + "download_pdb_all.log"
     threads: 1
     shell:
-        "grep --no-filename ^REVDAT {input.pdb_files} > {output}"
+        """
+        mkdir --parents {pdb_input_dir}
+        (
+            if [ -z "{pdb_id_list}" ]
+            then
+                awk '{{ if( $4 >= 100 && $5 >= 90 ) {{print}} }}' {input} \
+                    | cut -c 1-4 \
+                    | tr '[:lower:]' '[:upper:]' \
+                    | sort \
+                    | uniq
+            else
+                echo {pdb_id_list} >&2
+                echo {pdb_id_list} | tr ' ' '\n'
+            fi
+        ) \
+            | while read PDBID
+              do
+                wget https://files.rcsb.org/download/$PDBID.pdb -O {pdb_input_dir}$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
+                chmod -w {pdb_input_dir}$PDBID.pdb 2>/dev/null || true # Intentional
+                sleep 1
+              done
+        grep --no-filename ^REVDAT {pdb_input_dir}*.pdb > {log}
+        """
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
 # For this project, of interest are contacts between S1, ACE2 and antibody chains
 rule vorocontacts_out:
     input:
-        "pdb/P0DTC2/{pdbid}.pdb"
+        output_dir + "pdb/P0DTC2/{pdbid}.pdb"
     output:
-        "vorocontacts/{pdbid}.out"
+        output_dir + "vorocontacts/{pdbid}.out"
     log:
-        "vorocontacts/{pdbid}.log"
+        output_dir + "vorocontacts/{pdbid}.log"
+    singularity:
+        "container.sif"
     shell:
-        "bin/voronota-contacts -i {input} > {output} 2> {log} || touch {output}"
+        """
+        mkdir --parents {output_dir}vorocontacts
+        voronota-contacts -i {input} > {output} 2> {log} || echo -n > {output}
+        test -s {output} || echo WARNING: {output}: rule failed >&2
+        test -s {output} || cat {log} >&2
+        """
 
 rule vorocontacts_tab:
     input:
-        "vorocontacts/{pdbid}.out"
+        output_dir + "vorocontacts/{pdbid}.out"
     output:
-        "vorocontacts/{pdbid}.tab"
+        output_dir + "vorocontacts/{pdbid}.tab"
     shell:
         "bin/vorocontacts2tab {input} > {output}"
 
 rule propka_out:
     input:
-        "pdb/P0DTC2/{pdbid}.pdb"
+        output_dir + "pdb/P0DTC2/{pdbid}.pdb"
     output:
-        "propka/{pdbid}.out"
+        output_dir + "propka/{pdbid}.out"
     log:
-        "propka/{pdbid}.log"
+        output_dir + "propka/{pdbid}.log"
+    singularity:
+        "container.sif"
     shell:
         """
+        mkdir --parents {output_dir}propka
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
         (cd $TMP_DIR && propka3 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
-        cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        cp $TMP_DIR/{wildcards.pdbid}.pka {output} || touch {output} # propka failures manifest in nonexistent output files
+        mv $TMP_DIR/{wildcards.pdbid}.log {log}
+        mv $TMP_DIR/{wildcards.pdbid}.pka {output} || echo -n > {output} # propka failures manifest in nonexistent output files
         rm -rf $TMP_DIR
+        test -s {output} || echo WARNING: {output}: rule failed >&2
+        test -s {output} || cat {log} >&2
         """
 
 rule propka_tab:
     input:
-        "propka/{pdbid}.out"
+        output_dir + "propka/{pdbid}.out"
     output:
-        "propka/{pdbid}.tab"
+        output_dir + "propka/{pdbid}.tab"
     shell:
         "bin/propka2tab --no-coulombic {input} > {output}"
 
 rule pdb_seqres2fasta:
     input:
-        "pdb/pristine/{pdbid}.pdb"
+        pdb_input_dir + "{pdbid}.pdb"
     output:
         "pdb-seqres/{pdbid}.fa"
     shell:
@@ -130,6 +142,8 @@ rule blastp:
         query = "{query}.fa"
     output:
         "alignments/{subject}-{query}.blastp"
+    singularity:
+        "covid-lt.simg"
     shell:
         "blastp -query {input.query} -subject {input.subject} -outfmt '6 sseqid evalue score length pident nident' -max_target_seqs $(wc -l < {input.subject}) -subject_besthit > {output}"
 
@@ -138,6 +152,8 @@ rule hmmbuild:
         "{prefix}.msa"
     output:
         "{prefix}.hmm"
+    singularity:
+        "container.sif"
     shell:
         "hmmbuild {output} {input}"
 
@@ -148,27 +164,24 @@ rule hmmsearch:
         "alignments/{pfam}_full.hmm"
     output:
         "alignments/{fasta}-{pfam}.hmmsearch"
+    singularity:
+        "container.sif"
     shell:
         "sed 's/-//g' {input[0]} | hmmsearch --noali {input[1]} - > {output}"
 
 def downloaded_pdb_files():
-    from os.path import exists
-    pdb_ids = set()
-    if exists('download_pdb_all.log'):
-        file = open('download_pdb_all.log', 'r')
-        for line in file:
-            pdb_ids.add(line[23:27])
-        if '    ' in pdb_ids:
-            pdb_ids.remove('    ')
-    return sorted(pdb_ids)
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get().output[0]
+    return sorted(glob(checkpoint_output + '/*.pdb'))
 
 rule cd_hit:
     input:
-        "download_pdb_all.log",
-        pristine_pdbs = expand("pdb/pristine/{pdbid}.pdb", pdbid=downloaded_pdb_files()),
+        pristine_pdbs = downloaded_pdb_files,
         hmmsearch = "alignments/{base}.hmmsearch"
     output:
         "alignments/{base}.clusters"
+    singularity:
+        "container.sif"
     shell:
         """
         TMP_DIR=$(mktemp --directory)
@@ -184,98 +197,106 @@ rule cd_hit:
 # TODO: Preserve original LINK, SSBOND etc. records.
 rule fix_pdb:
     input:
-        "pdb/pristine/{pdbid}.pdb"
+        pdb_input_dir + "{pdbid}.pdb"
     output:
-        "pdb/fixed/{pdbid}.pdb"
+        output_dir + "pdb/fixed/{pdbid}.pdb"
+    singularity:
+        "container.sif"
     log:
-        "pdb/fixed/{pdbid}.log"
+        output_dir + "pdb/fixed/{pdbid}.log"
     shell:
         """
+        mkdir --parents {output_dir}pdb/fixed
+        echo -n > {output} # Clear the file if exists
         TMP_DIR=$(mktemp --directory)
-        bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb 2> {log} || true
+        PYTHONPATH=. bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb 2> {log} || true
         if [ ! -s $TMP_DIR/{wildcards.pdbid}.pdb ]
         then
-            echo -n > {output}
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
             rm -rf $TMP_DIR
             exit
         fi
-        bin/promod-fix-pdb $TMP_DIR/{wildcards.pdbid}.pdb > $TMP_DIR/fixed.pdb 2>> {log} || true
-        bin/pdb_rename_chains {input} --source $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
-        rm -rf $TMP_DIR
-        """
-
-# Renumber antibody chains using Rosetta
-# FIXME: This might not be working as expected at all; from [1] it seems that Rosetta needs properly numbered antibodies in its input.
-# [1] https://www.rosettacommons.org/docs/latest/application_documentation/antibody/General-Antibody-Options-and-Tips
-rule renumber_antibodies:
-    input:
-        "pdb/fixed/{pdbid}.pdb"
-    output:
-        "pdb/Chothia/{pdbid}.pdb"
-    log:
-        "pdb/Chothia/{pdbid}.log"
-    shell:
-        """
-        TMP_DIR=$(mktemp --directory)
-        cp {input} $TMP_DIR
-        (cd $TMP_DIR && antibody_numbering_converter -s {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
-        cp $TMP_DIR/{wildcards.pdbid}.log {log}
-        test -e $TMP_DIR/ROSETTA_CRASH.log && cat $TMP_DIR/ROSETTA_CRASH.log >> {log}
-        cp $TMP_DIR/{wildcards.pdbid}_0001.pdb {output} || touch {output} # Rosetta failures manifest in nonexistent output files
+        PYTHONPATH=. bin/promod-fix-pdb $TMP_DIR/{wildcards.pdbid}.pdb > $TMP_DIR/fixed.pdb 2>> {log} || true
+        PYTHONPATH=. bin/pdb_rename_chains --source {input} $TMP_DIR/fixed.pdb > {output} 2>> {log} || true
+        if [ ! -s {output} ]
+        then
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
         rm -rf $TMP_DIR
         """
 
 # Renumber PDB chains containing S1 according to its UNIPROT sequence.
 rule renumber_S1:
     input:
-        pdb = "pdb/Chothia/{pdbid}.pdb",
+        pdb = output_dir + "pdb/fixed/{pdbid}.pdb",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
         seq = "sequences/P0DTC2.fa"
     output:
-        "pdb/P0DTC2/{pdbid}.pdb"
+        output_dir + "pdb/P0DTC2/{pdbid}.pdb"
     log:
-        "pdb/P0DTC2/{pdbid}.log"
+        output_dir + "pdb/P0DTC2/{pdbid}.log"
     shell:
-        "bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log} || true"
+        """
+        if ! bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}
+        then
+            echo WARNING: {output}: rule failed >&2
+            cat {log} >&2
+        fi
+        """
+
+def propka_tabs(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand(output_dir + "propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+def vorocontacts_tabs(wildcards):
+    from glob import glob
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand(output_dir + "vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule contact_map:
     input:
-        "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-{pfam}.hmmsearch",
-        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
-        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files())
+        propka_tabs = propka_tabs,
+        vorocontacts_tabs = vorocontacts_tabs
     output:
-        "contact-maps/{pfam}/{search}.tab"
+        output_dir + "contact-maps/{pfam}/{search}.tab"
+    singularity:
+        "container.sif"
     shell:
         """
         comm -1 -2 \
-            <(ls -1 vorocontacts/*.tab | cut -d / -f 2 | sort) \
-            <(ls -1 propka/*.tab | cut -d / -f 2 | sort) \
-          | sed 's/\.tab//' \
-          | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" > {output}
+            <(ls -1 {output_dir}vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
+          | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" > {output}
         """
 
 # Identifies which residues in S1 chains are present in the original PDB files.
 rule quality_map:
     input:
-        "download_pdb_all.log",
         hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
-        propka_tabs = expand("propka/{pdbid}.tab", pdbid=downloaded_pdb_files()),
-        vorocontacts_tabs = expand("vorocontacts/{pdbid}.tab", pdbid=downloaded_pdb_files()),
+        propka_tabs = propka_tabs,
+        vorocontacts_tabs = vorocontacts_tabs,
         seq = "sequences/P0DTC2.fa"
     output:
-        "quality-map.tab"
+        output_dir + "quality-map.tab"
+    log:
+        output_dir + "quality-map.log"
+    singularity:
+        "container.sif"
     shell:
         """
+        echo -n > {log}
         TMP_DIR=$(mktemp --directory)
         comm -1 -2 \
-            <(ls -1 {input.propka_tabs} 2>/dev/null | cut -d / -f 2 | sort) \
-            <(ls -1 {input.vorocontacts_tabs} 2>/dev/null | cut -d / -f 2 | sort) \
-          | sed 's/\.tab//' \
+            <(ls -1 {input.propka_tabs} 2>/dev/null | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {input.vorocontacts_tabs} 2>/dev/null | xargs -i basename {{}} .tab | sort) \
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
-                bin/pdb_renumber_S1 pdb/pristine/$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 \
+                bin/pdb_renumber_S1 {pdb_input_dir}$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 2>> {log} \
                     | grep ^ATOM \
                     | cut -c 23-26 \
                     | tr -d ' ' \
@@ -297,68 +318,4 @@ rule quality_map:
             done
         cp $TMP_DIR/table.tab {output}
         rm -rf $TMP_DIR
-        """
-
-rule voromqa:
-    input:
-        "{path}/{pdbid}.pdb"
-    output:
-        "{path}/{pdbid}.voromqa"
-    shell:
-        "bin/voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || true"
-
-rule voromqa_all:
-    input:
-        "download_pdb_all.log",
-        pristine_pdbs_voromqa = expand("pdb/pristine/{pdbid}.voromqa", pdbid=downloaded_pdb_files()),
-        fixed_pdbs_voromqa = expand("pdb/fixed/{pdbid}.voromqa", pdbid=downloaded_pdb_files())
-    output:
-        "voromqa.tab"
-    shell:
-        """
-        for VOROMQA in {input.pristine_pdbs_voromqa}
-        do
-            PRISTINE=$VOROMQA
-            FIXED=pdb/fixed/$(basename $VOROMQA)
-            if [ -s $PRISTINE -a -s $FIXED ]
-            then
-                (
-                    echo -en $(basename $VOROMQA .voromqa)"\t"
-                    paste $PRISTINE $FIXED
-                ) | xargs echo | sed 's/ /\t/g'
-            fi
-        done > {output}
-        """
-
-rule qmean:
-    input:
-        "{path}/{pdbid}.pdb"
-    output:
-        "{path}/{pdbid}.qmean"
-    log:
-        "{path}/{pdbid}.qmean.log"
-    shell:
-        "bin/qmean {input} > {output} 2> {log} || true"
-
-rule qmean_all:
-    input:
-        "download_pdb_all.log",
-        pristine_pdbs_qmean = expand("pdb/pristine/{pdbid}.qmean", pdbid=downloaded_pdb_files()),
-        fixed_pdbs_qmean = expand("pdb/fixed/{pdbid}.qmean", pdbid=downloaded_pdb_files())
-    output:
-        "qmean.tab"
-    shell:
-        """
-        for QMEAN in {input.pristine_pdbs_qmean}
-        do
-            PRISTINE=$QMEAN
-            FIXED=pdb/fixed/$(basename $QMEAN)
-            if [ -s $PRISTINE -a -s $FIXED ]
-            then
-                (
-                    echo -en $(basename $QMEAN .QMEAN)"\t"
-                    paste $PRISTINE $FIXED
-                ) | xargs echo | sed 's/ /\t/g'
-            fi
-        done > {output}
         """

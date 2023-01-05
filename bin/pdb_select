@@ -15,6 +15,7 @@ chain_identifiers = {
     'SITE  ': [ 22, 33, 44, 55 ],
     'SEQRES': [ 11 ],
     'SSBOND': [ 15, 29 ],
+    'TER   ': [ 21 ],
 }
 
 import argparse, re, sys
