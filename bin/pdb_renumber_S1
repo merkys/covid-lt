@@ -18,14 +18,15 @@ filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
+parser.add_argument('--blastp', help='Specify the output log of blastp to identify S1 chain')
 parser.add_argument('--hmmsearch', help='Specify the output log of hmmsearch to identify S1 chain')
 parser.add_argument('--align-with', help='Specify the S1 sequence in FASTA format')
 parser.add_argument('--output-alignment', action='store_true', help='Output alignments to STDERR for debug purpose')
 parser.add_argument('--output-only-S1', action='store_true', help='Output only S1 chains')
 args = parser.parse_args()
 
-if not args.hmmsearch:
-    raise ValueError('hmmsearch output log is mandatory')
+if not args.blastp and not args.hmmsearch:
+    raise ValueError('output of blastp or hmmsearch is mandatory')
 
 if not args.align_with:
     raise ValueError('FASTA sequence of S1 is mandatory')
@@ -44,12 +45,20 @@ for filename in files:
         pdbid = match.group(1)
 
     chains = []
-    hmmsearch_file = open(args.hmmsearch, 'r')
-    for line in hmmsearch_file.readlines():
-        match = re.match('>> ' + pdbid.lower() + '_(.)', line)
-        if match:
-            chains.append(match.group(1))
-    hmmsearch_file.close()
+    if args.blastp:
+        blastp_file = open(args.blastp, 'r')
+        for line in blastp_file.readlines():
+            match = re.match(pdbid.lower() + '_(.)\s+\S+\s+\S+\s+(\S+)\s+(\S+)', line)
+            if match and int(match.group(2)) >= 100 and float(match.group(3)) >= 90:
+                chains.append(match.group(1))
+        blastp_file.close()
+    elif args.hmmsearch:
+        hmmsearch_file = open(args.hmmsearch, 'r')
+        for line in hmmsearch_file.readlines():
+            match = re.match('>> ' + pdbid.lower() + '_(.)', line)
+            if match:
+                chains.append(match.group(1))
+        hmmsearch_file.close()
 
     parser = PDB.PDBParser()
     struct = parser.get_structure(pdbid, filename)
