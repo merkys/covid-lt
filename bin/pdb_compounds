@@ -7,6 +7,7 @@ warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarn
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
+parser.add_argument('--blastp', action='append', default=[], help='Add output log of blastp to identify chains (may be multiple)')
 parser.add_argument('--hmmsearch', action='append', default=[], help='Add output log of hmmsearch to identify chains (may be multiple)')
 parser.add_argument('--with-lengths', action='store_true', help='Include chain lengths')
 args = parser.parse_args()
@@ -15,7 +16,22 @@ files = args.files
 if len(files) == 0:
     files = [sys.stdin]
 
-hmmsearch_chain_ids = {}
+searched_chain_ids = {}
+for log in args.blastp:
+    file = open(log, 'r')
+    for line in file.readlines():
+        match = re.match('(....)_(.)\s+\S+\s+\S+\s+(\S+)\s+(\S+)', line)
+        if match and int(match.group(3)) >= 100 and float(match.group(4)) >= 90:
+            pdb_id = match.group(1).upper()
+            chain = match.group(2)
+            if pdb_id not in searched_chain_ids:
+                searched_chain_ids[pdb_id] = {}
+            if chain in searched_chain_ids[pdb_id]:
+                # Rare case when more than one file matches the same chain
+                searched_chain_ids[pdb_id][chain] += ',' + log
+            else:
+                searched_chain_ids[pdb_id][chain] = log
+    file.close()
 for log in args.hmmsearch:
     file = open(log, 'r')
     in_main = False
@@ -25,15 +41,16 @@ for log in args.hmmsearch:
                 break
             pdb_id = line[60:64].upper()
             chain = line[65]
-            if pdb_id not in hmmsearch_chain_ids:
-                hmmsearch_chain_ids[pdb_id] = {}
-            if chain in hmmsearch_chain_ids[pdb_id]:
+            if pdb_id not in searched_chain_ids:
+                searched_chain_ids[pdb_id] = {}
+            if chain in searched_chain_ids[pdb_id]:
                 # Rare case when more than one file matches the same chain
-                hmmsearch_chain_ids[pdb_id][chain] += ',' + log
+                searched_chain_ids[pdb_id][chain] += ',' + log
             else:
-                hmmsearch_chain_ids[pdb_id][chain] = log
+                searched_chain_ids[pdb_id][chain] = log
         elif re.match('    ------- ------', line):
             in_main = True
+    file.close()
 
 for file in files:
     if args.with_lengths:
@@ -64,8 +81,8 @@ for file in files:
             elif line[11:17] == 'CHAIN:':
                 for chain in re.split("\s*,\s*", line[18:]):
                     additional_info = '?'
-                    if pdb_id in hmmsearch_chain_ids and chain in hmmsearch_chain_ids[pdb_id]:
-                        additional_info = hmmsearch_chain_ids[pdb_id][chain]
+                    if pdb_id in searched_chain_ids and chain in searched_chain_ids[pdb_id]:
+                        additional_info = searched_chain_ids[pdb_id][chain]
                     output = [pdb_id, chain, molecule]
                     if args.with_lengths:
                         atom_seq_length = '?'
