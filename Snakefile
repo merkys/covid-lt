@@ -278,7 +278,7 @@ rule fix_pdb:
 rule renumber_S1:
     input:
         pdb = output_dir + "pdb/fixed/{pdbid}.pdb",
-        hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
+        blastp = "alignments/pdb_seqres-P0DTC2.blastp",
         seq = "sequences/P0DTC2.fa"
     output:
         output_dir + "pdb/P0DTC2/{pdbid}.pdb"
@@ -286,7 +286,7 @@ rule renumber_S1:
         output_dir + "pdb/P0DTC2/{pdbid}.log"
     shell:
         """
-        if ! bin/pdb_renumber_S1 {input.pdb} --hmmsearch {input.hmmsearch} --align-with {input.seq} > {output} 2> {log}
+        if ! bin/pdb_renumber_S1 {input.pdb} --blastp {input.blastp} --align-with {input.seq} > {output} 2> {log}
         then
             echo WARNING: {output}: rule failed >&2
             cat {log} >&2
