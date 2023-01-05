@@ -323,7 +323,7 @@ rule contact_map:
 # Identifies which residues in S1 chains are present in the original PDB files.
 rule quality_map:
     input:
-        hmmsearch = "alignments/pdb_seqres-PF09408.hmmsearch",
+        blastp = "alignments/pdb_seqres-P0DTC2.blastp",
         propka_tabs = propka_tabs,
         vorocontacts_tabs = vorocontacts_tabs,
         seq = "sequences/P0DTC2.fa"
@@ -343,7 +343,7 @@ rule quality_map:
           | while read PDB_ID
             do
                 echo $PDB_ID > $TMP_DIR/column.tab
-                bin/pdb_renumber_S1 {pdb_input_dir}$PDB_ID.pdb --hmmsearch {input.hmmsearch} --align-with {input.seq} --output-only-S1 2>> {log} \
+                bin/pdb_renumber_S1 {pdb_input_dir}$PDB_ID.pdb --blastp {input.blastp} --align-with {input.seq} --output-only-S1 2>> {log} \
                     | grep ^ATOM \
                     | cut -c 23-26 \
                     | tr -d ' ' \
