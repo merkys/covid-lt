@@ -6,9 +6,13 @@ pdb_id_list = config["pdb_id_list"]
 output_dir = config["output_dir"]
 
 wildcard_constraints:
-    pdbid = "[A-Z0-9]{4}"
+    dirname = "[^/]+",
+    pdbid = "[A-Z0-9]{4}",
+    probe = "[0-9]+",
+    search = "[^/]+"
 
 include: "snakefiles/pdb-model-quality.smk"
+include: "snakefiles/dG-datasets.smk"
 
 # Top-level 'all' rule:
 rule all:
@@ -63,11 +67,23 @@ checkpoint download_pdb_all:
         ) \
             | while read PDBID
               do
-                wget https://files.rcsb.org/download/$PDBID.pdb -O {pdb_input_dir}$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
-                chmod -w {pdb_input_dir}$PDBID.pdb 2>/dev/null || true # Intentional
-                sleep 1
+                if [ ! -e {pdb_input_dir}$PDBID.pdb ]
+                then
+                  wget https://files.rcsb.org/download/$PDBID.pdb -O {pdb_input_dir}$PDBID.pdb || echo PDB file for $PDBID cannot be downloaded >&2
+                  chmod -w {pdb_input_dir}$PDBID.pdb 2>/dev/null || true # Intentional
+                  sleep 1
+                fi
               done
         grep --no-filename ^REVDAT {pdb_input_dir}*.pdb > {log}
+        """
+
+rule download_pdb:
+    output:
+        pdb_input_dir + "{pdbid}.pdb"
+    shell:
+        """
+        wget https://files.rcsb.org/download/{wildcards.pdbid}.pdb -O {pdb_input_dir}{wildcards.pdbid}.pdb || echo PDB file for {wildcards.pdbid} cannot be downloaded >&2
+        chmod -w {pdb_input_dir}{wildcards.pdbid}.pdb 2>/dev/null || true # Intentional
         """
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
@@ -75,41 +91,72 @@ checkpoint download_pdb_all:
 # For this project, of interest are contacts between S1, ACE2 and antibody chains
 rule vorocontacts_out:
     input:
-        output_dir + "pdb/P0DTC2/{pdbid}.pdb"
+        "{prefix}/{pdbid}.pdb"
     output:
-        output_dir + "vorocontacts/{pdbid}.out"
+        "{prefix}/vorocontacts/{pdbid}.out"
     log:
-        output_dir + "vorocontacts/{pdbid}.log"
+        "{prefix}/vorocontacts/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
         """
-        mkdir --parents {output_dir}vorocontacts
+        mkdir --parents $(dirname {output})
         voronota-contacts -i {input} > {output} 2> {log} || echo -n > {output}
+        test -s {output} || echo WARNING: {output}: rule failed >&2
+        test -s {output} || cat {log} >&2
+        """
+
+rule vorocontacts_custom_probe_out:
+    input:
+        "{prefix}/{pdbid}.pdb"
+    output:
+        "{prefix}/vorocontacts/probe-{probe}/{pdbid}.out"
+    log:
+        "{prefix}/vorocontacts/probe-{probe}/{pdbid}.log"
+    singularity:
+        "container.sif"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        echo -n > {log}
+        cat {input} \
+            | voronota get-balls-from-atoms-file --input-format detect --annotated --radii-file <(voronota-resources radii) --include-heteroatoms 2>>{log} \
+            | voronota query-balls --drop-altloc-indicators 2>>{log} \
+            | voronota calculate-contacts --annotated --tag-centrality --probe {wildcards.probe} 2>>{log} \
+            | voronota query-contacts --match-min-seq-sep 1 --preserve-graphics 2>>{log} \
+            | column -t > {output} || echo -n > {output}
         test -s {output} || echo WARNING: {output}: rule failed >&2
         test -s {output} || cat {log} >&2
         """
 
 rule vorocontacts_tab:
     input:
-        output_dir + "vorocontacts/{pdbid}.out"
+        "{prefix}/vorocontacts/{pdbid}.out"
     output:
-        output_dir + "vorocontacts/{pdbid}.tab"
+        "{prefix}/vorocontacts/{pdbid}.tab"
+    shell:
+        "bin/vorocontacts2tab {input} > {output}"
+
+rule vorocontacts_custom_probe_tab:
+    input:
+        "{prefix}/vorocontacts/probe-{probe}/{pdbid}.out"
+    output:
+        "{prefix}/vorocontacts/probe-{probe}/{pdbid}.tab"
     shell:
         "bin/vorocontacts2tab {input} > {output}"
 
 rule propka_out:
     input:
-        output_dir + "pdb/P0DTC2/{pdbid}.pdb"
+        "{prefix}/{pdbid}.pdb"
     output:
-        output_dir + "propka/{pdbid}.out"
+        "{prefix}/propka/{pdbid}.out"
     log:
-        output_dir + "propka/{pdbid}.log"
+        "{prefix}/propka/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
         """
-        mkdir --parents {output_dir}propka
+        mkdir --parents $(dirname {output})
         TMP_DIR=$(mktemp --directory)
         cp {input} $TMP_DIR
         (cd $TMP_DIR && propka3 {wildcards.pdbid}.pdb > {wildcards.pdbid}.log 2>&1 || true)
@@ -122,9 +169,9 @@ rule propka_out:
 
 rule propka_tab:
     input:
-        output_dir + "propka/{pdbid}.out"
+        "{prefix}/propka/{pdbid}.out"
     output:
-        output_dir + "propka/{pdbid}.tab"
+        "{prefix}/propka/{pdbid}.tab"
     shell:
         "bin/propka2tab --no-coulombic {input} > {output}"
 
@@ -249,12 +296,12 @@ rule renumber_S1:
 def propka_tabs(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(output_dir + "propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(output_dir + "pdb/P0DTC2/propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 def vorocontacts_tabs(wildcards):
     from glob import glob
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(output_dir + "vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(output_dir + "pdb/P0DTC2/vorocontacts/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule contact_map:
     input:
@@ -268,8 +315,8 @@ rule contact_map:
     shell:
         """
         comm -1 -2 \
-            <(ls -1 {output_dir}vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
-            <(ls -1 {output_dir}propka/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}pdb/P0DTC2/propka/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --contacts-with {input.hmmsearch} --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" > {output}
         """
 
@@ -319,3 +366,24 @@ rule quality_map:
         cp $TMP_DIR/table.tab {output}
         rm -rf $TMP_DIR
         """
+
+rule tleap:
+    input:
+        "{prefix}.pdb"
+    output:
+        prmtop = "{prefix}.prmtop",
+        inpcrd = "{prefix}.inpcrd"
+    log:
+        "{prefix}.tleap.log"
+    shell:
+        """
+        bin/tleap {input} {output.prmtop} {output.inpcrd} leaprc.protein.ff19SB 2> {log}
+        """
+
+rule build_TMscore:
+    input:
+        "externals/TMscore/TMscore.cpp"
+    output:
+        "bin/TMscore"
+    shell:
+        "g++ -static -O3 -ffast-math -lm -o {output} {input}"

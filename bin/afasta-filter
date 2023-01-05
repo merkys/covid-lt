@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+# Remove unconserved parts of a multiple sequence alignment in aligned FASTA format.
+
+from Bio import AlignIO
+import sys
+
+conserved_positions = []
+
+align = AlignIO.read(sys.stdin, 'fasta')
+for pos in range(0, len(align[0])):
+    frequencies = {}
+    for seq in align:
+        if seq[pos] in frequencies:
+            frequencies[seq[pos]] += 1
+        else:
+            frequencies[seq[pos]] = 1
+    if '-' in frequencies and frequencies['-']/len(align) > 0.7:
+        continue
+    if max(frequencies.values())/len(align) < 0.3:
+        continue
+    conserved_positions.append(pos)
+
+for seq in align:
+    print('>', seq.name, sep='')
+    for pos in conserved_positions:
+        print(seq[pos], end='')
+    print()

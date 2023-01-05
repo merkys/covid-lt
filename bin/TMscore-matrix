@@ -1,0 +1,28 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+options = parse_args(parser, positional_arguments = TRUE)
+
+files = options$args[2:] # First file is the contact matrix
+bases = substr( basename( files ), 0, 4 )
+
+distances = matrix( 0, nrow = length(files), ncol = length(files) )
+
+for (i in 1:length(files)) {
+    for (j in 1:length(files)) {
+        if( i >= j ) {
+            next
+        }
+
+        distances[i,j] = 1 - as.double( system( paste( 'bin/TMscore -c -ter 1', files[i], files[j],
+                                                       '| grep "^TM-score" | awk "{print \\$3}"', sep = ' ' ),
+                                                intern = TRUE ) )
+        distances[j,i] = distances[i,j]
+    }
+}
+
+distances = data.frame( bases, distances, row.names = 1 )
+names(distances) = bases
+
+suppressWarnings( write.table( distances, file="/dev/stdout", quote=FALSE ) )

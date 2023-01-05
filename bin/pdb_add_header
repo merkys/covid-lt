@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+# Add a synthetic HEADER line for a PDB file.
+# Some tools cannot work without it, thus 
+
+import argparse, re, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--id', help='Use the specified PDB ID')
+args = parser.parse_args()
+
+for pdb in args.files:
+    id = None
+    if args.id:
+        id = args.id
+    elif isinstance(pdb, str):
+        match = re.search('^(\S+/)?(....)\.pdb$', pdb)
+        id = match.group(2)
+    print('HEADER    ?                                       ?           ', id, sep='')
+    if isinstance(pdb, str):
+        pdb = open(pdb, 'r')
+    print(*pdb.readlines(), sep='', end='')

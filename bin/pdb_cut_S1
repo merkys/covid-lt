@@ -1,21 +1,28 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 from numpy import histogram
+from pdbio.pdbfile import PDBFile
+from warnings import warn
 import argparse, sys
+
+S1_domain_cuts = {
+    # Taken from https://pfam.xfam.org/protein/P0DTC2
+    'domains': [ 0, 24, 342, 531, 600, 705 ],
+    # Based on most usually occuring gaps in PDB
+    'gaps': [ 75, 153, 180, 250, 630, 682, 840, 1150 ],
+}
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--max-length', default=500, help='Maximum length of S1 chain')
 parser.add_argument('--S1-chain', default='A', help='Specify the S1 chain')
+parser.add_argument('--cut-by', choices=S1_domain_cuts.keys(), default='gaps', help='Specify how the cut places should be introduced')
 parser.add_argument('--contacts', help='Specify a file listing contacts between S1 and other chains')
 args = parser.parse_args()
 
 files = args.files
 if len(files) == 0:
     files = [sys.stdin]
-
-# Cuts are taken from https://pfam.xfam.org/protein/P0DTC2
-S1_domain_cuts = [ 0, 24, 342, 531, 600, 705 ]
 
 contacts = None
 
@@ -36,34 +43,20 @@ if args.contacts:
         contacts[atom2['chain']].add(int(atom1['res_nr']))
 
 for filename in files:
-    header = []
-    atoms = None
-    footer = []
+    pdb = PDBFile(filename)
+
+    # Find contacts that are visible in the PDB file
     contacts_now = set()
+    for chain in pdb:
+        if contacts and chain.name in contacts:
+            contacts_now.update(contacts[chain.name])
 
-    handle = filename
-    if isinstance(handle, str):
-        handle = open(handle, 'r')
+    if not contacts_now:
+        warn('{}: no contacts with chain {} observed, no output'.format(filename, args.S1_chain))
+        continue
 
-    for line in handle:
-        if line.startswith('ATOM  '):
-            chain = line[21]
-            residue = int(line[22:26])
-            if not atoms:
-                atoms = {}
-            if chain not in atoms:
-                atoms[chain] = []
-            atoms[chain].append(line)
-            if contacts and chain in contacts:
-                contacts_now.update(contacts[chain])
-        else:
-            if atoms:
-                footer.append(line)
-            else:
-                header.append(line)
-
-    S1_domain_cuts_now = S1_domain_cuts
-    if max(contacts_now) >= S1_domain_cuts[-1]:
+    S1_domain_cuts_now = S1_domain_cuts[args.cut_by]
+    if max(contacts_now) >= S1_domain_cuts[args.cut_by][-1]:
         S1_domain_cuts_now.append(max(contacts_now)+1)
     counts, _ = histogram(list(contacts_now), S1_domain_cuts_now)
     domains_needed = list(filter(lambda i: counts[i] > 0, range(len(counts))))
@@ -71,15 +64,10 @@ for filename in files:
     cut_range = [S1_domain_cuts_now[min(domains_needed)], S1_domain_cuts_now[max(domains_needed)+1]]
 
     if cut_range[1] - cut_range[0] > args.max_length:
-        print('Cannot cut S1 chain to the required limits without losing contacts', file=sys.stderr)
+        warn('{}: cannot cut S1 chain to the required limits without losing contacts'.format(filename))
 
-    print(''.join(header), end='')
-    for chain in sorted(atoms):
-        if chain == args.S1_chain:
-            for line in atoms[chain]:
-                residue = int(line[22:26])
-                if residue >= cut_range[0] and residue <= cut_range[1]:
-                    print(line, end='')
-        else:
-            print(''.join(atoms[chain]), end='')
-    print(''.join(footer), end='')
+    for residue in pdb.chain(args.S1_chain):
+        if residue.number() < cut_range[0] or residue.number() > cut_range[1]:
+            residue.delete()
+
+    print(pdb, end='')

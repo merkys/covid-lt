@@ -1,11 +1,30 @@
 #!/usr/bin/Rscript --vanilla
 
+library( "optparse" )
+parser <- OptionParser()
+parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
+parser <- add_option(parser, c( "--cluster-method" ), dest = "cluster_method", type = "character", default = "ward.D2")
+parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
+parser <- add_option(parser, c( "--replace-NA-with" ), dest = "na_replace", type = "double", default = NA)
+parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
+                     type = "double", default = 3)
+parser <- add_option(parser, c( "--RData" ), dest = "RData", type = "character")
+options = parse_args(parser, positional_arguments = TRUE)
+
 dist_na <- function(m) {
+    if( !is.na(options$options$na_replace) ) {
+        m[is.na(m)] = options$options$na_replace
+    }
+
     nrow = dim(m)[1]
 
     distances = matrix( nrow=nrow, ncol=nrow )
     for (i in 1:nrow) {
         for (j in 1:nrow) {
+            if( i >= j ) {
+                next
+            }
+
             row1 = m[i,]
             row2 = m[j,]
 
@@ -20,18 +39,19 @@ dist_na <- function(m) {
             } else {
                 distances[i,j] = 1e6 # Sufficiently large number
             }
+
+            distances[j,i] = distances[i,j]
         }
     }
-    return(as.dist(distances))
+    distances = data.frame( distances, row.names=row.names( m ) )
+    return( as.dist( distances ) )
 }
 
-library( "optparse" )
-parser <- OptionParser()
-parser <- add_option(parser, c( "--dendrogram" ), action = "store_true", default = FALSE)
-parser <- add_option(parser, c( "--scale" ), action = "store_true", default = FALSE)
-parser <- add_option(parser, c( "--row-margin" ), dest = "row_margin",
-                     type = "double", default = 3)
-options = parse_args(parser, positional_arguments = TRUE)
+clust = NULL
+hclustfun <- function(d) {
+    clust <<- hclust( d, method = options$options$cluster_method )
+    return( clust )
+}
 
 file = '/dev/stdin'
 files = options$args
@@ -50,7 +70,13 @@ if( options$options$scale ) {
 }
 
 D = read.csv(file, header=TRUE, sep="\t", na.strings="?")
+
 svg("/dev/stdout")
-heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram, distfun=dist_na, scale=scale,
+heatmap(t(as.matrix(D)), Colv=NA, Rowv=dendrogram,
+        distfun=dist_na, hclustfun=hclustfun, scale=scale,
         margin=c(2, options$options$row_margin),
         cexRow = 0.5 + 1/length(D))
+
+if( !is.na(options$options$RData) ) {
+    save(clust, file=options$options$RData)
+}

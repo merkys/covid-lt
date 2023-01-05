@@ -1,7 +1,10 @@
 from Bio.Data.SCOPData import protein_letters_3to1
 from pdbio.residue import Residue
+from warnings import warn
 
 class Chain:
+
+    anarci_chain_types = { 'H': 'H', 'K': 'L', 'L': 'L' }
 
     def __init__(self, parent, name):
         self.parent = parent
@@ -30,6 +33,31 @@ class Chain:
             else:
                 break
         return Residue(self, start, end)
+
+    def __len__(self):
+        return len([residue for residue in self])
+
+    def antibody_numbering(self):
+        from anarci import run_anarci
+        _, numbered, details, _ = run_anarci([(self.name, self.sequence())], scheme='chothia', allow=set(self.anarci_chain_types.keys()))
+        numbered = numbered[0]
+        details = details[0]
+        if numbered is None:
+            return None
+        if len(numbered) > 1:
+            warn('more than one H or L fragment was found in chain {}, using the first'.format(self.name))
+        return numbered[0]
+
+    def antibody_type(self):
+        from anarci import run_anarci
+        _, numbered, details, _ = run_anarci([(self.name, self.sequence())], scheme='chothia', allow=set(self.anarci_chain_types.keys()))
+        numbered = numbered[0]
+        details = details[0]
+        if numbered is None:
+            return None
+        if len(numbered) > 1:
+            warn('more than one H or L fragment was found in chain {}, using the first'.format(self.name))
+        return self.anarci_chain_types[details[0]['chain_type']]
 
     def is_contiguous(self):
         last = None

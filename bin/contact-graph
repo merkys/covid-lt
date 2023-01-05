@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+
+# Visualize contacts between protein chains by reading TAB file.
+
+from networkx import Graph, draw, nx_agraph
+from networkx.drawing.nx_pydot import write_dot
+from pdbio.pdbfile import PDBFile
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--pdb', help='Corresponding PDB file to identify chains')
+parser.add_argument('--output-complexes', action='store_true', help='Print complexes (S1, heavy chain, light chain)')
+parser.add_argument('--most-contacts', action='store_true', help='Print one complex having the most contacts')
+args = parser.parse_args()
+
+fill_colors = { 'H': 'black', 'L': 'gray' }
+font_colors = { 'H': 'white', 'L': 'black' }
+
+chain_types = None
+if args.pdb:
+    pdb = PDBFile(args.pdb)
+    chain_types = {}
+    for chain in pdb:
+        chain_type = chain.antibody_type()
+        if chain_type:
+            chain_types[chain.name] = chain_type
+
+for filename in args.files:
+    counts = {}
+    for line in open(filename, 'r'):
+        atom1, atom2 = {}, {}
+        fields = line.strip().split('\t')
+        atom1['chain'], atom1['res_nr'], atom1['res_type'], atom1['atom_nr'], atom1['atom_type'], \
+            atom2['chain'], atom2['res_nr'], atom2['res_type'], atom2['atom_nr'], atom2['atom_type'], *fields = fields
+        if atom1['chain'] == atom2['chain']:
+            continue
+        chains = ''.join(sorted([atom1['chain'], atom2['chain']]))
+        if chains not in counts:
+            counts[chains] = 0
+        counts[chains] += 1
+    graph = Graph()
+    for edge in counts:
+        A, B = list(edge)
+        if chain_types:
+            # Contacts between S1 chains are not interesting:
+            if A not in chain_types and B not in chain_types:
+                continue
+            # Contacts between antibody chains of the same type as well:
+            if A in chain_types and B in chain_types and chain_types[A] == chain_types[B]:
+                continue
+            for chain in [A, B]:
+                if chain in chain_types:
+                    graph.add_node(chain, fillcolor=fill_colors[chain_types[chain]], fontcolor=font_colors[chain_types[chain]], style='filled')
+        graph.add_edge(A, B, label=counts[edge])
+
+    if args.output_complexes:
+        if chain_types is None:
+            raise ValueError('Contact list is not given via \'--pdb\' option, cannot find complexes')
+        HL_contacts = []
+        for (A, B) in graph.edges():
+            if A in chain_types and B in chain_types:
+                # Order is H, L
+                if chain_types[A] == 'L':
+                    A, B = B, A
+                HL_contacts.append((A, B))
+        complexes = []
+        for (A, B) in HL_contacts:
+            A_neighbors = set(graph.neighbors(A))
+            B_neighbors = set(graph.neighbors(B))
+            complexes += list(C + A + B for C in A_neighbors & B_neighbors)
+        if args.most_contacts:
+            most_contacts = None
+            n_contacts = 0
+            for cmplx in complexes:
+                current_n_contacts = graph.get_edge_data(cmplx[0], cmplx[1])['label'] + graph.get_edge_data(cmplx[0], cmplx[2])['label']
+                if most_contacts and n_contacts > current_n_contacts:
+                    continue
+                most_contacts = cmplx
+                n_contacts = current_n_contacts
+            if most_contacts:
+                complexes = [most_contacts]
+            else:
+                complexes = []
+        if complexes:
+            print(*sorted(complexes), sep='\n')
+    else:
+        draw(graph, pos=nx_agraph.graphviz_layout(graph))
+        write_dot(graph, '/dev/stdout')

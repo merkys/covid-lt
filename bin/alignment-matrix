@@ -1,0 +1,18 @@
+#!/usr/bin/Rscript --vanilla
+
+# Generate distance matrix for multiple sequence alignment.
+
+library( 'optparse' )
+parser <- OptionParser()
+options = parse_args(parser, positional_arguments = TRUE)
+
+library('ape')
+library('seqinr')
+
+msa = read.alignment(options$args[1], format="fasta")
+msa_dist = dist.alignment(msa, matrix="identity")
+
+distances = data.frame( msa$nam, as.matrix( msa_dist ), row.names = 1 )
+names(distances) = msa$nam
+
+suppressWarnings( write.table( distances, file="/dev/stdout", quote=FALSE ) )
