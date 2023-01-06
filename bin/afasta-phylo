@@ -43,23 +43,27 @@ msa = read.alignment(file, format="fasta")
 msa_dist = dist.alignment(msa, matrix=options$options$matrix)
 T = nj(msa_dist)
 
-colors = replicate(length(msa$seq), "black")
+clusters = replicate(length(msa$seq), "black")
 if( options$options$use_ggtree ) {
-    colors = replicate(length(msa$seq) + T$Nnode, "black")
+    clusters = replicate(length(msa$seq) + T$Nnode, "black")
 }
 
 if( !is.na(options$options$clusters) ) {
     lines = readLines(options$options$clusters)
     for (i in 1:length(lines)) {
         ids = as.vector(strsplit(lines[i], ' ')[[1]])
-        colors[which( msa$nam %in% ids )] = Kelly_colors[i]
+        if( options$options$use_ggtree ) {
+            clusters[which( msa$nam %in% ids )] = i
+        } else {
+            clusters[which( msa$nam %in% ids )] = Kelly_colors[i]
+        }
     }
 }
 
 svg("/dev/stdout")
 if( options$options$use_ggtree ) {
     library("ggtree")
-    ggtree( T, layout='circular' ) + geom_tippoint( aes( color=colors ) )
+    ggtree( T, layout='circular' ) + geom_tippoint( aes( color=clusters ) )
 } else {
-    plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=colors, cex=0.5)
+    plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=clusters, cex=0.5)
 }
