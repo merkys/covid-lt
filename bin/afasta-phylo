@@ -34,6 +34,7 @@ library('seqinr')
 parser <- OptionParser()
 parser <- add_option(parser, c( '--clusters' ), dest = 'clusters', type = "character", default = NA)
 parser <- add_option(parser, c( '--matrix' ), dest = 'matrix', type = "character", default = 'similarity')
+parser <- add_option(parser, c( '--use-ggtree' ), action = 'store_true', dest = 'use_ggtree', default = FALSE)
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -52,4 +53,9 @@ if( !is.na(options$options$clusters) ) {
 }
 
 svg("/dev/stdout")
-plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=colors, cex=0.5)
+if( options$options$use_ggtree ) {
+    library("ggtree")
+    ggtree( T, layout='circular' )
+} else {
+    plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=colors, cex=0.5)
+}
