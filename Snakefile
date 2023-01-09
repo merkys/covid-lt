@@ -11,6 +11,7 @@ wildcard_constraints:
     probe = "[0-9]+",
     search = "[^/]+"
 
+include: "snakefiles/ACE2-complexes.smk"
 include: "snakefiles/antibody-complexes.smk"
 include: "snakefiles/pdb-model-quality.smk"
 include: "snakefiles/dG-datasets.smk"
