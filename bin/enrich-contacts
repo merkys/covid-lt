@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-# Enrich contacts of a PDB file
+# Enrich contacts in a PDB file. Given a list of contacting residue positions,
+# this tool inspects their evironment of a given radius and outputs all residue
+# numbers within these environments.
 
 from pdbio.pdbfile import PDBFile
 import argparse
