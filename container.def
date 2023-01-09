@@ -17,13 +17,13 @@ From: debian:testing
     # Remove unneeded packages after QMEAN is built
     apt-get install --yes sudo # Must not be removed
     tbl-dctrl --no-heading -d , debian/control | cut -d , -f 5 | cut -d ' ' -f 2 | xargs apt-get autoremove --yes
-    apt-get autoremove --yes dctrl-tools git git-buildpackage
+    apt-get autoremove --yes dctrl-tools git-buildpackage
 
     # Install QMEAN and its dependencies
     apt-get install --yes ../libqmean-dev_*.deb ../python3-qmean_*.deb ../qmean-data_*.deb
 
     # Install project dependencies from Debian repositories
-    apt-get install --yes bsdmainutils cd-hit hhsuite hmmer libopenmm-plugins moreutils muscle python3-biopython python3-networkx python3-ost python3-parmed python3-propka python3-pydot python3-simtk r-base-core r-cran-optparse voronota
+    apt-get install --yes bsdmainutils cd-hit hhsuite hmmer libopenmm-plugins moreutils muscle python3-biopython python3-networkx python3-ost python3-parmed python3-propka python3-pydot python3-simtk r-base-core r-cran-ape r-cran-devtools r-cran-optparse r-cran-seqinr voronota
 
     # Install ANARCI
     apt-get install --yes git python3-pip
@@ -31,3 +31,6 @@ From: debian:testing
 
     echo libcifpp-data libcifpp/update boolean false | debconf-set-selections
     apt-get install --yes python3-promod3
+
+    # Install ggtree
+    echo 'library("devtools"); install_github("YuLab-SMU/ggtree", lib="/usr/local/lib/R/site-library")' | Rscript -
