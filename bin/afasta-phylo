@@ -36,6 +36,7 @@ parser <- add_option(parser, c( '--clusters' ), dest = 'clusters', type = "chara
 parser <- add_option(parser, c( '--matrix' ), dest = 'matrix', type = "character", default = 'similarity')
 parser <- add_option(parser, c( '--use-ggtree' ), action = 'store_true', dest = 'use_ggtree', default = FALSE)
 parser <- add_option(parser, c( '--branch-length' ), type = 'character', dest = 'branch_length', default = '')
+parser <- add_option(parser, c( '--no-legend' ), action = 'store_true', dest = 'no_legend', default = FALSE)
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -44,9 +45,9 @@ msa = read.alignment(file, format="fasta")
 msa_dist = dist.alignment(msa, matrix=options$options$matrix)
 T = nj(msa_dist)
 
-clusters = replicate(length(msa$seq), "black")
+cluster = replicate(length(msa$seq), "black")
 if( options$options$use_ggtree ) {
-    clusters = replicate(length(msa$seq) + T$Nnode, "black")
+    cluster = replicate(length(msa$seq) + T$Nnode, "black")
 }
 
 if( !is.na(options$options$clusters) ) {
@@ -54,9 +55,9 @@ if( !is.na(options$options$clusters) ) {
     for (i in 1:length(lines)) {
         ids = as.vector(strsplit(lines[i], ' ')[[1]])
         if( options$options$use_ggtree ) {
-            clusters[which( msa$nam %in% ids )] = i
+            cluster[which( msa$nam %in% ids )] = i
         } else {
-            clusters[which( msa$nam %in% ids )] = Kelly_colors[i]
+            cluster[which( msa$nam %in% ids )] = Kelly_colors[i]
         }
     }
 }
@@ -64,9 +65,14 @@ if( !is.na(options$options$clusters) ) {
 svg("/dev/stdout")
 if( options$options$use_ggtree ) {
     library("ggtree", lib="/usr/local/lib/R/site-library")
-    ggtree( T, layout='circular', branch.length=options$options$branch_length) +
-        geom_tippoint( aes( color=clusters ) ) +
-        theme( legend.position='none' )
+    if( options$options$no_legend ) {
+        ggtree( T, layout='circular', branch.length=options$options$branch_length) +
+            geom_tippoint( aes( color=cluster ) ) +
+            theme( legend.position='none' )
+    } else {
+        ggtree( T, layout='circular', branch.length=options$options$branch_length) +
+            geom_tippoint( aes( color=cluster ) )
+    }
 } else {
-    plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=clusters, cex=0.5)
+    plot.phylo( T, type="unrooted", no.margin=TRUE, tip.color=cluster, cex=0.5 )
 }
