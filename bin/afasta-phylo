@@ -62,8 +62,8 @@ if( !is.na(options$options$clusters) ) {
 
 svg("/dev/stdout")
 if( options$options$use_ggtree ) {
-    library("ggtree")
-    ggtree( T, layout='circular' ) + geom_tippoint( aes( color=clusters ) )
+    library("ggtree", lib="/usr/local/lib/R/site-library")
+    ggtree( T, layout='circular' ) + geom_tippoint( aes( color=clusters ) ) + theme( legend.position='none' )
 } else {
     plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=clusters, cex=0.5)
 }
