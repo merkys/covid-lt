@@ -6,6 +6,7 @@
 
 library( "optparse" )
 parser <- OptionParser()
+parser <- add_option(parser, c( '--input-list' ), dest = 'input_list', action = "store_true", default = FALSE)
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -14,18 +15,47 @@ if( length(files) != 0 ) {
     file = files[1]
 }
 
-suppressWarnings( D <- read.csv( file, header = TRUE, sep = "\t", na.strings = "?" ) )
+n_contacts = NULL
+contact_abundance = NULL
 
-# Calculate the number of contacts per column
-n_contacts = vector( length=dim(D)[2] )
-for (i in 1:dim(D)[2]) {
-    n_contacts[i] = length(D[!is.na(D[,i]),i])
-}
+if( !options$options$input_list ) {
+    suppressWarnings( D <- read.csv( file, header = TRUE, sep = "\t", na.strings = "?" ) )
 
-# Calculate the abundance of each of the contacts in the group
-contact_abundance = vector( length=dim(D)[1] )
-for (i in 1:dim(D)[1]) {
-    contact_abundance[i] = length( D[i,!is.na(D[i,])] ) / length( D[i,] )
+    # Calculate the number of contacts per column
+    n_contacts = vector( length=dim(D)[2] )
+    for (i in 1:dim(D)[2]) {
+        n_contacts[i] = length(D[!is.na(D[,i]),i])
+    }
+
+    # Calculate the abundance of each of the contacts in the group
+    contact_abundance = vector( length=dim(D)[1] )
+    for (i in 1:dim(D)[1]) {
+        contact_abundance[i] = length( D[i,!is.na(D[i,])] ) / length( D[i,] )
+    }
+} else {
+    suppressWarnings( lines <- readLines( file ) )
+
+    # Calculate the number of contacts per line
+    n_contacts = vector( length=length(lines) )
+    for (i in 1:length(lines)) {
+        n_contacts[i] = length( strsplit( lines[i], ',' )[[1]] )
+    }
+
+    # Calculate the abundance of each of the contacts in the group
+    contact_abundance = vector()
+    for (i in 1:length(lines)) {
+        for (pos in as.numeric( strsplit( lines[i], ',' )[[1]] )) {
+            if( length( contact_abundance ) < pos ) {
+                contact_abundance[pos] = 1
+            } else if( is.na( contact_abundance[pos] ) ) {
+                contact_abundance[pos] = 1
+            } else {
+                contact_abundance[pos] = contact_abundance[pos] + 1
+            }
+        }
+    }
+    contact_abundance[is.na(contact_abundance)] = 0
+    contact_abundance = contact_abundance / length(lines)
 }
 
 # Perform a binary search to select a threshold percentage
@@ -48,10 +78,16 @@ while (TRUE) {
 }
 
 # Filtering out "rare" contacts
-for (i in 1:dim(D)[1]) {
-    if( contact_abundance[i] > last_mid ) {
-        cat( mean( as.double( D[i,] ), na.rm = TRUE ), "\n" )
-    } else {
-        cat( "?\n" )
+if( !options$options$input_list ) {
+    for (i in 1:dim(D)[1]) {
+        if( contact_abundance[i] > last_mid ) {
+            cat( mean( as.double( D[i,] ), na.rm = TRUE ), "\n" )
+        } else {
+            cat( "?\n" )
+        }
     }
+} else {
+    positions = 1:length( contact_abundance )
+    cat( positions[contact_abundance > last_mid], sep = ',' )
+    cat( "\n" )
 }
