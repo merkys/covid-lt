@@ -85,6 +85,11 @@ g_mmpbsa
 
 * Paper: https://pubs.acs.org/doi/10.1021/ci500020m
 
+ggtree
+======
+
+* Phylogenetic trees: https://guangchuangyu.github.io/ggtree-book/chapter-ggtree.html
+
 Conda
 =====
 
