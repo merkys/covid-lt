@@ -35,6 +35,7 @@ parser <- OptionParser()
 parser <- add_option(parser, c( '--clusters' ), dest = 'clusters', type = "character", default = NA)
 parser <- add_option(parser, c( '--matrix' ), dest = 'matrix', type = "character", default = 'similarity')
 parser <- add_option(parser, c( '--use-ggtree' ), action = 'store_true', dest = 'use_ggtree', default = FALSE)
+parser <- add_option(parser, c( '--branch-length' ), type = 'character', dest = 'branch_length', default = '')
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -63,7 +64,9 @@ if( !is.na(options$options$clusters) ) {
 svg("/dev/stdout")
 if( options$options$use_ggtree ) {
     library("ggtree", lib="/usr/local/lib/R/site-library")
-    ggtree( T, layout='circular' ) + geom_tippoint( aes( color=clusters ) ) + theme( legend.position='none' )
+    ggtree( T, layout='circular', branch.length=options$options$branch_length) +
+        geom_tippoint( aes( color=clusters ) ) +
+        theme( legend.position='none' )
 } else {
     plot.phylo(T, type="unrooted", no.margin=TRUE, tip.color=clusters, cex=0.5)
 }
