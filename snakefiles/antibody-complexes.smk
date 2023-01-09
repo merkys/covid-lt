@@ -275,6 +275,31 @@ rule conserved_contacts:
         cut -f 2- {output} | sponge {output}
         """
 
+rule conserved_contacts_enriched:
+    input:
+        clusters = "{prefix}/clusters/clusters.lst",
+        tab = "{prefix}/clusters/contacts-{base}.tab"
+    output:
+        "{prefix}/clusters/contacts/enriched/{probe}-{base}.lst"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        for CLUSTER in $(seq 1 $(wc -l < {input.clusters}))
+        do
+            for PDB in $(head -n $CLUSTER {input.clusters} | tail -n 1)
+            do
+                paste <(seq 1 1499) <(cut -f $CLUSTER {input.tab}) \
+                    | grep -vF ? \
+                    | cut -f 1 \
+                    | xargs \
+                    | tr ' ' , \
+                    | PYTHONPATH=. xargs -i bin/enrich-contacts --pdb {wildcards.prefix}/$PDB.pdb --contacts {{}} --radius {wildcards.probe} \
+                    | grep ^A \
+                    | cut -f 2
+            done | bin/conserved-contacts --input-list
+        done > {output}
+        """
+
 rule conserved_contacts_custom_probe:
     input:
         clusters = "{prefix}/clusters/clusters.lst",
