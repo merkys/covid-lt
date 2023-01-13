@@ -295,7 +295,7 @@ rule conserved_contacts_enriched:
                     | tr ' ' , \
                     | PYTHONPATH=. xargs -i bin/enrich-contacts --pdb {wildcards.prefix}/$PDB.pdb --contacts {{}} --radius {wildcards.probe} \
                     | grep ^A \
-                    | cut -f 2
+                    | cut -f 2 || true # silencing grep
             done | bin/conserved-contacts --input-list
         done > {output}
         """
