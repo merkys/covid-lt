@@ -35,6 +35,12 @@ if( !options$options$input_list ) {
 } else {
     suppressWarnings( lines <- readLines( file ) )
 
+    # Print an empty line if input is empty
+    if( length(lines) == 0 ) {
+        cat( "\n" )
+        quit()
+    }
+
     # Calculate the number of contacts per line
     n_contacts = vector( length=length(lines) )
     for (i in 1:length(lines)) {
