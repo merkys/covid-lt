@@ -2,7 +2,7 @@
 
 # Visualize contacts between protein chains by reading TAB file.
 
-from networkx import Graph, draw, nx_agraph
+from networkx import Graph, connected_components, draw, nx_agraph
 from networkx.drawing.nx_pydot import write_dot
 from pdbio.pdbfile import PDBFile
 import argparse, sys
@@ -71,6 +71,9 @@ for filename in args.files:
                 A_neighbors = set(graph.neighbors(A))
                 B_neighbors = set(graph.neighbors(B))
                 complexes += list(C + A + B for C in A_neighbors & B_neighbors)
+        else:
+            for component in connected_components(graph):
+                complexes.append(''.join(sorted(component)))
         if args.most_contacts:
             most_contacts = None
             n_contacts = 0
