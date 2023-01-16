@@ -19,14 +19,21 @@ rule extract_ACE2_complex:
     shell:
         """
         mkdir --parents $(dirname {output})
-        COMPLEX=$(PYTHONPATH=. bin/contact-graph {input.vorocontacts} --pdb {input.pdb} --output-complexes --most-contacts | grep -v ^Limiting || true)
+        S1_CHAINS=$(grep -i ^{wildcards.pdbid} alignments/pdb_seqres-P0DTC2.blastp | cut -c 6 | xargs echo | tr -d ' ')
+        ACE2_CHAINS=$(bin/hmmsearch2tab alignments/pdb_seqres-PF01401.hmmsearch | grep ^{wildcards.pdbid} | cut -f 2 | xargs echo | tr -d ' ')
+        if [ -z "$S1_CHAINS" -o -z "$ACE2_CHAINS" ]
+        then
+            echo -n > {output}
+            exit
+        fi
+        COMPLEX=$(bin/select-contacts --between $S1_CHAINS --between $ACE2_CHAINS {input.vorocontacts} | PYTHONPATH=. bin/contact-graph --output-complexes --most-contacts | grep -v ^Limiting || true)
         if [ -z "$COMPLEX" ]
         then
             echo -n > {output}
             exit
         fi
-        bin/pdb_select --chain $(echo $COMPLEX | cut -c 1) --chain $(echo $COMPLEX | cut -c 2) --chain $(echo $COMPLEX | cut -c 3) {input.pdb} \
+        bin/pdb_select --chain $(echo $COMPLEX | cut -c 1) --chain $(echo $COMPLEX | cut -c 2) {input.pdb} \
             | PYTHONPATH=. bin/pdb_cut_S1 --S1-chain $(echo $COMPLEX | cut -c 1) --contacts {input.vorocontacts} \
-            | PYTHONPATH=. bin/pdb_rename_chains --map $(echo $COMPLEX | cut -c 1):A --map $(echo $COMPLEX | cut -c 2):H --map $(echo $COMPLEX | cut -c 3):L > {output}
+            | PYTHONPATH=. bin/pdb_rename_chains --map $(echo $COMPLEX | cut -c 1):A --map $(echo $COMPLEX | cut -c 2):B > {output}
         echo COMPLX $COMPLEX >> {output}
         """
