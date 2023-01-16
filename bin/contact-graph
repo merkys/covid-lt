@@ -8,7 +8,7 @@ from pdbio.pdbfile import PDBFile
 import argparse, sys
 
 parser = argparse.ArgumentParser()
-parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('files', nargs='*', default=['/dev/stdin'])
 parser.add_argument('--pdb', help='Corresponding PDB file to identify chains')
 parser.add_argument('--output-complexes', action='store_true', help='Print selected complexes')
 parser.add_argument('--antibodies', action='store_true', help='Select antibodies and chains they contact with')
