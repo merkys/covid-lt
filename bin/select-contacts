@@ -38,7 +38,8 @@ def is_possible_salt_bridge(atom1, atom2):
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append')
-parser.add_argument('--not-among', action='append', default=[])
+parser.add_argument('--between', action='append', default=[], help='Given two groups of chains, select only contacts between the given groups')
+parser.add_argument('--not-among', action='append', default=[], help='Exclude contacts among given chains, may be multiple')
 parser.add_argument('--contacting-chains', action='store_true', help='List all contacting pairs of chains, suppress normal output')
 parser.add_argument('--exclude-self', action='store_true', help='Exclude contacts of a chain with itself')
 parser.add_argument('--cut', action='append', help='Select only a range of a specified chain, for example, "A:1-10"', default=[])
@@ -50,6 +51,9 @@ args = parser.parse_args()
 chains = []
 if args.chain:
     chains = sorted(list(''.join(args.chain)))
+
+if args.between and len(args.between) != 2:
+    raise ValueError('Two groups of chains have to be given via \'--between\' option')
 
 cuts = {}
 for cut in args.cut:
@@ -82,6 +86,13 @@ for file in files:
             continue
         if args.exclude_self and atom1['chain'] == atom2['chain']:
             continue
+        if args.between:
+            if atom1['chain'] in set(args.between[0]) and atom2['chain'] in set(args.between[1]):
+                pass
+            elif atom1['chain'] in set(args.between[1]) and atom2['chain'] in set(args.between[0]):
+                pass
+            else:
+                continue
         for excluded in args.not_among:
             if atom1['chain'] in set(excluded) and atom2['chain'] in set(excluded):
                 continue
