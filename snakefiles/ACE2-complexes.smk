@@ -20,8 +20,8 @@ rule extract_ACE2_complex:
     shell:
         """
         mkdir --parents $(dirname {output})
-        S1_CHAINS=$(grep -i ^{wildcards.pdbid} alignments/pdb_seqres-P0DTC2.blastp | cut -c 6 | xargs echo | tr -d ' ')
-        ACE2_CHAINS=$(bin/hmmsearch2tab alignments/pdb_seqres-PF01401.hmmsearch | grep ^{wildcards.pdbid} | cut -f 2 | xargs echo | tr -d ' ')
+        S1_CHAINS=$(grep -i ^{wildcards.pdbid} alignments/pdb_seqres-P0DTC2.blastp | cut -c 6 | xargs echo | tr -d ' ' || true)
+        ACE2_CHAINS=$(bin/hmmsearch2tab alignments/pdb_seqres-PF01401.hmmsearch | grep ^{wildcards.pdbid} | cut -f 2 | xargs echo | tr -d ' ' || true)
         if [ -z "$S1_CHAINS" -o -z "$ACE2_CHAINS" ]
         then
             echo -n > {output}
@@ -34,7 +34,7 @@ rule extract_ACE2_complex:
             exit
         fi
         # In $COMPLEX, the first letter stands for S1 chain, the second - ACE2 chain
-        echo $ACE2_CHAINS | grep --silent ^$(echo $COMPLEX | cut -c 1) && COMPLEX=$(echo $COMPLEX | rev)
+        echo $S1_CHAINS | grep --silent ^$(echo $COMPLEX | cut -c 1) || COMPLEX=$(echo $COMPLEX | rev)
         bin/pdb_select --chain $(echo $COMPLEX | cut -c 1) --chain $(echo $COMPLEX | cut -c 2) {input.pdb} \
             | PYTHONPATH=. bin/pdb_cut_S1 --S1-chain $(echo $COMPLEX | cut -c 1) --contacts {input.vorocontacts} \
             | PYTHONPATH=. bin/pdb_rename_chains --map $(echo $COMPLEX | cut -c 1):A --map $(echo $COMPLEX | cut -c 2):B > {output}
