@@ -66,11 +66,11 @@ rule snugdock:
 
 rule ff_one:
     input:
-        output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
+        "{prefix}/{pdbid}.pdb"
     output:
-        output_dir + "pdb/antibodies/complexes/ff/{ff}/{pdbid}.tsv"
+        "{prefix}/ff/{ff}/{pdbid}.tsv"
     log:
-        output_dir + "pdb/antibodies/complexes/ff/{ff}/{pdbid}.log"
+        "{prefix}/ff/{ff}/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
@@ -81,11 +81,11 @@ rule ff_one:
 
 rule ff_two:
     input:
-        output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
+        "{prefix}/{pdbid}.pdb"
     output:
-        output_dir + "pdb/antibodies/complexes/ff/{ff1}/{ff2}/{pdbid}.tsv"
+        "{prefix}/ff/{ff1}/{ff2}/{pdbid}.tsv"
     log:
-        output_dir + "pdb/antibodies/complexes/ff/{ff1}/{ff2}/{pdbid}.log"
+        "{prefix}/ff/{ff1}/{ff2}/{pdbid}.log"
     singularity:
         "container.sif"
     shell:
