@@ -38,6 +38,7 @@ def is_possible_salt_bridge(atom1, atom2):
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append')
+parser.add_argument('--not-among', action='append', default=[])
 parser.add_argument('--contacting-chains', action='store_true', help='List all contacting pairs of chains, suppress normal output')
 parser.add_argument('--exclude-self', action='store_true', help='Exclude contacts of a chain with itself')
 parser.add_argument('--cut', action='append', help='Select only a range of a specified chain, for example, "A:1-10"', default=[])
@@ -81,6 +82,9 @@ for file in files:
             continue
         if args.exclude_self and atom1['chain'] == atom2['chain']:
             continue
+        for excluded in args.not_among:
+            if atom1['chain'] in set(excluded) and atom2['chain'] in set(excluded):
+                continue
         if atom1['chain'] in cuts:
             found = list(filter(lambda cut: int(atom1['res_nr']) >= cut[0] and int(atom1['res_nr']) <= cut[1], cuts[atom1['chain']]))
             if not found:
