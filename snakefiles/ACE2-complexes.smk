@@ -8,6 +8,7 @@ rule extract_ACE2_complexes:
         complexes
 
 # TODO: Rewrite to extract the ACE2 complexes
+# TODO: Handle complicated complexes (now only S1-ACE2 pairs are extracted)
 rule extract_ACE2_complex:
     input:
         pdb = output_dir + "pdb/P0DTC2/{pdbid}.pdb",
@@ -27,7 +28,7 @@ rule extract_ACE2_complex:
             exit
         fi
         COMPLEX=$(bin/select-contacts --between $S1_CHAINS --between $ACE2_CHAINS {input.vorocontacts} | PYTHONPATH=. bin/contact-graph --output-complexes --most-contacts | grep -v ^Limiting || true)
-        if [ -z "$COMPLEX" ]
+        if [ -z "$COMPLEX" -o $(echo -n "$COMPLEX" | wc -c) -ne 2 ]
         then
             echo -n > {output}
             exit
