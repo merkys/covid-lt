@@ -2,15 +2,16 @@
 
 # Visualize contacts between protein chains by reading TAB file.
 
-from networkx import Graph, draw, nx_agraph
+from networkx import Graph, connected_components, draw, induced_subgraph, nx_agraph
 from networkx.drawing.nx_pydot import write_dot
 from pdbio.pdbfile import PDBFile
 import argparse, sys
 
 parser = argparse.ArgumentParser()
-parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('files', nargs='*', default=['/dev/stdin'])
 parser.add_argument('--pdb', help='Corresponding PDB file to identify chains')
-parser.add_argument('--output-complexes', action='store_true', help='Print complexes (S1, heavy chain, light chain)')
+parser.add_argument('--output-complexes', action='store_true', help='Print selected complexes')
+parser.add_argument('--antibodies', action='store_true', help='Select antibodies and chains they contact with')
 parser.add_argument('--most-contacts', action='store_true', help='Print one complex having the most contacts')
 args = parser.parse_args()
 
@@ -18,7 +19,9 @@ fill_colors = { 'H': 'black', 'L': 'gray' }
 font_colors = { 'H': 'white', 'L': 'black' }
 
 chain_types = None
-if args.pdb:
+if args.antibodies:
+    if not args.pdb:
+        raise ValueError('PDB file is not given via \'--pdb\' option, cannot find antibody complexes')
     pdb = PDBFile(args.pdb)
     chain_types = {}
     for chain in pdb:
@@ -55,25 +58,30 @@ for filename in args.files:
         graph.add_edge(A, B, label=counts[edge])
 
     if args.output_complexes:
-        if chain_types is None:
-            raise ValueError('Contact list is not given via \'--pdb\' option, cannot find complexes')
-        HL_contacts = []
-        for (A, B) in graph.edges():
-            if A in chain_types and B in chain_types:
-                # Order is H, L
-                if chain_types[A] == 'L':
-                    A, B = B, A
-                HL_contacts.append((A, B))
         complexes = []
-        for (A, B) in HL_contacts:
-            A_neighbors = set(graph.neighbors(A))
-            B_neighbors = set(graph.neighbors(B))
-            complexes += list(C + A + B for C in A_neighbors & B_neighbors)
+        if args.antibodies:
+            HL_contacts = []
+            for (A, B) in graph.edges():
+                if A in chain_types and B in chain_types:
+                    # Order is H, L
+                    if chain_types[A] == 'L':
+                        A, B = B, A
+                    HL_contacts.append((A, B))
+            for (A, B) in HL_contacts:
+                A_neighbors = set(graph.neighbors(A))
+                B_neighbors = set(graph.neighbors(B))
+                complexes += list(C + A + B for C in A_neighbors & B_neighbors)
+        else:
+            for component in connected_components(graph):
+                complexes.append(''.join(sorted(component)))
         if args.most_contacts:
             most_contacts = None
             n_contacts = 0
             for cmplx in complexes:
-                current_n_contacts = graph.get_edge_data(cmplx[0], cmplx[1])['label'] + graph.get_edge_data(cmplx[0], cmplx[2])['label']
+                if args.antibodies:
+                    current_n_contacts = graph.get_edge_data(cmplx[0], cmplx[1])['label'] + graph.get_edge_data(cmplx[0], cmplx[2])['label']
+                else:
+                    current_n_contacts = sum(graph.get_edge_data(a, b)['label'] for (a, b) in induced_subgraph(graph, list(cmplx)).edges())
                 if most_contacts and n_contacts > current_n_contacts:
                     continue
                 most_contacts = cmplx
