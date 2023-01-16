@@ -10,7 +10,8 @@ import argparse, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
 parser.add_argument('--pdb', help='Corresponding PDB file to identify chains')
-parser.add_argument('--output-complexes', action='store_true', help='Print complexes (S1, heavy chain, light chain)')
+parser.add_argument('--output-complexes', action='store_true', help='Print selected complexes')
+parser.add_argument('--antibodies', action='store_true', help='Select antibodies and chains they contact with [default]', default=True)
 parser.add_argument('--most-contacts', action='store_true', help='Print one complex having the most contacts')
 args = parser.parse_args()
 
@@ -57,18 +58,19 @@ for filename in args.files:
     if args.output_complexes:
         if chain_types is None:
             raise ValueError('Contact list is not given via \'--pdb\' option, cannot find complexes')
-        HL_contacts = []
-        for (A, B) in graph.edges():
-            if A in chain_types and B in chain_types:
-                # Order is H, L
-                if chain_types[A] == 'L':
-                    A, B = B, A
-                HL_contacts.append((A, B))
         complexes = []
-        for (A, B) in HL_contacts:
-            A_neighbors = set(graph.neighbors(A))
-            B_neighbors = set(graph.neighbors(B))
-            complexes += list(C + A + B for C in A_neighbors & B_neighbors)
+        if args.antibodies:
+            HL_contacts = []
+            for (A, B) in graph.edges():
+                if A in chain_types and B in chain_types:
+                    # Order is H, L
+                    if chain_types[A] == 'L':
+                        A, B = B, A
+                    HL_contacts.append((A, B))
+            for (A, B) in HL_contacts:
+                A_neighbors = set(graph.neighbors(A))
+                B_neighbors = set(graph.neighbors(B))
+                complexes += list(C + A + B for C in A_neighbors & B_neighbors)
         if args.most_contacts:
             most_contacts = None
             n_contacts = 0
