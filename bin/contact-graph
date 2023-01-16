@@ -15,14 +15,13 @@ parser.add_argument('--antibodies', action='store_true', help='Select antibodies
 parser.add_argument('--most-contacts', action='store_true', help='Print one complex having the most contacts')
 args = parser.parse_args()
 
-if args.antibodies and not args.pdb:
-    raise ValueError('PDB file is not given via \'--pdb\' option, cannot find antibody complexes')
-
 fill_colors = { 'H': 'black', 'L': 'gray' }
 font_colors = { 'H': 'white', 'L': 'black' }
 
 chain_types = None
-if args.antibodies and args.pdb:
+if args.antibodies:
+    if not args.pdb:
+        raise ValueError('PDB file is not given via \'--pdb\' option, cannot find antibody complexes')
     pdb = PDBFile(args.pdb)
     chain_types = {}
     for chain in pdb:
