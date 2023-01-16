@@ -2,7 +2,7 @@
 
 # Visualize contacts between protein chains by reading TAB file.
 
-from networkx import Graph, connected_components, draw, nx_agraph
+from networkx import Graph, connected_components, draw, induced_subgraph, nx_agraph
 from networkx.drawing.nx_pydot import write_dot
 from pdbio.pdbfile import PDBFile
 import argparse, sys
@@ -78,7 +78,10 @@ for filename in args.files:
             most_contacts = None
             n_contacts = 0
             for cmplx in complexes:
-                current_n_contacts = graph.get_edge_data(cmplx[0], cmplx[1])['label'] + graph.get_edge_data(cmplx[0], cmplx[2])['label']
+                if args.antibodies:
+                    current_n_contacts = graph.get_edge_data(cmplx[0], cmplx[1])['label'] + graph.get_edge_data(cmplx[0], cmplx[2])['label']
+                else:
+                    current_n_contacts = sum(graph.get_edge_data(a, b)['label'] for (a, b) in induced_subgraph(graph, list(cmplx)).edges())
                 if most_contacts and n_contacts > current_n_contacts:
                     continue
                 most_contacts = cmplx
