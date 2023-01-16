@@ -116,7 +116,7 @@ do
         ANTIBODY_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --hmmsearch "${CONTACTS_WITH}" | grep -F "${CONTACTS_WITH}" | cut -f 2 | xargs | sed 's/ //g')"
     else
         # Detect complex using bin/contact-graph
-        COMPLEX=$(PYTHONPATH=. bin/contact-graph ${OUTPUT_DIR}${VOROCONTACTS_DIR}/${PDB_ID}.tab --pdb ${OUTPUT_DIR}pdb/P0DTC2/${PDB_ID}.pdb --output-complexes --most-contacts | grep -v ^Limiting)
+        COMPLEX=$(PYTHONPATH=. bin/contact-graph ${OUTPUT_DIR}${VOROCONTACTS_DIR}/${PDB_ID}.tab --pdb ${OUTPUT_DIR}pdb/P0DTC2/${PDB_ID}.pdb --antibodies --output-complexes --most-contacts | grep -v ^Limiting)
         S1_CHAINS=$(echo ${COMPLEX} | cut -c 1)
         ANTIBODY_CHAINS=$(echo ${COMPLEX} | cut -c 2-)
     fi
