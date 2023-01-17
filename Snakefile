@@ -11,8 +11,9 @@ wildcard_constraints:
     probe = "[0-9]+",
     search = "[^/]+"
 
-include: "snakefiles/pdb-model-quality.smk"
 include: "snakefiles/dG-datasets.smk"
+include: "snakefiles/forcefields.smk"
+include: "snakefiles/pdb-model-quality.smk"
 
 # Top-level 'all' rule:
 rule all:
