@@ -61,18 +61,14 @@ rule antibody_ff_all:
 
 def propka_tabs(wildcards):
     from glob import glob
-    prefix = output_dir + "pdb/P0DTC2"
-    if wildcards.get("prefix"):
-        prefix = wildcards.get("prefix")
+    prefix = wildcards.get("prefix")
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
     return expand(prefix + "/propka/{pdbid}.tab", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 def vorocontacts_tabs(wildcards):
     from glob import glob
     path = "vorocontacts/{pdbid}.tab"
-    prefix = output_dir + "pdb/P0DTC2"
-    if wildcards.get("prefix"):
-        prefix = wildcards.get("prefix")
+    prefix = wildcards.get("prefix")
     if wildcards.get("probe"):
         path = "vorocontacts/probe-" + wildcards.get("probe") + "/{pdbid}.tab"
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
