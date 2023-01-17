@@ -131,9 +131,9 @@ rule complex_contact_clusters:
 # TODO: Find a better name
 rule complex_contact_main:
     input:
-        output_dir + "pdb/antibodies/complexes/dist-matrices/contact.m"
+        "{prefix}/dist-matrices/contact.m"
     output:
-        output_dir + "pdb/antibodies/complexes/clusters/clusters.lst"
+        "{prefix}/clusters/clusters.lst"
     shell:
         """
         mkdir --parents $(dirname {output})
