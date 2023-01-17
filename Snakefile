@@ -13,6 +13,7 @@ wildcard_constraints:
 
 include: "snakefiles/ACE2-complexes.smk"
 include: "snakefiles/antibody-complexes.smk"
+include: "snakefiles/complexes.smk"
 include: "snakefiles/dG-datasets.smk"
 include: "snakefiles/forcefields.smk"
 include: "snakefiles/pdb-model-quality.smk"
