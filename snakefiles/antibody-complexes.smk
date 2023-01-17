@@ -1,7 +1,10 @@
 def complexes(wildcards):
     from glob import glob
+    path = output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
+    if wildcards.get("prefix"):
+        path = wildcards.get("prefix") + "/{pdbid}.pdb"
     checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(output_dir + "pdb/antibodies/complexes/{pdbid}.pdb", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+    return expand(path, pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
 
 rule extract_complexes:
     input:
@@ -210,11 +213,11 @@ rule conserved_contacts_custom_probe:
 rule complex_dist_matrix:
     input:
         complexes,
-        distances = output_dir + "pdb/antibodies/complexes/contact-maps/distances/..tab"
+        distances = "{prefix}/contact-maps/distances/..tab"
     output:
-        output_dir + "pdb/antibodies/complexes/dist-matrices/{base}.m"
+        "{prefix}/dist-matrices/{base}.m"
     shell:
         """
         mkdir --parents $(dirname {output})
-        find {output_dir}pdb/antibodies/complexes/ -maxdepth 1 -name '*.pdb' -a -size +0 | sort | xargs bin/{wildcards.base}-matrix {input.distances} > {output}
+        find {wildcards.prefix} -maxdepth 1 -name '*.pdb' -a -size +0 | sort | xargs bin/{wildcards.base}-matrix {input.distances} > {output}
         """
