@@ -35,6 +35,10 @@ do
             OUTPUT_DIR=$2
             shift
             ;;
+        --propka-dir)
+            PROPKA_DIR=$2
+            shift
+            ;;
         --vorocontacts-dir)
             VOROCONTACTS_DIR=$2
             shift
@@ -62,7 +66,7 @@ function chain_contacts() {
     S1_CHAIN=$1
     OTHER_CHAIN=$2
 
-    cat ${OUTPUT_DIR}${PROPKA_DIR}/${PDB_ID}.tab ${OUTPUT_DIR}${VOROCONTACTS_DIR}/${PDB_ID}.tab \
+    cat ${PROPKA_DIR}/${PDB_ID}.tab ${VOROCONTACTS_DIR}/${PDB_ID}.tab \
         | bin/select-contacts --chain ${S1_CHAIN} --exclude-self --merge ${OUTPUT_VALUES} \
         | grep "${FILTER}" \
         | while read C1 R1 C2 R2 VALUE
@@ -116,7 +120,7 @@ do
         ANTIBODY_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --hmmsearch "${CONTACTS_WITH}" | grep -F "${CONTACTS_WITH}" | cut -f 2 | xargs | sed 's/ //g')"
     else
         # Detect complex using bin/contact-graph
-        COMPLEX=$(PYTHONPATH=. bin/contact-graph ${OUTPUT_DIR}${VOROCONTACTS_DIR}/${PDB_ID}.tab --pdb ${OUTPUT_DIR}pdb/P0DTC2/${PDB_ID}.pdb --antibodies --output-complexes --most-contacts | grep -v ^Limiting)
+        COMPLEX=$(PYTHONPATH=. bin/contact-graph ${VOROCONTACTS_DIR}/${PDB_ID}.tab --pdb ${OUTPUT_DIR}pdb/P0DTC2/${PDB_ID}.pdb --antibodies --output-complexes --most-contacts | grep -v ^Limiting)
         S1_CHAINS=$(echo ${COMPLEX} | cut -c 1)
         ANTIBODY_CHAINS=$(echo ${COMPLEX} | cut -c 2-)
     fi
@@ -142,7 +146,7 @@ do
                 fi
             fi
         else
-            for OTHER_CHAIN in $(cat ${OUTPUT_DIR}${PROPKA_DIR}/${PDB_ID}.tab ${OUTPUT_DIR}${VOROCONTACTS_DIR}/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
+            for OTHER_CHAIN in $(cat ${PROPKA_DIR}/${PDB_ID}.tab ${VOROCONTACTS_DIR}/${PDB_ID}.tab | bin/select-contacts --chain ${S1_CHAIN} --contacting-chains --exclude-self | grep ^${S1_CHAIN} | sed 's/,/ /g')
             do
                 # Ignore non-antibody chains
                 echo ${OTHER_CHAIN} | grep --silent "[${ANTIBODY_CHAINS}]" || continue
