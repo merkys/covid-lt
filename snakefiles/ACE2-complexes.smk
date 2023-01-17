@@ -1,13 +1,3 @@
-def complexes(wildcards):
-    from glob import glob
-    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
-    return expand(output_dir + "pdb/ACE2/complexes/{pdbid}.pdb", pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
-
-rule extract_ACE2_complexes:
-    input:
-        complexes
-
-# TODO: Rewrite to extract the ACE2 complexes
 # TODO: Handle complicated complexes (now only S1-ACE2 pairs are extracted)
 rule extract_ACE2_complex:
     input:

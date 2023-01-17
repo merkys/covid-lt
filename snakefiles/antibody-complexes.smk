@@ -1,4 +1,4 @@
-rule extract_complex:
+rule extract_antibody_complex:
     input:
         pdb = output_dir + "pdb/P0DTC2/{pdbid}.pdb",
         vorocontacts = output_dir + "pdb/P0DTC2/vorocontacts/{pdbid}.tab"
