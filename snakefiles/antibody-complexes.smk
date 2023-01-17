@@ -102,7 +102,6 @@ rule complex_contact_map_custom_probe:
         propka_tabs = propka_tabs,
         vorocontacts_tabs = vorocontacts_tabs
     output:
-        output_dir + "pdb/antibodies/complexes/contact-maps/probe-{probe}/{dirname}/{search}.tab"
         "{prefix}/contact-maps/probe-{probe}/{dirname}/{search}.tab"
     singularity:
         "container.sif"
