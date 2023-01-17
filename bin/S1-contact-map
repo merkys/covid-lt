@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PDB_IDS=
+USER_S1_CHAIN=
 CONTACTS_WITH=
 FILTER=.
 
@@ -18,6 +19,10 @@ do
     case $1 in
         --filter)
             FILTER=$2
+            shift
+            ;;
+        --S1|--S1-chain)
+            USER_S1_CHAIN=$2
             shift
             ;;
         --contacts-with)
@@ -112,17 +117,30 @@ do
     S1_CHAINS=
     ANTIBODY_CHAINS=
 
+    if [ -n "${USER_S1_CHAIN}" ]
+    then
+        S1_CHAINS=${USER_S1_CHAIN}
+    fi
+
     if [ -n "${CONTACTS_WITH}" ]
     then
-        # Select all S1 chains
-        S1_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --blastp alignments/pdb_seqres-P0DTC2.blastp | grep P0DTC2 | cut -f 2 | xargs | sed 's/ //g')"
+        if [ -z "${S1_CHAINS}" ]
+        then
+            # Select all S1 chains
+            S1_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --blastp alignments/pdb_seqres-P0DTC2.blastp | grep P0DTC2 | cut -f 2 | xargs | sed 's/ //g')"
+        fi
         # Selecting antibody chains
         ANTIBODY_CHAINS="$(bin/pdb_compounds ${PDB_INPUT_DIR}/${PDB_ID}.pdb --hmmsearch "${CONTACTS_WITH}" | grep -F "${CONTACTS_WITH}" | cut -f 2 | xargs | sed 's/ //g')"
     else
-        # Detect complex using bin/contact-graph
-        COMPLEX=$(PYTHONPATH=. bin/contact-graph ${VOROCONTACTS_DIR}/${PDB_ID}.tab --pdb ${OUTPUT_DIR}pdb/P0DTC2/${PDB_ID}.pdb --antibodies --output-complexes --most-contacts | grep -v ^Limiting)
-        S1_CHAINS=$(echo ${COMPLEX} | cut -c 1)
-        ANTIBODY_CHAINS=$(echo ${COMPLEX} | cut -c 2-)
+        if [ -n "${S1_CHAINS}" ]
+        then
+            ANTIBODY_CHAINS=$(bin/select-contacts ${VOROCONTACTS_DIR}/${PDB_ID}.tab --contacting-chains --exclude-self | grep ^${S1_CHAINS} | cut -f 2 | tr -d ,)
+        else
+            # Detect complex using bin/contact-graph
+            COMPLEX=$(PYTHONPATH=. bin/contact-graph ${VOROCONTACTS_DIR}/${PDB_ID}.tab --pdb ${OUTPUT_DIR}pdb/P0DTC2/${PDB_ID}.pdb --antibodies --output-complexes --most-contacts | grep -v ^Limiting)
+            S1_CHAINS=$(echo ${COMPLEX} | cut -c 1)
+            ANTIBODY_CHAINS=$(echo ${COMPLEX} | cut -c 2-)
+        fi
     fi
 
     # Next if no S1 chains found

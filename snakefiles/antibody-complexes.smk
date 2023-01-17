@@ -92,7 +92,7 @@ rule complex_contact_map:
         comm -1 -2 \
             <(ls -1 {wildcards.prefix}/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
             <(ls -1 {wildcards.prefix}/propka/*.tab | xargs -i basename {{}} .tab | sort) \
-          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --propka-dir {wildcards.prefix}/propka --vorocontacts-dir {wildcards.prefix}/vorocontacts --output-{wildcards.dirname} --merge-antibody-chains > {output}
+          | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" --propka-dir {wildcards.prefix}/propka --vorocontacts-dir {wildcards.prefix}/vorocontacts --output-{wildcards.dirname} --merge-antibody-chains --S1-chain A > {output}
         """
 
 rule complex_contact_map_custom_probe:
@@ -110,5 +110,5 @@ rule complex_contact_map_custom_probe:
             <(ls -1 {output_dir}pdb/P0DTC2/vorocontacts/probe-{wildcards.probe}/*.tab | xargs -i basename {{}} .tab | sort) \
             <(ls -1 {output_dir}pdb/P0DTC2/propka/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" \
-            --output-dir "{output_dir}" --vorocontacts-dir {output_dir}pdb/P0DTC2/vorocontacts/probe-{wildcards.probe} --output-{wildcards.dirname} --merge-antibody-chains > {output}
+            --output-dir "{output_dir}" --vorocontacts-dir {output_dir}pdb/P0DTC2/vorocontacts/probe-{wildcards.probe} --output-{wildcards.dirname} --merge-antibody-chains --S1-chain A > {output}
         """
