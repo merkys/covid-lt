@@ -175,6 +175,8 @@ rule variable_sequence_msa:
         complex_sequences
     output:
         "{prefix}/sequences/variable.msa"
+    singularity:
+        "container.sif"
     shell:
         """
         find {wildcards.prefix}/sequences -name '*.fa' | sort | xargs cat | muscle | bin/afasta-filter > {output}
