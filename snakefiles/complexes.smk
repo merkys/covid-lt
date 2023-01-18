@@ -161,3 +161,21 @@ rule complex_dist_matrix:
         mkdir --parents $(dirname {output})
         find {wildcards.prefix} -maxdepth 1 -name '*.pdb' -a -size +0 | sort | xargs bin/{wildcards.base}-matrix {input.distances} > {output}
         """
+
+def complex_sequences(wildcards):
+    from glob import glob
+    path = output_dir + "pdb/antibodies/complexes/sequences/{pdbid}.fa"
+    if wildcards.get("prefix"):
+        path = wildcards.get("prefix") + "/sequences/{pdbid}.fa"
+    checkpoint_output = checkpoints.download_pdb_all.get(**wildcards).output[0]
+    return expand(path, pdbid=glob_wildcards(checkpoint_output + '/{pdbid}.pdb').pdbid)
+
+rule variable_sequence_msa:
+    input:
+        complex_sequences
+    output:
+        "{prefix}/sequences/variable.msa"
+    shell:
+        """
+        find {wildcards.prefix}/sequences -name '*.fa' | sort | xargs cat | muscle | bin/afasta-filter > {output}
+        """
