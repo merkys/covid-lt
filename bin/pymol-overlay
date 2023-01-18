@@ -1,10 +1,32 @@
 #!/bin/bash
 
-FIRST=$1
-shift
+FIRST=
+REST=
+
+DIR=outputs/pdb/antibodies/complexes
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+        -d|--directory|--dir)
+            DIR="$2"
+            shift
+        ;;
+        -*) echo "`basename $0`: unknown option $1" >&2 ; exit 1 ;;
+        *)
+            if [ -z "$FIRST" ]
+            then
+                FIRST=$1
+            else
+                REST="$REST $1"
+            fi
+            ;;
+    esac
+    shift
+done
 
 (
-    for PDB in $*
+    for PDB in $REST
     do
         echo align $PDB and chain A, $FIRST and chain A
     done
@@ -12,4 +34,4 @@ shift
     echo select s1, all and chain A
     echo color white, s1
 ) \
-    | pymol $(echo $FIRST $* | tr ' ' '\n' | xargs -i echo outputs/pdb/antibodies/complexes/{}.pdb) -u /dev/stdin > /dev/null
+    | pymol $(echo $FIRST $REST | tr ' ' '\n' | xargs -i echo $DIR/{}.pdb) -u /dev/stdin > /dev/null
