@@ -30,3 +30,20 @@ rule extract_ACE2_complex:
             | PYTHONPATH=. bin/pdb_rename_chains --map $(echo $COMPLEX | cut -c 1):A --map $(echo $COMPLEX | cut -c 2):B > {output}
         echo COMPLX $COMPLEX >> {output}
         """
+
+rule ACE2_sequences:
+    input:
+        output_dir + "pdb/ACE2/complexes/{name}.pdb"
+    output:
+        output_dir + "pdb/ACE2/complexes/sequences/{name}.fa"
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        echo -n > {output}
+        if bin/pdb_add_header {input} | bin/pdb_select --chain B | bin/pdb_atom2fasta 2>/dev/null | grep -v '^>' >> {output}
+        then
+            echo '>{wildcards.name}' | cat - {output} | sponge {output}
+        else
+            echo -n > {output}
+        fi
+        """
