@@ -1,14 +1,14 @@
 #!/bin/bash
 
-INPUT_TOPOLOGY=$1
+INPUT_PARAMETERS=$1
 shift
 
-TOPOLOGY_BASE=$(basename $INPUT_TOPOLOGY)
+PARAMETERS_BASE=$(basename $INPUT_PARAMETERS)
 
 TMPDIR=$(mktemp --directory)
 
 cat "$@" > $TMPDIR/input.tar
-cp $INPUT_TOPOLOGY $TMPDIR/
+cp $INPUT_PARAMETERS $TMPDIR/
 
 cat > $TMPDIR/minimize.conf <<END
 # Based on https://www.ks.uiuc.edu/Training/Tutorials/namd/namd-tutorial-html/node26.html
@@ -19,7 +19,7 @@ set temperature    310; # Normal warm-blooded cell temperature
 temperature        \$temperature
 
 paraTypeCharmm     on
-parameters         $TOPOLOGY_BASE
+parameters         $PARAMETERS_BASE
 
 cutoff             12
 switchdist         10
