@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+from Bio.Data.IUPACData import protein_letters_1to3, protein_letters_3to1
+from re import fullmatch
+from warnings import warn
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--replace', action='append', help='Specify replacements')
+args = parser.parse_args()
+
+replace_by_chain = {}
+for replacement in args.replace:
+    m = fullmatch('([A-Z])?([A-Z])([0-9]+)([A-Z])', replacement)
+    if not m:
+        continue
+    chain = m.group(1) if m.group(1) else 'any'
+    fro, pos, to = m.group(2), int(m.group(3)), m.group(4)
+    if chain not in replace_by_chain:
+        replace_by_chain[chain] = {}
+    replace_by_chain[chain][pos] = { 'from': protein_letters_1to3[fro].upper(),
+                                     'to':   protein_letters_1to3[to].upper() }
+
+for pdb in args.files:
+    if isinstance(pdb, str):
+        pdb = open(pdb, 'r')
+    for line in pdb:
+        if line[0:6] == 'SEQRES':
+            line_no = int(line[7:10])
+            chain = line[11]
+            mutations_for_chain = replace_by_chain['any'] if 'any' in replace_by_chain else {}
+            if chain in replace_by_chain:
+                mutations_for_chain = { **mutations_for_chain, **replace_by_chain[chain] }
+            if mutations_for_chain:
+                for i in range(0,13):
+                    resname = line[19+i*4:22+i*4]
+                    pos = (line_no-1)*13+i+1
+                    if resname == '   ' or pos not in mutations_for_chain:
+                        continue
+                    if mutations_for_chain[pos]['from'] != resname:
+                        warn('chain {} position {} is {} while mutation requests {}'.format(chain, pos, mutations_for_chain[pos]['from'], mutations_for_chain[pos]['to']))
+                    line = line[0:19+i*4] + mutations_for_chain[pos]['to'] + line[22+i*4:]
+        print(line, end='')
