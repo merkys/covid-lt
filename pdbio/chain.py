@@ -1,4 +1,4 @@
-from Bio.Data.SCOPData import protein_letters_3to1
+from Bio.Data.IUPACData import protein_letters_3to1
 from pdbio.residue import Residue
 from warnings import warn
 
@@ -90,7 +90,7 @@ class Chain:
         for residue in self:
             if sequence is None:
                 sequence = ''
-            sequence = sequence + protein_letters_3to1[residue.resname()]
+            sequence = sequence + protein_letters_3to1[residue.resname().capitalize()]
         return sequence
 
     def sequence_seqres(self):
@@ -103,5 +103,5 @@ class Chain:
             for i in range(0,13):
                 residue = line[19+i*4:22+i*4]
                 if residue != '   ':
-                    sequence = sequence + protein_letters_3to1[residue]
+                    sequence = sequence + protein_letters_3to1[residue.capitalize()]
         return sequence
