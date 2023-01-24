@@ -1,0 +1,44 @@
+#!/bin/bash
+
+INPUT_TOPOLOGY=$1
+shift
+
+TOPOLOGY_BASE=$(basename $INPUT_TOPOLOGY)
+
+TMPDIR=$(mktemp --directory)
+
+cat "$@" > $TMPDIR/input.tar
+cp $INPUT_TOPOLOGY $TMPDIR/
+
+cat > $TMPDIR/minimize.conf <<END
+# Based on https://www.ks.uiuc.edu/Training/Tutorials/namd/namd-tutorial-html/node26.html
+structure          input.psf
+coordinates        input.pdb
+
+set temperature    310; # Normal warm-blooded cell temperature
+temperature        \$temperature
+
+paraTypeCharmm     on
+parameters         $TOPOLOGY_BASE
+
+cutoff             12
+switchdist         10
+
+exclude            scaled1-4
+outputname         output
+
+minimize           1000;          # Minimization steps
+reinitvels         \$temperature; # Minimization zeros velocities (?)
+END
+
+(
+    cd $TMPDIR
+    tar -xf input.tar && rm input.tar
+
+    mv *.pdb input.pdb
+    mv *.psf input.psf
+
+    namd2 minimize.conf >&2
+)
+
+rm -rf $TMPDIR
