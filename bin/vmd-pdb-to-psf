@@ -24,7 +24,7 @@ END
 
 (
     cd $TMPDIR
-    VMDDIR=/usr/lib/vmd vmd -dispdev text -e vmdgen.pgn
+    VMDDIR=/usr/lib/vmd vmd -dispdev text -e vmdgen.pgn >&2
 
     mv vmd.pdb $(basename $PDB_BASE .pdb).vmd.pdb
     mv vmd.psf $(basename $PDB_BASE .pdb).vmd.psf
