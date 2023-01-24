@@ -10,6 +10,7 @@ except ModuleNotFoundError:
     from simtk import openmm
     from simtk.openmm import OpenMMException, app as openmm_app
 
+from tempfile import NamedTemporaryFile
 import argparse, sys
 
 def print_forces(system, simulation):
@@ -52,8 +53,13 @@ if len(args.files) == 2: # Assume prmtop and inpcrd pair
         implicit_solvent = getattr(importlib.import_module('openmm.app.amberprmtopfile'), args.implicit_solvent)
     system = struct.createSystem(constraints=constraints, implicitSolvent=implicit_solvent)
 else: # Assume plain PDB
-    file = args.files[0] # for now
-    struct = openmm_app.PDBFile(file)
+    struct = None
+    if len(args.files):
+        struct = openmm_app.PDBFile(args.files[0]) # for now
+    else:
+        temporary_file = NamedTemporaryFile('w+')
+        temporary_file.write(sys.stdin.read())
+        struct = openmm_app.PDBFile(temporary_file.name)
     force_field = openmm_app.ForceField(*forcefields)
     system = force_field.createSystem(struct.topology, constraints=constraints)
     # stiffness omitted here
