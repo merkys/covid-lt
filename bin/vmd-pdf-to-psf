@@ -1,0 +1,35 @@
+#!/bin/bash
+
+INPUT_PDB=$1
+INPUT_TOPOLOGY=$2
+
+PDB_BASE=$(basename $INPUT_PDB)
+TOPOLOGY_BASE=$(basename $INPUT_TOPOLOGY)
+
+TMPDIR=$(mktemp --directory)
+
+cp $INPUT_PDB $INPUT_TOPOLOGY $TMPDIR/
+
+cat > $TMPDIR/vmdgen.pgn <<END
+package require psfgen
+topology $TOPOLOGY_BASE
+pdbalias residue HIS HSE
+segment I {pdb $PDB_BASE}
+coordpdb $PDB_BASE I
+guesscoord
+writepdb vmd.pdb
+writepsf vmd.psf
+exit
+END
+
+(
+    cd $TMPDIR
+    VMDDIR=/usr/lib/vmd vmd -dispdev text -e vmdgen.pgn
+
+    mv vmd.pdb $(basename $PDB_BASE .pdb).vmd.pdb
+    mv vmd.psf $(basename $PDB_BASE .pdb).vmd.psf
+
+    tar -cf /dev/stdout $(basename $PDB_BASE .pdb).vmd.pdb $(basename $PDB_BASE .pdb).vmd.psf
+)
+
+rm -rf $TMPDIR
