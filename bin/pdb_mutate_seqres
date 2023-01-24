@@ -12,11 +12,11 @@ args = parser.parse_args()
 
 replace_by_chain = {}
 for replacement in args.replace:
-    m = fullmatch('([A-Z])?([A-Z])([0-9]+)([A-Z])', replacement)
+    m = fullmatch('([A-Z])([A-Z])?([0-9]+)([A-Z])', replacement)
     if not m:
         continue
-    chain = m.group(1) if m.group(1) else 'any'
-    fro, pos, to = m.group(2), int(m.group(3)), m.group(4)
+    chain = m.group(2) if m.group(2) else 'any'
+    fro, pos, to = m.group(1), int(m.group(3)), m.group(4)
     if chain not in replace_by_chain:
         replace_by_chain[chain] = {}
     replace_by_chain[chain][pos] = { 'from': protein_letters_1to3[fro].upper(),
