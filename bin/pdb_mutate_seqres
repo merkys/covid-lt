@@ -29,13 +29,16 @@ for pdb in args.files:
         if line[0:6] == 'SEQRES':
             line_no = int(line[7:10])
             chain = line[11]
+            mutations_for_chain = replace_by_chain['any'] if 'any' in replace_by_chain else {}
             if chain in replace_by_chain:
+                mutations_for_chain = { **mutations_for_chain, **replace_by_chain[chain] }
+            if mutations_for_chain:
                 for i in range(0,13):
                     resname = line[19+i*4:22+i*4]
                     pos = (line_no-1)*13+i+1
-                    if resname == '   ' or pos not in replace_by_chain[chain]:
+                    if resname == '   ' or pos not in mutations_for_chain:
                         continue
-                    if replace_by_chain[chain][pos]['from'] != resname:
-                        warn('chain {} position {} is {} while mutation requests {}'.format(chain, pos, replace_by_chain[chain][pos]['from'], replace_by_chain[chain][pos]['to']))
-                    line = line[0:19+i*4] + replace_by_chain[chain][pos]['to'] + line[22+i*4:]
+                    if mutations_for_chain[pos]['from'] != resname:
+                        warn('chain {} position {} is {} while mutation requests {}'.format(chain, pos, mutations_for_chain[pos]['from'], mutations_for_chain[pos]['to']))
+                    line = line[0:19+i*4] + mutations_for_chain[pos]['to'] + line[22+i*4:]
         print(line, end='')
