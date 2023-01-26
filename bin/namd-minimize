@@ -27,7 +27,7 @@ switchdist         10
 exclude            scaled1-4
 outputname         output
 
-minimize           1000;          # Minimization steps
+minimize           100;           # Minimization steps
 reinitvels         \$temperature; # Minimization zeros velocities (?)
 END
 
