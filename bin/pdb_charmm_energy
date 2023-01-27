@@ -4,13 +4,13 @@ INPUT_PDB=$1
 INPUT_RTF=$2 # topology
 INPUT_PRM=$3 # parameters
 
-PDB_BASE=$(basename $INPUT_PDB)
 RTF_BASE=$(basename $INPUT_RTF)
 PRM_BASE=$(basename $INPUT_PRM)
 
 TMPDIR=$(mktemp --directory)
 
-cp $INPUT_PDB $INPUT_RTF $INPUT_PRM $TMPDIR/
+cp $INPUT_RTF $INPUT_PRM $TMPDIR/
+sed 's/HIS/HSD/g' $INPUT_PDB > $TMPDIR/input.pdb
 
 cat > $TMPDIR/energy.inp <<END
 !Read in RTF and Parameter files
@@ -23,7 +23,7 @@ READ PARA CARD UNIT 1
 CLOSE UNIT 1
  
 !Read in the pdb
-OPEN UNIT 1 CARD READ NAME $PDB_BASE
+OPEN UNIT 1 CARD READ NAME input.pdb
 READ SEQU PDB UNIT 1
  
 !Time for CHARMM to make the Internal Coordinates table
@@ -57,8 +57,6 @@ END
 
 (
     cd $TMPDIR
-
-    sed -i 's/HIS/HSD/g' $PDB_BASE
     charmm < energy.inp
 )
 
