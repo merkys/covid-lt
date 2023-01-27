@@ -27,7 +27,7 @@ switchdist         10
 exclude            scaled1-4
 outputname         output
 
-minimize           1000;          # Minimization steps
+minimize           100;           # Minimization steps
 reinitvels         \$temperature; # Minimization zeros velocities (?)
 END
 
@@ -39,6 +39,11 @@ END
     mv *.psf input.psf
 
     namd2 minimize.conf >&2
+
+    if [ -e output.coor -a -e output.vel -a -e output.xsc ]
+    then
+        tar -cf /dev/stdout output.coor output.vel output.xsc
+    fi
 )
 
 rm -rf $TMPDIR

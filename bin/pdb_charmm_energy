@@ -1,0 +1,63 @@
+#!/bin/bash
+
+INPUT_PDB=$1
+INPUT_RTF=$2 # topology
+INPUT_PRM=$3 # parameters
+
+RTF_BASE=$(basename $INPUT_RTF)
+PRM_BASE=$(basename $INPUT_PRM)
+
+TMPDIR=$(mktemp --directory)
+
+cp $INPUT_RTF $INPUT_PRM $TMPDIR/
+sed 's/HIS/HSD/g' $INPUT_PDB > $TMPDIR/input.pdb
+
+cat > $TMPDIR/energy.inp <<END
+!Read in RTF and Parameter files
+OPEN UNIT 1 CARD READ NAME $RTF_BASE
+READ RTF CARD UNIT 1
+CLOSE UNIT 1
+
+OPEN UNIT 1 CARD READ NAME $PRM_BASE
+READ PARA CARD UNIT 1
+CLOSE UNIT 1
+ 
+!Read in the pdb
+OPEN UNIT 1 CARD READ NAME input.pdb
+READ SEQU PDB UNIT 1
+ 
+!Time for CHARMM to make the Internal Coordinates table
+GENErate A SETUp
+ 
+REWInd UNIT 1
+READ COOR PDB UNIT 1
+CLOSE UNIT 1
+ 
+!Involves known atomic coordinates and fills in missing coordinates
+
+IC FILL
+
+!Will retrieve standard coordinates from the parameter file
+
+IC PARAmeters
+
+!Will find the Cartesian coordinates previously unknown
+IC BUILd
+
+!Rebuild all hydrogen coordinates
+HBUILD SELEct HYDRogen END
+
+!Check for remaining missing atoms
+PRINt COOR SELEct .NOT. INITialized END
+ 
+ENERgy
+
+STOP
+END
+
+(
+    cd $TMPDIR
+    charmm < energy.inp
+)
+
+rm -rf $TMPDIR
