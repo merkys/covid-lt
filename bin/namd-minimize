@@ -26,6 +26,7 @@ switchdist         10
 
 exclude            scaled1-4
 outputname         output
+binaryoutput       no
 
 minimize           100;           # Minimization steps
 reinitvels         \$temperature; # Minimization zeros velocities (?)

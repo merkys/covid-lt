@@ -13,6 +13,7 @@ cp $INPUT_RTF $INPUT_PRM $TMPDIR/
 sed 's/HIS/HSD/g' $INPUT_PDB > $TMPDIR/input.pdb
 
 cat > $TMPDIR/energy.inp <<END
+!Taken from https://www.charmm.org/wiki//index.php/CHARMM:The_Basics
 !Read in RTF and Parameter files
 OPEN UNIT 1 CARD READ NAME $RTF_BASE
 READ RTF CARD UNIT 1
