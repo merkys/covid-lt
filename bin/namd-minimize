@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Perform PDB structure minimization using NAMD.
+# Configuration file is based on https://www.ks.uiuc.edu/Training/Tutorials/namd/namd-tutorial-html/node26.html
+# Useful reference: https://www.ks.uiuc.edu/Research/namd/2.14/ug.pdf
+
 INPUT_PARAMETERS=$1
 shift
 
@@ -11,7 +15,6 @@ cat "$@" > $TMPDIR/input.tar
 cp $INPUT_PARAMETERS $TMPDIR/
 
 cat > $TMPDIR/minimize.conf <<END
-# Based on https://www.ks.uiuc.edu/Training/Tutorials/namd/namd-tutorial-html/node26.html
 structure          input.psf
 coordinates        input.pdb
 
