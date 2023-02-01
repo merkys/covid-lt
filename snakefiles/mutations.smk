@@ -27,6 +27,21 @@ rule energies:
         expand('{chain}/{mut}.ener', chain=chains(), mut=mutations()),
         'complex/wt.ener',
         expand('{chain}/wt.ener', chain=chains())
+    output:
+        "vdw.tab"
+    shell:
+        """
+        echo -n > {output}
+        for MUT in $(ls -1 {input} | xargs -i basename {{}} .ener | sort | uniq)
+        do
+            echo -n $MUT >> {output}
+            for CHAIN in complex $(find . -name '[A-Z]' | sort)
+            do
+                echo -n "\t"$(grep '^ENER EXTERN>' $CHAIN/$MUT.ener | awk '{{print $3}}') >> {output}
+            done
+            echo >> {output}
+        done
+        """
 
 rule chain:
     input:
@@ -47,7 +62,7 @@ rule complex:
     shell:
         """
         mkdir --parents $(dirname {output})
-        ../bin/vmd-pdb-to-psf {input} ../1A22.namd/top_all22_prot.rtf | ../bin/namd-minimize ../1A22.namd/par_all22_prot.prm | tar -x --to-stdout output.coor > {output}
+        ../bin/vmd-pdb-to-psf {input} ../1A22.namd/top_all22_prot.rtf | ../bin/namd-minimize ../1A22.namd/par_all22_prot.prm | tar -x --to-stdout output.coor | pdb_renumber --from 1 > {output}
         """
 
 rule energy:
