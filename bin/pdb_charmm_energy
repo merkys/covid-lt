@@ -35,11 +35,9 @@ READ COOR PDB UNIT 1
 CLOSE UNIT 1
  
 !Involves known atomic coordinates and fills in missing coordinates
-
 IC FILL
 
 !Will retrieve standard coordinates from the parameter file
-
 IC PARAmeters
 
 !Will find the Cartesian coordinates previously unknown
