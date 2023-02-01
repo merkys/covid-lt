@@ -1,5 +1,10 @@
 wildcard_constraints:
+    chain = "[A-Za-a]",
     mutation = "[A-Za-z0-9]+"
+
+def chains():
+    from os import popen
+    return popen('grep -hE "^ATOM|^HETATM" wt.pdb | cut -b 21-22 | uniq').read().split()
 
 def mutations():
     return [x.strip() for x in open('mutations.lst', 'r').readlines()]
@@ -16,10 +21,23 @@ checkpoint generate_mutations:
         paste <(ls -1 wt_Model_00*) <(echo {output} | xargs -n1 echo) | while read LINE; do mv $LINE; done
         """
 
-rule complex_energies:
+rule energies:
     input:
         expand('complex/{mut}.ener', mut=mutations()),
-        'complex/wt.ener'
+        expand('{chain}/{mut}.ener', chain=chains(), mut=mutations()),
+        'complex/wt.ener',
+        expand('{chain}/wt.ener', chain=chains())
+
+rule chain:
+    input:
+        '{mutation}.pdb'
+    output:
+        '{chain}/{mutation}.pdb'
+    shell:
+        """
+        mkdir --parents $(dirname {output})
+        ../bin/pdb_select --chain {wildcards.chain} {input} | pdb_renumber --from 1 | ../bin/vmd-pdb-to-psf /dev/stdin ../1A22.namd/top_all22_prot.rtf | ../bin/namd-minimize ../1A22.namd/par_all22_prot.prm | tar -x --to-stdout output.coor > {output}
+        """
 
 rule complex:
     input:
