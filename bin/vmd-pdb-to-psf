@@ -14,8 +14,18 @@ cat > $TMPDIR/vmdgen.pgn <<END
 package require psfgen
 topology $TOPOLOGY_BASE
 pdbalias residue HIS HSE
-segment I {pdb $PDB_BASE}
-coordpdb $PDB_BASE I
+END
+
+for CHAIN in $(pdb_chains $TMPDIR/$(basename $INPUT_PDB))
+do
+    pdb_select --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$CHAIN.pdb
+    echo "segment $CHAIN { pdb $CHAIN.pdb }" >> $TMPDIR/vmdgen.pgn
+    echo "coordpdb $CHAIN.pdb $CHAIN" >> $TMPDIR/vmdgen.pgn
+done
+
+rm $TMPDIR/$INPUT_PDB
+
+cat >> $TMPDIR/vmdgen.pgn <<END
 guesscoord
 writepdb vmd.pdb
 writepsf vmd.psf
