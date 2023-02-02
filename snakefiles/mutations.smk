@@ -120,11 +120,17 @@ rule all_energies:
         for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .ener | cut -d _ -f 1-2 | cut -d . -f 1 | sort | uniq)
         do
             test -s optimized/$MUT.ener || continue
+            test $(echo $MUT | cut -d _ -f 2) == wt && continue
 
             for OUT in {output.solv} {output.vdw}
             do
                 echo -n $(echo $MUT | sed 's/_/\t/g') >> $OUT
             done
+
+            (
+                grep 'Electrostatic energy' optimized/$(echo $MUT | cut -d _ -f 1)_wt.ener | awk '{{print $NF}}'
+                grep --no-filename 'Electrostatic energy' optimized/$(echo $MUT | cut -d _ -f 1)_wt_*.ener | awk '{{print -$NF}}'
+            ) | bin/sum | xargs -i echo -n "\t"{{}} >> {output.solv}
 
             echo -n "\t"$(grep 'Electrostatic energy' optimized/$MUT.ener | awk '{{print $NF}}') >> {output.solv}
             echo -n "\t"$(grep '^ENER EXTERN>' optimized/$MUT.ener | awk '{{print $3}}') >> {output.vdw}
