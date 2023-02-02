@@ -132,6 +132,11 @@ rule all_energies:
                 grep --no-filename 'Electrostatic energy' optimized/$(echo $MUT | cut -d _ -f 1)_wt_*.ener | awk '{{print -$NF}}'
             ) | bin/sum | xargs -i echo -n "\t"{{}} >> {output.solv}
 
+            (
+                grep '^ENER EXTERN>' optimized/$(echo $MUT | cut -d _ -f 1)_wt.ener | awk '{{print $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/$(echo $MUT | cut -d _ -f 1)_wt_*.ener | awk '{{print -$3}}'
+            ) | bin/sum | xargs -i echo -n "\t"{{}} >> {output.vdw}
+
             echo -n "\t"$(grep 'Electrostatic energy' optimized/$MUT.ener | awk '{{print $NF}}') >> {output.solv}
             echo -n "\t"$(grep '^ENER EXTERN>' optimized/$MUT.ener | awk '{{print $3}}') >> {output.vdw}
 
