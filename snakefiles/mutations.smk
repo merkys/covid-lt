@@ -117,17 +117,23 @@ rule all_energies:
         """
         echo -n > {output.solv}
         echo -n > {output.vdw}
-        for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .ener | cut -d _ -f 1-2 | sort | uniq)
+        for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .ener | cut -d _ -f 1-2 | cut -d . -f 1 | sort | uniq)
         do
+            test -s optimized/$MUT.ener || continue
+
             for OUT in {output.solv} {output.vdw}
             do
-                echo -n $(echo $MUT | cut -d _ -f 1)"\t"$(echo $MUT | cut -d _ -f 2) >> $OUT
+                echo -n $(echo $MUT | sed 's/_/\t/g') >> $OUT
             done
-            # for CHAIN in complex $(find . -name '[A-Z]' | sort)
-            # do
-            #     echo -n "\t"$(grep 'Electrostatic energy' $CHAIN/$MUT.ener | awk '{{print $NF}}') >> {output.solv}
-            #     echo -n "\t"$(grep '^ENER EXTERN>' $CHAIN/$MUT.ener | awk '{{print $3}}') >> {output.vdw}
-            # done
+
+            echo -n "\t"$(grep 'Electrostatic energy' optimized/$MUT.ener | awk '{{print $NF}}') >> {output.solv}
+            echo -n "\t"$(grep '^ENER EXTERN>' optimized/$MUT.ener | awk '{{print $3}}') >> {output.vdw}
+
+            for CHAIN in optimized/${{MUT}}_*.ener
+            do
+                echo -n "\t"$(grep 'Electrostatic energy' $CHAIN | awk '{{print $NF}}') >> {output.solv}
+                echo -n "\t"$(grep '^ENER EXTERN>' $CHAIN | awk '{{print $3}}') >> {output.vdw}
+            done
             echo >> {output.solv}
             echo >> {output.vdw}
         done
