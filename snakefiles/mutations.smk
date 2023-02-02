@@ -28,18 +28,23 @@ rule energies:
         'complex/wt.ener',
         expand('{chain}/wt.ener', chain=chains())
     output:
-        "vdw.tab"
+        solv = "solv.tab",
+        vdw = "vdw.tab"
     shell:
         """
-        echo -n > {output}
+        echo -n > {output.solv}
+        echo -n > {output.vdw}
         for MUT in $(ls -1 {input} | xargs -i basename {{}} .ener | sort | uniq)
         do
-            echo -n $MUT >> {output}
+            echo -n $MUT >> {output.solv}
+            echo -n $MUT >> {output.vdw}
             for CHAIN in complex $(find . -name '[A-Z]' | sort)
             do
-                echo -n "\t"$(grep '^ENER EXTERN>' $CHAIN/$MUT.ener | awk '{{print $3}}') >> {output}
+                echo -n "\t"$(grep 'Electrostatic energy' $CHAIN/$MUT.ener | awk '{{print $NF}}') >> {output.solv}
+                echo -n "\t"$(grep '^ENER EXTERN>' $CHAIN/$MUT.ener | awk '{{print $3}}') >> {output.vdw}
             done
-            echo >> {output}
+            echo >> {output.solv}
+            echo >> {output.vdw}
         done
         """
 
