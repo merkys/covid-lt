@@ -51,7 +51,11 @@ rule chain:
     shell:
         """
         mkdir --parents $(dirname {output})
-        ../bin/pdb_select --chain {wildcards.chain} {input} | pdb_renumber --from 1 | ../bin/vmd-pdb-to-psf /dev/stdin ../1A22.namd/top_all22_prot.rtf | ../bin/namd-minimize ../1A22.namd/par_all22_prot.prm | tar -x --to-stdout output.coor > {output}
+        bin/pdb_select --chain {wildcards.chain} {input} \
+            | pdb_renumber --from 1 \
+            | bin/vmd-pdb-to-psf /dev/stdin ../1A22.namd/top_all22_prot.rtf \
+            | bin/namd-minimize ../1A22.namd/par_all22_prot.prm \
+            | tar -x --to-stdout output.coor > {output}
         """
 
 rule complex:
@@ -62,7 +66,10 @@ rule complex:
     shell:
         """
         mkdir --parents $(dirname {output})
-        ../bin/vmd-pdb-to-psf {input} ../1A22.namd/top_all22_prot.rtf | ../bin/namd-minimize ../1A22.namd/par_all22_prot.prm | tar -x --to-stdout output.coor | pdb_renumber --from 1 > {output}
+        bin/vmd-pdb-to-psf {input} ../1A22.namd/top_all22_prot.rtf \
+            | bin/namd-minimize ../1A22.namd/par_all22_prot.prm \
+            | tar -x --to-stdout output.coor \
+            | pdb_renumber --from 1 > {output}
         """
 
 rule energy:
@@ -72,6 +79,6 @@ rule energy:
         '{name}.ener'
     shell:
         """
-        ../bin/pdb_charmm_energy {input} --topology ../1A22.namd/top_all22_prot.rtf --parameters ../1A22.namd/par_all22_prot.prm --pbeq \
+        bin/pdb_charmm_energy {input} --topology ../1A22.namd/top_all22_prot.rtf --parameters ../1A22.namd/par_all22_prot.prm --pbeq \
             | grep -e ^ENER -e 'Electrostatic energy' > {output}
         """
