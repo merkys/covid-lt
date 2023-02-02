@@ -71,4 +71,7 @@ rule energy:
     output:
         '{name}.ener'
     shell:
-        "../bin/pdb_charmm_energy {input} ../1A22.namd/top_all22_prot.rtf ../1A22.namd/par_all22_prot.prm | grep ^ENER > {output}"
+        """
+        ../bin/pdb_charmm_energy {input} --topology ../1A22.namd/top_all22_prot.rtf --parameters ../1A22.namd/par_all22_prot.prm --pbeq \
+            | grep -e ^ENER -e 'Electrostatic energy' > {output}
+        """
