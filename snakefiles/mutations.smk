@@ -30,8 +30,7 @@ rule mutated_complex:
         """
         if [ -s {input} ]
         then
-            EvoEF2 --command BuildMutant --pdb {input} --mutant_file <(echo {wildcards.mutation}) --bbdep no || echo -n > {output}
-            mv {wildcards.pdbid}_wt_Model_0001.pdb {output} || echo -n > {output}
+            bin/EvoEF2-mutate {input} {wildcards.mutation} > {output} || echo -n > {output}
         else
             echo -n > {output}
         fi
