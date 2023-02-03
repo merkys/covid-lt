@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# EvoEF2 needs a wrapper to control the location of output file.
+
+PDB=$1
+MUTATIONS=$2
+
+TMPDIR=$(mktemp --directory)
+
+cp $PDB $TMPDIR/
+
+(
+    cd $TMPDIR
+    EvoEF2 --command BuildMutant --pdb $(basename $PDB) --mutant_file <(echo $MUTATIONS) --bbdep no >&2
+    cat $(basename $PDB .pdb)_Model_0001.pdb
+)
+
+rm -rf "$TMPDIR"
