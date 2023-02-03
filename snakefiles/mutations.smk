@@ -30,7 +30,7 @@ rule mutated_complex:
         """
         if [ -s {input} ]
         then
-            EvoEF2 --command BuildMutant --pdb {input} --mutant_file <(echo {wildcards.mutation}) || echo -n > {output}
+            EvoEF2 --command BuildMutant --pdb {input} --mutant_file <(echo {wildcards.mutation}) --bbdep no || echo -n > {output}
             mv {wildcards.pdbid}_wt_Model_0001.pdb {output} || echo -n > {output}
         else
             echo -n > {output}
@@ -74,8 +74,8 @@ rule optimize_complex:
         if [ -s {input} ]
         then
             pdb_renumber --from 1 {input} \
-                | bin/vmd-pdb-to-psf /dev/stdin ../1A22.namd/top_all22_prot.rtf \
-                | bin/namd-minimize ../1A22.namd/par_all22_prot.prm \
+                | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
+                | bin/namd-minimize forcefields/par_all22_prot.prm \
                 | tar -x --to-stdout output.coor > {output}
         else
             echo -n > {output}
@@ -92,8 +92,8 @@ rule optimize_chain:
         mkdir --parents $(dirname {output})
         bin/pdb_select --chain {wildcards.chain} {input} \
             | pdb_renumber --from 1 \
-            | bin/vmd-pdb-to-psf /dev/stdin ../1A22.namd/top_all22_prot.rtf \
-            | bin/namd-minimize ../1A22.namd/par_all22_prot.prm \
+            | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
+            | bin/namd-minimize forcefields/par_all22_prot.prm \
             | tar -x --to-stdout output.coor > {output}
         """
 
@@ -159,7 +159,7 @@ rule energy:
         """
         if [ -s {input} ]
         then
-            bin/pdb_charmm_energy {input} --topology ../1A22.namd/top_all22_prot.rtf --parameters ../1A22.namd/par_all22_prot.prm --pbeq \
+            bin/pdb_charmm_energy {input} --topology forcefields/top_all22_prot.rtf --parameters forcefields/par_all22_prot.prm --pbeq \
                 | grep -e ^ENER -e 'Electrostatic energy' > {output}
         else
             echo -n > {output}
