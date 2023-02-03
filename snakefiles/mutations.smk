@@ -165,3 +165,19 @@ rule energy:
             echo -n > {output}
         fi
         """
+
+rule join_with_skempi:
+    input:
+        skempi = "SkempiS.txt",
+        solv = "solv.tab",
+        vdw = "vdw.tab"
+    output:
+        solv = "solv-skempi.tab",
+        vdw = "vdw-skempi.tab"
+    shell:
+        """
+        join <(tail -n +2 {input.skempi} | awk '{{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $14}}' | sort -k1.1) \
+             <(sed 's/ /_/' {input.solv} | sort -k1.1) | sed 's/ /\t/g' > {output.solv}
+        join <(tail -n +2 {input.skempi} | awk '{{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $13}}' | sort -k1.1) \
+             <(sed 's/ /_/' {input.vdw}  | sort -k1.1) | sed 's/ /\t/g' > {output.vdw}
+        """
