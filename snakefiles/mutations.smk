@@ -73,10 +73,10 @@ rule optimize_complex:
         mkdir --parents $(dirname {output})
         if [ -s {input} ]
         then
-            bin/vmd-pdb-to-psf {input} ../1A22.namd/top_all22_prot.rtf \
+            pdb_renumber --from 1 {input} \
+                | bin/vmd-pdb-to-psf /dev/stdin ../1A22.namd/top_all22_prot.rtf \
                 | bin/namd-minimize ../1A22.namd/par_all22_prot.prm \
-                | tar -x --to-stdout output.coor \
-                | pdb_renumber --from 1 > {output}
+                | tar -x --to-stdout output.coor > {output}
         else
             echo -n > {output}
         fi
