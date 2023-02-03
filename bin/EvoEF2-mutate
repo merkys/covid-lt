@@ -9,6 +9,16 @@ TMPDIR=$(mktemp --directory)
 
 cp $PDB $TMPDIR/
 
+MUT_RES=$(echo $MUTATIONS | cut -c 1)
+MUT_CHAIN=$(echo $MUTATIONS | cut -c 2)
+MUT_POS=$(echo $MUTATIONS | grep -o '[0-9]\+' | head -n 1)
+
+if [ "$(bin/pdb_select $TMPDIR/$(basename $PDB) --chain $MUT_CHAIN --from $MUT_POS | bin/pdb_atom2fasta | grep -v '^>' | head -n 1 | cut -c 1)" != "$MUT_RES" ]
+then
+    echo $(basename $0): $PDB: residue in mutated position does not match the declared one >&2
+    exit 1
+fi
+
 (
     cd $TMPDIR
     EvoEF2 --command BuildMutant --pdb $(basename $PDB) --mutant_file <(echo $MUTATIONS) --bbdep no >&2
