@@ -27,6 +27,8 @@ parameters         $PARAMETERS_BASE
 cutoff             12
 switchdist         10
 
+rigidBonds         all; # Use SHAKE to constrain hydrogen-containing bonds
+
 exclude            scaled1-4
 outputname         output
 binaryoutput       no
