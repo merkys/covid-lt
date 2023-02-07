@@ -10,7 +10,8 @@ TOPOLOGY_BASE=$(basename $INPUT_TOPOLOGY)
 
 TMPDIR=$(mktemp --directory)
 
-cp $INPUT_PDB $INPUT_TOPOLOGY $TMPDIR/
+grep -v '^HETATM' $INPUT_PDB > $TMPDIR/$(basename $INPUT_PDB)
+cp $INPUT_TOPOLOGY $TMPDIR/
 
 cat > $TMPDIR/vmdgen.pgn <<END
 package require psfgen
@@ -20,8 +21,7 @@ END
 
 for CHAIN in $(pdb_chains $TMPDIR/$(basename $INPUT_PDB))
 do
-    pdb_select --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) \
-        | grep -v '^HETATM' > $TMPDIR/$CHAIN.pdb
+    pdb_select --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$CHAIN.pdb
     echo "segment $CHAIN { pdb $CHAIN.pdb }" >> $TMPDIR/vmdgen.pgn
     echo "coordpdb $CHAIN.pdb $CHAIN" >> $TMPDIR/vmdgen.pgn
 done
