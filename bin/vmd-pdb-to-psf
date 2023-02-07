@@ -23,7 +23,7 @@ do
     echo "coordpdb $CHAIN.pdb $CHAIN" >> $TMPDIR/vmdgen.pgn
 done
 
-rm $TMPDIR/$INPUT_PDB
+rm $TMPDIR/$(basename $INPUT_PDB)
 
 cat >> $TMPDIR/vmdgen.pgn <<END
 guesscoord
