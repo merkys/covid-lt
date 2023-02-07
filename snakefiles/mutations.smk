@@ -41,12 +41,9 @@ rule wt:
         "{pdbid}.pdb"
     output:
         "{pdbid}_wt.pdb"
-    singularity:
-        "container.sif"
     shell:
         """
-        PYTHONPATH=. bin/promod-fix-pdb {input} \
-            | PYTHONPATH=. bin/pdb_rename_chains --source {input} > {output} || echo -n > {output}
+        cat {input} > {output}
         """
 
 rule all_original_pdbs:
@@ -72,8 +69,7 @@ rule optimize_complex:
         mkdir --parents $(dirname {output})
         if [ -s {input} ]
         then
-            pdb_renumber --from 1 {input} \
-                | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
+            bin/vmd-pdb-to-psf {input} forcefields/top_all22_prot.rtf \
                 | bin/namd-minimize forcefields/par_all22_prot.prm \
                 | tar -x --to-stdout output.coor > {output}
         else
@@ -90,7 +86,6 @@ rule optimize_chain:
         """
         mkdir --parents $(dirname {output})
         bin/pdb_select --chain {wildcards.chain} {input} \
-            | pdb_renumber --from 1 \
             | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
             | tar -x --to-stdout output.coor > {output}
@@ -98,7 +93,7 @@ rule optimize_chain:
 
 def list_chains(pdb):
     from os import popen
-    return popen('grep -hE "^ATOM|^HETATM" {} | cut -b 21-22 | uniq'.format(pdb)).read().split()
+    return popen('grep -h "^ATOM" {} | cut -b 21-22 | uniq'.format(pdb)).read().split()
 
 rule all_optimized:
     input:
