@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Based on https://www.ks.uiuc.edu/Research/vmd/plugins/psfgen/ug.pdf
+
 INPUT_PDB=$1
 INPUT_TOPOLOGY=$2
 
@@ -18,12 +20,13 @@ END
 
 for CHAIN in $(pdb_chains $TMPDIR/$(basename $INPUT_PDB))
 do
-    pdb_select --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$CHAIN.pdb
+    pdb_select --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) \
+        | grep -v '^HETATM' > $TMPDIR/$CHAIN.pdb
     echo "segment $CHAIN { pdb $CHAIN.pdb }" >> $TMPDIR/vmdgen.pgn
     echo "coordpdb $CHAIN.pdb $CHAIN" >> $TMPDIR/vmdgen.pgn
 done
 
-rm $TMPDIR/$(basename $INPUT_PDB)
+rm -f $TMPDIR/$(basename $INPUT_PDB)
 
 cat >> $TMPDIR/vmdgen.pgn <<END
 guesscoord
