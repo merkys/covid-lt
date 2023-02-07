@@ -91,7 +91,7 @@ PBEQ
         dcel 1.0 -
 ENDSCRIPT
 
-pdb_box complex/wt.pdb | bin/pbeq-mesh >> $TMPDIR/energy.inp
+pdb_box $TMPDIR/input.pdb | bin/pbeq-mesh >> $TMPDIR/energy.inp
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
         maxi 1000 select all end

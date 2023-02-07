@@ -23,6 +23,7 @@ import argparse, re, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--chain', action='append', help='Select certain chain(s), may be multiple')
+parser.add_argument('--from-residue', type=int, help='Starting residue number')
 args = parser.parse_args()
 
 files = args.files
@@ -77,5 +78,7 @@ for file in files:
             continue
         mentioned_chains = set([line[x] for x in chain_identifiers[keyword]])
         if set(args.chain).isdisjoint(mentioned_chains):
+            continue
+        if args.from_residue is not None and keyword == 'ATOM  ' and int(line[22:26]) < args.from_residue:
             continue
         print(line, end='')
