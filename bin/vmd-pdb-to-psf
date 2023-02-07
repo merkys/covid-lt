@@ -19,9 +19,9 @@ topology $TOPOLOGY_BASE
 pdbalias residue HIS HSE
 END
 
-for CHAIN in $(pdb_chains $TMPDIR/$(basename $INPUT_PDB))
+for CHAIN in $(pdb_chains $TMPDIR/$(basename $INPUT_PDB) | sort | uniq)
 do
-    pdb_select --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$CHAIN.pdb
+    bin/pdb_select --first-model --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$CHAIN.pdb
     echo "segment $CHAIN { pdb $CHAIN.pdb }" >> $TMPDIR/vmdgen.pgn
     echo "coordpdb $CHAIN.pdb $CHAIN" >> $TMPDIR/vmdgen.pgn
 done
