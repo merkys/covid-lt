@@ -43,7 +43,7 @@ rule wt:
         "{pdbid}_wt.pdb"
     shell:
         """
-        cat {input} > {output}
+        PYTHONPATH=. bin/pdb_clean_incomplete {input} > {output}
         """
 
 rule all_original_pdbs:

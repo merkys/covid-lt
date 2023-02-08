@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+
+# Remove incomplete residues from a PDB file.
+
+from pdbio.pdbfile import PDBFile
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+args = parser.parse_args()
+
+files = args.files
+if len(files) == 0:
+    files = [sys.stdin]
+
+for filename in files:
+    target = PDBFile(filename)
+
+    for chain in target:
+        for residue in chain:
+            if residue.end - residue.start < 4:
+                residue.delete()
+
+    print(target, end='')
