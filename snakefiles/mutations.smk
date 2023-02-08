@@ -69,7 +69,8 @@ rule optimize_complex:
         mkdir --parents $(dirname {output})
         if [ -s {input} ]
         then
-            bin/vmd-pdb-to-psf {input} forcefields/top_all22_prot.rtf \
+            pdb_renumber --from 1 {input} \
+                | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
                 | bin/namd-minimize forcefields/par_all22_prot.prm \
                 | tar -x --to-stdout output.coor > {output}
         else
@@ -86,6 +87,7 @@ rule optimize_chain:
         """
         mkdir --parents $(dirname {output})
         bin/pdb_select --chain {wildcards.chain} {input} \
+            | pdb_renumber --from 1 \
             | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
             | tar -x --to-stdout output.coor > {output}
@@ -153,7 +155,8 @@ rule energy:
         """
         if [ -s {input} ]
         then
-            bin/pdb_charmm_energy {input} --topology forcefields/top_all22_prot.rtf --parameters forcefields/par_all22_prot.prm --pbeq \
+            pdb_renumber --from 1 {input} \
+                | bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all22_prot.rtf --parameters forcefields/par_all22_prot.prm --pbeq \
                 | grep -e ^ENER -e 'Electrostatic energy' > {output}
         else
             echo -n > {output}
