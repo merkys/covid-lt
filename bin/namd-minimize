@@ -50,7 +50,11 @@ END
     mv *.psf input.psf
 
     grep '^ATOM  ' input.pdb \
-        | awk '{print substr($0,0,60)"  5   "substr($0,67)}' > constraints.con
+        | awk '{if( substr($0,13,4) == " C  " || substr($0,13,4) == " CA " || substr($0,13,4) == " N  " ) {
+                    print substr($0,0,60)"  5   "substr($0,67)
+                } else {
+                    print substr($0,0,60)"  0   "substr($0,67)
+                }}' > constraints.con
 
     namd2 minimize.conf >&2
 
