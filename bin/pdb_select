@@ -27,6 +27,7 @@ parser.add_argument('files', nargs='*')
 parser.add_argument('--first-model', action='store_true', help='Select only the first model (if multiple)')
 parser.add_argument('--chain', action='append', help='Select certain chain(s), may be multiple')
 parser.add_argument('--from-residue', type=int, help='Starting residue number')
+parser.add_argument('--backbone', action='store_true', help='Select only the backbone atoms')
 args = parser.parse_args()
 
 files = args.files
@@ -56,7 +57,7 @@ for file in files:
             line_nr = 1
             mol_nr = 1
             for mol in range(len(compnd)):
-                if set(args.chain).isdisjoint(compnd[mol]['CHAIN']):
+                if args.chain and set(args.chain).isdisjoint(compnd[mol]['CHAIN']):
                     continue
                 if line_nr == 1:
                     print('COMPND    ', end='')
@@ -69,7 +70,8 @@ for file in files:
                 print('COMPND% 4d MOLECULE: %s' % (line_nr, compnd[mol]['MOLECULE']), end='')
                 line_nr += 1
 
-                compnd[mol]['CHAIN'] = compnd[mol]['CHAIN'] & set(args.chain)
+                if args.chain:
+                    compnd[mol]['CHAIN'] = compnd[mol]['CHAIN'] & set(args.chain)
                 print('COMPND% 4d CHAIN: %s;' % (line_nr, ', '.join(compnd[mol]['CHAIN'])))
                 line_nr += 1
 
@@ -84,12 +86,15 @@ for file in files:
             continue
         if args.first_model and model != 1 and keyword in model_keywords:
             continue
-        if keyword not in chain_identifiers or not args.chain:
+        if keyword not in chain_identifiers:
             print(line, end='')
             continue
-        mentioned_chains = set([line[x] for x in chain_identifiers[keyword]])
-        if set(args.chain).isdisjoint(mentioned_chains):
-            continue
+        if args.chain:
+            mentioned_chains = set([line[x] for x in chain_identifiers[keyword]])
+            if set(args.chain).isdisjoint(mentioned_chains):
+                continue
         if args.from_residue is not None and keyword == 'ATOM  ' and int(line[22:26]) < args.from_residue:
+            continue
+        if args.backbone and keyword == 'ATOM  ' and line[12:16].strip() not in ['C', 'CA', 'N']:
             continue
         print(line, end='')
