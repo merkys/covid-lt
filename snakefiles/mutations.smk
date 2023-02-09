@@ -116,6 +116,7 @@ rule all_energies:
         for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .ener | cut -d _ -f 1-2 | cut -d . -f 1 | sort | uniq)
         do
             test -s optimized/$MUT.ener || continue
+            test -s optimized/$(echo $MUT | cut -d _ -f 1)_wt.ener || continue
             test $(echo $MUT | cut -d _ -f 2) == wt && continue
 
             for OUT in {output.solv} {output.vdw}
@@ -155,9 +156,12 @@ rule energy:
         """
         if [ -s {input} ]
         then
-            pdb_renumber --from 1 {input} \
+            if ! pdb_renumber --from 1 {input} \
                 | bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all22_prot.rtf --parameters forcefields/par_all22_prot.prm --pbeq \
                 | grep -e ^ENER -e 'Electrostatic energy' > {output}
+            then
+                echo -n > {output}
+            fi
         else
             echo -n > {output}
         fi
