@@ -11,6 +11,8 @@ def input_complexes():
         fields = line.split("\t")
         if fields[4] != fields[5]: # Filter out lines where Mutation(s)_PDB and Mutation(s)_cleaned are different
             continue
+        if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
+            continue
         if fields[0] not in seen_wt:
             complexes.append("{}_wt".format(fields[0]))
             seen_wt.add(fields[0])
