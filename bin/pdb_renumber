@@ -6,6 +6,7 @@ import argparse, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--output-map', help='Specify a file to store renumbering map')
 args = parser.parse_args()
 
 pdb = PDBFile(args.files[0]) # Only the first file is processed for now
@@ -22,3 +23,8 @@ for chain in pdb:
     chain.renumber(renumber_plain)
 
 print(pdb, end='')
+
+if args.output_map:
+    with open(args.output_map, 'w') as out:
+        for key in residue_map:
+            print(key, residue_map[key], sep="\t", file=out)
