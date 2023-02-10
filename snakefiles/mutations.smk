@@ -66,12 +66,15 @@ rule optimize_complex:
         "{pdbid}_{type}.pdb"
     output:
         "optimized/{pdbid}_{type}.pdb"
+    log:
+        "optimized/{pdbid}_{type}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
         if [ -s {input} ]
         then
-            pdb_renumber --from 1 {input} \
+            grep ^ATOM {input} \
+                | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
                 | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
                 | bin/namd-minimize forcefields/par_all22_prot.prm \
                 | tar -x --to-stdout output.coor > {output}
@@ -85,11 +88,14 @@ rule optimize_chain:
         "{pdbid}_{type}.pdb"
     output:
         "optimized/{pdbid}_{type}_{chain}.pdb"
+    log:
+        "optimized/{pdbid}_{type}_{chain}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
         bin/pdb_select --chain {wildcards.chain} {input} \
-            | pdb_renumber --from 1 \
+            | grep ^ATOM \
+            | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
             | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
             | tar -x --to-stdout output.coor > {output}
@@ -179,10 +185,12 @@ rule dssp:
         echo -n > {output.com}
         for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .pdb | grep -v _wt | cut -d _ -f 1-2 | cut -d . -f 1 | sort | uniq)
         do
-            POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
+            ORIG_POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
             CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
 
             test -s optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb || continue
+
+            POS=$(grep ^${{CHAIN}}${{ORIG_POS}} optimized/$(echo $MUT | cut -d _ -f 1)_wt.map | cut -f 2)
 
             dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt_$CHAIN.pdb \
                 | grep -vP '\.$' \
