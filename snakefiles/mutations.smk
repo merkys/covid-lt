@@ -208,13 +208,21 @@ rule dssp:
 rule join_with_skempi:
     input:
         skempi = "SkempiS.txt",
+        sa_com = "sa_com.tab",
+        sa_part = "sa_part.tab",
         solv = "solv.tab",
         vdw = "vdw.tab"
     output:
+        sa_com = "sa_com-skempi.tab",
+        sa_part = "sa_part-skempi.tab",
         solv = "solv-skempi.tab",
         vdw = "vdw-skempi.tab"
     shell:
         """
+        join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $16}} }}' | sort -k1.1) \
+             <(sort -k1.1 {input.sa_com}) | sed 's/ /\t/g' > {output.sa_com}
+        join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $17}} }}' | sort -k1.1) \
+             <(sort -k1.1 {input.sa_part}) | sed 's/ /\t/g' > {output.sa_part}
         join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $14}} }}' | sort -k1.1) \
              <(sed 's/ /_/' {input.solv} | sort -k1.1) | sed 's/ /\t/g' > {output.solv}
         join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $13}} }}' | sort -k1.1) \
