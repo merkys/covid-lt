@@ -169,6 +169,34 @@ rule energy:
         fi
         """
 
+rule dssp:
+    output:
+        part = "sa_part.tab",
+        com = "sa_com.tab"
+    shell:
+        """
+        echo -n > {output.part}
+        echo -n > {output.com}
+        for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .pdb | grep -v _wt | cut -d _ -f 1-2 | cut -d . -f 1 | sort | uniq)
+        do
+            POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
+            CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
+
+            test -s optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb || continue
+
+            dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt_$CHAIN.pdb \
+                | grep -vP '\.$' \
+                | grep -P "^\s+$POS\s" \
+                | cut -c 36-38 \
+                | xargs -i echo -e $MUT"\t"{{}} >> {output.part} || true
+            dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb \
+                | grep -vP '\.$' \
+                | grep -P "^\s+$POS\s" \
+                | cut -c 36-38 \
+                | xargs -i echo -e $MUT"\t"{{}} >> {output.com} || true
+        done
+        """
+
 rule join_with_skempi:
     input:
         skempi = "SkempiS.txt",
