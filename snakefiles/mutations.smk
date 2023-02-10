@@ -184,3 +184,19 @@ rule join_with_skempi:
         join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $13}} }}' | sort -k1.1) \
              <(sed 's/ /_/' {input.vdw}  | sort -k1.1) | sed 's/ /\t/g' > {output.vdw}
         """
+
+rule side_by_side:
+    input:
+        "{type}-skempi.tab"
+    output:
+        "{type}-diff.tab"
+    shell:
+        """
+        cat {input} \
+            | while read LINE
+                do
+                    echo -n $(echo "$LINE" | cut -f 1-2)"\t"
+                    Rscript -e "0 + $(echo "$LINE" | cut -f 3) - ($(echo "$LINE" | cut -f 4) - $(echo "$LINE" | cut -f 5- | ./bin/sum))" | cut -d ' ' -f 2
+                done \
+            | sed 's/ /\t/g' > {output}
+        """
