@@ -190,7 +190,7 @@ rule dssp:
 
             test -s optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb || continue
 
-            POS=$(grep ^${{CHAIN}}${{ORIG_POS}} optimized/$(echo $MUT | cut -d _ -f 1)_wt.map | cut -f 2)
+            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/$(echo $MUT | cut -d _ -f 1)_wt.map | cut -f 2)
 
             dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt_$CHAIN.pdb \
                 | grep -vP '\.$' \
