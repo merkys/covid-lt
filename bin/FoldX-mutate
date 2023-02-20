@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# FoldX needs a wrapper to setup the environment and control the file names.
+
+PDB=$1
+MUTATIONS=$2
+ROTABASE=$3
+WT=$4
+
+TMPDIR=$(mktemp --directory)
+
+cp $PDB $ROTABASE $TMPDIR/
+
+(
+    cd $TMPDIR
+    echo "$2;" > individual_list.lst
+    foldx -c BuildModel --pdb $(basename $PDB) --mutant-file individual_list.lst --rotabaseLocation $(basename $ROTABASE)
+    cat $(basename $PDB .pdb)_1.pdb
+)
+
+if [ -n "$WT" ]
+then
+    grep ^ATOM $TMPDIR/WT_$(basename $PDB .pdb)_1.pdb > $WT
+fi
+
+rm -rf "$TMPDIR"
