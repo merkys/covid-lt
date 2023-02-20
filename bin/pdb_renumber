@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+from pdbio.pdbfile import PDBFile
+from warnings import warn
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--output-map', help='Specify a file to store renumbering map')
+args = parser.parse_args()
+
+pdb = PDBFile(args.files[0]) # Only the first file is processed for now
+
+residue_map = {}
+
+for chain in pdb:
+    def renumber_plain(number, icode):
+        key = chain.name + str(number)
+        if key not in residue_map:
+            residue_map[key] = len(residue_map) + 1
+        return residue_map[key], ' '
+
+    chain.renumber(renumber_plain)
+
+print(pdb, end='')
+
+if args.output_map:
+    with open(args.output_map, 'w') as out:
+        for key in residue_map:
+            print(key, residue_map[key], sep="\t", file=out)

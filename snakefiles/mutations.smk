@@ -11,6 +11,8 @@ def input_complexes():
         fields = line.split("\t")
         if fields[4] != fields[5]: # Filter out lines where Mutation(s)_PDB and Mutation(s)_cleaned are different
             continue
+        if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
+            continue
         if fields[0] not in seen_wt:
             complexes.append("{}_wt".format(fields[0]))
             seen_wt.add(fields[0])
@@ -64,12 +66,15 @@ rule optimize_complex:
         "{pdbid}_{type}.pdb"
     output:
         "optimized/{pdbid}_{type}.pdb"
+    log:
+        "optimized/{pdbid}_{type}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
         if [ -s {input} ]
         then
-            pdb_renumber --from 1 {input} \
+            grep ^ATOM {input} \
+                | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
                 | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
                 | bin/namd-minimize forcefields/par_all22_prot.prm \
                 | tar -x --to-stdout output.coor > {output}
@@ -83,11 +88,14 @@ rule optimize_chain:
         "{pdbid}_{type}.pdb"
     output:
         "optimized/{pdbid}_{type}_{chain}.pdb"
+    log:
+        "optimized/{pdbid}_{type}_{chain}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
         bin/pdb_select --chain {wildcards.chain} {input} \
-            | pdb_renumber --from 1 \
+            | grep ^ATOM \
+            | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
             | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
             | tar -x --to-stdout output.coor > {output}
@@ -167,18 +175,72 @@ rule energy:
         fi
         """
 
+rule dssp:
+    output:
+        part = "sa_part.tab",
+        com = "sa_com.tab"
+    shell:
+        """
+        echo -n > {output.part}
+        echo -n > {output.com}
+        for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .pdb | grep -v _wt | cut -d _ -f 1-2 | cut -d . -f 1 | sort | uniq)
+        do
+            ORIG_POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
+            CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
+
+            test -s optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb || continue
+
+            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/$(echo $MUT | cut -d _ -f 1)_wt.map | cut -f 2)
+
+            dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt_$CHAIN.pdb \
+                | grep -vP '\.$' \
+                | grep -P "^\s+$POS\s" \
+                | cut -c 36-38 \
+                | xargs -i echo -e $MUT"\t"{{}} >> {output.part} || true
+            dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb \
+                | grep -vP '\.$' \
+                | grep -P "^\s+$POS\s" \
+                | cut -c 36-38 \
+                | xargs -i echo -e $MUT"\t"{{}} >> {output.com} || true
+        done
+        """
+
 rule join_with_skempi:
     input:
         skempi = "SkempiS.txt",
+        sa_com = "sa_com.tab",
+        sa_part = "sa_part.tab",
         solv = "solv.tab",
         vdw = "vdw.tab"
     output:
+        sa_com = "sa_com-skempi.tab",
+        sa_part = "sa_part-skempi.tab",
         solv = "solv-skempi.tab",
         vdw = "vdw-skempi.tab"
     shell:
         """
-        join <(tail -n +2 {input.skempi} | awk '{{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $14}}' | sort -k1.1) \
+        join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $16}} }}' | sort -k1.1) \
+             <(sort -k1.1 {input.sa_com}) | sed 's/ /\t/g' > {output.sa_com}
+        join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $17}} }}' | sort -k1.1) \
+             <(sort -k1.1 {input.sa_part}) | sed 's/ /\t/g' > {output.sa_part}
+        join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $14}} }}' | sort -k1.1) \
              <(sed 's/ /_/' {input.solv} | sort -k1.1) | sed 's/ /\t/g' > {output.solv}
-        join <(tail -n +2 {input.skempi} | awk '{{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $13}}' | sort -k1.1) \
+        join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $13}} }}' | sort -k1.1) \
              <(sed 's/ /_/' {input.vdw}  | sort -k1.1) | sed 's/ /\t/g' > {output.vdw}
+        """
+
+rule side_by_side:
+    input:
+        "{type}-skempi.tab"
+    output:
+        "{type}-diff.tab"
+    shell:
+        """
+        cat {input} \
+            | while read LINE
+                do
+                    echo -n $(echo "$LINE" | cut -f 1-2)"\t"
+                    Rscript -e "0 + $(echo "$LINE" | cut -f 3) - ($(echo "$LINE" | cut -f 4) - $(echo "$LINE" | cut -f 5- | ./bin/sum))" | cut -d ' ' -f 2
+                done \
+            | sed 's/ /\t/g' > {output}
         """
