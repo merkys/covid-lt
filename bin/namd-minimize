@@ -50,7 +50,7 @@ END
     mv *.psf input.psf
 
     grep '^ATOM  ' input.pdb \
-        | awk '{if( substr($0,13,4) == " C  " || substr($0,13,4) == " CA " || substr($0,13,4) == " N  " ) {
+        | awk '{if( substr($0,13,4) == " C  " || substr($0,13,4) == " CA " || substr($0,13,4) == " N  " || substr($0,13,4) == " O  " ) {
                     print substr($0,0,60)"  5   "substr($0,67)
                 } else {
                     print substr($0,0,60)"  0   "substr($0,67)
