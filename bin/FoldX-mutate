@@ -14,8 +14,8 @@ cp $PDB $ROTABASE $TMPDIR/
 (
     cd $TMPDIR
     echo "$2;" > individual_list.lst
-    foldx -c BuildModel --pdb $(basename $PDB) --mutant-file individual_list.lst --rotabaseLocation $(basename $ROTABASE)
-    cat $(basename $PDB .pdb)_1.pdb
+    foldx -c BuildModel --pdb $(basename $PDB) --mutant-file individual_list.lst --rotabaseLocation $(basename $ROTABASE) >&2
+    grep ^ATOM $(basename $PDB .pdb)_1.pdb
 )
 
 if [ -n "$WT" ]
