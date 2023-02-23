@@ -122,11 +122,28 @@ rule all_energies:
             grep -h 'Electrostatic energy' optimized/${{MUT}}.ener optimized/${{MUT}}_wt.ener \
                 | awk '{{print $5}}' | xargs echo | awk '{{print $1 - $2}}' >> {output.solv}
 
+            PDB=$(echo $MUT | cut -d _ -f 1)
+            CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
+            CHAINLESS_MUT=$(echo $MUT | cut -d _ -f 2 | cut -c 1,3-)
+
+            PARTNERS=$(grep ^$PDB SkempiS.txt \
+                        | grep forward \
+                        | awk '{{if( $5 == $6 )                 {{print $0}}}}' \
+                        | awk '{{if( $4 == "'$CHAIN'_1" )       {{print $0}}}}' \
+                        | awk '{{if( $5 == "'$CHAINLESS_MUT'" ) {{print $0}}}}' \
+                        | awk '{{print substr($2,1,1) substr($3,1,1)}}' \
+                        | head -n1)
+
+            A=$(echo $PARTNERS | cut -c 1)
+            B=$(echo $PARTNERS | cut -c 2)
+
             (
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}.ener      | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_?.ener    | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt.ener   | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt_?.ener | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}.ener           | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_${{A}}.ener    | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_${{B}}.ener    | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt.ener        | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt_${{A}}.ener | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt_${{B}}.ener | awk '{{print  $3}}'
             ) | bin/sum >> {output.vdw}
         done
         """
