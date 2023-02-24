@@ -15,7 +15,7 @@ residue_map = {}
 
 for chain in pdb:
     def renumber_plain(number, icode):
-        key = chain.name + str(number)
+        key = chain.name + str(number) + icode
         if key not in residue_map:
             residue_map[key] = len(residue_map) + 1
         return residue_map[key], ' '
