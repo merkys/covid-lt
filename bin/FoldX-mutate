@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # FoldX needs a wrapper to setup the environment and control the file names.
+# individual_list.lst preparation is described here:
+# https://foldxsuite.crg.eu/parameter/mutant-file
 
 PDB=$1
 MUTATIONS=$2
