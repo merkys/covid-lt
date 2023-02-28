@@ -26,13 +26,20 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--first-model', action='store_true', help='Select only the first model (if multiple)')
 parser.add_argument('--chain', action='append', help='Select certain chain(s), may be multiple')
-parser.add_argument('--from-residue', type=int, help='Starting residue number')
+parser.add_argument('--residues', help='Select a range of residues (currently just one)')
 parser.add_argument('--backbone', action='store_true', help='Select only the backbone atoms')
 args = parser.parse_args()
 
 files = args.files
 if len(files) == 0:
     files = [sys.stdin]
+
+residue_range = range(int(-10e8), int(10e8)) # Long enough range to fit all possible residue numbers
+if args.residues:
+    residue_range = args.residues.split('-')
+    residue_range[0] = int(residue_range[0]) if residue_range[0] else int(-10e8)
+    residue_range[1] = int(residue_range[1]) if residue_range[1] else int( 10e8)
+    residue_range = range(residue_range[0], residue_range[1]+1)
 
 model = 1
 for file in files:
@@ -93,7 +100,7 @@ for file in files:
             mentioned_chains = set([line[x] for x in chain_identifiers[keyword]])
             if set(args.chain).isdisjoint(mentioned_chains):
                 continue
-        if args.from_residue is not None and keyword == 'ATOM  ' and int(line[22:26]) < args.from_residue:
+        if keyword == 'ATOM  ' and int(line[22:26]) not in residue_range:
             continue
         if args.backbone and keyword == 'ATOM  ' and line[12:16].strip() not in ['C', 'CA', 'N']:
             continue
