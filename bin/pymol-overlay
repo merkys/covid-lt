@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Selection algebra implemented according to https://pymolwiki.org/index.php/Selection_Algebra
+
 FIRST=
 REST=
 
