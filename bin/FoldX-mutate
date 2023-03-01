@@ -17,7 +17,10 @@ cp $PDB $ROTABASE $TMPDIR/
     cd $TMPDIR
     echo "$2;" > individual_list.lst
     foldx -c BuildModel --pdb $(basename $PDB) --mutant-file individual_list.lst --rotabaseLocation $(basename $ROTABASE) >&2
+
     grep ^ATOM $(basename $PDB .pdb)_1.pdb
+    awk '{print "RAW > " $0 }' Raw_$(basename $PDB .pdb).fxout >&2
+    awk '{print "DIFF> " $0 }' Dif_$(basename $PDB .pdb).fxout >&2
 )
 
 if [ -n "$WT" ]
