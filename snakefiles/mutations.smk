@@ -86,8 +86,8 @@ rule optimize_chain:
     shell:
         """
         mkdir --parents $(dirname {output})
-        bin/pdb_select --chain {wildcards.chain} {input} \
-            | grep ^ATOM \
+        grep ^ATOM {input} \
+            | bin/pdb_select --chain {wildcards.chain} \
             | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
             | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
