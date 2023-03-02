@@ -59,12 +59,15 @@ rule optimize_complex:
         "{pdbid}_{mutation_maybe_wt}.pdb"
     output:
         "optimized/{pdbid}_{mutation_maybe_wt}.pdb"
+    log:
+        "optimized/{pdbid}_{mutation_maybe_wt}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
         if [ -s {input} ]
         then
             grep ^ATOM {input} \
+                | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
                 | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
                 | bin/namd-minimize forcefields/par_all22_prot.prm \
                 | tar -x --to-stdout output.coor > {output}
@@ -78,11 +81,14 @@ rule optimize_chain:
         "{pdbid}_{mutation_maybe_wt}.pdb"
     output:
         "optimized/{pdbid}_{mutation_maybe_wt}_{chain}.pdb"
+    log:
+        "optimized/{pdbid}_{mutation_maybe_wt}_{chain}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
         bin/pdb_select --chain {wildcards.chain} {input} \
             | grep ^ATOM \
+            | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
             | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
             | tar -x --to-stdout output.coor > {output}
@@ -151,7 +157,7 @@ rule energy:
         """
         if [ -s {input} ]
         then
-            if ! PYTHONPATH=. bin/pdb_renumber {input} \
+            if ! pdb_renumber --from 1 {input} \
                 | bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all22_prot.rtf --parameters forcefields/par_all22_prot.prm --pbeq \
                 | grep -e ^ENER -e 'Electrostatic energy' > {output}
             then
