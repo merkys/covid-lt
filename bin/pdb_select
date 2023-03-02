@@ -36,9 +36,12 @@ if len(files) == 0:
 
 residue_range = range(int(-10e8), int(10e8)) # Long enough range to fit all possible residue numbers
 if args.residues:
-    residue_range = args.residues.split('-')
-    residue_range[0] = int(residue_range[0]) if residue_range[0] else int(-10e8)
-    residue_range[1] = int(residue_range[1]) if residue_range[1] else int( 10e8)
+    match = re.match('^(-?\d*)-(-?\d*)$', args.residues)
+    if not match:
+        raise ValueError("do not know how to process range '{}'".format(args.residues))
+    residue_range = [0, 0]
+    residue_range[0] = int(match.group(1)) if match.group(1) else int(-10e8)
+    residue_range[1] = int(match.group(2)) if match.group(2) else int( 10e8)
     residue_range = range(residue_range[0], residue_range[1]+1)
 
 model = 1
