@@ -157,7 +157,7 @@ rule energy:
         """
         if [ -s {input} ]
         then
-            if ! pdb_renumber --from 1 {input} \
+            if ! PYTHONPATH=. bin/pdb_renumber {input} \
                 | bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all22_prot.rtf --parameters forcefields/par_all22_prot.prm --pbeq \
                 | grep -e ^ENER -e 'Electrostatic energy' > {output}
             then
