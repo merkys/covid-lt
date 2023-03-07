@@ -118,19 +118,25 @@ class PDBFile:
     def __str__(self):
         return ''.join(self.content)
 
-    def _get_cKDTree(self):
-        if self._cKDTree is not None:
-            return self._cKDTree
+    def _get_cKDTree(self, prefilter=None):
+        if self._cKDTree is not None and not prefilter:
+            return self._cKDTree, self._cKDTree_atoms
 
         from scipy.spatial import cKDTree
         coordinates = []
-        self._cKDTree_atoms = []
+        atoms = []
 
         for chain in self:
             for residue in chain:
                 for atom in residue:
-                    self._cKDTree_atoms.append( atom )
-                    coordinates.append( atom.coords() )
+                    if not prefilter or prefilter(atom):
+                        atoms.append( atom )
+                        coordinates.append( atom.coords() )
 
-        self._cKDTree = cKDTree( coordinates )
-        return self._cKDTree
+        tree = cKDTree( coordinates )
+
+        if not prefilter:
+            self._cKDTree = tree
+            self._cKDTree_atoms = atoms
+
+        return tree, atoms
