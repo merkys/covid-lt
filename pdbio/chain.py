@@ -106,7 +106,7 @@ class Chain:
                     sequence = sequence + protein_letters_3to1[residue.capitalize()]
         return sequence
 
-    def within(self, distance):
+    def within(self, distance, result_class='Chain'):
         cKDTree = self.parent._get_cKDTree()
         coordinates = []
         for residue in self:
@@ -116,5 +116,12 @@ class Chain:
         for hits in cKDTree.query_ball_point( coordinates, distance ):
             merged.update(set(hits))
         atoms = [self.parent._cKDTree_atoms[x] for x in merged]
-        atoms = filter(lambda x: x.parent.parent.name != self.name, atoms)
-        return list(atoms)
+        result = filter(lambda x: x.parent.parent.name != self.name, atoms)
+
+        if result_class == 'Atom':
+            return list(result)
+        result = set(atom.parent for atom in result)
+        if result_class == 'Residue':
+            return list(result)
+        result = set(residue.parent for residue in result)
+        return list(result)
