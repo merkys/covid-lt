@@ -115,4 +115,6 @@ class Chain:
         merged = set()
         for hits in cKDTree.query_ball_point( coordinates, distance ):
             merged.update(set(hits))
-        return [self.parent._cKDTree_atoms[x] for x in merged]
+        atoms = [self.parent._cKDTree_atoms[x] for x in merged]
+        atoms = filter(lambda x: x.parent.parent.name != self.name, atoms)
+        return list(atoms)
