@@ -169,6 +169,8 @@ rule energy:
         """
 
 rule fold_energy:
+    input:
+        expand("{complex}.log", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
     output:
         "fold.tab"
     shell:
