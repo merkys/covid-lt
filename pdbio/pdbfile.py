@@ -25,6 +25,9 @@ class PDBFile:
         else:
             raise StopIteration()
 
+    def __getitem__(self, key):
+        return self.chain(key)
+
     def get(self, keyword):
         while len(keyword) < 6:
             keyword = keyword + ' '
