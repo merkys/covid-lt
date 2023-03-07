@@ -168,6 +168,19 @@ rule energy:
         fi
         """
 
+rule fold_energy:
+    output:
+        "fold.tab"
+    shell:
+        """
+        ls -1 *.log \
+            | while read FILE
+              do
+                echo -en $(basename $FILE .log)"\t"
+                grep '^DIFF>' $FILE | tail -n 1 | cut -f 2
+              done > {output}
+        """
+
 rule dssp:
     output:
         part = "sa_part.tab",
@@ -201,17 +214,21 @@ rule dssp:
 rule join_with_skempi:
     input:
         skempi = "SkempiS.txt",
+        fold = "fold.tab",
         sa_com = "sa_com.tab",
         sa_part = "sa_part.tab",
         solv = "solv.tab",
         vdw = "vdw.tab"
     output:
+        fold = "fold-skempi.tab",
         sa_com = "sa_com-skempi.tab",
         sa_part = "sa_part-skempi.tab",
         solv = "solv-skempi.tab",
         vdw = "vdw-skempi.tab"
     shell:
         """
+        join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $15}} }}' | sort -k1.1) \
+             <(sort -k1.1 {input.fold}) | sed 's/ /\t/g' > {output.fold}
         join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $16}} }}' | sort -k1.1) \
              <(sort -k1.1 {input.sa_com}) | sed 's/ /\t/g' > {output.sa_com}
         join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $17}} }}' | sort -k1.1) \
