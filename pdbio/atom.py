@@ -25,4 +25,4 @@ class Atom:
 
     def within(self, distance):
         cKDTree = self.parent.parent.parent._get_cKDTree()
-        return [self.parent.parent.parent._cKDTree_atoms[x] for x in cKDTree.query_ball_point( self.coords, distance )]
+        return [self.parent.parent.parent._cKDTree_atoms[x] for x in cKDTree.query_ball_point( self.coords(), distance )]
