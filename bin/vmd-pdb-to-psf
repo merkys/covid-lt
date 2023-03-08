@@ -2,8 +2,28 @@
 
 # Based on https://www.ks.uiuc.edu/Research/vmd/plugins/psfgen/ug.pdf
 
-INPUT_PDB=$1
-INPUT_TOPOLOGY=$2
+INPUT_PDB=
+INPUT_TOPOLOGY=
+
+SPLIT_CHAINS_INTO_SEGMENTS=true
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+        -t|--topology|--topo|--top)
+            INPUT_TOPOLOGY="$2"
+            shift
+            ;;
+        --no-split-chains-into-segments)
+            SPLIT_CHAINS_INTO_SEGMENTS=false
+            ;;
+        -*) echo "`basename $0`: unknown option $1" >&2 ; exit 1 ;;
+        *)
+            test -z "$INPUT_PDB" && INPUT_PDB=$1
+            ;;
+    esac
+    shift
+done
 
 PDB_BASE=$(basename $INPUT_PDB)
 TOPOLOGY_BASE=$(basename $INPUT_TOPOLOGY)
@@ -21,13 +41,20 @@ END
 
 for CHAIN in $(pdb_chains $TMPDIR/$(basename $INPUT_PDB) | sort | uniq)
 do
-    for RANGE in $(bin/pdb_select --first-model --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) | pdb_listres | tr , ' ')
-    do
-        SEGNAME=${CHAIN}$(echo $RANGE | cut -d - -f 1)
-        bin/pdb_select --first-model --chain $CHAIN --residues=$RANGE $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$SEGNAME.pdb
-        echo "segment $SEGNAME { pdb $SEGNAME.pdb }" >> $TMPDIR/vmdgen.pgn
-        echo "coordpdb $SEGNAME.pdb $SEGNAME" >> $TMPDIR/vmdgen.pgn
-    done
+    if $SPLIT_CHAINS_INTO_SEGMENTS
+    then
+        for RANGE in $(bin/pdb_select --first-model --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) | pdb_listres | tr , ' ')
+        do
+            SEGNAME=${CHAIN}$(echo $RANGE | cut -d - -f 1)
+            bin/pdb_select --first-model --chain $CHAIN --residues=$RANGE $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$SEGNAME.pdb
+            echo "segment $SEGNAME { pdb $SEGNAME.pdb }" >> $TMPDIR/vmdgen.pgn
+            echo "coordpdb $SEGNAME.pdb $SEGNAME" >> $TMPDIR/vmdgen.pgn
+        done
+    else
+        bin/pdb_select --first-model --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$CHAIN.pdb
+        echo "segment $CHAIN { pdb $CHAIN.pdb }" >> $TMPDIR/vmdgen.pgn
+        echo "coordpdb $CHAIN.pdb $CHAIN" >> $TMPDIR/vmdgen.pgn
+    fi
 done
 
 rm -f $TMPDIR/$(basename $INPUT_PDB)
