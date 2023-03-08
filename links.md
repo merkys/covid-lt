@@ -1,4 +1,5 @@
 * Rochman et al. (2022) paper on a similar research: https://journals.asm.org/doi/full/10.1128/mbio.00135-22
+* Zhang et al. (2021) Structure of SARS-CoV-2 spike protein. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8423807/
 
 Antibody numbering
 ==================
