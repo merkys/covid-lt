@@ -1,22 +1,20 @@
 wildcard_constraints:
     chain = "[A-Za-z]",
     mutation = "[A-Z]{2}\d+[A-Z]",
+    mutation_maybe_wt = "[A-Z]{2}\d+[A-Z](_wt)?",
     pdbid = "[A-Z0-9]{4}",
     type = "[A-Za-z0-9]+"
 
 def input_complexes():
     complexes = []
-    seen_wt = set()
     for line in open('SkempiS.txt', 'r').readlines():
         fields = line.split("\t")
         if fields[4] != fields[5]: # Filter out lines where Mutation(s)_PDB and Mutation(s)_cleaned are different
             continue
         if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
             continue
-        if fields[0] not in seen_wt:
-            complexes.append("{}_wt".format(fields[0]))
-            seen_wt.add(fields[0])
         complexes.append("{}_{}{}{}".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
+        complexes.append("{}_{}{}{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
     return complexes
 
 rule all_complexes:
@@ -25,27 +23,22 @@ rule all_complexes:
 
 rule mutated_complex:
     input:
-        "{pdbid}_wt.pdb"
-    output:
-        "{pdbid}_{mutation}.pdb"
-    shell:
-        """
-        if [ -s {input} ]
-        then
-            bin/EvoEF2-mutate {input} {wildcards.mutation} > {output} || echo -n > {output}
-        else
-            echo -n > {output}
-        fi
-        """
-
-rule wt:
-    input:
         "{pdbid}.pdb"
     output:
-        "{pdbid}_wt.pdb"
+        mutation = "{pdbid}_{mutation}.pdb",
+        wt = "{pdbid}_{mutation}_wt.pdb"
+    log:
+        "{pdbid}_{mutation}.log"
+    singularity:
+        "container.sif"
     shell:
         """
-        PYTHONPATH=. bin/pdb_clean_incomplete {input} > {output}
+        echo -n > {output.mutation}
+        echo -n > {output.wt}
+        if [ -s {input} ]
+        then
+            PATH=~/bin:$PATH bin/FoldX-mutate {input} {wildcards.mutation} rotabase.txt {output.wt} > {output.mutation} 2> {log} || echo Processing {input} failed >&2
+        fi
         """
 
 rule all_original_pdbs:
@@ -63,11 +56,11 @@ rule original_pdb:
 
 rule optimize_complex:
     input:
-        "{pdbid}_{type}.pdb"
+        "{pdbid}_{mutation_maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{type}.pdb"
+        "optimized/{pdbid}_{mutation_maybe_wt}.pdb"
     log:
-        "optimized/{pdbid}_{type}.map"
+        "optimized/{pdbid}_{mutation_maybe_wt}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -85,16 +78,16 @@ rule optimize_complex:
 
 rule optimize_chain:
     input:
-        "{pdbid}_{type}.pdb"
+        "{pdbid}_{mutation_maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{type}_{chain}.pdb"
+        "optimized/{pdbid}_{mutation_maybe_wt}_{chain}.pdb"
     log:
-        "optimized/{pdbid}_{type}_{chain}.map"
+        "optimized/{pdbid}_{mutation_maybe_wt}_{chain}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
-        bin/pdb_select --chain {wildcards.chain} {input} \
-            | grep ^ATOM \
+        grep ^ATOM {input} \
+            | bin/pdb_select --chain {wildcards.chain} \
             | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
             | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
@@ -121,37 +114,37 @@ rule all_energies:
         """
         echo -n > {output.solv}
         echo -n > {output.vdw}
-        for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .ener | cut -d _ -f 1-2 | cut -d . -f 1 | sort | uniq)
+        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+\.ener$' | xargs -i basename {{}} .ener | sort | uniq)
         do
-            test -s optimized/$MUT.ener || continue
-            test -s optimized/$(echo $MUT | cut -d _ -f 1)_wt.ener || continue
-            test $(echo $MUT | cut -d _ -f 2) == wt && continue
+            echo -en "$MUT\t" >> {output.solv}
+            echo -en "$MUT\t" >> {output.vdw}
 
-            for OUT in {output.solv} {output.vdw}
-            do
-                echo -n $(echo $MUT | sed 's/_/\t/g') >> $OUT
-            done
+            grep -h 'Electrostatic energy' optimized/${{MUT}}.ener optimized/${{MUT}}_wt.ener \
+                | awk '{{print $5}}' | xargs echo | awk '{{print $1 - $2}}' >> {output.solv}
+
+            PDB=$(echo $MUT | cut -d _ -f 1)
+            CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
+            CHAINLESS_MUT=$(echo $MUT | cut -d _ -f 2 | cut -c 1,3-)
+
+            PARTNERS=$(grep ^$PDB SkempiS.txt \
+                        | grep forward \
+                        | awk '{{if( $5 == $6 )                 {{print $0}}}}' \
+                        | awk '{{if( $4 == "'$CHAIN'_1" )       {{print $0}}}}' \
+                        | awk '{{if( $5 == "'$CHAINLESS_MUT'" ) {{print $0}}}}' \
+                        | awk '{{print substr($2,1,1) substr($3,1,1)}}' \
+                        | head -n1)
+
+            A=$(echo $PARTNERS | cut -c 1)
+            B=$(echo $PARTNERS | cut -c 2)
 
             (
-                grep 'Electrostatic energy' optimized/$(echo $MUT | cut -d _ -f 1)_wt.ener | awk '{{print $NF}}'
-                grep --no-filename 'Electrostatic energy' optimized/$(echo $MUT | cut -d _ -f 1)_wt_*.ener | awk '{{print -$NF}}'
-            ) | bin/sum | xargs -i echo -n "\t"{{}} >> {output.solv}
-
-            (
-                grep '^ENER EXTERN>' optimized/$(echo $MUT | cut -d _ -f 1)_wt.ener | awk '{{print $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/$(echo $MUT | cut -d _ -f 1)_wt_*.ener | awk '{{print -$3}}'
-            ) | bin/sum | xargs -i echo -n "\t"{{}} >> {output.vdw}
-
-            echo -n "\t"$(grep 'Electrostatic energy' optimized/$MUT.ener | awk '{{print $NF}}') >> {output.solv}
-            echo -n "\t"$(grep '^ENER EXTERN>' optimized/$MUT.ener | awk '{{print $3}}') >> {output.vdw}
-
-            for CHAIN in optimized/${{MUT}}_*.ener
-            do
-                echo -n "\t"$(grep 'Electrostatic energy' $CHAIN | awk '{{print $NF}}') >> {output.solv}
-                echo -n "\t"$(grep '^ENER EXTERN>' $CHAIN | awk '{{print $3}}') >> {output.vdw}
-            done
-            echo >> {output.solv}
-            echo >> {output.vdw}
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}.ener           | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_${{A}}.ener    | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_${{B}}.ener    | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt.ener        | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt_${{A}}.ener | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt_${{B}}.ener | awk '{{print  $3}}'
+            ) | bin/sum >> {output.vdw}
         done
         """
 
@@ -164,7 +157,7 @@ rule energy:
         """
         if [ -s {input} ]
         then
-            if ! pdb_renumber --from 1 {input} \
+            if ! PYTHONPATH=. bin/pdb_renumber {input} \
                 | bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all22_prot.rtf --parameters forcefields/par_all22_prot.prm --pbeq \
                 | grep -e ^ENER -e 'Electrostatic energy' > {output}
             then
@@ -173,6 +166,21 @@ rule energy:
         else
             echo -n > {output}
         fi
+        """
+
+rule fold_energy:
+    input:
+        expand("{complex}.log", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
+    output:
+        "fold.tab"
+    shell:
+        """
+        ls -1 *.log \
+            | while read FILE
+              do
+                echo -en $(basename $FILE .log)"\t"
+                grep '^DIFF>' $FILE | tail -n 1 | cut -f 2
+              done > {output}
         """
 
 rule dssp:
@@ -208,17 +216,21 @@ rule dssp:
 rule join_with_skempi:
     input:
         skempi = "SkempiS.txt",
+        fold = "fold.tab",
         sa_com = "sa_com.tab",
         sa_part = "sa_part.tab",
         solv = "solv.tab",
         vdw = "vdw.tab"
     output:
+        fold = "fold-skempi.tab",
         sa_com = "sa_com-skempi.tab",
         sa_part = "sa_part-skempi.tab",
         solv = "solv-skempi.tab",
         vdw = "vdw-skempi.tab"
     shell:
         """
+        join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $15}} }}' | sort -k1.1) \
+             <(sort -k1.1 {input.fold}) | sed 's/ /\t/g' > {output.fold}
         join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $16}} }}' | sort -k1.1) \
              <(sort -k1.1 {input.sa_com}) | sed 's/ /\t/g' > {output.sa_com}
         join <(tail -n +2 {input.skempi} | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $17}} }}' | sort -k1.1) \

@@ -11,6 +11,8 @@ class PDBFile:
         else:
             ValueError('Cannot process {}' % type(fileobject))
         self.content = self.file.readlines()
+        self._cKDTree = None
+        self._cKDTree_atoms = []
 
     def __iter__(self):
         self.iterchain = -1
@@ -22,6 +24,9 @@ class PDBFile:
             return self.chain(self.chains()[self.iterchain])
         else:
             raise StopIteration()
+
+    def __getitem__(self, key):
+        return self.chain(key)
 
     def get(self, keyword):
         while len(keyword) < 6:
@@ -112,3 +117,26 @@ class PDBFile:
 
     def __str__(self):
         return ''.join(self.content)
+
+    def _get_cKDTree(self, prefilter=None):
+        if self._cKDTree is not None and not prefilter:
+            return self._cKDTree, self._cKDTree_atoms
+
+        from scipy.spatial import cKDTree
+        coordinates = []
+        atoms = []
+
+        for chain in self:
+            for residue in chain:
+                for atom in residue:
+                    if not prefilter or prefilter(atom):
+                        atoms.append( atom )
+                        coordinates.append( atom.coords() )
+
+        tree = cKDTree( coordinates )
+
+        if not prefilter:
+            self._cKDTree = tree
+            self._cKDTree_atoms = atoms
+
+        return tree, atoms

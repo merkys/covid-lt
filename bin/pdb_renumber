@@ -6,6 +6,7 @@ import argparse, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--adjust-by', type=int, help='Instead of renumbering from 1, adjust residue numbers by adding the specified value')
 parser.add_argument('--output-map', help='Specify a file to store renumbering map')
 args = parser.parse_args()
 
@@ -15,12 +16,20 @@ residue_map = {}
 
 for chain in pdb:
     def renumber_plain(number, icode):
-        key = chain.name + str(number)
+        key = chain.name + str(number) + icode
         if key not in residue_map:
             residue_map[key] = len(residue_map) + 1
         return residue_map[key], ' '
 
-    chain.renumber(renumber_plain)
+    def renumber_adjust(number, icode):
+        key = chain.name + str(number) + icode
+        residue_map[key] = number + args.adjust_by
+        return number + args.adjust_by, icode
+
+    if args.adjust_by:
+        chain.renumber(renumber_adjust)
+    else:
+        chain.renumber(renumber_plain)
 
 print(pdb, end='')
 

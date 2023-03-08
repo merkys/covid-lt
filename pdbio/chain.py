@@ -105,3 +105,26 @@ class Chain:
                 if residue != '   ':
                     sequence = sequence + protein_letters_3to1[residue.capitalize()]
         return sequence
+
+    def within(self, distance, result_class='Chain', prefilter=None):
+        cKDTree, atoms = self.parent._get_cKDTree(prefilter=prefilter)
+
+        coordinates = []
+        for residue in self:
+            for atom in residue:
+                if not prefilter or prefilter(atom):
+                    coordinates.append( atom.coords() )
+
+        merged = set()
+        for hits in cKDTree.query_ball_point( coordinates, distance ):
+            merged.update(set(hits))
+        result = [atoms[x] for x in merged]
+        result = filter(lambda x: x.parent.parent.name != self.name, result)
+
+        if result_class == 'Atom':
+            return list(result)
+        result = set(atom.parent for atom in result)
+        if result_class == 'Residue':
+            return list(result)
+        result = set(residue.parent for residue in result)
+        return list(result)

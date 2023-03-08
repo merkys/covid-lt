@@ -5,6 +5,7 @@ INPUT_RTF= # topology
 INPUT_PRM= # parameters
 
 PBEQ=
+SEQUENCE_FROM_SEQRES=
 
 while [ $# -gt 0 ]
 do
@@ -19,6 +20,10 @@ do
             ;;
         --pbeq)
             PBEQ=1
+            ;;
+        --sequence-from-seqres)
+            SEQUENCE_FROM_SEQRES="$2"
+            shift
             ;;
         -*) echo "`basename $0`: unknown option $1" >&2 ; exit 1 ;;
         *)
@@ -52,18 +57,37 @@ CLOSE UNIT 1
 OPEN UNIT 1 CARD READ NAME $PRM_BASE
 READ PARA CARD UNIT 1
 CLOSE UNIT 1
- 
-!Read in the pdb
+
+ENDSCRIPT
+
+if test -n "$SEQUENCE_FROM_SEQRES"
+then
+    cat $SEQUENCE_FROM_SEQRES > $TMPDIR/seqres.pdb
+    for CHAIN in $(grep ^ATOM $TMPDIR/seqres.pdb | pdb_chains)
+    do
+        echo read sequence card >> $TMPDIR/energy.inp
+        grep ^SEQRES $TMPDIR/seqres.pdb | cut -c 12- | grep ^$CHAIN | cut -c 3-6 | head -n 1 >> $TMPDIR/energy.inp
+        grep ^SEQRES $TMPDIR/seqres.pdb | cut -c 12- | grep ^$CHAIN | cut -c 9-  | sed 's/HIS/HSD/g' >> $TMPDIR/energy.inp
+        echo generate $CHAIN setup >> $TMPDIR/energy.inp
+        echo >> $TMPDIR/energy.inp
+    done
+else
+    cat >> $TMPDIR/energy.inp <<ENDSCRIPT
 OPEN UNIT 1 CARD READ NAME input.pdb
 READ SEQU PDB UNIT 1
- 
+CLOSE UNIT 1
+
 !Time for CHARMM to make the Internal Coordinates table
 GENErate A SETUp
- 
-REWInd UNIT 1
+
+ENDSCRIPT
+fi
+
+cat >> $TMPDIR/energy.inp <<ENDSCRIPT
+OPEN UNIT 1 CARD READ NAME input.pdb
 READ COOR PDB UNIT 1
 CLOSE UNIT 1
- 
+
 !Involves known atomic coordinates and fills in missing coordinates
 IC FILL
 

@@ -21,9 +21,13 @@ END
 
 for CHAIN in $(pdb_chains $TMPDIR/$(basename $INPUT_PDB) | sort | uniq)
 do
-    bin/pdb_select --first-model --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$CHAIN.pdb
-    echo "segment $CHAIN { pdb $CHAIN.pdb }" >> $TMPDIR/vmdgen.pgn
-    echo "coordpdb $CHAIN.pdb $CHAIN" >> $TMPDIR/vmdgen.pgn
+    for RANGE in $(bin/pdb_select --first-model --chain $CHAIN $TMPDIR/$(basename $INPUT_PDB) | pdb_listres | tr , ' ')
+    do
+        SEGNAME=${CHAIN}$(echo $RANGE | cut -d - -f 1)
+        bin/pdb_select --first-model --chain $CHAIN --residues=$RANGE $TMPDIR/$(basename $INPUT_PDB) > $TMPDIR/$SEGNAME.pdb
+        echo "segment $SEGNAME { pdb $SEGNAME.pdb }" >> $TMPDIR/vmdgen.pgn
+        echo "coordpdb $SEGNAME.pdb $SEGNAME" >> $TMPDIR/vmdgen.pgn
+    done
 done
 
 rm -f $TMPDIR/$(basename $INPUT_PDB)

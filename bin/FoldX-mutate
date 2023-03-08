@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # FoldX needs a wrapper to setup the environment and control the file names.
+# individual_list.lst preparation is described here:
+# https://foldxsuite.crg.eu/parameter/mutant-file
 
 PDB=$1
 MUTATIONS=$2
@@ -14,8 +16,11 @@ cp $PDB $ROTABASE $TMPDIR/
 (
     cd $TMPDIR
     echo "$2;" > individual_list.lst
-    foldx -c BuildModel --pdb $(basename $PDB) --mutant-file individual_list.lst --rotabaseLocation $(basename $ROTABASE)
-    cat $(basename $PDB .pdb)_1.pdb
+    foldx -c BuildModel --pdb $(basename $PDB) --mutant-file individual_list.lst --rotabaseLocation $(basename $ROTABASE) >&2
+
+    grep ^ATOM $(basename $PDB .pdb)_1.pdb
+    awk '{print "RAW > " $0 }' Raw_$(basename $PDB .pdb).fxout >&2
+    awk '{print "DIFF> " $0 }' Dif_$(basename $PDB .pdb).fxout >&2
 )
 
 if [ -n "$WT" ]
