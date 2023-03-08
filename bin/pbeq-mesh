@@ -2,6 +2,10 @@
 
 import math, sys
 
+dcel = 1
+if len(sys.argv) > 1:
+    dcel = float(sys.argv[1])
+
 for line in sys.stdin:
     box = line.split()
 
@@ -12,6 +16,6 @@ for line in sys.stdin:
     box[4] = math.floor(float(box[4]))
     box[5] = math.ceil(float(box[5]))
 
-    print('NCLX', box[1]-box[0], 'XBCEN', (box[0]+box[1])/2, '-')
-    print('NCLY', box[3]-box[2], 'YBCEN', (box[2]+box[3])/2, '-')
-    print('NCLZ', box[5]-box[4], 'ZBCEN', (box[4]+box[5])/2, '-')
+    print('NCLX', (box[1]-box[0])/dcel, 'XBCEN', (box[0]+box[1])/2, '-')
+    print('NCLY', (box[3]-box[2])/dcel, 'YBCEN', (box[2]+box[3])/2, '-')
+    print('NCLZ', (box[5]-box[4])/dcel, 'ZBCEN', (box[4]+box[5])/2, '-')

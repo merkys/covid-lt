@@ -5,6 +5,7 @@ INPUT_RTF= # topology
 INPUT_PRM= # parameters
 
 PBEQ=
+PBEQ_DCEL=1.0
 SEQUENCE_FROM_SEQRES=
 
 while [ $# -gt 0 ]
@@ -20,6 +21,10 @@ do
             ;;
         --pbeq)
             PBEQ=1
+            ;;
+        --pbeq-dcel)
+            PBEQ_DCEL="$2"
+            shift
             ;;
         --sequence-from-seqres)
             SEQUENCE_FROM_SEQRES="$2"
@@ -112,10 +117,10 @@ then
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
 PBEQ
    SOLVE epsw 80 epsp 2 -
-        dcel 1.0 -
+        dcel $PBEQ_DCEL -
 ENDSCRIPT
 
-pdb_box $TMPDIR/input.pdb | bin/pbeq-mesh >> $TMPDIR/energy.inp
+pdb_box $TMPDIR/input.pdb | bin/pbeq-mesh $PBEQ_DCEL >> $TMPDIR/energy.inp
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
         maxi 1000 select all end
