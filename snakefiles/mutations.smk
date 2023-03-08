@@ -87,7 +87,7 @@ rule optimize_complex:
             grep ^ATOM {input} \
                 | bin/pdb_select --chain {wildcards.chains} \
                 | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
-                | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
+                | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments \
                 | bin/namd-minimize forcefields/par_all22_prot.prm \
                 | tar -x --to-stdout output.coor > {output}
         else
@@ -108,7 +108,7 @@ rule optimize_chain:
         grep ^ATOM {input} \
             | bin/pdb_select --chain {wildcards.chain} \
             | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
-            | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
+            | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
             | tar -x --to-stdout output.coor > {output}
         """
