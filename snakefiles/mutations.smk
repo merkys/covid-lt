@@ -5,8 +5,8 @@ wildcard_constraints:
     pdbid = "[A-Z0-9]{4}",
     type = "[A-Za-z0-9]+"
 
-def input_complexes():
-    complexes = []
+def skempi_filtered()
+    skempi = []
     for line in open('SkempiS.txt', 'r').readlines():
         fields = line.split("\t")
         if fields[1].count('.') > 0 or fields[2].count('.') > 0: # Filter out lines having more than two partners
@@ -15,6 +15,12 @@ def input_complexes():
             continue
         if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
             continue
+        skempi.append(fields)
+    return skempi
+
+def input_complexes():
+    complexes = []
+    for line in skempi_filtered():
         complexes.append("{}_{}{}{}".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
         complexes.append("{}_{}{}{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
     return complexes
