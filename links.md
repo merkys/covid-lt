@@ -63,6 +63,12 @@ Rosetta
 * PyRosetta: https://www.pyrosetta.org/documentation/tutorials
 * SnugDock: https://www.rosettacommons.org/docs/latest/application_documentation/antibody/snugdock
 
+SSAP
+====
+
+* Paper: https://pubmed.ncbi.nlm.nih.gov/8743709/
+* Paper: https://www.sciencedirect.com/science/article/abs/pii/S0076687996660388
+
 MutaBind2
 =========
 
@@ -107,6 +113,7 @@ YANK
 Other
 =====
 
+* Al-Lazikani, Lesk & Chothia. Standard conformations for the canonical structures of immunoglobulins: https://www.sciencedirect.com/science/article/abs/pii/S0022283697913541
 * CNS: http://cns-online.org/v1.3/
 * PRODIGY dataset: https://bianca.science.uu.nl/prodigy/dataset
 * pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/
