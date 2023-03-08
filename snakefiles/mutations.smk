@@ -9,6 +9,8 @@ def input_complexes():
     complexes = []
     for line in open('SkempiS.txt', 'r').readlines():
         fields = line.split("\t")
+        if fields[1].count('.') > 0 or fields[2].count('.') > 0: # Filter out lines having more than two partners
+            continue
         if fields[4] != fields[5]: # Filter out lines where Mutation(s)_PDB and Mutation(s)_cleaned are different
             continue
         if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
