@@ -1,5 +1,6 @@
 wildcard_constraints:
     chain = "[A-Za-z]",
+    maybe_wt = "(_wt)?",
     mutation = "[A-Z]{2}\d+[A-Z]",
     mutation_maybe_wt = "[A-Z]{2}\d+[A-Z](_wt)?",
     pdbid = "[A-Z0-9]{4}",
@@ -64,11 +65,11 @@ rule original_pdb:
 
 rule optimize_complex:
     input:
-        "{pdbid}_{mutation_maybe_wt}.pdb"
+        "{pdbid}_{mutation}{maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{mutation_maybe_wt}.pdb"
+        "optimized/{pdbid}_{mutation}{maybe_wt}.pdb"
     log:
-        "optimized/{pdbid}_{mutation_maybe_wt}.map"
+        "optimized/{pdbid}_{mutation}{maybe_wt}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -86,11 +87,11 @@ rule optimize_complex:
 
 rule optimize_chain:
     input:
-        "{pdbid}_{mutation_maybe_wt}.pdb"
+        "{pdbid}_{mutation}{maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{mutation_maybe_wt}_{chain}.pdb"
+        "optimized/{pdbid}_{mutation}{maybe_wt}_{chain}.pdb"
     log:
-        "optimized/{pdbid}_{mutation_maybe_wt}_{chain}.map"
+        "optimized/{pdbid}_{mutation}{maybe_wt}_{chain}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
