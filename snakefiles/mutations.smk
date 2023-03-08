@@ -1,21 +1,39 @@
 wildcard_constraints:
     chain = "[A-Za-z]",
+    chains = "[A-Za-z]+",
+    maybe_wt = "(_wt)?",
     mutation = "[A-Z]{2}\d+[A-Z]",
     mutation_maybe_wt = "[A-Z]{2}\d+[A-Z](_wt)?",
     pdbid = "[A-Z0-9]{4}",
     type = "[A-Za-z0-9]+"
 
-def input_complexes():
-    complexes = []
+def skempi_filtered():
+    skempi = []
     for line in open('SkempiS.txt', 'r').readlines():
         fields = line.split("\t")
+        if fields[1].count('.') > 0 or fields[2].count('.') > 0: # Filter out lines having more than two partners
+            continue
         if fields[4] != fields[5]: # Filter out lines where Mutation(s)_PDB and Mutation(s)_cleaned are different
             continue
         if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
             continue
-        complexes.append("{}_{}{}{}".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
-        complexes.append("{}_{}{}{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
+        skempi.append(fields)
+    return skempi
+
+def input_complexes():
+    complexes = []
+    for fields in skempi_filtered():
+        complexes.append("{}_{}{}{}_{}{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], fields[1][0], fields[2][0]))
+        complexes.append("{}_{}{}{}_{}{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], fields[1][0], fields[2][0]))
     return complexes
+
+def skempi_get_details(mutation):
+    if mutation[1].isalpha(): # chain given
+        mutation = mutation[0] + mutation[2:]
+    for fields in skempi_filtered():
+        if fields[4] == mutation:
+            return fields
+    return None
 
 rule all_complexes:
     input:
@@ -25,10 +43,10 @@ rule mutated_complex:
     input:
         "{pdbid}.pdb"
     output:
-        mutation = "{pdbid}_{mutation}.pdb",
-        wt = "{pdbid}_{mutation}_wt.pdb"
+        mutation = "{pdbid}_{mutation}_{chains}.pdb",
+        wt = "{pdbid}_{mutation}_{chains}_wt.pdb"
     log:
-        "{pdbid}_{mutation}.log"
+        "{pdbid}_{mutation}_{chains}.log"
     singularity:
         "container.sif"
     shell:
@@ -56,17 +74,18 @@ rule original_pdb:
 
 rule optimize_complex:
     input:
-        "{pdbid}_{mutation_maybe_wt}.pdb"
+        "{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{mutation_maybe_wt}.pdb"
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
     log:
-        "optimized/{pdbid}_{mutation_maybe_wt}.map"
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
         if [ -s {input} ]
         then
             grep ^ATOM {input} \
+                | bin/pdb_select --chain {wildcards.chains} \
                 | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
                 | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
                 | bin/namd-minimize forcefields/par_all22_prot.prm \
@@ -78,11 +97,11 @@ rule optimize_complex:
 
 rule optimize_chain:
     input:
-        "{pdbid}_{mutation_maybe_wt}.pdb"
+        "{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{mutation_maybe_wt}_{chain}.pdb"
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}_{chain}.pdb"
     log:
-        "optimized/{pdbid}_{mutation_maybe_wt}_{chain}.map"
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}_{chain}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -94,18 +113,20 @@ rule optimize_chain:
             | tar -x --to-stdout output.coor > {output}
         """
 
-def list_chains(pdb):
-    from os import popen
-    return popen('grep -h "^ATOM" {} | cut -b 21-22 | uniq'.format(pdb)).read().split()
+def list_chains(name):
+    name_parts = name.split('_')
+    if name_parts[-1] == 'wt':
+        name_parts.pop()
+    return list(name_parts[-1])
 
 rule all_optimized:
     input:
-        [expand("optimized/{cplx}_{chain}.pdb", cplx=cplx, chain=list_chains(cplx + ".pdb")) for cplx in input_complexes()],
+        [expand("optimized/{cplx}_{chain}.pdb", cplx=cplx, chain=list_chains(cplx)) for cplx in input_complexes()],
         expand("optimized/{cplx}.pdb", cplx=input_complexes())
 
 rule all_energies:
     input:
-        [expand("optimized/{cplx}_{chain}.ener", cplx=cplx, chain=list_chains(cplx + ".pdb")) for cplx in input_complexes()],
+        [expand("optimized/{cplx}_{chain}.ener", cplx=cplx, chain=list_chains(cplx)) for cplx in input_complexes()],
         expand("optimized/{cplx}.ener", cplx=input_complexes())
     output:
         solv = "solv.tab",
@@ -114,12 +135,14 @@ rule all_energies:
         """
         echo -n > {output.solv}
         echo -n > {output.vdw}
-        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+\.ener$' | xargs -i basename {{}} .ener | sort | uniq)
+        for STRUCT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+\.ener$' | xargs -i basename {{}} .ener | sort | uniq)
         do
+            MUT=$(echo $STRUCT | cut -d _ -f 1-2)
+
             echo -en "$MUT\t" >> {output.solv}
             echo -en "$MUT\t" >> {output.vdw}
 
-            grep -h 'Electrostatic energy' optimized/${{MUT}}.ener optimized/${{MUT}}_wt.ener \
+            grep -h 'Electrostatic energy' optimized/${{STRUCT}}.ener optimized/${{STRUCT}}_wt.ener \
                 | awk '{{print $5}}' | xargs echo | awk '{{print $1 - $2}}' >> {output.solv}
 
             PDB=$(echo $MUT | cut -d _ -f 1)
@@ -134,16 +157,16 @@ rule all_energies:
                         | awk '{{print substr($2,1,1) substr($3,1,1)}}' \
                         | head -n1)
 
-            A=$(echo $PARTNERS | cut -c 1)
-            B=$(echo $PARTNERS | cut -c 2)
+            A=$(echo $STRUCT | cut -d _ -f 3 | cut -c 1)
+            B=$(echo $STRUCT | cut -d _ -f 3 | cut -c 2)
 
             (
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}.ener           | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_${{A}}.ener    | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_${{B}}.ener    | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt.ener        | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt_${{A}}.ener | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt_${{B}}.ener | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}.ener           | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{A}}.ener    | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{B}}.ener    | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt.ener        | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{A}}.ener | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{B}}.ener | awk '{{print  $3}}'
             ) | bin/sum >> {output.vdw}
         done
         """
