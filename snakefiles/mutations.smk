@@ -6,7 +6,7 @@ wildcard_constraints:
     pdbid = "[A-Z0-9]{4}",
     type = "[A-Za-z0-9]+"
 
-def skempi_filtered()
+def skempi_filtered():
     skempi = []
     for line in open('SkempiS.txt', 'r').readlines():
         fields = line.split("\t")
@@ -21,10 +21,18 @@ def skempi_filtered()
 
 def input_complexes():
     complexes = []
-    for line in skempi_filtered():
+    for fields in skempi_filtered():
         complexes.append("{}_{}{}{}".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
         complexes.append("{}_{}{}{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
     return complexes
+
+def skempi_get_details(mutation):
+    if mutation[1].isalpha(): # chain given
+        mutation = mutation[0] + mutation[2:]
+    for fields in skempi_filtered():
+        if fields[4] == mutation:
+            return fields
+    return None
 
 rule all_complexes:
     input:
