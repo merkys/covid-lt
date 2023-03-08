@@ -135,12 +135,14 @@ rule all_energies:
         """
         echo -n > {output.solv}
         echo -n > {output.vdw}
-        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+\.ener$' | xargs -i basename {{}} .ener | sort | uniq)
+        for STRUCT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+\.ener$' | xargs -i basename {{}} .ener | sort | uniq)
         do
+            MUT=$(echo $STRUCT | cut -d _ -f 1-2)
+
             echo -en "$MUT\t" >> {output.solv}
             echo -en "$MUT\t" >> {output.vdw}
 
-            grep -h 'Electrostatic energy' optimized/${{MUT}}.ener optimized/${{MUT}}_wt.ener \
+            grep -h 'Electrostatic energy' optimized/${{STRUCT}}.ener optimized/${{STRUCT}}_wt.ener \
                 | awk '{{print $5}}' | xargs echo | awk '{{print $1 - $2}}' >> {output.solv}
 
             PDB=$(echo $MUT | cut -d _ -f 1)
@@ -155,16 +157,16 @@ rule all_energies:
                         | awk '{{print substr($2,1,1) substr($3,1,1)}}' \
                         | head -n1)
 
-            A=$(echo $PARTNERS | cut -c 1)
-            B=$(echo $PARTNERS | cut -c 2)
+            A=$(echo $STRUCT | cut -d _ -f 3 | cut -c 1)
+            B=$(echo $STRUCT | cut -d _ -f 3 | cut -c 2)
 
             (
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}.ener           | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_${{A}}.ener    | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_${{B}}.ener    | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt.ener        | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt_${{A}}.ener | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{MUT}}_wt_${{B}}.ener | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}.ener           | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{A}}.ener    | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{B}}.ener    | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt.ener        | awk '{{print -$3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{A}}.ener | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{B}}.ener | awk '{{print  $3}}'
             ) | bin/sum >> {output.vdw}
         done
         """
