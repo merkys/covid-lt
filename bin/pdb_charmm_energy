@@ -114,6 +114,8 @@ ENDSCRIPT
 if [ -n "$PBEQ" ]
 then
 
+# PBEQ module is described in https://academiccharmm.org/documentation/version/c47b2/pbeq
+
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
 PBEQ
    SOLVE epsw 80 epsp 2 -
