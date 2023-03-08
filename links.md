@@ -31,6 +31,7 @@ OpenMM
 OpenStructure
 =============
 
+* Comparing two structures: https://openstructure.org/docs/2.2/actions/
 * Simulation parameters: https://openstructure.org/docs/2.3.1/mol/mm/simulation/#ost.mol.mm.Simulation
 
 PDB format
@@ -55,6 +56,11 @@ ProteinTools
 
 * Server: https://proteintools.uni-bayreuth.de
 * Paper: https://academic.oup.com/nar/article/49/W1/W559/6279848
+
+Provean
+=======
+
+* Usage example: https://gist.github.com/darencard/d3ff1399f1fa05b35429eb148383aea4
 
 Rosetta
 =======
