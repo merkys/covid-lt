@@ -1,5 +1,6 @@
 wildcard_constraints:
     chain = "[A-Za-z]",
+    chains = "[A-Za-z]+",
     maybe_wt = "(_wt)?",
     mutation = "[A-Z]{2}\d+[A-Z]",
     mutation_maybe_wt = "[A-Z]{2}\d+[A-Z](_wt)?",
@@ -22,8 +23,8 @@ def skempi_filtered():
 def input_complexes():
     complexes = []
     for fields in skempi_filtered():
-        complexes.append("{}_{}{}{}".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
-        complexes.append("{}_{}{}{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]))
+        complexes.append("{}_{}{}{}_{}{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], fields[1][0], fields[2][0]))
+        complexes.append("{}_{}{}{}_{}{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], fields[1][0], fields[2][0]))
     return complexes
 
 def skempi_get_details(mutation):
@@ -42,10 +43,10 @@ rule mutated_complex:
     input:
         "{pdbid}.pdb"
     output:
-        mutation = "{pdbid}_{mutation}.pdb",
-        wt = "{pdbid}_{mutation}_wt.pdb"
+        mutation = "{pdbid}_{mutation}_{chains}.pdb",
+        wt = "{pdbid}_{mutation}_{chains}_wt.pdb"
     log:
-        "{pdbid}_{mutation}.log"
+        "{pdbid}_{mutation}_{chains}.log"
     singularity:
         "container.sif"
     shell:
@@ -73,17 +74,18 @@ rule original_pdb:
 
 rule optimize_complex:
     input:
-        "{pdbid}_{mutation}{maybe_wt}.pdb"
+        "{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{mutation}{maybe_wt}.pdb"
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
     log:
-        "optimized/{pdbid}_{mutation}{maybe_wt}.map"
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
         if [ -s {input} ]
         then
             grep ^ATOM {input} \
+                | bin/pdb_select --chain {wildcards.chains} \
                 | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
                 | bin/vmd-pdb-to-psf /dev/stdin forcefields/top_all22_prot.rtf \
                 | bin/namd-minimize forcefields/par_all22_prot.prm \
@@ -95,11 +97,11 @@ rule optimize_complex:
 
 rule optimize_chain:
     input:
-        "{pdbid}_{mutation}{maybe_wt}.pdb"
+        "{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{mutation}{maybe_wt}_{chain}.pdb"
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}_{chain}.pdb"
     log:
-        "optimized/{pdbid}_{mutation}{maybe_wt}_{chain}.map"
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}_{chain}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -111,18 +113,20 @@ rule optimize_chain:
             | tar -x --to-stdout output.coor > {output}
         """
 
-def list_chains(pdb):
-    from os import popen
-    return popen('grep -h "^ATOM" {} | cut -b 21-22 | uniq'.format(pdb)).read().split()
+def list_chains(name):
+    name_parts = name.split('_')
+    if name_parts[-1] == 'wt':
+        name_parts.pop()
+    return list(name_parts[-1])
 
 rule all_optimized:
     input:
-        [expand("optimized/{cplx}_{chain}.pdb", cplx=cplx, chain=list_chains(cplx + ".pdb")) for cplx in input_complexes()],
+        [expand("optimized/{cplx}_{chain}.pdb", cplx=cplx, chain=list_chains(cplx)) for cplx in input_complexes()],
         expand("optimized/{cplx}.pdb", cplx=input_complexes())
 
 rule all_energies:
     input:
-        [expand("optimized/{cplx}_{chain}.ener", cplx=cplx, chain=list_chains(cplx + ".pdb")) for cplx in input_complexes()],
+        [expand("optimized/{cplx}_{chain}.ener", cplx=cplx, chain=list_chains(cplx)) for cplx in input_complexes()],
         expand("optimized/{cplx}.ener", cplx=input_complexes())
     output:
         solv = "solv.tab",
