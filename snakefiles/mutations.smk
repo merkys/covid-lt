@@ -222,10 +222,11 @@ rule dssp:
             test -s optimized/${{MUT}}_wt.pdb || continue
 
             POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt.map | cut -f 2)
+            POS_IN_CHAIN=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt_$CHAIN.map | cut -f 2)
 
             dssp optimized/${{MUT}}_wt_$CHAIN.pdb \
                 | grep -vP '\.$' \
-                | grep -P "^\s+$POS\s" \
+                | grep -P "^\s+$POS_IN_CHAIN\s" \
                 | cut -c 36-38 \
                 | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.part} || true
             dssp optimized/${{MUT}}_wt.pdb \
