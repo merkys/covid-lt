@@ -227,12 +227,12 @@ rule dssp:
                 | grep -vP '\.$' \
                 | grep -P "^\s+$POS\s" \
                 | cut -c 36-38 \
-                | xargs -i echo -e $MUT"\t"{{}} >> {output.part} || true
+                | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.part} || true
             dssp optimized/${{MUT}}_wt.pdb \
                 | grep -vP '\.$' \
                 | grep -P "^\s+$POS\s" \
                 | cut -c 36-38 \
-                | xargs -i echo -e $MUT"\t"{{}} >> {output.com} || true
+                | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.com} || true
         done
         """
 
@@ -285,12 +285,14 @@ rule train_dataset:
         vdw = "vdw.tab",
         solv = "solv.tab",
         fold = "fold.tab",
+        sa_part = "sa_part.tab",
+        sa_com = "sa_com.tab",
         skempi = "SkempiS.txt"
     output:
         "train-dataset.tab"
     shell:
         """
-        join {input.vdw} {input.solv} | join - <(sed 's/_AB\t/\t/' {input.fold}) | sed 's/ /\t/g' > {output}
+        join {input.vdw} {input.solv} | join - <(sed 's/_AB\t/\t/' {input.fold}) | join - {input.sa_part} | join - {input.sa_com} | sed 's/ /\t/g' > {output}
 
         grep forward {input.skempi} \
             | awk '{{if( $5 == $6 )   {{print $0}}}}' \
