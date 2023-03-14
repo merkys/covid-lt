@@ -4,10 +4,19 @@ library( 'optparse' )
 library( 'randomForest' )
 
 parser <- OptionParser()
+parser <- add_option(parser, c( '--train-size' ), type = 'double', default = 0.8)
 options = parse_args(parser, positional_arguments = TRUE)
 
 D = read.csv( options$args[1], quote="", sep="\t" )
-is_train = sample( c(TRUE, FALSE), length(D[,1]), replace=TRUE, prob=c(0.4, 0.6) )
+
+train_size = options$options$train
+if( train_size < 1 ) {
+    train_size = round( length(D[,1]) * train_size )
+}
+
+is_train = logical( length(D[,1]) )
+is_train[1:train_size] = TRUE
+is_train = sample( is_train )
 
 train = D[ is_train, 2:length(D)]
 test  = D[!is_train, 2:length(D)]
