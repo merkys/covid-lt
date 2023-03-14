@@ -293,7 +293,7 @@ rule train_dataset_our:
         "train-dataset-our.tab"
     shell:
         """
-        join {input.vdw} {input.solv} | join - <(sed 's/_AB\t/\t/' {input.fold}) | join - {input.sa_part} | join - {input.sa_com} | sed 's/ /\t/g' > {output}
+        join {input.vdw} {input.solv} | join - <(sed 's/_..\t/\t/' {input.fold}) | join - {input.sa_part} | join - {input.sa_com} | sed 's/ /\t/g' > {output}
 
         grep forward {input.skempi} \
             | awk '{{if( $5 == $6 )   {{print $0}}}}' \
