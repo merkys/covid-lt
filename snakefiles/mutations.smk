@@ -280,7 +280,7 @@ rule side_by_side:
             | sed 's/ /\t/g' > {output}
         """
 
-rule train_dataset:
+rule train_dataset_our:
     input:
         vdw = "vdw.tab",
         solv = "solv.tab",
@@ -289,7 +289,7 @@ rule train_dataset:
         sa_com = "sa_com.tab",
         skempi = "SkempiS.txt"
     output:
-        "train-dataset.tab"
+        "train-dataset-our.tab"
     shell:
         """
         join {input.vdw} {input.solv} | join - <(sed 's/_AB\t/\t/' {input.fold}) | join - {input.sa_part} | join - {input.sa_com} | sed 's/ /\t/g' > {output}
