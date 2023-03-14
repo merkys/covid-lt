@@ -5,6 +5,7 @@ library( 'randomForest' )
 
 parser <- OptionParser()
 parser <- add_option(parser, c( '--train-size' ), type = 'double', default = 0.8)
+parser <- add_option(parser, c( '--repeat' ), dest = 'rep', type = 'double', default = 1)
 options = parse_args(parser, positional_arguments = TRUE)
 
 D = read.csv( options$args[1], quote="", sep="\t" )
@@ -14,18 +15,24 @@ if( train_size < 1 ) {
     train_size = round( length(D[,1]) * train_size )
 }
 
-is_train = logical( length(D[,1]) )
-is_train[1:train_size] = TRUE
-is_train = sample( is_train )
+errors = numeric( options$options$rep * ( length(D[,1]) - train_size ) )
 
-train = D[ is_train, 2:length(D)]
-test  = D[!is_train, 2:length(D)]
+for (i in 1:options$options$rep) {
+    is_train = logical( length(D[,1]) )
+    is_train[1:train_size] = TRUE
+    is_train = sample( is_train )
 
-names(train) = names(D)[2:length(D)]
-names(test)  = names(D)[2:length(D)]
+    train = D[ is_train, 2:length(D)]
+    test  = D[!is_train, 2:length(D)]
 
-model = randomForest( formula = ddG ~ ., data = train )
-print(model)
+    names(train) = names(D)[2:length(D)]
+    names(test)  = names(D)[2:length(D)]
 
-P = predict(model, newdata=test)
-cat("RMSE", sqrt(mean((P - test$ddG)**2)), "\n")
+    model = randomForest( formula = ddG ~ ., data = train )
+
+    P = predict(model, newdata=test)
+
+    errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
+}
+
+cat("RMSE", sqrt(mean(errors**2)), "\n")
