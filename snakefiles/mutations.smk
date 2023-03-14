@@ -279,3 +279,22 @@ rule side_by_side:
                 done \
             | sed 's/ /\t/g' > {output}
         """
+
+rule train_dataset:
+    input:
+        vdw = "vdw.tab",
+        solv = "solv.tab",
+        fold = "fold.tab",
+        skempi = "SkempiS.txt"
+    output:
+        "train-dataset.tab"
+    shell:
+        """
+        join {input.vdw} {input.solv} | join - <(sed 's/_AB\t/\t/' {input.fold}) | sed 's/ /\t/g' > {output}
+
+        grep forward {input.skempi} \
+            | awk '{{if( $5 == $6 )   {{print $0}}}}' \
+            | awk '{{if( $2 !~ /\./ ) {{print $0}}}}' \
+            | awk '{{if( $3 !~ /\./ ) {{print $0}}}}' \
+            | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $7}}' | sort | join {output} - | sed 's/ /\t/g' | sponge {output}
+        """
