@@ -2,14 +2,14 @@
 
 library("randomForest")
 
-D = read.csv( "/dev/stdin", quote="", sep="\t", header=FALSE )
+D = read.csv( "/dev/stdin", quote="", sep="\t" )
 is_train = sample( c(TRUE, FALSE), length(D[,1]), replace=TRUE, prob=c(0.4, 0.6) )
 
 train = D[ is_train, 2:length(D)]
 test  = D[!is_train, 2:length(D)]
 
-names(train) = c("vdw", "solv", "fold", "sa_part", "sa_com", "ddG")
-names(test) = c("vdw", "solv", "fold", "sa_part", "sa_com", "ddG")
+names(train) = names(D)[2:length(D)]
+names(test)  = names(D)[2:length(D)]
 
 model = randomForest( formula = ddG ~ ., data = train )
 print(model)

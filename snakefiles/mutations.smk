@@ -299,5 +299,10 @@ rule train_dataset_our:
             | awk '{{if( $5 == $6 )   {{print $0}}}}' \
             | awk '{{if( $2 !~ /\./ ) {{print $0}}}}' \
             | awk '{{if( $3 !~ /\./ ) {{print $0}}}}' \
-            | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $7}}' | sort | join {output} - | sed 's/ /\t/g' | sponge {output}
+            | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $7}}' \
+            | sort \
+            | join {output} - \
+            | cat <(echo mutation vdw solv fold sa_part sa_com ddG) - \
+            | sed 's/ /\t/g' \
+            | sponge {output}
         """
