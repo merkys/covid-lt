@@ -214,21 +214,21 @@ rule dssp:
         """
         echo -n > {output.part}
         echo -n > {output.com}
-        for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .pdb | grep -v _wt | cut -d _ -f 1-2 | cut -d . -f 1 | sort | uniq)
+        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
         do
             ORIG_POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
             CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
 
-            test -s optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb || continue
+            test -s optimized/${{MUT}}_wt.pdb || continue
 
-            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/$(echo $MUT | cut -d _ -f 1)_wt.map | cut -f 2)
+            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt.map | cut -f 2)
 
-            dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt_$CHAIN.pdb \
+            dssp optimized/${{MUT}}_wt_$CHAIN.pdb \
                 | grep -vP '\.$' \
                 | grep -P "^\s+$POS\s" \
                 | cut -c 36-38 \
                 | xargs -i echo -e $MUT"\t"{{}} >> {output.part} || true
-            dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb \
+            dssp optimized/${{MUT}}_wt.pdb \
                 | grep -vP '\.$' \
                 | grep -P "^\s+$POS\s" \
                 | cut -c 36-38 \
