@@ -144,20 +144,16 @@ rule all_energies:
             grep -h 'Electrostatic energy' optimized/${{STRUCT}}.ener optimized/${{STRUCT}}_wt.ener \
                 | awk '{{print $5}}' | xargs echo | awk '{{print $1 - $2}}' >> {output.solv}
 
-            PDB=$(echo $MUT | cut -d _ -f 1)
             CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
-            CHAINLESS_MUT=$(echo $MUT | cut -d _ -f 2 | cut -c 1,3-)
-
-            A=$(echo $STRUCT | cut -d _ -f 3 | cut -c 1)
-            B=$(echo $STRUCT | cut -d _ -f 3 | cut -c 2)
 
             (
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}.ener           | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{A}}.ener    | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{B}}.ener    | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt.ener        | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{A}}.ener | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{B}}.ener | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}.ener    | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt.ener | awk '{{print -$3}}'
+                for CH in $(echo $CHAIN | grep -o .)
+                do
+                    grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{CH}}.ener    | awk '{{print -$3}}'
+                    grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{CH}}.ener | awk '{{print  $3}}'
+                done
             ) | bin/sum >> {output.vdw}
         done
         """
@@ -288,8 +284,6 @@ rule train_dataset_our:
 
         grep forward {input.skempi} \
             | awk '{{if( $5 == $6 )   {{print $0}}}}' \
-            | awk '{{if( $2 !~ /\./ ) {{print $0}}}}' \
-            | awk '{{if( $3 !~ /\./ ) {{print $0}}}}' \
             | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $7}}' \
             | sort \
             | join {output} - \
