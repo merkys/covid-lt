@@ -1,5 +1,7 @@
 #!/usr/bin/Rscript --vanilla
 
+# Developed according to example in https://www.statology.org/random-forest-in-r/
+
 library( 'optparse' )
 library( 'randomForest' )
 
