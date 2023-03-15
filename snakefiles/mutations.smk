@@ -148,14 +148,6 @@ rule all_energies:
             CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
             CHAINLESS_MUT=$(echo $MUT | cut -d _ -f 2 | cut -c 1,3-)
 
-            PARTNERS=$(grep ^$PDB SkempiS.txt \
-                        | grep forward \
-                        | awk '{{if( $5 == $6 )                 {{print $0}}}}' \
-                        | awk '{{if( $4 == "'$CHAIN'_1" )       {{print $0}}}}' \
-                        | awk '{{if( $5 == "'$CHAINLESS_MUT'" ) {{print $0}}}}' \
-                        | awk '{{print substr($2,1,1) substr($3,1,1)}}' \
-                        | head -n1)
-
             A=$(echo $STRUCT | cut -d _ -f 3 | cut -c 1)
             B=$(echo $STRUCT | cut -d _ -f 3 | cut -c 2)
 
