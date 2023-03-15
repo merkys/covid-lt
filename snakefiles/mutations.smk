@@ -11,8 +11,6 @@ def skempi_filtered():
     skempi = []
     for line in open('SkempiS.txt', 'r').readlines():
         fields = line.split("\t")
-        if fields[1].count('.') > 0 or fields[2].count('.') > 0: # Filter out lines having more than two partners
-            continue
         if fields[4] != fields[5]: # Filter out lines where Mutation(s)_PDB and Mutation(s)_cleaned are different
             continue
         if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
@@ -23,8 +21,9 @@ def skempi_filtered():
 def input_complexes():
     complexes = []
     for fields in skempi_filtered():
-        complexes.append("{}_{}{}{}_{}{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], fields[1][0], fields[2][0]))
-        complexes.append("{}_{}{}{}_{}{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], fields[1][0], fields[2][0]))
+        partners = ''.join(sorted(chain[0] for chain in fields[1].split('.') + fields[2].split('.')))
+        complexes.append("{}_{}{}{}_{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], partners))
+        complexes.append("{}_{}{}{}_{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], partners))
     return complexes
 
 def skempi_get_details(mutation):
