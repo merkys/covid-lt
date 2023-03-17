@@ -302,9 +302,7 @@ rule train_data_skempi:
         echo mutation vdw solv fold sa_part sa_com cs cont ddG | sed 's/ /\t/g' > {output}
 
         grep forward {input.skempi} \
-            | awk '{{if( $5 == $6 )   {{print $0}}}}' \
-            | awk '{{if( $2 !~ /\./ ) {{print $0}}}}' \
-            | awk '{{if( $3 !~ /\./ ) {{print $0}}}}' \
+            | awk '{{if( $5 == $6 ) {{print $0}}}}' \
             | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $13 "\t" $14 "\t" $15 "\t" $16 "\t" $17 "\t" $18 "\t" $19 "\t" $7}}' \
             | sed 's/\r//g' \
             | sort >> {output}
