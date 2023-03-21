@@ -2,8 +2,8 @@ wildcard_constraints:
     chain = "[A-Za-z]",
     chains = "[A-Za-z]+",
     maybe_wt = "(_wt)?",
-    mutation = "[A-Z]{2}\d+[A-Z]",
-    mutation_maybe_wt = "[A-Z]{2}\d+[A-Z](_wt)?",
+    mutation = "[A-Z]{2}-?\d+[a-z]?[A-Z]",
+    mutation_maybe_wt = "[A-Z]{2}-?\d+[a-z]?[A-Z](_wt)?",
     pdbid = "[A-Z0-9]{4}",
     type = "[A-Za-z0-9]+"
 
@@ -11,8 +11,6 @@ def skempi_filtered():
     skempi = []
     for line in open('SkempiS.txt', 'r').readlines():
         fields = line.split("\t")
-        if fields[4] != fields[5]: # Filter out lines where Mutation(s)_PDB and Mutation(s)_cleaned are different
-            continue
         if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
             continue
         skempi.append(fields)
@@ -104,12 +102,16 @@ rule optimize_chain:
     shell:
         """
         mkdir --parents $(dirname {output})
-        grep ^ATOM {input} \
+        if ! grep ^ATOM {input} \
             | bin/pdb_select --chain {wildcards.chain} \
             | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
             | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
             | tar -x --to-stdout output.coor > {output}
+        then
+            echo -n > {output}
+            echo -n > {log}
+        fi
         """
 
 def list_chains(name):
@@ -137,6 +139,9 @@ rule all_energies:
         for STRUCT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+\.ener$' | xargs -i basename {{}} .ener | sort | uniq)
         do
             MUT=$(echo $STRUCT | cut -d _ -f 1-2)
+
+            test -s optimized/${{STRUCT}}.ener || continue
+            test -s optimized/${{STRUCT}}_wt.ener || continue
 
             echo -en "$MUT\t" >> {output.solv}
             echo -en "$MUT\t" >> {output.vdw}
@@ -283,7 +288,6 @@ rule train_dataset_our:
         join {input.vdw} {input.solv} | join - <(sed 's/_[^_]\+\t/\t/' {input.fold}) | join - {input.sa_part} | join - {input.sa_com} | sed 's/ /\t/g' > {output}
 
         grep forward {input.skempi} \
-            | awk '{{if( $5 == $6 ) {{print $0}}}}' \
             | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $7}}' \
             | sort \
             | join {output} - \
