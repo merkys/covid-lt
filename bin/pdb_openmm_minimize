@@ -63,7 +63,12 @@ else: # Assume plain PDB
         temporary_file.write(sys.stdin.read())
         struct = openmm_app.PDBFile(temporary_file.name)
     force_field = openmm_app.ForceField(*forcefields)
-    system = force_field.createSystem(struct.topology, constraints=constraints)
+
+    try:
+        system = force_field.createSystem(struct.topology, constraints=constraints)
+    except ValueError as error:
+        raise ValueError(str(error) + ' OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
+
     # stiffness omitted here
 
 # Splitting forces one force per group in order to be able to access them later
