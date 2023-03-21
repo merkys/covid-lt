@@ -2,6 +2,7 @@
 
 # Based on https://github.com/openmm/openmm/issues/1463
 
+from openmm import app as openmm_app
 from parmed.charmm.parameters import CharmmParameterSet
 import parmed, sys
 
@@ -32,10 +33,14 @@ for atom in struct.atoms:
         continue
     print("atom left without a type:", atom)
 
-# ~ for bond in struct.bonds:
-    # ~ if bond.atom1.residue.number == bond.atom2.residue.number:
-        # ~ residue = ff.residues[bond.atom1.residue.name]
-        # ~ bond_par = filter(lambda x: 
-        # ~ bond.type = ff.residues[bond.atom1.residue.name].
-    # ~ else:
-        # ~ pass
+for bond in struct.bonds:
+    suitable_types = list(filter(lambda k: bond.atom1.type in k and bond.atom2.type in k, ff.bond_types)) # FIXME: This is not entirely correct
+    if suitable_types:
+        bond.type = suitable_types[0]
+        continue
+    print("bond left without a type:", bond)
+
+print(struct)
+
+system = struct.createSystem(constraints = openmm_app.HBonds)
+print(parmed.openmm.energy_decomposition_system(struct, s))
