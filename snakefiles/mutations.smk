@@ -183,6 +183,7 @@ rule energy:
         fi
         """
 
+# FoldX does not understand residues with alternative locations
 rule fold_energy:
     input:
         expand("{complex}.log", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
@@ -193,6 +194,7 @@ rule fold_energy:
         ls -1 *.log \
             | while read FILE
               do
+                grep --silent '^DIFF>' $FILE || continue
                 echo -en $(basename $FILE .log)"\t"
                 grep '^DIFF>' $FILE | tail -n 1 | cut -f 2
               done > {output}
