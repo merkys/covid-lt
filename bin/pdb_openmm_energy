@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+# Based on https://github.com/openmm/openmm/issues/1463
+
+from parmed.charmm.parameters import CharmmParameterSet
+import parmed, sys
+
+struct = parmed.load_file(sys.argv[1])
+ff = CharmmParameterSet.load_set(sys.argv[2], sys.argv[3]) # RTF, PRM
+
+for atom in struct.atoms:
+    atom_name = atom.name
+    residue_name = atom.residue.name
+
+    if residue_name == 'HIS':
+        residue_name = 'HSE'
+    if residue_name == 'ILE' and atom_name == 'CD1':
+        atom_name = 'CD'
+
+    residue = None
+    if atom.residue.number == 0:
+        residue = ff.patches['NTER']
+    elif atom_name == 'OXT':
+        atom_name = 'OT1'
+        residue = ff.patches['CTER']
+    else:
+        residue = ff.residues[residue_name]
+
+    suitable_atoms = list(filter(lambda a: a.name == atom_name, residue.atoms))
+    if suitable_atoms:
+        atom.type = suitable_atoms[0].type
+        continue
+    print("atom left without a type:", atom)
+
+# ~ for bond in struct.bonds:
+    # ~ if bond.atom1.residue.number == bond.atom2.residue.number:
+        # ~ residue = ff.residues[bond.atom1.residue.name]
+        # ~ bond_par = filter(lambda x: 
+        # ~ bond.type = ff.residues[bond.atom1.residue.name].
+    # ~ else:
+        # ~ pass
