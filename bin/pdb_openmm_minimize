@@ -39,6 +39,8 @@ if not len(forcefields):
 constraints = openmm_app.HBonds
 tolerance = 2.39
 
+# FIXME: ParMed could be used to get OpenMM energies separated into terms, however, ParMed does not know how to assign bond types after reading PDB files.
+
 struct = None
 system = None
 if len(args.files) == 2: # Assume prmtop and inpcrd pair
