@@ -9,29 +9,32 @@ import parmed, sys
 struct = parmed.load_file(sys.argv[1])
 ff = CharmmParameterSet.load_set(sys.argv[2], sys.argv[3]) # RTF, PRM
 
-for atom in struct.atoms:
-    atom_name = atom.name
-    residue_name = atom.residue.name
+for residue in struct.residues:
+    residue_name = residue.name
 
-    if residue_name == 'HIS':
-        residue_name = 'HSE'
-    if residue_name == 'ILE' and atom_name == 'CD1':
-        atom_name = 'CD'
-
-    residue = None
-    if atom.residue.number == 0:
-        residue = ff.patches['NTER']
-    elif atom_name == 'OXT':
-        atom_name = 'OT1'
-        residue = ff.patches['CTER']
+    residue_par = None
+    if False and residue.number == 1:
+        residue_par = ff.patches['NTER']
+    elif list(filter(lambda a: a.name == 'OXT', residue.atoms)):
+        residue_par = ff.patches['CTER']
+    elif residue_name == 'HIS':
+        residue_par = ff.residues['HSE']
     else:
-        residue = ff.residues[residue_name]
+        residue_par = ff.residues[residue_name]
 
-    suitable_atoms = list(filter(lambda a: a.name == atom_name, residue.atoms))
-    if suitable_atoms:
-        atom.type = suitable_atoms[0].type
-        continue
-    print("atom left without a type:", atom)
+    for atom in residue.atoms:
+        atom_name = atom.name
+
+        if residue_name == 'ILE' and atom_name == 'CD1':
+            atom_name = 'CD'
+        elif atom_name == 'OXT':
+            atom_name = 'OT1'
+
+        suitable_atoms = list(filter(lambda a: a.name == atom_name, residue_par.atoms))
+        if suitable_atoms:
+            atom.type = suitable_atoms[0].type
+            continue
+        print("atom left without a type:", atom)
 
 for bond in struct.bonds:
     suitable_types = list(filter(lambda k: bond.atom1.type in k and bond.atom2.type in k, ff.bond_types)) # FIXME: This is not entirely correct
