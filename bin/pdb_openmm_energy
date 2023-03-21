@@ -14,13 +14,13 @@ for residue in struct.residues:
 
     residue_par = None
     if False and residue.number == 1:
-        residue_par = ff.patches['NTER']
+        residue_par = ff.patches['NTER'].atoms
     elif list(filter(lambda a: a.name == 'OXT', residue.atoms)):
-        residue_par = ff.patches['CTER']
+        residue_par = ff.patches['CTER'].atoms + ff.residues[residue_name].atoms
     elif residue_name == 'HIS':
-        residue_par = ff.residues['HSE']
+        residue_par = ff.residues['HSE'].atoms
     else:
-        residue_par = ff.residues[residue_name]
+        residue_par = ff.residues[residue_name].atoms
 
     for atom in residue.atoms:
         atom_name = atom.name
@@ -30,7 +30,7 @@ for residue in struct.residues:
         elif atom_name == 'OXT':
             atom_name = 'OT1'
 
-        suitable_atoms = list(filter(lambda a: a.name == atom_name, residue_par.atoms))
+        suitable_atoms = list(filter(lambda a: a.name == atom_name, residue_par))
         if suitable_atoms:
             atom.type = suitable_atoms[0].type
             continue
@@ -39,11 +39,9 @@ for residue in struct.residues:
 for bond in struct.bonds:
     suitable_types = list(filter(lambda k: bond.atom1.type in k and bond.atom2.type in k, ff.bond_types)) # FIXME: This is not entirely correct
     if suitable_types:
-        bond.type = suitable_types[0]
+        bond.type = ff.bond_types[suitable_types[0]]
         continue
     print("bond left without a type:", bond)
 
-print(struct)
-
 system = struct.createSystem(constraints = openmm_app.HBonds)
-print(parmed.openmm.energy_decomposition_system(struct, s))
+print(parmed.openmm.energy_decomposition_system(struct, system))
