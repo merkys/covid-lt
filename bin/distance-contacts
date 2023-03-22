@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+from pdbio.pdbfile import PDBFile
+import sys
+
+pdb = PDBFile(sys.argv[1]) # For now
+
+for chain in pdb:
+    for residue in chain:
+        for atom in residue:
+            for neighbour in atom.within(10):
+                print(atom.parent.parent.name, atom.parent.number(), atom.parent.resname(), 'atom_nr', atom.name(),
+                      neighbour.parent.parent.name, neighbour.parent.number(), neighbour.parent.resname(), 'atom_nr', neighbour.name(),
+                      sep="\t")
