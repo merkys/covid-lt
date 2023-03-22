@@ -1,0 +1,40 @@
+#!/usr/bin/Rscript --vanilla
+
+# Developed according to example in https://www.statology.org/random-forest-in-r/
+
+library( 'optparse' )
+library( 'randomForest' )
+
+parser <- OptionParser()
+parser <- add_option(parser, c( '--train-size' ), type = 'double', default = 0.8)
+parser <- add_option(parser, c( '--repeat' ), dest = 'rep', type = 'double', default = 1)
+options = parse_args(parser, positional_arguments = TRUE)
+
+D = read.csv( options$args[1], quote="", sep="\t" )
+
+train_size = options$options$train
+if( train_size < 1 ) {
+    train_size = round( length(D[,1]) * train_size )
+}
+
+errors = numeric( options$options$rep * ( length(D[,1]) - train_size ) )
+
+for (i in 1:options$options$rep) {
+    is_train = logical( length(D[,1]) )
+    is_train[1:train_size] = TRUE
+    is_train = sample( is_train )
+
+    train = D[ is_train, 2:length(D)]
+    test  = D[!is_train, 2:length(D)]
+
+    names(train) = names(D)[2:length(D)]
+    names(test)  = names(D)[2:length(D)]
+
+    model = randomForest( formula = ddG ~ ., data = train )
+
+    P = predict(model, newdata=test)
+
+    errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
+}
+
+cat("RMSE", sqrt(mean(errors**2)), "\n")

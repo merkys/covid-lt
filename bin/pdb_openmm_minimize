@@ -39,6 +39,8 @@ if not len(forcefields):
 constraints = openmm_app.HBonds
 tolerance = 2.39
 
+# FIXME: ParMed could be used to get OpenMM energies separated into terms, see https://github.com/openmm/openmm/issues/1463
+
 struct = None
 system = None
 if len(args.files) == 2: # Assume prmtop and inpcrd pair
@@ -61,7 +63,12 @@ else: # Assume plain PDB
         temporary_file.write(sys.stdin.read())
         struct = openmm_app.PDBFile(temporary_file.name)
     force_field = openmm_app.ForceField(*forcefields)
-    system = force_field.createSystem(struct.topology, constraints=constraints)
+
+    try:
+        system = force_field.createSystem(struct.topology, constraints=constraints)
+    except ValueError as error:
+        raise ValueError(str(error) + ' OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
+
     # stiffness omitted here
 
 # Splitting forces one force per group in order to be able to access them later

@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+# Based on https://github.com/openmm/openmm/issues/1463
+
+from openmm import app as openmm_app
+from parmed.charmm.parameters import CharmmParameterSet
+import parmed, sys
+
+struct = parmed.load_file(sys.argv[1])
+ff = CharmmParameterSet.load_set(sys.argv[2], sys.argv[3]) # RTF, PRM
+
+for residue in struct.residues:
+    residue_name = residue.name
+
+    residue_par = None
+    if False and residue.number == 1:
+        residue_par = ff.patches['NTER'].atoms
+    elif list(filter(lambda a: a.name == 'OXT', residue.atoms)):
+        residue_par = ff.patches['CTER'].atoms + ff.residues[residue_name].atoms
+    elif residue_name == 'HIS':
+        residue_par = ff.residues['HSE'].atoms
+    else:
+        residue_par = ff.residues[residue_name].atoms
+
+    for atom in residue.atoms:
+        atom_name = atom.name
+
+        if residue_name == 'ILE' and atom_name == 'CD1':
+            atom_name = 'CD'
+        elif atom_name == 'OXT':
+            atom_name = 'OT1'
+
+        suitable_atoms = list(filter(lambda a: a.name == atom_name, residue_par))
+        if suitable_atoms:
+            atom.type = suitable_atoms[0].type
+            continue
+        print("atom left without a type:", atom)
+
+for bond in struct.bonds:
+    suitable_types = list(filter(lambda k: bond.atom1.type in k and bond.atom2.type in k, ff.bond_types)) # FIXME: This is not entirely correct
+    if suitable_types:
+        bond.type = ff.bond_types[suitable_types[0]]
+        continue
+    print("bond left without a type:", bond)
+
+system = struct.createSystem(constraints = openmm_app.HBonds, nonbondedMethod=openmm_app.PME)
+print(parmed.openmm.energy_decomposition_system(struct, system))

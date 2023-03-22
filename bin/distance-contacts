@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+from pdbio.pdbfile import PDBFile
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--exclude-hydrogen', action='store_true', help='Exclude hydrogen atoms')
+args = parser.parse_args()
+
+pdb = PDBFile(args.files[0]) # For now
+
+for chain in pdb:
+    for residue in chain:
+        for atom in residue:
+            if args.exclude_hydrogen and atom.name().startswith('H'):
+                continue
+            for neighbour in atom.within(10):
+                if args.exclude_hydrogen and neighbour.name().startswith('H'):
+                    continue
+                print(atom.chain.name, atom.residue.number(), atom.residue.resname(), atom.number, atom.name(),
+                      neighbour.chain.name, neighbour.residue.number(), neighbour.residue.resname(), neighbour.number, neighbour.name(),
+                      '?', '?', '?', sep="\t")

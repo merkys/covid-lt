@@ -1,4 +1,5 @@
 * Rochman et al. (2022) paper on a similar research: https://journals.asm.org/doi/full/10.1128/mbio.00135-22
+* Zhang et al. (2021) Structure of SARS-CoV-2 spike protein. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8423807/
 
 Antibody numbering
 ==================
@@ -30,6 +31,7 @@ OpenMM
 OpenStructure
 =============
 
+* Comparing two structures: https://openstructure.org/docs/2.2/actions/
 * Simulation parameters: https://openstructure.org/docs/2.3.1/mol/mm/simulation/#ost.mol.mm.Simulation
 
 PDB format
@@ -55,12 +57,23 @@ ProteinTools
 * Server: https://proteintools.uni-bayreuth.de
 * Paper: https://academic.oup.com/nar/article/49/W1/W559/6279848
 
+Provean
+=======
+
+* Usage example: https://gist.github.com/darencard/d3ff1399f1fa05b35429eb148383aea4
+
 Rosetta
 =======
 
 * Comparative modelling demo: https://www.rosettacommons.org/demos/latest/public/legacy_comparative_modeling/comparative_modeling
 * PyRosetta: https://www.pyrosetta.org/documentation/tutorials
 * SnugDock: https://www.rosettacommons.org/docs/latest/application_documentation/antibody/snugdock
+
+SSAP
+====
+
+* Paper: https://pubmed.ncbi.nlm.nih.gov/8743709/
+* Paper: https://www.sciencedirect.com/science/article/abs/pii/S0076687996660388
 
 MutaBind2
 =========
@@ -111,6 +124,7 @@ YANK
 Other
 =====
 
+* Al-Lazikani, Lesk & Chothia. Standard conformations for the canonical structures of immunoglobulins: https://www.sciencedirect.com/science/article/abs/pii/S0022283697913541
 * CNS: http://cns-online.org/v1.3/
 * PRODIGY dataset: https://bianca.science.uu.nl/prodigy/dataset
 * pdb-tools Python package: https://www.bonvinlab.org/pdb-tools/

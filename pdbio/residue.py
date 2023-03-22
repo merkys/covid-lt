@@ -8,18 +8,10 @@ class Residue:
         self.end = end
 
     def __iter__(self):
-        self.iter_atom_line = self.start
-        return self
-
-    def __next__(self):
-        if self.iter_atom_line > self.end:
-            raise StopIteration()
-        while not self.parent.parent.content[self.iter_atom_line].startswith('ATOM  ') and self.iter_atom_line < self.end:
-            self.iter_atom_line += 1
-        if not self.parent.parent.content[self.iter_atom_line].startswith('ATOM  '):
-            raise StopIteration()
-        self.iter_atom_line += 1
-        return Atom(self, self.iter_atom_line-1)
+        for i in range(self.start, self.end+1):
+            if not self.file.content[i].startswith('ATOM  '):
+                continue
+            yield Atom(self, i)
 
     def icode(self):
         return self.parent.parent.content[self.start][26]
@@ -29,6 +21,16 @@ class Residue:
 
     def resname(self):
         return self.parent.parent.content[self.start][17:20]
+
+    # Parent links
+
+    @property
+    def chain(self):
+        return self.parent
+
+    @property
+    def file(self):
+        return self.parent.parent
 
     def delete(self):
         # FIXME: Other fields should as well be updated to reflect the removal of this residue

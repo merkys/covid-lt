@@ -37,6 +37,7 @@ cat > $TMPDIR/vmdgen.pgn <<END
 package require psfgen
 topology $TOPOLOGY_BASE
 pdbalias residue HIS HSE
+pdbalias residue MLY LYS
 END
 
 for CHAIN in $(pdb_chains $TMPDIR/$(basename $INPUT_PDB) | sort | uniq)

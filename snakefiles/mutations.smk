@@ -2,8 +2,8 @@ wildcard_constraints:
     chain = "[A-Za-z]",
     chains = "[A-Za-z]+",
     maybe_wt = "(_wt)?",
-    mutation = "[A-Z]{2}\d+[A-Z]",
-    mutation_maybe_wt = "[A-Z]{2}\d+[A-Z](_wt)?",
+    mutation = "[A-Z]{2}-?\d+[a-z]?[A-Z]",
+    mutation_maybe_wt = "[A-Z]{2}-?\d+[a-z]?[A-Z](_wt)?",
     pdbid = "[A-Z0-9]{4}",
     type = "[A-Za-z0-9]+"
 
@@ -11,10 +11,6 @@ def skempi_filtered():
     skempi = []
     for line in open('SkempiS.txt', 'r').readlines():
         fields = line.split("\t")
-        if fields[1].count('.') > 0 or fields[2].count('.') > 0: # Filter out lines having more than two partners
-            continue
-        if fields[4] != fields[5]: # Filter out lines where Mutation(s)_PDB and Mutation(s)_cleaned are different
-            continue
         if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
             continue
         skempi.append(fields)
@@ -23,8 +19,9 @@ def skempi_filtered():
 def input_complexes():
     complexes = []
     for fields in skempi_filtered():
-        complexes.append("{}_{}{}{}_{}{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], fields[1][0], fields[2][0]))
-        complexes.append("{}_{}{}{}_{}{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], fields[1][0], fields[2][0]))
+        partners = ''.join(sorted(chain[0] for chain in fields[1].split('.') + fields[2].split('.')))
+        complexes.append("{}_{}{}{}_{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], partners))
+        complexes.append("{}_{}{}{}_{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], partners))
     return complexes
 
 def skempi_get_details(mutation):
@@ -105,12 +102,16 @@ rule optimize_chain:
     shell:
         """
         mkdir --parents $(dirname {output})
-        grep ^ATOM {input} \
+        if ! grep ^ATOM {input} \
             | bin/pdb_select --chain {wildcards.chain} \
             | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
             | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments \
             | bin/namd-minimize forcefields/par_all22_prot.prm \
             | tar -x --to-stdout output.coor > {output}
+        then
+            echo -n > {output}
+            echo -n > {log}
+        fi
         """
 
 def list_chains(name):
@@ -139,34 +140,25 @@ rule all_energies:
         do
             MUT=$(echo $STRUCT | cut -d _ -f 1-2)
 
+            test -s optimized/${{STRUCT}}.ener || continue
+            test -s optimized/${{STRUCT}}_wt.ener || continue
+
             echo -en "$MUT\t" >> {output.solv}
             echo -en "$MUT\t" >> {output.vdw}
 
             grep -h 'Electrostatic energy' optimized/${{STRUCT}}.ener optimized/${{STRUCT}}_wt.ener \
                 | awk '{{print $5}}' | xargs echo | awk '{{print $1 - $2}}' >> {output.solv}
 
-            PDB=$(echo $MUT | cut -d _ -f 1)
             CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
-            CHAINLESS_MUT=$(echo $MUT | cut -d _ -f 2 | cut -c 1,3-)
-
-            PARTNERS=$(grep ^$PDB SkempiS.txt \
-                        | grep forward \
-                        | awk '{{if( $5 == $6 )                 {{print $0}}}}' \
-                        | awk '{{if( $4 == "'$CHAIN'_1" )       {{print $0}}}}' \
-                        | awk '{{if( $5 == "'$CHAINLESS_MUT'" ) {{print $0}}}}' \
-                        | awk '{{print substr($2,1,1) substr($3,1,1)}}' \
-                        | head -n1)
-
-            A=$(echo $STRUCT | cut -d _ -f 3 | cut -c 1)
-            B=$(echo $STRUCT | cut -d _ -f 3 | cut -c 2)
 
             (
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}.ener           | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{A}}.ener    | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{B}}.ener    | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt.ener        | awk '{{print -$3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{A}}.ener | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{B}}.ener | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}.ener    | awk '{{print  $3}}'
+                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt.ener | awk '{{print -$3}}'
+                for CH in $(echo $CHAIN | grep -o .)
+                do
+                    grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{CH}}.ener    | awk '{{print -$3}}'
+                    grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{CH}}.ener | awk '{{print  $3}}'
+                done
             ) | bin/sum >> {output.vdw}
         done
         """
@@ -181,7 +173,7 @@ rule energy:
         if [ -s {input} ]
         then
             if ! PYTHONPATH=. bin/pdb_renumber {input} \
-                | bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all22_prot.rtf --parameters forcefields/par_all22_prot.prm --pbeq \
+                | bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --pbeq \
                 | grep -e ^ENER -e 'Electrostatic energy' > {output}
             then
                 echo -n > {output}
@@ -191,6 +183,7 @@ rule energy:
         fi
         """
 
+# FoldX does not understand residues with alternative locations
 rule fold_energy:
     input:
         expand("{complex}.log", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
@@ -201,6 +194,7 @@ rule fold_energy:
         ls -1 *.log \
             | while read FILE
               do
+                grep --silent '^DIFF>' $FILE || continue
                 echo -en $(basename $FILE .log)"\t"
                 grep '^DIFF>' $FILE | tail -n 1 | cut -f 2
               done > {output}
@@ -214,25 +208,26 @@ rule dssp:
         """
         echo -n > {output.part}
         echo -n > {output.com}
-        for MUT in $(ls -1 optimized/ | xargs -i basename {{}} .pdb | grep -v _wt | cut -d _ -f 1-2 | cut -d . -f 1 | sort | uniq)
+        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
         do
             ORIG_POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
             CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
 
-            test -s optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb || continue
+            test -s optimized/${{MUT}}_wt.pdb || continue
 
-            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/$(echo $MUT | cut -d _ -f 1)_wt.map | cut -f 2)
+            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt.map | cut -f 2)
+            POS_IN_CHAIN=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt_$CHAIN.map | cut -f 2)
 
-            dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt_$CHAIN.pdb \
+            dssp optimized/${{MUT}}_wt_$CHAIN.pdb \
+                | grep -vP '\.$' \
+                | grep -P "^\s+$POS_IN_CHAIN\s" \
+                | cut -c 36-38 \
+                | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.part} || true
+            dssp optimized/${{MUT}}_wt.pdb \
                 | grep -vP '\.$' \
                 | grep -P "^\s+$POS\s" \
                 | cut -c 36-38 \
-                | xargs -i echo -e $MUT"\t"{{}} >> {output.part} || true
-            dssp optimized/$(echo $MUT | cut -d _ -f 1)_wt.pdb \
-                | grep -vP '\.$' \
-                | grep -P "^\s+$POS\s" \
-                | cut -c 36-38 \
-                | xargs -i echo -e $MUT"\t"{{}} >> {output.com} || true
+                | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.com} || true
         done
         """
 
@@ -278,4 +273,42 @@ rule side_by_side:
                     Rscript -e "0 + $(echo "$LINE" | cut -f 3) - ($(echo "$LINE" | cut -f 4) - $(echo "$LINE" | cut -f 5- | ./bin/sum))" | cut -d ' ' -f 2
                 done \
             | sed 's/ /\t/g' > {output}
+        """
+
+rule train_dataset_our:
+    input:
+        vdw = "vdw.tab",
+        solv = "solv.tab",
+        fold = "fold.tab",
+        sa_part = "sa_part.tab",
+        sa_com = "sa_com.tab",
+        skempi = "SkempiS.txt"
+    output:
+        "train-dataset-our.tab"
+    shell:
+        """
+        join {input.vdw} {input.solv} | join - <(sed 's/_[^_]\+\t/\t/' {input.fold}) | join - {input.sa_part} | join - {input.sa_com} | sed 's/ /\t/g' > {output}
+
+        grep forward {input.skempi} \
+            | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $7}}' \
+            | sort \
+            | join {output} - \
+            | cat <(echo mutation vdw solv fold sa_part sa_com ddG) - \
+            | sed 's/ /\t/g' \
+            | sponge {output}
+        """
+
+rule train_data_skempi:
+    input:
+        skempi = "SkempiS.txt"
+    output:
+        "train-dataset-skempi.tab"
+    shell:
+        """
+        echo mutation vdw solv fold sa_part sa_com cs cont ddG | sed 's/ /\t/g' > {output}
+
+        grep forward {input.skempi} \
+            | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $13 "\t" $14 "\t" $15 "\t" $16 "\t" $17 "\t" $18 "\t" $19 "\t" $7}}' \
+            | sed 's/\r//g' \
+            | sort >> {output}
         """
