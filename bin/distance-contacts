@@ -9,6 +9,6 @@ for chain in pdb:
     for residue in chain:
         for atom in residue:
             for neighbour in atom.within(10):
-                print(atom.parent.parent.name, atom.parent.number(), atom.parent.resname(), atom.number, atom.name(),
-                      neighbour.parent.parent.name, neighbour.parent.number(), neighbour.parent.resname(), neighbour.number, neighbour.name(),
+                print(atom.chain.name, atom.residue.number(), atom.residue.resname(), atom.number, atom.name(),
+                      neighbour.chain.name, neighbour.residue.number(), neighbour.residue.resname(), neighbour.number, neighbour.name(),
                       sep="\t")
