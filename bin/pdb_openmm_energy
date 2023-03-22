@@ -43,5 +43,5 @@ for bond in struct.bonds:
         continue
     print("bond left without a type:", bond)
 
-system = struct.createSystem(constraints = openmm_app.HBonds)
+system = struct.createSystem(constraints = openmm_app.HBonds, nonbondedMethod=openmm_app.PME)
 print(parmed.openmm.energy_decomposition_system(struct, system))
