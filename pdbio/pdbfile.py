@@ -15,15 +15,8 @@ class PDBFile:
         self._cKDTree_atoms = []
 
     def __iter__(self):
-        self.iterchain = -1
-        return self
-
-    def __next__(self):
-        self.iterchain += 1
-        if self.iterchain < len(self.chains()):
-            return self.chain(self.chains()[self.iterchain])
-        else:
-            raise StopIteration()
+        for chain in self.chains():
+            yield self[chain]
 
     def __getitem__(self, key):
         return self.chain(key)
