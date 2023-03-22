@@ -8,7 +8,11 @@ pdb = PDBFile(sys.argv[1]) # For now
 for chain in pdb:
     for residue in chain:
         for atom in residue:
+            # ~ if atom.name().startswith('H'):
+                # ~ continue
             for neighbour in atom.within(10):
+                # ~ if neighbour.name().startswith('H'):
+                    # ~ continue
                 print(atom.chain.name, atom.residue.number(), atom.residue.resname(), atom.number, atom.name(),
                       neighbour.chain.name, neighbour.residue.number(), neighbour.residue.resname(), neighbour.number, neighbour.name(),
-                      sep="\t")
+                      '?', '?', '?', sep="\t")
