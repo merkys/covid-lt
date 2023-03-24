@@ -231,6 +231,29 @@ rule dssp:
         done
         """
 
+rule N_wt_cont:
+    output:
+        "N_wt_cont.tab"
+    shell:
+        """
+        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
+        do
+            PDB_ID=$(echo $MUT | cut -d _ -f 1)
+            CHAIN=$( echo $MUT | cut -d _ -f 2 | cut -c 2)
+            CHAINS=$(echo $MUT | cut -d _ -f 3)
+
+            echo -en $MUT"\t"
+            bin/pdb_select --chain $CHAINS ${{PDB_ID}}.pdb \
+                | PYTHONPATH=. ../bin/distance-contacts /dev/stdin \
+                | ../bin/select-contacts --exclude-self --chain $CHAIN \
+                | cut -f 1,2,6,7 \
+                | awk "{{ if( \$1 == \"$CHAIN\" ) {{print \$3 \$4}} else {{print \$1 \$2}} }}" \
+                | sort \
+                | uniq \
+                | wc -l
+        done > {output}
+        """
+
 rule join_with_skempi:
     input:
         skempi = "SkempiS.txt",
@@ -282,18 +305,19 @@ rule train_dataset_our:
         fold = "fold.tab",
         sa_part = "sa_part.tab",
         sa_com = "sa_com.tab",
+        N_wt_cont = "N_wt_cont.tab",
         skempi = "SkempiS.txt"
     output:
         "train-dataset-our.tab"
     shell:
         """
-        join {input.vdw} {input.solv} | join - <(sed 's/_[^_]\+\t/\t/' {input.fold}) | join - {input.sa_part} | join - {input.sa_com} | sed 's/ /\t/g' > {output}
+        join {input.vdw} {input.solv} | join - <(sed 's/_[^_]\+\t/\t/' {input.fold}) | join - {input.sa_part} | join - {input.sa_com} | join - <(sed 's/_[^_]\+\t/\t/' {input.N_wt_cont} | sort) | sed 's/ /\t/g' > {output}
 
         grep forward {input.skempi} \
             | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $7}}' \
             | sort \
             | join {output} - \
-            | cat <(echo mutation vdw solv fold sa_part sa_com ddG) - \
+            | cat <(echo mutation vdw solv fold sa_part sa_com cont ddG) - \
             | sed 's/ /\t/g' \
             | sponge {output}
         """
