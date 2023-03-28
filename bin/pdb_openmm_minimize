@@ -67,7 +67,7 @@ else: # Assume plain PDB
     try:
         system = force_field.createSystem(struct.topology, constraints=constraints)
     except ValueError as error:
-        raise ValueError(str(error) + ' OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
+        raise ValueError(str(error) + '. OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
 
     # stiffness omitted here
 
