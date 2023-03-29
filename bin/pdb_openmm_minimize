@@ -54,6 +54,9 @@ if len(args.files) == 2: # Assume prmtop and inpcrd pair
         import importlib
         implicit_solvent = getattr(importlib.import_module('openmm.app.amberprmtopfile'), args.implicit_solvent)
     system = struct.createSystem(constraints=constraints, implicitSolvent=implicit_solvent)
+elif args.files[0].endswith('.psf'): # VMD PSF
+    struct = openmm_app.CharmmPsfFile(args.files[0])
+    system = struct.createSystem(openmm_app.CharmmParameterSet(*forcefields))
 else: # Assume plain PDB
     struct = None
     if len(args.files):
