@@ -48,6 +48,7 @@ tolerance = 2.39
 
 struct = None
 system = None
+topology = None
 if len(args.files) == 2 and list(filter(lambda x: x.endswith('.prmtop'), args.files)): # Assume prmtop and inpcrd pair
     from parmed import load_file
     files = args.files
@@ -59,14 +60,14 @@ if len(args.files) == 2 and list(filter(lambda x: x.endswith('.prmtop'), args.fi
         import importlib
         implicit_solvent = getattr(importlib.import_module('openmm.app.amberprmtopfile'), args.implicit_solvent)
     system = struct.createSystem(constraints=constraints, implicitSolvent=implicit_solvent)
+    topology = struct.topology
 else: # Assume plain PDB
-    struct = None
-    system = None
     if len(args.files) == 2: # Assume PDB + PSF pair
         # Implemented according to https://parmed.github.io/ParmEd/html/omm_charmm.html
+        struct = openmm_app.PDBFile(args.files[0])
         psf = openmm_app.CharmmPsfFile(args.files[1]) # Assume second file is PSF
         system = psf.createSystem(openmm_app.CharmmParameterSet(*forcefields))
-        struct = openmm_app.PDBFile(args.files[0])
+        topology = psf.topology
     else: # Assume just a PDB file
         if len(args.files):
             struct = openmm_app.PDBFile(args.files[0]) # for now
@@ -80,6 +81,7 @@ else: # Assume plain PDB
             system = force_field.createSystem(struct.topology, constraints=constraints)
         except ValueError as error:
             raise ValueError(str(error) + '. OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
+        topology = struct.topology
 
         # stiffness omitted here
 
@@ -100,7 +102,7 @@ else:
             pass # try next until something is found
 
 integrator = openmm.LangevinIntegrator(300 * openmm.unit.kelvin, 0.01, 0.0)
-simulation = openmm_app.Simulation(struct.topology, system, integrator, platform)
+simulation = openmm_app.Simulation(topology, system, integrator, platform)
 simulation.context.setPositions(struct.positions)
 
 if args.print_forces:
