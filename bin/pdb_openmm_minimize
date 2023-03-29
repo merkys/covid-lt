@@ -13,15 +13,15 @@ except ModuleNotFoundError:
 from tempfile import NamedTemporaryFile
 import argparse, sys
 
-def print_forces(system, simulation):
+def print_forces(system, simulation, unit):
     """
     Based on https://openmm.github.io/openmm-cookbook/dev/notebooks/cookbook/Analyzing%20Energy%20Contributions.html
     """
     state = simulation.context.getState(getEnergy=True, getPositions=True)
-    print('PotentialEnergy', state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
+    print('PotentialEnergy', state.getPotentialEnergy() / unit, sep="\t")
     for i, force in enumerate(system.getForces()):
         state = simulation.context.getState(getEnergy=True, groups={i})
-        print(force.__class__.__name__, state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
+        print(force.__class__.__name__, state.getPotentialEnergy() / unit, sep="\t")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -30,11 +30,16 @@ parser.add_argument('--forcefield', action='append', help='Specify the forcefiel
 parser.add_argument('--implicit-solvent', help='Implicit solvent to use')
 parser.add_argument('--max-iterations', type=int, help='Maximum number of iterations', default=1)
 parser.add_argument('--print-forces', action='store_true', help='Suppress normal output, print forces instead')
+parser.add_argument('--force-unit', choices=['kJ/mol', 'kcal/mol'], help='Unit for force', default='kJ/mol')
 args = parser.parse_args()
 
 forcefields = args.forcefield
 if not len(forcefields):
     forcefields = ['amber99sb.xml']
+
+unit = openmm.unit.kilojoule_per_mole
+if args.force_unit == 'kcal/mol':
+    unit = openmm.unit.kilocalorie_per_mole
 
 constraints = openmm_app.HBonds
 tolerance = 2.39
@@ -54,7 +59,7 @@ if len(args.files) == 2: # Assume prmtop and inpcrd pair
         import importlib
         implicit_solvent = getattr(importlib.import_module('openmm.app.amberprmtopfile'), args.implicit_solvent)
     system = struct.createSystem(constraints=constraints, implicitSolvent=implicit_solvent)
-elif args.files[0].endswith('.psf'): # VMD PSF
+elif args.files and args.files[0].endswith('.psf'): # VMD PSF
     struct = openmm_app.CharmmPsfFile(args.files[0])
     system = struct.createSystem(openmm_app.CharmmParameterSet(*forcefields))
 else: # Assume plain PDB
@@ -95,13 +100,13 @@ simulation = openmm_app.Simulation(struct.topology, system, integrator, platform
 simulation.context.setPositions(struct.positions)
 
 if args.print_forces:
-    print_forces(system, simulation)
+    print_forces(system, simulation, unit)
 
 if args.max_iterations:
     simulation.minimizeEnergy(maxIterations=args.max_iterations, tolerance=tolerance)
 
     if args.print_forces:
-        print_forces(system, simulation)
+        print_forces(system, simulation, unit)
     else:
         state = simulation.context.getState(getEnergy=True, getPositions=True)
         openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
