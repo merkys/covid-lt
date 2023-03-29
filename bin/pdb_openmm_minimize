@@ -48,7 +48,7 @@ tolerance = 2.39
 
 struct = None
 system = None
-if len(args.files) == 2: # Assume prmtop and inpcrd pair
+if len(args.files) == 2 and list(filter(lambda x: x.endswith('.prmtop'), args.files)): # Assume prmtop and inpcrd pair
     from parmed import load_file
     files = args.files
     if files[1].endswith('.prmtop'): # order must be: prmtop, inpcrd
@@ -64,20 +64,26 @@ elif args.files and args.files[0].endswith('.psf'): # VMD PSF
     system = struct.createSystem(openmm_app.CharmmParameterSet(*forcefields))
 else: # Assume plain PDB
     struct = None
-    if len(args.files):
-        struct = openmm_app.PDBFile(args.files[0]) # for now
-    else:
-        temporary_file = NamedTemporaryFile('w+')
-        temporary_file.write(sys.stdin.read())
-        struct = openmm_app.PDBFile(temporary_file.name)
-    force_field = openmm_app.ForceField(*forcefields)
+    system = None
+    if len(args.files) == 2: # Assume PDB + PSF pair
+        psf = openmm_app.CharmmPsfFile(args.files[1]) # Assume second file is PSF
+        system = psf.createSystem(openmm_app.CharmmParameterSet(*forcefields))
+        struct = openmm_app.PDBFile(args.files[0])
+    else: # Assume just a PDB file
+        if len(args.files):
+            struct = openmm_app.PDBFile(args.files[0]) # for now
+        else:
+            temporary_file = NamedTemporaryFile('w+')
+            temporary_file.write(sys.stdin.read())
+            struct = openmm_app.PDBFile(temporary_file.name)
+        force_field = openmm_app.ForceField(*forcefields)
 
-    try:
-        system = force_field.createSystem(struct.topology, constraints=constraints)
-    except ValueError as error:
-        raise ValueError(str(error) + '. OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
+        try:
+            system = force_field.createSystem(struct.topology, constraints=constraints)
+        except ValueError as error:
+            raise ValueError(str(error) + '. OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
 
-    # stiffness omitted here
+        # stiffness omitted here
 
 # Splitting forces one force per group in order to be able to access them later
 for i, f in enumerate(system.getForces()):
