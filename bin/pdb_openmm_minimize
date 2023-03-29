@@ -42,7 +42,6 @@ if args.force_unit == 'kcal/mol':
     unit = openmm.unit.kilocalorie_per_mole
 
 constraints = openmm_app.HBonds
-tolerance = 2.39
 
 # FIXME: ParMed could be used to get OpenMM energies separated into terms, see https://github.com/openmm/openmm/issues/1463
 
@@ -66,7 +65,9 @@ else: # Assume plain PDB
         # Implemented according to https://parmed.github.io/ParmEd/html/omm_charmm.html
         struct = openmm_app.PDBFile(args.files[0])
         psf = openmm_app.CharmmPsfFile(args.files[1]) # Assume second file is PSF
-        system = psf.createSystem(openmm_app.CharmmParameterSet(*forcefields))
+        system = psf.createSystem(openmm_app.CharmmParameterSet(*forcefields),
+                                  nonbondedMethod=openmm_app.CutoffNonPeriodic,
+                                  nonbondedCutoff=12*openmm.unit.angstrom)
         topology = psf.topology
     else: # Assume just a PDB file
         if len(args.files):
@@ -109,7 +110,7 @@ if args.print_forces:
     print_forces(system, simulation, unit)
 
 if args.max_iterations:
-    simulation.minimizeEnergy(maxIterations=args.max_iterations, tolerance=tolerance)
+    simulation.minimizeEnergy(maxIterations=args.max_iterations)
 
     if args.print_forces:
         print_forces(system, simulation, unit)
