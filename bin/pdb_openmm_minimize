@@ -63,6 +63,7 @@ else: # Assume plain PDB
     struct = None
     system = None
     if len(args.files) == 2: # Assume PDB + PSF pair
+        # Implemented according to https://parmed.github.io/ParmEd/html/omm_charmm.html
         psf = openmm_app.CharmmPsfFile(args.files[1]) # Assume second file is PSF
         system = psf.createSystem(openmm_app.CharmmParameterSet(*forcefields))
         struct = openmm_app.PDBFile(args.files[0])
