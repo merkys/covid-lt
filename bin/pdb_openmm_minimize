@@ -98,7 +98,7 @@ else:
         except OpenMMException:
             pass # try next until something is found
 
-integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
+integrator = openmm.LangevinIntegrator(300 * openmm.unit.kelvin, 0.01, 0.0)
 simulation = openmm_app.Simulation(struct.topology, system, integrator, platform)
 simulation.context.setPositions(struct.positions)
 
