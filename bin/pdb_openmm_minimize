@@ -105,7 +105,7 @@ if args.constrain_backbone:
 
 nonbonded_force = system.getForces()[3] # FIXME: Find a better way to pick this one
 
-for i in range(0, nonbonded_force.getNumParticles()):
+for i in range(0, nonbonded_force.getNumParticles()): # Adjust force parameters for particles
     charge, sigma, epsilon = nonbonded_force.getParticleParameters(i)
     if args.no_LJ:
         epsilon = 0
@@ -113,7 +113,7 @@ for i in range(0, nonbonded_force.getNumParticles()):
         charge = 0
     nonbonded_force.setParticleParameters(i, charge, sigma, epsilon)
 
-for i in range(0, nonbonded_force.getNumExceptions()):
+for i in range(0, nonbonded_force.getNumExceptions()): # Adjust force parameters for exceptions
     particle1, particle2, chargeProd, sigma, epsilon = nonbonded_force.getExceptionParameters(i)
     if args.no_LJ:
         epsilon = 0
