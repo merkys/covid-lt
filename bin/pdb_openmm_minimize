@@ -103,7 +103,7 @@ if args.constrain_backbone:
         if atom.name in ['C', 'CA', 'N', 'O']:
             restraint.addParticle(atom.index, struct.positions[atom.index])
 
-nonbonded_force = system.getForces()[3] # FIXME: Find a better way to pick this one
+nonbonded_force = list(filter(lambda f: isinstance(f, openmm.NonbondedForce), system.getForces()))[0]
 
 for i in range(0, nonbonded_force.getNumParticles()): # Adjust force parameters for particles
     charge, sigma, epsilon = nonbonded_force.getParticleParameters(i)
