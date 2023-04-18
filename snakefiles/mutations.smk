@@ -325,3 +325,13 @@ rule train_data_skempi:
             | sed 's/\r//g' \
             | sort >> {output}
         """
+
+rule pdb2pqr:
+    input:
+        "{name}.pdb"
+    output:
+        "{name}.pqr"
+    singularity:
+        "apbs.sif"
+    shell:
+        "pdb2pqr {input} {output}"
