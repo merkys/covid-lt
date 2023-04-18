@@ -10,6 +10,7 @@ except ModuleNotFoundError:
     from simtk import openmm
     from simtk.openmm import OpenMMException, app as openmm_app
 
+from copy import deepcopy
 from tempfile import NamedTemporaryFile
 import argparse, sys
 
@@ -21,7 +22,7 @@ def print_forces(system, simulation, unit):
     print('PotentialEnergy', state.getPotentialEnergy() / unit, sep="\t")
     for i, force in enumerate(system.getForces()):
         state = simulation.context.getState(getEnergy=True, groups={i})
-        print(force.__class__.__name__, state.getPotentialEnergy() / unit, sep="\t")
+        print(force.getName(), state.getPotentialEnergy() / unit, sep="\t")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -103,7 +104,15 @@ if args.constrain_backbone:
         if atom.name in ['C', 'CA', 'N', 'O']:
             restraint.addParticle(atom.index, struct.positions[atom.index])
 
+# Splitting LJ and Coulomb forces
 nonbonded_force = list(filter(lambda f: isinstance(f, openmm.NonbondedForce), system.getForces()))[0]
+
+LJ = nonbonded_force
+Coulomb = deepcopy(nonbonded_force)
+LJ.setName('LJForce')
+Coulomb.setName('CoulombForce')
+
+system.addForce(Coulomb)
 
 for i in range(0, nonbonded_force.getNumParticles()): # Adjust force parameters for particles
     charge, sigma, epsilon = nonbonded_force.getParticleParameters(i)
@@ -111,7 +120,8 @@ for i in range(0, nonbonded_force.getNumParticles()): # Adjust force parameters 
         epsilon = 0
     if args.no_Coulomb:
         charge = 0
-    nonbonded_force.setParticleParameters(i, charge, sigma, epsilon)
+    LJ.setParticleParameters(i, 0, sigma, epsilon)
+    Coulomb.setParticleParameters(i, charge, sigma, 0)
 
 for i in range(0, nonbonded_force.getNumExceptions()): # Adjust force parameters for exceptions
     particle1, particle2, chargeProd, sigma, epsilon = nonbonded_force.getExceptionParameters(i)
@@ -119,7 +129,8 @@ for i in range(0, nonbonded_force.getNumExceptions()): # Adjust force parameters
         epsilon = 0
     if args.no_Coulomb:
         chargeProd = 0
-    nonbonded_force.setExceptionParameters(i, particle1, particle2, chargeProd, sigma, epsilon)
+    LJ.setExceptionParameters(i, particle1, particle2, 0, sigma, epsilon)
+    Coulomb.setExceptionParameters(i, particle1, particle2, chargeProd, sigma, 0)
 
 # Splitting forces one force per group in order to be able to access them later
 for i, f in enumerate(system.getForces()):
