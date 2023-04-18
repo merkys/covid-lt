@@ -94,24 +94,13 @@ rule optimize_complex:
 
 rule optimize_chain:
     input:
-        "{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
     output:
         "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}_{chain}.pdb"
-    log:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}_{chain}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
-        if ! grep ^ATOM {input} \
-            | bin/pdb_select --chain {wildcards.chain} \
-            | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
-            | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments \
-            | bin/namd-minimize forcefields/par_all22_prot.prm \
-            | tar -x --to-stdout output.coor > {output}
-        then
-            echo -n > {output}
-            echo -n > {log}
-        fi
+        bin/pdb_select --chain {wildcards.chain} {input} > {output}
         """
 
 def list_chains(name):
