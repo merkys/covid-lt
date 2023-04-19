@@ -122,7 +122,7 @@ PBEQ
         dcel $PBEQ_DCEL -
 ENDSCRIPT
 
-pdb_box $TMPDIR/input.pdb | bin/pbeq-mesh $PBEQ_DCEL >> $TMPDIR/energy.inp
+bin/pbeq-mesh $TMPDIR/input.pdb $PBEQ_DCEL >> $TMPDIR/energy.inp
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
         maxi 1000 select all end
