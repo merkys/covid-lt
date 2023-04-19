@@ -23,7 +23,7 @@ elec name ${NAME}       # Electrostatics calculation on the solvated state
   grid 0.5 0.5 0.5      # Grid spacing
   gcent mol ${MOL}      # Center the grid on the molecule
   mol ${MOL}            # Perform the calculation on the molecule
-  npbe                  # Solve the linearized Poisson-Boltzmann equation
+  lpbe                  # Solve the linearized Poisson-Boltzmann equation
   bcfl mdh              # Use all multipole moments when calculating the potential
   pdie 2.0              # Solute dielectric
   sdie 80               # Solvent dielectric
