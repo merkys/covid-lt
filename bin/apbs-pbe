@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Input script designed according to:
+# https://apbs.readthedocs.io/en/latest/using/examples/solvation-energies.html#polar-solvation
+
 INPUT_FILE=$(mktemp)
 
 cat > ${INPUT_FILE} <<END
