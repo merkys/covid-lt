@@ -34,7 +34,7 @@ elec name ${NAME}       # Electrostatics calculation on the solvated state
   srfm mol              # Molecular surface definition
   srad 1.4              # Solvent probe radius (for molecular surface)
   swin 0.3              # Solvent surface spline window (not used here)
-  sdens 10.0            # Sphere density for accessibility object
+  sdens 10.0            # Sphere density for accessibility object (typical value)
   temp 300              # Temperature
   calcenergy total      # Calculate energies
   calcforce no          # Do not calculate forces
