@@ -1,0 +1,47 @@
+#!/bin/bash
+
+INPUT_FILE=$(mktemp)
+
+cat > ${INPUT_FILE} <<END
+read
+    mol pqr $1
+    mol pqr $2
+end
+END
+
+NAMES="mut wt"
+
+for MOL in 1 2
+do
+    NAME=$(echo ${NAMES} | cut -d ' ' -f ${MOL})
+
+cat >> ${INPUT_FILE} <<END
+elec name ${NAME}       # Electrostatics calculation on the solvated state
+  mg-manual             # Specify the mode for APBS to run
+  dime 161 161 161      # The grid dimensions
+  nlev 4                # Multigrid level parameter
+  grid 0.5 0.5 0.5      # Grid spacing
+  gcent mol ${MOL}      # Center the grid on the molecule
+  mol ${MOL}            # Perform the calculation on the molecule
+  npbe                  # Solve the linearized Poisson-Boltzmann equation
+  bcfl mdh              # Use all multipole moments when calculating the potential
+  pdie 2.0              # Solute dielectric
+  sdie 80               # Solvent dielectric
+  chgm spl2             # Spline-based discretization of the delta functions
+  srfm mol              # Molecular surface definition
+  srad 1.4              # Solvent probe radius (for molecular surface)
+  swin 0.3              # Solvent surface spline window (not used here)
+  sdens 10.0            # Sphere density for accessibility object
+  temp 300              # Temperature
+  calcenergy total      # Calculate energies
+  calcforce no          # Do not calculate forces
+end
+END
+done
+
+echo print energy mut - wt end >> ${INPUT_FILE}
+echo quit >> ${INPUT_FILE}
+
+apbs ${INPUT_FILE}
+
+rm -f ${INPUT_FILE}

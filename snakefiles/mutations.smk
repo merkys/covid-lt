@@ -335,3 +335,14 @@ rule pdb2pqr:
         "apbs.sif"
     shell:
         "pdb2pqr {input} {output}"
+
+rule apbs:
+    input:
+        mut = "{name}.pqr",
+        wt = "{name}_wt.pqr"
+    output:
+        "{name}.apbs.out"
+    singularity:
+        "apbs.sif"
+    shell:
+        "bin/apbs-pbe {input.mut} {input.wt} > {output}"
