@@ -345,4 +345,4 @@ rule apbs:
     singularity:
         "apbs.sif"
     shell:
-        "bin/apbs-pbe {input.mut} {input.wt} > {output}"
+        "bin/apbs-pbe {input.mut} {input.wt} > {output} 2>&1"
