@@ -20,7 +20,7 @@ elec name ${NAME}       # Electrostatics calculation on the solvated state
   mg-manual             # Specify the mode for APBS to run
   dime 161 161 161      # The grid dimensions
   nlev 4                # Multigrid level parameter
-  grid 0.5 0.5 0.5      # Grid spacing
+  grid 1 1 1            # Grid spacing
   gcent mol ${MOL}      # Center the grid on the molecule
   mol ${MOL}            # Perform the calculation on the molecule
   lpbe                  # Solve the linearized Poisson-Boltzmann equation
