@@ -1,0 +1,34 @@
+#!/bin/bash
+
+MUT=$1
+
+CHAINS=$2
+
+PARTNER1=$2
+PARTNER2=$3
+
+CHAINS=${PARTNER1}${PARTNER2}
+
+(
+
+    for FILE in ${MUT}_${CHAINS}.pdb ${MUT}_${CHAINS}_wt.pdb
+    do
+        sed 's/HSE/HIS/g' $FILE \
+            | ../../master/bin/pdb_openmm_minimize --forcefield amber99sb.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force \
+            | grep ^LJForce \
+            | cut -f 2
+    done
+
+    # for PARTNER in $PARTNER1 $PARTNER2
+    for CHAIN in $CHAIN1 $CHAIN2
+    do
+        for FILE in ${MUT}_${CHAINS}_wt_${CHAIN}.pdb ${MUT}_${CHAINS}_${CHAIN}.pdb
+        do
+            sed 's/HSE/HIS/g' $FILE \
+                | ../../master/bin/pdb_openmm_minimize --forcefield amber99sb.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force \
+                | grep ^LJForce \
+                | cut -f 2
+        done
+    done
+
+) | perl -le 'while (<>) {print $_ * (-1) ** ($. + 1)}'
