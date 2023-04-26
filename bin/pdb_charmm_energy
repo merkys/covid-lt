@@ -115,6 +115,7 @@ if [ -n "$PBEQ" ]
 then
 
 # PBEQ module is described in https://academiccharmm.org/documentation/version/c47b2/pbeq
+# More about solvation is described in http://charmm.sunhwanj.com/html/pbeq.html
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
 PBEQ
@@ -125,7 +126,16 @@ ENDSCRIPT
 bin/pbeq-mesh $TMPDIR/input.pdb $PBEQ_DCEL >> $TMPDIR/energy.inp
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
-        maxi 1000 select all end
+        set ener80 = ?ENPB
+    SOLVE epsw 1 epsp 2 -
+        dcel $PBEQ_DCEL -
+ENDSCRIPT
+
+bin/pbeq-mesh $TMPDIR/input.pdb $PBEQ_DCEL >> $TMPDIR/energy.inp
+
+cat >> $TMPDIR/energy.inp <<ENDSCRIPT
+        set ener1 = ?ENPB
+    CALC total = @ener80 - @ener1
 END
 ENDSCRIPT
 fi
