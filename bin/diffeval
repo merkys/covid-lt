@@ -2,8 +2,6 @@
 
 MUT=$1
 
-CHAINS=$2
-
 PARTNER1=$2
 PARTNER2=$3
 
@@ -19,12 +17,12 @@ CHAINS=${PARTNER1}${PARTNER2}
             | cut -f 2
     done
 
-    # for PARTNER in $PARTNER1 $PARTNER2
-    for CHAIN in $CHAIN1 $CHAIN2
+    for PARTNER in $PARTNER1 $PARTNER2
     do
-        for FILE in ${MUT}_${CHAINS}_wt_${CHAIN}.pdb ${MUT}_${CHAINS}_${CHAIN}.pdb
+        for FILE in ${MUT}_${CHAINS}_wt.pdb ${MUT}_${CHAINS}.pdb
         do
             sed 's/HSE/HIS/g' $FILE \
+                | bin/pdb_select --chain ${PARTNER} \
                 | ../../master/bin/pdb_openmm_minimize --forcefield amber99sb.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force \
                 | grep ^LJForce \
                 | cut -f 2
