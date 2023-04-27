@@ -12,14 +12,16 @@ read
 end
 END
 
-NAMES="mut wt"
+SDIES='80 2'
 
 for MOL in 1 2
 do
-    NAME=$(echo ${NAMES} | cut -d ' ' -f ${MOL})
+    for SOLV in 1 2
+    do
+        SDIE=$(echo $SDIES | cut -d ' ' -f $SOLV)
 
 cat >> ${INPUT_FILE} <<END
-elec name ${NAME}       # Electrostatics calculation on the solvated state
+elec name calc_${MOL}_${SOLV}
   mg-manual             # Specify the mode for APBS to run
   dime 161 161 161      # The grid dimensions
   grid 1 1 1            # Grid spacing
@@ -27,8 +29,8 @@ elec name ${NAME}       # Electrostatics calculation on the solvated state
   mol ${MOL}            # Perform the calculation on the molecule
   lpbe                  # Solve the linearized Poisson-Boltzmann equation
   bcfl mdh              # Use all multipole moments when calculating the potential
-  pdie 2.0              # Solute dielectric
-  sdie 80               # Solvent dielectric
+  pdie 2                # Solute dielectric
+  sdie ${SDIE}          # Solvent dielectric
   chgm spl2             # Spline-based discretization of the delta functions
   srfm mol              # Molecular surface definition
   srad 1.4              # Solvent probe radius (for molecular surface)
@@ -39,9 +41,11 @@ elec name ${NAME}       # Electrostatics calculation on the solvated state
   calcforce no          # Do not calculate forces
 end
 END
+
+    done
 done
 
-echo print energy mut - wt end >> ${INPUT_FILE}
+echo print energy calc_1_1 - calc_1_2 - calc_2_1 + calc_2_2 end >> ${INPUT_FILE}
 echo quit >> ${INPUT_FILE}
 
 apbs ${INPUT_FILE}
