@@ -12,7 +12,7 @@ read
 end
 END
 
-SDIES='80 2'
+SDIES='80 1'
 
 for MOL in 1 2
 do
