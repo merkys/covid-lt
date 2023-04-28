@@ -119,14 +119,17 @@ then
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
 PBEQ
-   SOLVE epsw 80 epsp 2 -
+    scalar wmain = radius
+
+    SOLVE epsw 80 epsp 2 -
         dcel $PBEQ_DCEL -
 ENDSCRIPT
 
 bin/pbeq-mesh $TMPDIR/input.pdb $PBEQ_DCEL >> $TMPDIR/energy.inp
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
-        set ener80 = ?ENPB
+    set ener80 = ?ENPB
+
     SOLVE epsw 1 epsp 2 -
         dcel $PBEQ_DCEL -
 ENDSCRIPT
@@ -134,8 +137,11 @@ ENDSCRIPT
 bin/pbeq-mesh $TMPDIR/input.pdb $PBEQ_DCEL >> $TMPDIR/energy.inp
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
-        set ener1 = ?ENPB
+    set ener1 = ?ENPB
+
     CALC total = @ener80 - @ener1
+
+    RESET
 END
 ENDSCRIPT
 fi
