@@ -163,7 +163,7 @@ rule energy:
         then
             if ! PYTHONPATH=. bin/pdb_renumber {input} \
                 | PYTHONPATH=. bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --pbeq \
-                | grep -e ^ENER -e 'Electrostatic energy' > {output}
+                | grep -e ^ENER -e '^ Parameter: TOTAL' > {output}
             then
                 echo -n > {output}
             fi
