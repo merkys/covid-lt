@@ -8,29 +8,20 @@ INPUT_FILE=$(mktemp)
 cat > ${INPUT_FILE} <<END
 read
     mol pqr $1
-    mol pqr $2
 end
 END
 
-SDIES='80 1'
-
-for MOL in 1 2
-do
-    for SOLV in 1 2
-    do
-        SDIE=$(echo $SDIES | cut -d ' ' -f $SOLV)
-
 cat >> ${INPUT_FILE} <<END
-elec name calc_${MOL}_${SOLV}
+elec name wat
   mg-manual             # Specify the mode for APBS to run
   dime 161 161 161      # The grid dimensions
   grid 1 1 1            # Grid spacing
-  gcent mol ${MOL}      # Center the grid on the molecule
-  mol ${MOL}            # Perform the calculation on the molecule
+  gcent mol 1           # Center the grid on the molecule
+  mol 1                 # Perform the calculation on the molecule
   lpbe                  # Solve the linearized Poisson-Boltzmann equation
   bcfl mdh              # Use all multipole moments when calculating the potential
   pdie 2                # Solute dielectric
-  sdie ${SDIE}          # Solvent dielectric
+  sdie 80               # Solvent dielectric
   chgm spl2             # Spline-based discretization of the delta functions
   srfm mol              # Molecular surface definition
   srad 1.4              # Solvent probe radius (for molecular surface)
@@ -40,13 +31,9 @@ elec name calc_${MOL}_${SOLV}
   calcenergy total      # Calculate energies
   calcforce no          # Do not calculate forces
 end
+print energy wat end
+quit
 END
-
-    done
-done
-
-echo print energy calc_1_1 - calc_1_2 - calc_2_1 + calc_2_2 end >> ${INPUT_FILE}
-echo quit >> ${INPUT_FILE}
 
 apbs ${INPUT_FILE}
 
