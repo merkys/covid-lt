@@ -346,3 +346,27 @@ rule apbs:
         "apbs.sif"
     shell:
         "bin/apbs-pbe {input.mut} {input.wt} > {output} 2>&1"
+
+rule apbs_partners:
+    input:
+        mut = "optimized/{name}_{chains}.pdb",
+        wt = "optimized/{name}_{chains}_wt.pdb"
+    output:
+        "optimized/{name}_{chains}.apbs.solv"
+    singularity:
+        "apbs.sif"
+    shell:
+        """
+        PYTHONPATH=. bin/apbs-diffeval {wildcards.name} $(tail -n +2 SkempiS.txt | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $2 "\t" $3}} }}' | grep "^{wildcards.name}\t" | cut -f 2- | sed 's/[^\tA-Z]//g') > {output}
+        """
+
+rule charmm_partners:
+    input:
+        mut = "optimized/{name}_{chains}.pdb",
+        wt = "optimized/{name}_{chains}_wt.pdb"
+    output:
+        "optimized/{name}_{chains}.charmm.solv"
+    shell:
+        """
+        PYTHONPATH=. bin/charmm-diffeval {wildcards.name} $(tail -n +2 SkempiS.txt | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $2 "\t" $3}} }}' | grep "^{wildcards.name}\t" | cut -f 2- | sed 's/[^\tA-Z]//g') > {output}
+        """
