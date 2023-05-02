@@ -11,15 +11,19 @@ read
 end
 END
 
+CELL=$(bin/pbeq-mesh $1 | cut -d ' ' -f 2 | cut -d . -f 1 | xargs -i expr {} + 50 | xargs)
+
 cat >> ${INPUT_FILE} <<END
 elec name wat
-  mg-manual             # Specify the mode for APBS to run
+  mg-auto               # Specify the mode for APBS to run
   dime 161 161 161      # The grid dimensions
-  grid 1 1 1            # Grid spacing
-  gcent mol 1           # Center the grid on the molecule
+  cglen ${CELL}
+  fglen ${CELL}
+  cgcent mol 1
+  fgcent mol 1
   mol 1                 # Perform the calculation on the molecule
   lpbe                  # Solve the linearized Poisson-Boltzmann equation
-  bcfl mdh              # Use all multipole moments when calculating the potential
+  bcfl sdh              # Use all multipole moments when calculating the potential
   pdie 2                # Solute dielectric
   sdie 80               # Solvent dielectric
   chgm spl2             # Spline-based discretization of the delta functions
