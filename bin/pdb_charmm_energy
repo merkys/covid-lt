@@ -130,16 +130,7 @@ bin/pbeq-mesh $TMPDIR/input.pdb $PBEQ_DCEL >> $TMPDIR/energy.inp
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
     set ener80 = ?ENPB
 
-    SOLVE epsw 1 epsp 2 -
-        dcel $PBEQ_DCEL -
-ENDSCRIPT
-
-bin/pbeq-mesh $TMPDIR/input.pdb $PBEQ_DCEL >> $TMPDIR/energy.inp
-
-cat >> $TMPDIR/energy.inp <<ENDSCRIPT
-    set ener1 = ?ENPB
-
-    CALC total = @ener80 - @ener1
+    CALC total = @ener80
 
     RESET
 END
