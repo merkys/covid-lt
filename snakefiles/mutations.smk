@@ -370,3 +370,26 @@ rule charmm_partners:
         """
         PYTHONPATH=. bin/charmm-diffeval {wildcards.name} $(tail -n +2 SkempiS.txt | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $2 "\t" $3}} }}' | grep "^{wildcards.name}\t" | cut -f 2- | sed 's/[^\tA-Z]//g') > {output}
         """
+
+rule openmm_energy:
+    input:
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.openmm.ener"
+    singularity:
+        "container.sif"
+    shell:
+        """
+        PARTNERS=$(tail -n +2 SkempiS.txt | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $2 "\t" $3}} }}' | grep "^{wildcards.pdbid}_{wildcards.mutation}\t" | cut -f 2- | sed 's/[^\tA-Z]//g')
+
+        (
+            sed 's/HSE/HIS/g' {input} \
+                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+            sed 's/HSE/HIS/g' {input} \
+                | bin/pdb_select --chain $(echo $PARTNERS | cut -d ' ' -f 1) \
+                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+            sed 's/HSE/HIS/g' {input} \
+                | bin/pdb_select --chain $(echo $PARTNERS | cut -d ' ' -f 2) \
+                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+        ) > {output}
+        """
