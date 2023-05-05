@@ -4,6 +4,8 @@ wildcard_constraints:
     maybe_wt = "(_wt)?",
     mutation = "[A-Z]{2}-?\d+[a-z]?[A-Z]",
     mutation_maybe_wt = "[A-Z]{2}-?\d+[a-z]?[A-Z](_wt)?",
+    partner1 = "[A-Za-z]+",
+    partner2 = "[A-Za-z]+",
     pdbid = "[A-Z0-9]{4}",
     type = "[A-Za-z0-9]+"
 
@@ -19,9 +21,10 @@ def skempi_filtered():
 def input_complexes():
     complexes = []
     for fields in skempi_filtered():
-        partners = ''.join(sorted(chain[0] for chain in fields[1].split('.') + fields[2].split('.')))
-        complexes.append("{}_{}{}{}_{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], partners))
-        complexes.append("{}_{}{}{}_{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], partners))
+        partner1 = ''.join(sorted(chain[0] for chain in fields[1].split('.')))
+        partner2 = ''.join(sorted(chain[0] for chain in fields[2].split('.')))
+        complexes.append("{}_{}{}{}_{}_{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], partner1, partner2))
+        complexes.append("{}_{}{}{}_{}_{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], partner1, partner2))
     return complexes
 
 rule all_complexes:
@@ -32,10 +35,10 @@ rule mutated_complex:
     input:
         "{pdbid}.pdb"
     output:
-        mutation = "{pdbid}_{mutation}_{chains}.pdb",
-        wt = "{pdbid}_{mutation}_{chains}_wt.pdb"
+        mutation = "{pdbid}_{mutation}_{partner1}_{partner2}.pdb",
+        wt = "{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
     log:
-        "{pdbid}_{mutation}_{chains}.log"
+        "{pdbid}_{mutation}_{partner1}_{partner2}.log"
     singularity:
         "container.sif"
     shell:
@@ -63,18 +66,18 @@ rule original_pdb:
 
 rule optimize_complex:
     input:
-        "{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
+        "{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
     log:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.map"
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.map"
     shell:
         """
         mkdir --parents $(dirname {output})
         if [ -s {input} ]
         then
             grep ^ATOM {input} \
-                | bin/pdb_select --chain {wildcards.chains} \
+                | bin/pdb_select --chain {wildcards.partner1}{wildcards.partner2} \
                 | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
                 | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments \
                 | bin/namd-minimize forcefields/par_all22_prot.prm \
