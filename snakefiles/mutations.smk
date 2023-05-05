@@ -333,47 +333,45 @@ rule apbs:
 
 rule apbs_partners:
     input:
-        mut = "optimized/{name}_{chains}.pdb",
-        wt = "optimized/{name}_{chains}_wt.pdb"
+        mut = "optimized/{name}_{partner1}_{partner2}.pdb",
+        wt = "optimized/{name}_{partner1}_{partner2}_wt.pdb"
     output:
-        "optimized/{name}_{chains}.apbs.solv"
+        "optimized/{name}_{partner1}_{partner2}.apbs.solv"
     singularity:
         "apbs.sif"
     shell:
         """
-        PYTHONPATH=. bin/apbs-diffeval {wildcards.name} $(tail -n +2 SkempiS.txt | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $2 "\t" $3}} }}' | grep "^{wildcards.name}\t" | cut -f 2- | sed 's/[^\tA-Z]//g') > {output}
+        PYTHONPATH=. bin/apbs-diffeval {wildcards.name} {wildcards.partner1} {wildcards.partner2} > {output}
         """
 
 rule charmm_partners:
     input:
-        mut = "optimized/{name}_{chains}.pdb",
-        wt = "optimized/{name}_{chains}_wt.pdb"
+        mut = "optimized/{name}_{partner1}_{partner2}.pdb",
+        wt = "optimized/{name_{partner1}_{partner2}_wt.pdb"
     output:
-        "optimized/{name}_{chains}.charmm.solv"
+        "optimized/{name}_{partner1}_{partner2}.charmm.solv"
     shell:
         """
-        PYTHONPATH=. bin/charmm-diffeval {wildcards.name} $(tail -n +2 SkempiS.txt | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $2 "\t" $3}} }}' | grep "^{wildcards.name}\t" | cut -f 2- | sed 's/[^\tA-Z]//g') > {output}
+        PYTHONPATH=. bin/charmm-diffeval {wildcards.name} {wildcards.partner1} {wildcards.partner2} > {output}
         """
 
 rule openmm_energy:
     input:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
     output:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.openmm.ener"
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.openmm.ener"
     singularity:
         "container.sif"
     shell:
         """
-        PARTNERS=$(tail -n +2 SkempiS.txt | awk '{{ if( $8 == "forward" ) {{print $1 "_" substr($5,0,1) substr($4,0,1) substr($5,2) "\t" $2 "\t" $3}} }}' | grep "^{wildcards.pdbid}_{wildcards.mutation}\t" | cut -f 2- | sed 's/[^\tA-Z]//g')
-
         (
             sed 's/HSE/HIS/g' {input} \
                 | bin/pdb_openmm_minimize --forcefield amber99sb.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
             sed 's/HSE/HIS/g' {input} \
-                | bin/pdb_select --chain $(echo $PARTNERS | cut -d ' ' -f 1) \
+                | bin/pdb_select --chain {wildcards.partner1} \
                 | bin/pdb_openmm_minimize --forcefield amber99sb.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
             sed 's/HSE/HIS/g' {input} \
-                | bin/pdb_select --chain $(echo $PARTNERS | cut -d ' ' -f 2) \
+                | bin/pdb_select --chain {wildcards.partner2} \
                 | bin/pdb_openmm_minimize --forcefield amber99sb.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
         ) > {output}
         """
