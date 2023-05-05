@@ -92,17 +92,6 @@ rule optimize_complex:
         fi
         """
 
-rule optimize_chain:
-    input:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
-    output:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}_{chain}.pdb"
-    shell:
-        """
-        mkdir --parents $(dirname {output})
-        bin/pdb_select --chain {wildcards.chain} {input} > {output}
-        """
-
 def list_chains(name):
     name_parts = name.split('_')
     if name_parts[-1] == 'wt':
@@ -111,9 +100,9 @@ def list_chains(name):
 
 rule all_optimized:
     input:
-        [expand("optimized/{cplx}_{chain}.pdb", cplx=cplx, chain=list_chains(cplx)) for cplx in input_complexes()],
         expand("optimized/{cplx}.pdb", cplx=input_complexes())
 
+# FIXME: This rule no longer works as we no longer optimize separate chains
 rule all_energies:
     input:
         [expand("optimized/{cplx}_{chain}.ener", cplx=cplx, chain=list_chains(cplx)) for cplx in input_complexes()],
