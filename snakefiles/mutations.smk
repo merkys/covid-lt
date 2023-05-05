@@ -384,12 +384,12 @@ rule openmm_energy:
 
         (
             sed 's/HSE/HIS/g' {input} \
-                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
             sed 's/HSE/HIS/g' {input} \
                 | bin/pdb_select --chain $(echo $PARTNERS | cut -d ' ' -f 1) \
-                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
             sed 's/HSE/HIS/g' {input} \
                 | bin/pdb_select --chain $(echo $PARTNERS | cut -d ' ' -f 2) \
-                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
         ) > {output}
         """
