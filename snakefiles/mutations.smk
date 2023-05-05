@@ -24,14 +24,6 @@ def input_complexes():
         complexes.append("{}_{}{}{}_{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], partners))
     return complexes
 
-def skempi_get_details(mutation):
-    if mutation[1].isalpha(): # chain given
-        mutation = mutation[0] + mutation[2:]
-    for fields in skempi_filtered():
-        if fields[4] == mutation:
-            return fields
-    return None
-
 rule all_complexes:
     input:
         expand("{complex}.pdb", complex=input_complexes())
