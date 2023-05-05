@@ -22,7 +22,10 @@ def print_forces(system, simulation, unit):
     print('PotentialEnergy', state.getPotentialEnergy() / unit, sep="\t")
     for i, force in enumerate(system.getForces()):
         state = simulation.context.getState(getEnergy=True, groups={i})
-        print(force.getName(), state.getPotentialEnergy() / unit, sep="\t")
+        try:
+            print(force.getName(), state.getPotentialEnergy() / unit, sep="\t")
+        except AttributeError: # OpenMM 7.5.1 does not have names for forces
+            print(force.__class__.__name__, state.getPotentialEnergy() / unit, sep="\t")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
@@ -84,7 +87,7 @@ else: # Assume plain PDB
         force_field = openmm_app.ForceField(*forcefields)
 
         try:
-            system = force_field.createSystem(struct.topology, constraints=constraints)
+            system = force_field.createSystem(struct.topology, constraints=constraints, soluteDielectric=2.0, solventDielectric=80.0)
         except ValueError as error:
             raise ValueError(str(error) + '. OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
         topology = struct.topology
@@ -113,8 +116,11 @@ if args.split_nonbonded_force or args.no_LJ or args.no_Coulomb:
     LJ = nonbonded_force
     Coulomb = deepcopy(nonbonded_force)
 
-    LJ.setName('LJForce')
-    Coulomb.setName('CoulombForce')
+    try:
+        LJ.setName('LJForce')
+        Coulomb.setName('CoulombForce')
+    except AttributeError: # OpenMM 7.5.1 does not have names for forces
+        pass
 
     system.addForce(Coulomb)
 
