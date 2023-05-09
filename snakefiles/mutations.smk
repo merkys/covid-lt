@@ -79,8 +79,8 @@ rule optimize_complex:
             grep ^ATOM {input} \
                 | bin/pdb_select --chain {wildcards.partner1}{wildcards.partner2} \
                 | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
-                | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments \
-                | bin/namd-minimize forcefields/par_all22_prot.prm \
+                | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments 2>/dev/null \
+                | bin/namd-minimize forcefields/par_all22_prot.prm 2>/dev/null \
                 | tar -x --to-stdout output.coor > {output}
         else
             echo -n > {output}
@@ -354,6 +354,10 @@ rule charmm_partners:
         """
         PYTHONPATH=. bin/charmm-diffeval {wildcards.name} {wildcards.partner1} {wildcards.partner2} > {output}
         """
+
+rule all_openmm_energy:
+    input:
+        expand("optimized/{cplx}.openmm.ener", cplx=input_complexes())
 
 rule openmm_energy:
     input:
