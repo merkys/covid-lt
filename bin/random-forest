@@ -18,7 +18,9 @@ if( train_size < 1 ) {
     train_size = round( length(D[,1]) * train_size )
 }
 
-model = NA
+best_model = NA
+best_model_mse = NA
+
 errors = numeric( options$options$rep * ( length(D[,1]) - train_size ) )
 
 for (i in 1:options$options$rep) {
@@ -37,11 +39,16 @@ for (i in 1:options$options$rep) {
     P = predict(model, newdata=test)
 
     errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
+
+    if( is.na( best_model ) || best_model_mse > sqrt(mean((P - test$ddG)^2)) ) {
+        best_model = model
+        best_model_mse = sqrt(mean((P - test$ddG)^2))
+    }
 }
 
 if( !is.na( options$options$importance ) ) {
     svg( options$options$importance )
-    varImpPlot( model )
+    varImpPlot( best_model )
 }
 
 cat("RMSE", sqrt(mean(errors**2)), "\n")
