@@ -8,6 +8,7 @@ library( 'randomForest' )
 parser <- OptionParser()
 parser <- add_option(parser, c( '--train-size' ), type = 'double', default = 0.8)
 parser <- add_option(parser, c( '--repeat' ), dest = 'rep', type = 'double', default = 1)
+parser <- add_option(parser, c( '--importance-plot' ), type = 'character', default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
 D = read.csv( options$args[1], quote="", sep="\t" )
@@ -17,6 +18,7 @@ if( train_size < 1 ) {
     train_size = round( length(D[,1]) * train_size )
 }
 
+model = NA
 errors = numeric( options$options$rep * ( length(D[,1]) - train_size ) )
 
 for (i in 1:options$options$rep) {
@@ -35,6 +37,11 @@ for (i in 1:options$options$rep) {
     P = predict(model, newdata=test)
 
     errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
+}
+
+if( !is.na( options$options$importance ) ) {
+    svg( options$options$importance )
+    varImpPlot( model )
 }
 
 cat("RMSE", sqrt(mean(errors**2)), "\n")
