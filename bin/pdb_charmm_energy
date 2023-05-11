@@ -4,6 +4,7 @@ INPUT_PDB=
 INPUT_RTF= # topology
 INPUT_PRM= # parameters
 
+GBSA=
 PBEQ=
 PBEQ_DCEL=1.0
 SEQUENCE_FROM_SEQRES=
@@ -18,6 +19,9 @@ do
         -p|--parameters|--param|--par|--prm)
             INPUT_PRM="$2"
             shift
+            ;;
+        --gbsa)
+            GBSA=1
             ;;
         --pbeq)
             PBEQ=1
@@ -107,9 +111,11 @@ HBUILD SELEct HYDRogen END
 
 !Check for remaining missing atoms
 PRINt COOR SELEct .NOT. INITialized END
- 
-ENERgy
 ENDSCRIPT
+
+test -n "$GBSA" && echo GBorn gbneck igb=1 epsin=2 epsout=80 >> $TMPDIR/energy.inp
+
+echo ENERgy >> $TMPDIR/energy.inp
 
 if [ -n "$PBEQ" ]
 then
