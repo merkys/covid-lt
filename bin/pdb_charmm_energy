@@ -113,7 +113,7 @@ HBUILD SELEct HYDRogen END
 PRINt COOR SELEct .NOT. INITialized END
 ENDSCRIPT
 
-test -n "$GBSA" && echo GBorn gbneck igb=1 epsin=2 epsout=80 >> $TMPDIR/energy.inp
+test -n "$GBSA" && echo GBorn gbsw igb=1 epsin=2 epsout=80 >> $TMPDIR/energy.inp
 
 echo ENERgy >> $TMPDIR/energy.inp
 
