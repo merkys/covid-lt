@@ -88,6 +88,7 @@ else: # Assume plain PDB
         force_field = openmm_app.ForceField(*forcefields)
 
         if args.add_missing_hydrogens:
+            # According to http://docs.openmm.org/latest/userguide/application/03_model_building_editing.html
             modeller = openmm_app.modeller.Modeller(struct.topology, struct.positions)
             modeller.addHydrogens(force_field)
             struct = modeller
