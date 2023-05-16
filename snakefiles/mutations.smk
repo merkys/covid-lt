@@ -136,11 +136,11 @@ rule all_energies:
         done
         """
 
-rule all_charmm:
+rule all_charmm_energy:
     input:
         expand("optimized/{cplx}.charmm.ener", cplx=input_complexes())
 
-rule energy:
+rule charmm_energy:
     input:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
     output:
