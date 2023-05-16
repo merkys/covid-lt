@@ -136,18 +136,30 @@ rule all_energies:
         done
         """
 
+rule all_charmm:
+    input:
+        expand("optimized/{cplx}.charmm.ener", cplx=input_complexes())
+
 rule energy:
     input:
-        "{name}.pdb"
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
     output:
-        "{name}.ener"
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.charmm.ener"
     shell:
         """
         if [ -s {input} ]
         then
-            if ! PYTHONPATH=. bin/pdb_renumber {input} \
-                | PYTHONPATH=. bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --pbeq \
-                | grep -e ^ENER -e '^ Parameter: TOTAL' > {output}
+            if ! (PYTHONPATH=. bin/pdb_renumber {input} \
+                    | PYTHONPATH=. bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --gbsa \
+                    | grep -e ^ENER -e '^ Parameter: TOTAL' && \
+                  bin/pdb_select --chain {wildcards.partner1} {input} \
+                    | PYTHONPATH=. bin/pdb_renumber \
+                    | PYTHONPATH=. bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --gbsa \
+                    | grep -e ^ENER -e '^ Parameter: TOTAL' && \
+                  bin/pdb_select --chain {wildcards.partner2} {input} \
+                    | PYTHONPATH=. bin/pdb_renumber \
+                    | PYTHONPATH=. bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --gbsa \
+                    | grep -e ^ENER -e '^ Parameter: TOTAL') > {output}
             then
                 echo -n > {output}
             fi
@@ -370,12 +382,49 @@ rule openmm_energy:
         """
         (
             sed 's/HSE/HIS/g' {input} \
-                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
             sed 's/HSE/HIS/g' {input} \
                 | bin/pdb_select --chain {wildcards.partner1} \
-                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
             sed 's/HSE/HIS/g' {input} \
                 | bin/pdb_select --chain {wildcards.partner2} \
-                | bin/pdb_openmm_minimize --forcefield amber99sb.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+        ) > {output}
+        """
+
+rule all_delphi_energy:
+    input:
+        expand("optimized/{cplx}.delphi.ener", cplx=input_complexes())
+    output:
+        "delphi.tab"
+    shell:
+        """
+        ls -1 optimized/*_wt.delphi.ener \
+            | while read FILE
+              do
+                BASE=$(basename $FILE _wt.delphi.ener)
+
+                grep --silent '^ Energy> Corrected reaction field energy' optimized/${{BASE}}.delphi.ener || continue
+                grep --silent '^ Energy> Corrected reaction field energy' optimized/${{BASE}}_wt.delphi.ener || continue
+
+                DIFF=$(grep --no-filename '^ Energy> Corrected reaction field energy' optimized/${{BASE}}.delphi.ener optimized/${{BASE}}_wt.delphi.ener \
+                    | awk '{{print $7}}' \
+                    | xargs \
+                    | awk '{{print $1 - $2 - $3 - $4 + $5 + $6}}')
+                echo -e $(echo $BASE | cut -d _ -f 1-2)"\t"${{DIFF}}
+              done | tee {output}
+        """
+
+rule delphi_energy:
+    input:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.delphi.ener"
+    shell:
+        """
+        (
+            bin/pdb_delphi_energy {input}
+            bin/pdb_select --chain {wildcards.partner1} {input} | bin/pdb_delphi_energy
+            bin/pdb_select --chain {wildcards.partner2} {input} | bin/pdb_delphi_energy
         ) > {output}
         """
