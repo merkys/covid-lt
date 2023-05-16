@@ -93,6 +93,10 @@ else: # Assume plain PDB
             modeller.addHydrogens(force_field)
             struct = modeller
 
+        if 'charmm_polar_2013.xml' in forcefields or 'charmm_polar_2019.xml' in forcefields:
+            modeller = openmm_app.modeller.Modeller(struct.topology, struct.positions)
+            modeller.addExtraParticles(force_field)
+
         try:
             system = force_field.createSystem(struct.topology, constraints=constraints, soluteDielectric=2.0, solventDielectric=80.0)
         except ValueError as error:
@@ -177,6 +181,7 @@ if args.max_iterations:
 
     if args.print_forces:
         print_forces(system, simulation, unit)
-    else:
-        state = simulation.context.getState(getEnergy=True, getPositions=True)
-        openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
+
+if not args.print_forces:
+    state = simulation.context.getState(getEnergy=True, getPositions=True)
+    openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
