@@ -371,6 +371,32 @@ rule all_openmm_energy:
     input:
         expand("optimized/{cplx}.openmm.ener", cplx=input_complexes())
 
+rule existing_openmm_energy:
+    output:
+        "openmm.tab"
+    shell:
+        """
+        ls -1 optimized/*_wt.openmm.ener \
+            | while read FILE
+              do
+                BASE=$(basename $FILE _wt.openmm.ener)
+
+                echo -en $(echo $BASE | cut -d _ -f 1-2)
+                cut -f 1 optimized/${{BASE}}.openmm.ener optimized/${{BASE}}_wt.openmm.ener \
+                    | sort \
+                    | uniq \
+                    | while read FORCE
+                      do
+                        grep --no-filename ^$FORCE optimized/${{BASE}}.openmm.ener optimized/${{BASE}}_wt.openmm.ener \
+                            | cut -f 2 \
+                            | xargs \
+                            | awk '{{print $1 - $2 - $3 - $4 + $5 + $6}}' \
+                            | xargs -i echo -en "\t"{{}}
+                      done
+                echo
+              done > {output}
+        """
+
 rule openmm_energy:
     input:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
