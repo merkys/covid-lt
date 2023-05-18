@@ -55,6 +55,8 @@ fi
   cut = 12.0,
   igb = 5,
   gbsa = 1,
+  intdiel = 2.0,
+  extdiel = 80.0,
 /
 
 &gb
