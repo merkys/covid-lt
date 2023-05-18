@@ -7,6 +7,8 @@ PRMTOP_FILE=
 INPCRD_FILE=
 SOURCE=
 
+TAR_OUTPUT=false
+
 while [ $# -gt 0 ]
 do
     case $1 in
@@ -20,6 +22,8 @@ do
         --source)
             SOURCE="$2"
             shift
+        --tar|--output-tar)
+            TAR_OUTPUT=true
         *)
             PDB=$1
             ;;
@@ -45,8 +49,13 @@ cp $PDB "${TMP_DIR}"
 
 EXIT_STATUS=0
 
-cp "${TMP_DIR}"/PRMTOP_FILE $PRMTOP_FILE || EXIT_STATUS=1
-cp "${TMP_DIR}"/INPCRD_FILE $INPCRD_FILE || EXIT_STATUS=1
+if $TAR_OUTPUT
+then
+    (cd "${TMP_DIR}" && tar -cf /dev/stdout PRMTOP_FILE INPCRD_FILE || EXIT_STATUS=1)
+else
+    cp "${TMP_DIR}"/PRMTOP_FILE $PRMTOP_FILE || EXIT_STATUS=1
+    cp "${TMP_DIR}"/INPCRD_FILE $INPCRD_FILE || EXIT_STATUS=1
+fi
 
 rm -rf "${TMP_DIR}"
 
