@@ -454,3 +454,21 @@ rule delphi_energy:
             bin/pdb_select --chain {wildcards.partner2} {input} | bin/pdb_delphi_energy
         ) > {output}
         """
+
+rule all_sander_energy:
+    input:
+        expand("optimized/{cplx}.sander.ener", cplx=input_complexes())
+
+rule sander_energy:
+    input:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.sander.ener"
+    shell:
+        """
+        (
+            grep ^ATOM {input} | bin/tleap --output-tar --source leaprc.protein.ff19SB 2>/dev/null | bin/sander --input-tar
+            grep ^ATOM {input} | bin/pdb_select --chain {wildcards.partner1} | bin/tleap --output-tar --source leaprc.protein.ff19SB 2>/dev/null | bin/sander --input-tar
+            grep ^ATOM {input} | bin/pdb_select --chain {wildcards.partner2} | bin/tleap --output-tar --source leaprc.protein.ff19SB 2>/dev/null | bin/sander --input-tar
+        ) > {output}
+        """
