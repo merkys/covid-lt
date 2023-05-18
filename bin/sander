@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Wrapper for sander
+
+PRMTOP_FILE=$1
+shift
+
+INPCRD_FILE=$1
+shift
+
+TMP_DIR=$(mktemp --directory)
+
+cat $PRMTOP_FILE > $TMP_DIR/prmtop
+cat $INPCRD_FILE > $TMP_DIR/inpcrd
+
+(
+    cd "${TMP_DIR}"
+
+    cat > mdin <<END
+
+&cntrl
+  imin = 1,
+  ntpr = 1000,
+  ntwx = 1000,
+  nstlim = 10000,
+  cut = 12.0,
+  igb = 5,
+  gbsa = 1,
+/
+
+&gb
+  igb = 5,
+/
+
+&pb
+  istrng = 0.15,
+  cavity_surften = 0.005,
+/
+END
+
+    sander -i mdin -o mdout -p prmtop -c inpcrd
+    cat mdout
+)
+
+rm -rf "${TMP_DIR}"
