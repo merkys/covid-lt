@@ -370,7 +370,7 @@ rule tleap:
         "{prefix}.tleap.log"
     shell:
         """
-        bin/tleap {input} {output.prmtop} {output.inpcrd} leaprc.protein.ff19SB 2> {log}
+        bin/tleap {input} --prmtop {output.prmtop} --inpcrd {output.inpcrd} --source leaprc.protein.ff19SB 2> {log}
         """
 
 rule build_TMscore:
