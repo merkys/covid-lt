@@ -30,6 +30,8 @@ TMP_DIR=$(mktemp --directory)
 if $TAR_INPUT
 then
     (
+        cd "${TMP_DIR}"
+
         cat "$@" > input.tar
         tar -xf input.tar && rm input.tar
         mv PRMTOP_FILE prmtop
