@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Prepare inputs for Amber calculations
+
 PDB=$1
 shift
 
