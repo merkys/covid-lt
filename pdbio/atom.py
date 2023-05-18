@@ -13,15 +13,24 @@ class Atom:
             elif len(element) > 2:
                 element = element[0:2]
             self.parent.parent.parent.content[self.line] = self.parent.parent.parent.content[self.line][:76] + element + self.parent.parent.parent.content[self.line][78:]
-        return(old_element)
+        return old_element
 
     def coords(self):
         return [float(self.parent.parent.parent.content[self.line][30:38]),
                 float(self.parent.parent.parent.content[self.line][38:46]),
                 float(self.parent.parent.parent.content[self.line][46:54])]
 
-    def name(self):
-        return self.parent.parent.parent.content[self.line][12:16].strip()
+    def name(self, name=None):
+        old_name = self.parent.parent.parent.content[self.line][12:16].strip()
+        if name:
+            if len(name) > 4:
+                raise ValueError("atom name cannot be longer than 4 characters")
+            if len(name) < 4:
+                name = ' ' + name
+            while len(name) < 4:
+                name = name + ' '
+            self.parent.parent.parent.content[self.line] = self.parent.parent.parent.content[self.line][:12] + element + self.parent.parent.parent.content[self.line][16:]
+        return old_name
 
     @property
     def number(self):
