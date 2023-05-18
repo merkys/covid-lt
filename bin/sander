@@ -2,16 +2,43 @@
 
 # Wrapper for sander
 
-PRMTOP_FILE=$1
-shift
+PRMTOP_FILE=
+INPCRD_FILE=
 
-INPCRD_FILE=$1
-shift
+TAR_INPUT=false
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+        -p|--prm|--prmtop)
+            PRMTOP_FILE="$2"
+            shift
+            ;;
+        -i|-c|--inp|--crd|--inpcrd)
+            INPCRD_FILE="$2"
+            shift
+            ;;
+        --tar|--input-tar)
+            TAR_INPUT=true
+            ;;
+    esac
+    shift
+done
 
 TMP_DIR=$(mktemp --directory)
 
-cat $PRMTOP_FILE > $TMP_DIR/prmtop
-cat $INPCRD_FILE > $TMP_DIR/inpcrd
+if $TAR_INPUT
+then
+    (
+        cat "$@" > input.tar
+        tar -xf input.tar && rm input.tar
+        mv PRMTOP_FILE prmtop
+        mv INPCRD_FILE inpcrd
+    )
+else
+    cat $PRMTOP_FILE > $TMP_DIR/prmtop
+    cat $INPCRD_FILE > $TMP_DIR/inpcrd
+fi
 
 (
     cd "${TMP_DIR}"

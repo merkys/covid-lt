@@ -19,11 +19,14 @@ do
         -i|-c|--inp|--crd|--inpcrd)
             INPCRD_FILE="$2"
             shift
+            ;;
         --source)
             SOURCE="$2"
             shift
+            ;;
         --tar|--output-tar)
             TAR_OUTPUT=true
+            ;;
         *)
             PDB=$1
             ;;
