@@ -18,7 +18,7 @@ def print_forces(system, simulation, unit):
     """
     Based on https://openmm.github.io/openmm-cookbook/dev/notebooks/cookbook/Analyzing%20Energy%20Contributions.html
     """
-    state = simulation.context.getState(getEnergy=True, getPositions=True)
+    state = simulation.context.getState(getEnergy=True)
     print('PotentialEnergy', state.getPotentialEnergy() / unit, sep="\t")
     for i, force in enumerate(system.getForces()):
         state = simulation.context.getState(getEnergy=True, groups={i})
@@ -183,5 +183,5 @@ if args.max_iterations:
         print_forces(system, simulation, unit)
 
 if not args.print_forces:
-    state = simulation.context.getState(getEnergy=True, getPositions=True)
+    state = simulation.context.getState(getPositions=True)
     openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
