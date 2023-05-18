@@ -2,7 +2,7 @@
 
 # Prepare inputs for Amber calculations
 
-PDB=
+PDB=/dev/stdin
 PRMTOP_FILE=
 INPCRD_FILE=
 SOURCE=
@@ -36,7 +36,7 @@ done
 
 TMP_DIR=$(mktemp --directory)
 
-cp $PDB "${TMP_DIR}"
+cat $PDB > "${TMP_DIR}"/$(basename $PDB)
 
 (
     cd "${TMP_DIR}"
