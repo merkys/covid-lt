@@ -226,8 +226,8 @@ rule binding_energy_EvoEF2:
                 ) \
                     | grep ^Total \
                     | xargs \
-                    | awk '{{print "'$MUT'\t" $3 - $6}}' | tee {output}
-              done
+                    | awk '{{print "'$MUT'\t" $3 - $6}}'
+              done > {output}
         """
 
 rule dssp:
