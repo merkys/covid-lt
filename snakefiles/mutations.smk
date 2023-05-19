@@ -31,7 +31,7 @@ rule all_complexes:
     input:
         expand("{complex}.pdb", complex=input_complexes())
 
-rule mutated_complex:
+rule mutated_complex_FoldX:
     input:
         "{pdbid}.pdb"
     output:
@@ -49,6 +49,22 @@ rule mutated_complex:
         then
             PATH=~/bin:$PATH bin/FoldX-mutate {input} {wildcards.mutation} rotabase.txt {output.wt} > {output.mutation} 2> {log} || echo Processing {input} failed >&2
         fi
+        """
+
+rule all_mutated_complex_EvoEF2:
+    input:
+        expand("EvoEF2/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
+
+rule mutated_complex_EvoEF2:
+    input:
+        "{pdbid}.pdb"
+    output:
+        "EvoEF2/{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
+    log:
+        "EvoEF2/{pdbid}_{mutation}_{partner1}_{partner2}.log"
+    shell:
+        """
+        bin/EvoEF2-mutate {input} {wildcards.mutation} > {output} 2> {log} || echo -n > {output}
         """
 
 rule all_original_pdbs:
@@ -187,22 +203,26 @@ rule fold_energy:
 
 rule binding_energy_EvoEF2:
     input:
-        expand("{cplx}.pdb", cplx=input_complexes())
+        expand("EvoEF2/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
     output:
         "binding_energy_EvoEF2.tab"
     shell:
         """
-        ls -1 *_wt.pdb \
-            | xargs -i basename {{}} _wt.pdb \
+        ls -1 EvoEF2/*.pdb \
+            | xargs -n 1 basename \
             | while read BASE
               do
-                test -s ${{BASE}}.pdb || continue
-                test -s ${{BASE}}_wt.pdb || continue
+                MUTATED=EvoEF2/$BASE
+                WT=$(echo $BASE | cut -d _ -f 1).pdb
+
+                test -s $MUTATED || continue
+                test -s $WT || continue
 
                 MUT=$(echo $BASE | cut -d _ -f 1-2)
+
                 (
-                    EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb ${{BASE}}.pdb
-                    EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb ${{BASE}}_wt.pdb
+                    EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $MUTATED
+                    EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $WT
                 ) \
                     | grep ^Total \
                     | xargs \
