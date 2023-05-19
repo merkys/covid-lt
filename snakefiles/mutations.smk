@@ -185,6 +185,31 @@ rule fold_energy:
               done > {output}
         """
 
+rule binding_energy_EvoEF2:
+    input:
+        expand("{cplx}.pdb", cplx=input_complexes())
+    output:
+        "binding_energy_EvoEF2.tab"
+    shell:
+        """
+        ls -1 *_wt.pdb \
+            | xargs -i basename {{}} _wt.pdb \
+            | while read BASE
+              do
+                test -s ${{BASE}}.pdb || continue
+                test -s ${{BASE}}_wt.pdb || continue
+
+                MUT=$(echo $BASE | cut -d _ -f 1-2)
+                (
+                    EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb ${{BASE}}.pdb
+                    EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb ${{BASE}}_wt.pdb
+                ) \
+                    | grep ^Total \
+                    | xargs \
+                    | awk '{{print "'$MUT'\t" $3 - $6}}' | tee {output}
+              done
+        """
+
 rule dssp:
     output:
         part = "sa_part.tab",
