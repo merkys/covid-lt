@@ -517,3 +517,19 @@ rule sander_energy:
             grep ^ATOM {input} | bin/pdb_select --chain {wildcards.partner2} | bin/tleap --output-tar --source leaprc.protein.ff19SB 2>/dev/null | bin/sander --input-tar
         ) > {output}
         """
+
+rule UEP:
+    input:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.uep.csv"
+    singularity:
+        "UEP.sif"
+    shell:
+        """
+        TMPFILE=$(mktemp --suffix .pdb)
+        sed 's/HSE/HIS/g' {input} > $TMPFILE
+        PYTHONPATH=UEP python3 UEP/UEP.py --pdb $TMPFILE --interface {wildcards.partner1},{wildcards.partner2}
+        rm -f $TMPFILE
+        mv /tmp/$(basename $TMPFILE .pdb)_UEP_*.csv {output}
+        """
