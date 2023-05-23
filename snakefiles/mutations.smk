@@ -518,6 +518,10 @@ rule sander_energy:
         ) > {output}
         """
 
+rule all_UEP:
+    input:
+        expand("optimized/{complex}.uep.csv", complex=filter(lambda x: x.endswith("_wt"), input_complexes()))
+
 rule UEP:
     input:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
