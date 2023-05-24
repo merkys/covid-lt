@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+from Bio.Data.IUPACData import protein_letters_3to1
+import argparse, re, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+args = parser.parse_args()
+
+files = args.files
+if len(files) == 0:
+    files = [sys.stdin]
+
+def process_mut(match):
+    return protein_letters_3to1[match.group(3).capitalize()] + match.group(1) + match.group(2) + ','
+
+for file in files:
+    if isinstance(file, str):
+        file = open(file, 'r')
+    header = re.split(',', re.sub("\n$", '', file.readline()))
+    print(','.join(protein_letters_3to1[x.capitalize()] if x.capitalize() in protein_letters_3to1 else x for x in header))
+    for line in file:
+        print(re.sub('^(.)_(\d+)_(...),', process_mut, line), end='')
