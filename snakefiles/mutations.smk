@@ -522,6 +522,21 @@ rule all_UEP:
     input:
         expand("optimized/{complex}.uep.csv", complex=filter(lambda x: x.endswith("_wt"), input_complexes()))
 
+rule existing_UEP:
+    output:
+        "uep.tab"
+    shell:
+        """
+        ls -1 optimized/*.uep.csv \
+            | while read FILE
+              do
+                PDB=$(basename $FILE | cut -d _ -f 1)
+                MUT=$(basename $FILE | cut -d _ -f 2)
+                DDG=$(bin/process-uep $FILE --map optimized/$(basename $FILE .uep.csv).map --mutation $MUT)
+                echo $DDG | grep --silent . && echo -e ${{PDB}}_${{MUT}}"\t"$DDG || true
+              done | tee {output}
+        """
+
 rule UEP:
     input:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
