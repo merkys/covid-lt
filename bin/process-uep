@@ -6,6 +6,7 @@ import argparse, re, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--map', help='Specify a file providing residue mapping')
+parser.add_argument('--mutation', help='Select a specific mutation')
 args = parser.parse_args()
 
 map = None
@@ -19,12 +20,13 @@ files = args.files
 if len(files) == 0:
     files = [sys.stdin]
 
-def process_mut(match):
+def process_mut(uep_mutation):
+    match = re.match('^(.)_(\d+)_(...)$', uep_mutation)
     chain, number, aa = match.group(1), match.group(2), match.group(3)
     if map:
         chain = ''
         number = map[number]
-    return protein_letters_3to1[aa.capitalize()] + chain + number + ','
+    return protein_letters_3to1[aa.capitalize()] + chain + number
 
 for file in files:
     if isinstance(file, str):
@@ -32,4 +34,6 @@ for file in files:
     header = re.split(',', file.readline().strip())
     print(','.join(protein_letters_3to1[x.capitalize()] if x.capitalize() in protein_letters_3to1 else x for x in header))
     for line in file:
-        print(re.sub('^(.)_(\d+)_(...),', process_mut, line), end='')
+        fields = line.strip().split(',')
+        fields[0] = process_mut(fields[0])
+        print(*fields, sep=',')
