@@ -28,12 +28,23 @@ def process_mut(uep_mutation):
         number = map[number]
     return protein_letters_3to1[aa.capitalize()] + chain + number
 
+header = None
 for file in files:
     if isinstance(file, str):
         file = open(file, 'r')
     header = re.split(',', file.readline().strip())
-    print(','.join(protein_letters_3to1[x.capitalize()] if x.capitalize() in protein_letters_3to1 else x for x in header))
+    if not args.mutation:
+        print(','.join(protein_letters_3to1[x.capitalize()] if x.capitalize() in protein_letters_3to1 else x for x in header))
     for line in file:
         fields = line.strip().split(',')
         fields[0] = process_mut(fields[0])
-        print(*fields, sep=',')
+        if args.mutation:
+            if fields[0] != args.mutation[0:-1]:
+                continue
+            for i, aa in enumerate(header):
+                if aa.capitalize() not in protein_letters_3to1:
+                    continue
+                if protein_letters_3to1[aa.capitalize()] == args.mutation[-1]:
+                    print(fields[i])
+        else:
+            print(*fields, sep=',')
