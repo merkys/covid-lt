@@ -201,6 +201,35 @@ rule fold_energy:
               done > {output}
         """
 
+rule binding_energy_EvoEF:
+    input:
+        expand("EvoEF2/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
+    output:
+        "binding_energy_EvoEF.tab"
+    shell:
+        """
+        ls -1 EvoEF2/*.pdb \
+            | xargs -n 1 basename \
+            | while read BASE
+              do
+                MUTATED=EvoEF2/$BASE
+                WT=$(echo $BASE | cut -d _ -f 1).pdb
+
+                test -s $MUTATED || continue
+                test -s $WT || continue
+
+                MUT=$(echo $BASE | cut -d _ -f 1-2)
+
+                (
+                    EvoEF --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $MUTATED
+                    EvoEF --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $WT
+                ) \
+                    | grep ^Total \
+                    | xargs \
+                    | awk '{{print "'$MUT'\t" $3 - $6}}'
+              done | tee {output}
+        """
+
 rule binding_energy_EvoEF2:
     input:
         expand("EvoEF2/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
