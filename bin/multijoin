@@ -1,0 +1,15 @@
+#!/bin/bash
+
+TMPFILE=$(mktemp)
+
+cat $1 > $TMPFILE
+shift
+
+while [ $# -gt 0 ]
+do
+    join --header $TMPFILE $1 | sed 's/ /\t/g' | sponge $TMPFILE
+    shift
+done
+
+cat $TMPFILE
+rm $TMPFILE
