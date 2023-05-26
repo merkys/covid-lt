@@ -55,6 +55,7 @@ rule all_mutated_complex_EvoEF2:
     input:
         expand("EvoEF2/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
 
+# EvoEF2 has trouble dealing with multi-model PDB files: https://github.com/xiaoqiah/EvoEF2/issues/2
 rule mutated_complex_EvoEF2:
     input:
         "{pdbid}.pdb"
@@ -219,6 +220,8 @@ rule binding_energy_EvoEF:
                 test -s $MUTATED || continue
                 test -s $WT || continue
 
+                grep --silent ^MODEL $WT && continue || true
+
                 MUT=$(echo $BASE | cut -d _ -f 1-2)
 
                 (
@@ -228,7 +231,7 @@ rule binding_energy_EvoEF:
                     | grep ^Total \
                     | xargs \
                     | awk '{{print "'$MUT'\t" $3 - $6}}'
-              done | tee {output}
+              done > {output}
         """
 
 rule binding_energy_EvoEF2:
