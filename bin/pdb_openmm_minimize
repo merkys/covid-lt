@@ -31,6 +31,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--platform', help='Specify the platform to use for the simulation (by default the fastest available is used)')
 parser.add_argument('--forcefield', action='append', help='Specify the forcefield, may be multiple (["amber99sb.xml"] by default)', default=[])
+parser.add_argument('--solvent-forcefield', action='append', help='Specify the solvent forcefield (none by default)', default=[])
 parser.add_argument('--implicit-solvent', help='Implicit solvent to use')
 parser.add_argument('--add-missing-hydrogens', action='store_true', help='Add missing hydrogen atoms')
 parser.add_argument('--constrain-backbone', action='store_true', help='Apply harmonic restraints on the protein backbone')
@@ -45,6 +46,8 @@ args = parser.parse_args()
 forcefields = args.forcefield
 if not len(forcefields):
     forcefields = ['amber99sb.xml']
+if args.solvent_forcefield:
+    forcefields += args.solvent_forcefield
 
 unit = openmm.unit.kilojoule_per_mole
 if args.force_unit == 'kcal/mol':
@@ -97,8 +100,13 @@ else: # Assume plain PDB
             modeller = openmm_app.modeller.Modeller(struct.topology, struct.positions)
             modeller.addExtraParticles(force_field)
 
+        system_parameters = {}
+        if args.solvent_forcefield:
+            system_parameters['soluteDielectric'] = 2.0
+            system_parameters['solventDielectric'] = 80.0
+
         try:
-            system = force_field.createSystem(struct.topology, constraints=constraints, soluteDielectric=2.0, solventDielectric=80.0)
+            system = force_field.createSystem(struct.topology, constraints=constraints, **system_parameters)
         except ValueError as error:
             raise ValueError(str(error) + '. OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
         topology = struct.topology
