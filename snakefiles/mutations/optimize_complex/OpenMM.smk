@@ -5,6 +5,8 @@ rule optimize_complex:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
     log:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.map"
+    singularity:
+        "container.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -13,7 +15,7 @@ rule optimize_complex:
             grep ^ATOM {input} \
                 | bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} \
                 | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
-                | bin/pdb_openmm_minimize --forcefield charmm36.xml --constrain-backbone --max-iterations 100 > {output}
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --constrain-backbone --add-missing-hydrogens --max-iterations 100 > {output}
         else
             echo -n > {output}
         fi
