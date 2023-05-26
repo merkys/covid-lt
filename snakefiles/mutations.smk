@@ -64,7 +64,8 @@ rule mutated_complex_EvoEF2:
         "EvoEF2/{pdbid}_{mutation}_{partner1}_{partner2}.log"
     shell:
         """
-        bin/EvoEF2-mutate {input} {wildcards.mutation} > {output} 2> {log} || echo -n > {output}
+        bin/pdb_select --first-model {input} \
+            | bin/EvoEF2-mutate --mutation {wildcards.mutation} > {output} 2> {log} || echo -n > {output}
         """
 
 rule all_original_pdbs:
