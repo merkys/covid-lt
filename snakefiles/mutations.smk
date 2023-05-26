@@ -115,45 +115,6 @@ rule all_optimized:
     input:
         expand("optimized/{cplx}.pdb", cplx=input_complexes())
 
-# FIXME: This rule no longer works as we no longer optimize separate chains
-rule all_energies:
-    input:
-        [expand("optimized/{cplx}_{chain}.ener", cplx=cplx, chain=list_chains(cplx)) for cplx in input_complexes()],
-        expand("optimized/{cplx}.ener", cplx=input_complexes())
-    output:
-        solv = "solv.tab",
-        vdw = "vdw.tab"
-    shell:
-        """
-        echo -n > {output.solv}
-        echo -n > {output.vdw}
-        for STRUCT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+\.ener$' | xargs -i basename {{}} .ener | sort | uniq)
-        do
-            MUT=$(echo $STRUCT | cut -d _ -f 1-2)
-
-            test -s optimized/${{STRUCT}}.ener || continue
-            test -s optimized/${{STRUCT}}_wt.ener || continue
-
-            echo -en "$MUT\t" >> {output.solv}
-            echo -en "$MUT\t" >> {output.vdw}
-
-            grep -h 'Electrostatic energy' optimized/${{STRUCT}}.ener optimized/${{STRUCT}}_wt.ener \
-                | awk '{{print $5}}' | xargs echo | awk '{{print $1 - $2}}' >> {output.solv}
-
-            CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
-
-            (
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}.ener    | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt.ener | awk '{{print -$3}}'
-                for CH in $(echo $CHAIN | grep -o .)
-                do
-                    grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{CH}}.ener    | awk '{{print -$3}}'
-                    grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{CH}}.ener | awk '{{print  $3}}'
-                done
-            ) | bin/sum >> {output.vdw}
-        done
-        """
-
 rule all_charmm_energy:
     input:
         expand("optimized/{cplx}.charmm.ener", cplx=input_complexes())
