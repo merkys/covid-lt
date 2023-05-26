@@ -31,25 +31,10 @@ rule all_complexes:
     input:
         expand("{complex}.pdb", complex=input_complexes())
 
+# Alternative ways to produce mutants:
+
 include: "snakefiles/mutations/mutated_complex/FoldX.smk"
-
-rule all_mutated_complex_EvoEF2:
-    input:
-        expand("EvoEF2/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
-
-# EvoEF2 has trouble dealing with multi-model PDB files: https://github.com/xiaoqiah/EvoEF2/issues/2
-rule mutated_complex_EvoEF2:
-    input:
-        "{pdbid}.pdb"
-    output:
-        "EvoEF2/{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
-    log:
-        "EvoEF2/{pdbid}_{mutation}_{partner1}_{partner2}.log"
-    shell:
-        """
-        bin/pdb_select --first-model {input} \
-            | bin/EvoEF2-mutate --mutation {wildcards.mutation} > {output} 2> {log} || echo -n > {output}
-        """
+# include: "snakefiles/mutations/mutated_complex/EvoEF2.smk"
 
 rule all_original_pdbs:
     input:
