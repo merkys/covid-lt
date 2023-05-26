@@ -52,6 +52,7 @@ rule original_pdb:
 # Alternative ways to optimize complexes:
 
 include: "snakefiles/mutations/optimize_complex/namd.smk"
+# include: "snakefiles/mutations/optimize_complex/OpenMM.smk"
 
 def list_chains(name):
     name_parts = name.split('_')
