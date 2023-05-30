@@ -51,8 +51,8 @@ rule original_pdb:
 
 # Alternative ways to optimize complexes:
 
-include: "snakefiles/mutations/optimize_complex/namd.smk"
-# include: "snakefiles/mutations/optimize_complex/OpenMM.smk"
+# include: "snakefiles/mutations/optimize_complex/namd.smk"
+include: "snakefiles/mutations/optimize_complex/OpenMM.smk"
 
 def list_chains(name):
     name_parts = name.split('_')
@@ -368,6 +368,9 @@ rule existing_openmm_energy:
             | while read FILE
               do
                 BASE=$(basename $FILE _wt.openmm.ener)
+
+                test -e optimized/${{BASE}}.openmm.ener    || continue
+                test -e optimized/${{BASE}}_wt.openmm.ener || continue
 
                 echo -en $(echo $BASE | cut -d _ -f 1-2)
                 cut -f 1 optimized/${{BASE}}.openmm.ener optimized/${{BASE}}_wt.openmm.ener \
