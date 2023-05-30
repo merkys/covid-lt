@@ -52,7 +52,11 @@ unit = openmm.unit.kilojoule_per_mole
 if args.force_unit == 'kcal/mol':
     unit = openmm.unit.kilocalorie_per_mole
 
-system_attributes = { 'constraints': openmm_app.HBonds }
+system_attributes = {
+    'constraints': openmm_app.HBonds,
+    'nonbondedMethod': openmm_app.CutoffNonPeriodic,
+    'nonbondedCutoff': 12*openmm.unit.angstrom,
+}
 
 if args.solute_dielectric:
     system_attributes['soluteDielectric'] = args.solute_dielectric
