@@ -110,8 +110,6 @@ else: # Assume plain PDB
             raise ValueError(str(error) + '. OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
         topology = struct.topology
 
-        # stiffness omitted here
-
 if args.constrain_backbone:
     # Restraining the backbone according to:
     # https://openmm.github.io/openmm-cookbook/dev/notebooks/restraints_constraints_forces/Restraining%20Atom%20Positions.html
