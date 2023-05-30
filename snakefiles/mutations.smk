@@ -364,6 +364,7 @@ rule existing_openmm_energy:
         "openmm.tab"
     shell:
         """
+        cut -f 1 optimized/*.openmm.ener | sort | uniq | xargs echo mutation | sed 's/ /\t/g' > {output}
         ls -1 optimized/*_wt.openmm.ener \
             | while read FILE
               do
@@ -385,7 +386,7 @@ rule existing_openmm_energy:
                             | xargs -i echo -en "\t"{{}}
                       done
                 echo
-              done > {output}
+              done >> {output}
         """
 
 rule openmm_energy:
