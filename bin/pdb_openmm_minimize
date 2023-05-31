@@ -63,6 +63,18 @@ if args.solute_dielectric:
 if args.solvent_dielectric:
     system_attributes['solventDielectric'] = args.solvent_dielectric
 
+# Find the most suitable platform
+platform = None
+if args.platform:
+    platform = openmm.Platform.getPlatformByName(args.platform)
+else:
+    for platform_name in ['CUDA', 'OpenCL', 'CPU', 'Reference']:
+        try:
+            platform = openmm.Platform.getPlatformByName(platform_name)
+            break
+        except OpenMMException:
+            pass # try next until something is found
+
 # FIXME: ParMed could be used to get OpenMM energies separated into terms, see https://github.com/openmm/openmm/issues/1463
 
 struct = None
@@ -101,12 +113,12 @@ else: # Assume plain PDB
         if args.add_missing_hydrogens:
             # According to http://docs.openmm.org/latest/userguide/application/03_model_building_editing.html
             modeller = openmm_app.modeller.Modeller(struct.topology, struct.positions)
-            modeller.addHydrogens(force_field)
+            modeller.addHydrogens(force_field, platform=platform)
             struct = modeller
 
         if 'charmm_polar_2013.xml' in forcefields or 'charmm_polar_2019.xml' in forcefields:
             modeller = openmm_app.modeller.Modeller(struct.topology, struct.positions)
-            modeller.addExtraParticles(force_field)
+            modeller.addExtraParticles(force_field, platform=platform)
 
         try:
             system = force_field.createSystem(struct.topology, **system_attributes)
@@ -165,18 +177,6 @@ if args.split_nonbonded_force or args.no_LJ or args.no_Coulomb:
 # Splitting forces one force per group in order to be able to access them later
 for i, f in enumerate(system.getForces()):
     f.setForceGroup(i)
-
-# Find the most suitable platform
-platform = None
-if args.platform:
-    platform = openmm.Platform.getPlatformByName(args.platform)
-else:
-    for platform_name in ['CUDA', 'OpenCL', 'CPU', 'Reference']:
-        try:
-            platform = openmm.Platform.getPlatformByName(platform_name)
-            break
-        except OpenMMException:
-            pass # try next until something is found
 
 integrator = openmm.LangevinIntegrator(300 * openmm.unit.kelvin, 0.01, 0.0)
 simulation = openmm_app.Simulation(topology, system, integrator, platform)
