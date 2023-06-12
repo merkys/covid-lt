@@ -98,8 +98,7 @@ else: # Assume plain PDB
         struct = openmm_app.PDBFile(args.files[0])
         psf = openmm_app.CharmmPsfFile(args.files[1]) # Assume second file is PSF
         system = psf.createSystem(openmm_app.CharmmParameterSet(*forcefields),
-                                  nonbondedMethod=openmm_app.CutoffNonPeriodic,
-                                  nonbondedCutoff=12*openmm.unit.angstrom)
+                                  **system_attributes)
         topology = psf.topology
     else: # Assume just a PDB file
         if len(args.files):
