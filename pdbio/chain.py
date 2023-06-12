@@ -1,4 +1,4 @@
-from Bio.Data.IUPACData import protein_letters_3to1
+from Bio.Data.IUPACData import protein_letters_3to1_extended
 from pdbio.residue import Residue
 from warnings import warn
 
@@ -18,7 +18,7 @@ class Chain:
                 continue
             start, end = iter_residue_line, iter_residue_line
             atom = self.parent.content[start]
-            this_chain, this_number, this_icode = atom[21], int(atom[22:26]), atom[26]
+            this_chain, this_number, this_icode = atom[21], int(atom[22:26]), atom[26] 
             while iter_residue_line + 1 < len(self.parent.content):
                 iter_residue_line += 1
                 if not self.parent.content[iter_residue_line].startswith('ATOM  '):
@@ -87,11 +87,19 @@ class Chain:
         for residue in self:
             if sequence is None:
                 sequence = ''
-            sequence = sequence + protein_letters_3to1[residue.resname().capitalize()]
+            sequence = sequence + protein_letters_3to1_extended[residue.resname().capitalize()]
         return sequence
 
-    def sequence_seqres(self):
+    def sequence_seqres(self, return_3L = False):
+        """ 
+        Returns single letter coded sequences as string  or single leter 
+        sequence as string and a list of three letter representations
+        """
+            
         sequence = None
+        sequence3L = []
+        out=""
+        
         for line in self.parent.get('SEQRES'):
             if line[11] != self.name:
                 continue
@@ -99,9 +107,18 @@ class Chain:
                 sequence = ''
             for i in range(0,13):
                 residue = line[19+i*4:22+i*4]
-                if residue != '   ':
-                    sequence = sequence + protein_letters_3to1[residue.capitalize()]
-        return sequence
+                if residue != '   ' and residue != '':
+                    resU = residue.capitalize()
+                    sequence3L.append(resU)
+                    if (resU in protein_letters_3to1_extended.keys()):
+                        sequence = sequence + protein_letters_3to1_extended[resU]
+                    else:
+                        sequence = sequence + "X"
+                            
+        if return_3L:
+            return (sequence,sequence3L)
+        else:
+            return sequence
 
     def within(self, distance, result_class='Chain', prefilter=None):
         cKDTree, atoms = self.parent._get_cKDTree(prefilter=prefilter)
