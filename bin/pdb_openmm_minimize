@@ -177,7 +177,7 @@ if args.split_nonbonded_force or args.no_LJ or args.no_Coulomb:
 for i, f in enumerate(system.getForces()):
     f.setForceGroup(i)
 
-integrator = openmm.LangevinIntegrator(300 * openmm.unit.kelvin, 0.01, 0.0)
+integrator = openmm.LangevinIntegrator(310 * openmm.unit.kelvin, 0.01, 1 * openmm.unit.femtosecond)
 simulation = openmm_app.Simulation(topology, system, integrator, platform)
 simulation.context.setPositions(struct.positions)
 
