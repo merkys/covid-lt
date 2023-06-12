@@ -8,6 +8,7 @@ library( 'randomForest' )
 parser <- OptionParser()
 parser <- add_option(parser, c( '--train-size' ), type = 'double', default = 0.8)
 parser <- add_option(parser, c( '--repeat' ), dest = 'rep', type = 'double', default = 1)
+parser <- add_option(parser, c( '--use-caret' ), dest = 'caret', action = 'store_true', default = FALSE)
 parser <- add_option(parser, c( '--importance-plot' ), type = 'character', default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
@@ -16,6 +17,10 @@ D = read.csv( options$args[1], quote="", sep="\t" )
 train_size = options$options$train
 if( train_size < 1 ) {
     train_size = round( length(D[,1]) * train_size )
+}
+
+if( options$options$caret ) {
+    library( 'caret' )
 }
 
 best_model = NA
@@ -34,7 +39,12 @@ for (i in 1:options$options$rep) {
     names(train) = names(D)[2:length(D)]
     names(test)  = names(D)[2:length(D)]
 
-    model = randomForest( formula = ddG ~ ., data = train )
+    model = NULL
+    if( options$options$caret ) {
+        model = train( ddG ~ ., data = train, method = 'rf' )
+    } else {
+        model = randomForest( formula = ddG ~ ., data = train )
+    }
 
     P = predict(model, newdata=test)
 
