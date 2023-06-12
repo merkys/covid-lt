@@ -36,7 +36,7 @@ fi
 
 (
     cd $TMPDIR
-    EvoEF2 --command BuildMutant --pdb input.pdb --mutant_file <(echo $MUTATION) --bbdep no >&2
+    EvoEF2 --command BuildMutant --pdb input.pdb --mutant_file <(echo $MUTATION) >&2
     cat input_Model_0001.pdb
 )
 
