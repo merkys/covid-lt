@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# EvoEF2 needs a wrapper to control the location of output file.
+
+TMPDIR=$(mktemp --directory)
+
+cat "$@" > $TMPDIR/input.pdb
+
+(
+    cd $TMPDIR
+    EvoEF2 --command RepairStructure --pdb input.pdb >&2
+    cat input_Repair.pdb
+)
+
+rm -rf "$TMPDIR"
