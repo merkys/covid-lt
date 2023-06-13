@@ -7,7 +7,7 @@ class Atom:
     def alternate_location(self, altloc=None):
         old_altloc = self.parent.parent.parent.content[self.line][16]
         if altloc:
-            self.parent.parent.parent.content[self.line][16] = altloc
+            self.parent.parent.parent.content[self.line] = self.parent.parent.parent.content[self.line][:16] + altloc + self.parent.parent.parent.content[self.line][17:]
         return old_altloc
 
     def element(self, element=None):
@@ -64,3 +64,6 @@ class Atom:
         charmm_to_amber = { 'HA1': 'HA', 'HB1': 'HB3', 'HN': 'H', 'OT1': 'O', 'OT2': 'OXT' }
         if self.name() in charmm_to_amber:
             self.name(charmm_to_amber[self.name()])
+
+    def delete(self):
+        self.parent.parent.parent.content[self.line] = ''
