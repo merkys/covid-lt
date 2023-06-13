@@ -11,9 +11,8 @@ class Chain:
         self.name = name
 
     def __iter__(self):
-        iter_residue_line = -1
+        iter_residue_line = 0
         while iter_residue_line < len(self.parent.content)-1:
-            iter_residue_line += 1
             if not self.parent.content[iter_residue_line].startswith('ATOM  ') or self.parent.content[iter_residue_line][21] != self.name:
                 continue
             start, end = iter_residue_line, iter_residue_line
