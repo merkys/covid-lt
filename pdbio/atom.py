@@ -4,6 +4,12 @@ class Atom:
         self.parent = parent
         self.line = line
 
+    def alternate_location(self, altloc=None):
+        old_altloc = self.parent.parent.parent.content[self.line][16]
+        if altloc:
+            self.parent.parent.parent.content[self.line][16] = altloc
+        return old_altloc
+
     def element(self, element=None):
         old_element = self.parent.parent.parent.content[self.line][76:78].strip()
         if element:
