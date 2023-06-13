@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Resolve alternate locations by leaving only the first alternate location inside each residue
+
 from pdbio import PDBFile
 import argparse, sys
 
