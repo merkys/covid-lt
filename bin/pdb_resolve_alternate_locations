@@ -11,10 +11,15 @@ pdb = PDBFile(args.files[0]) # Only the first file is processed for now
 
 for chain in pdb:
     for residue in chain:
+        primary_location = None
         for atom in residue:
-            if atom.alternate_location() == 'A':
+            if atom.alternate_location() == ' ':
+                continue
+            if not primary_location:
+                primary_location = atom.alternate_location()
+            if atom.alternate_location() == primary_location:
                 atom.alternate_location(' ')
-            elif atom.alternate_location() != ' ':
+            else:
                 atom.delete()
 
 print(pdb, end='')
