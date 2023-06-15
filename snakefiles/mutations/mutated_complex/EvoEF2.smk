@@ -17,7 +17,7 @@ rule mutated_complex:
 
         RES_FROM=$(echo {wildcards.mutation} | cut -c 1)
         RES_TO=$(echo {wildcards.mutation} | grep -o . | tail -n 1)
-        NUMBER=$(echo {wildcards.mutation} | sed 's/^.//; s/.$//')
+        NUMBER=$(echo {wildcards.mutation} | sed 's/^.//; s/.$//' | tr 'a-z' 'A-Z')
 
         NUMBER_NOW=$(grep ^$NUMBER {input.map} | cut -f 2)
 
