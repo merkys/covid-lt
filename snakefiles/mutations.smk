@@ -114,13 +114,14 @@ rule fold_energy:
         """
 
 rule binding_energy_EvoEF:
-    input:
-        expand("EvoEF2/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
+#     input:
+#         expand("optimized/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
     output:
         "binding_energy_EvoEF.tab"
     shell:
         """
-        ls -1 EvoEF2/*.pdb \
+        ls -1 optimized/*.pdb \
+            | grep -v _wt \
             | xargs -n 1 basename \
             | while read BASE
               do
@@ -145,13 +146,14 @@ rule binding_energy_EvoEF:
         """
 
 rule binding_energy_EvoEF2:
-    input:
-        expand("EvoEF2/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
+#     input:
+#         expand("optimized/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
     output:
         "binding_energy_EvoEF2.tab"
     shell:
         """
-        ls -1 EvoEF2/*.pdb \
+        ls -1 optimized/*.pdb \
+            | grep -v _wt \
             | xargs -n 1 basename \
             | while read BASE
               do
