@@ -10,10 +10,12 @@
 # TODO: Implement an alternative solution using seq.alg.AlignToSEQRES() from OpenStructure:
 # https://openstructure.org/docs/2.3.1/seq/alg/seqalg/
 
-from Bio import pairwise2
+from Bio import BiopythonDeprecationWarning, pairwise2
 from pdbio import PDBFile
-from warnings import warn
+from warnings import filterwarnings, warn
 import argparse, sys
+
+filterwarnings('ignore', category=BiopythonDeprecationWarning)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
