@@ -18,6 +18,7 @@ import argparse, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--output-alignment', action='store_true', help='Output the sequence alignment to STDERR')
+parser.add_argument('--output-map', help='Specify a file to store renumbering map')
 args = parser.parse_args()
 
 files = args.files
@@ -25,6 +26,8 @@ if len(files) == 0:
     files = [sys.stdin]
 
 pdb = PDBFile(files[0]) # for now
+
+residue_map = {}
 
 for chain in pdb:
     atom_seq = chain.sequence_atom().replace('X', '-')
@@ -85,8 +88,15 @@ for chain in pdb:
             warn('chain {}, residue {}, icode \'{}\' not found in the alignment, maybe they are HETATM?'.format(orig_chain, number, icode))
             return None, None, None
         index = residue_index[str(number) + icode]
+        residue_map[chain.name + str(number) + icode] = chain.name + str(alignment[index][0]+1) + alignment[index][1]
         return None, alignment[index][0]+1, alignment[index][1]
 
     pdb.renumber(renumber)
 
 print(pdb, end='')
+
+if args.output_map:
+    with open(args.output_map, 'w') as out:
+        for chain in pdb:
+            for key in sorted(filter(lambda x: x.startswith(chain.name), residue_map.keys()), key=lambda x: int(x[1:])):
+                print(key, residue_map[key], sep="\t", file=out)
