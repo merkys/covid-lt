@@ -33,8 +33,8 @@ rule all_complexes:
 
 # Alternative ways to produce mutants:
 
-include: "snakefiles/mutations/mutated_complex/FoldX.smk"
-# include: "snakefiles/mutations/mutated_complex/EvoEF2.smk"
+# include: "snakefiles/mutations/mutated_complex/FoldX.smk"
+include: "snakefiles/mutations/mutated_complex/EvoEF2.smk"
 
 rule all_original_pdbs:
     input:
