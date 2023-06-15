@@ -99,6 +99,5 @@ print(pdb, end='')
 
 if args.output_map:
     with open(args.output_map, 'w') as out:
-        for chain in pdb:
-            for key in sorted(filter(lambda x: x.startswith(chain.name), residue_map.keys()), key=lambda x: int(x[1:])):
-                print(key.rstrip(), residue_map[key].rstrip(), sep="\t", file=out)
+        for key in sorted(residue_map.keys(), key=lambda x: (x[0], int(x[1:-1]), x[-1])):
+            print(key.rstrip(), residue_map[key].rstrip(), sep="\t", file=out)
