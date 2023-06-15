@@ -13,6 +13,12 @@ rule wild_type:
     input:
         "{pdbid}.pdb"
     output:
-        "{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+        pdb = "{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb",
+        map = "{pdbid}_{mutation}_{partner1}_{partner2}_wt.map"
     shell:
-        "bin/pdb_select --first-model {input} | bin/EvoEF2-repair > {output} 2> /dev/null || echo -n > {output}"
+        """
+        bin/pdb_select --first-model {input} \
+            | grep -P '^(SEQRES|ATOM)' \
+            | PYTHONPATH=. bin/pdb_renumber --output-map {output.map} \
+            | bin/EvoEF2-repair > {output.pdb} 2> /dev/null || echo -n > {output.pdb}
+        """
