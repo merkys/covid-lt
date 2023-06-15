@@ -3,7 +3,7 @@
 from Bio import pairwise2
 from Bio.Seq import MutableSeq
 from ost import io, seq
-from pdbio.pdbfile import PDBFile
+from pdbio import PDBFile
 from promod3 import modelling
 from tempfile import NamedTemporaryFile
 from warnings import filterwarnings, warn
