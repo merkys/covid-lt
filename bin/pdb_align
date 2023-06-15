@@ -13,9 +13,14 @@
 from Bio import pairwise2
 from pdbio import PDBFile
 from warnings import warn
-import sys
+import argparse, sys
 
-files = sys.argv[1:]
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--output-alignment', action='store_true', help='Output the sequence alignment to STDERR')
+args = parser.parse_args()
+
+files = args.files
 if len(files) == 0:
     files = [sys.stdin]
 
@@ -31,6 +36,11 @@ for chain in pdb:
 
     # FIXME: Maybe globalxx() does not have the best scoring parameters.
     align = pairwise2.align.globalxx(atom_seq, seqres_seq, one_alignment_only=True)[0]
+    if args.output_alignment:
+        print('> {} ATOM'.format(chain.name), file=sys.stderr)
+        print(align[0], file=sys.stderr)
+        print('> {} SEQRES'.format(chain.name), file=sys.stderr)
+        print(align[1], file=sys.stderr)
 
     atom_seq_aligned = list(align[0])
     seqres_seq_aligned = list(align[1])
