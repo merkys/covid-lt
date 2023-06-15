@@ -40,6 +40,7 @@ rule wild_type:
         "container.sif"
     shell:
         """
+        echo -n > {output.map}
         bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
             | PYTHONPATH=. bin/pdb_align --output-map {output.map} \
             | PYTHONPATH=. bin/promod-fix-pdb \
