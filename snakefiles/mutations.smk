@@ -501,3 +501,31 @@ rule UEP:
         rm -f $TMPFILE
         mv /tmp/$(basename $TMPFILE .pdb)_UEP_*.csv {output}
         """
+
+rule cadscore:
+    input:
+        mutation = "optimized/{pdbid}_{mutation}_{partner1}_{partner2}.pdb",
+        wt = "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}.cadscore"
+    shell:
+        "voronota-cadscore --input-target {input.wt} --input-model {input.mutation} > {output}"
+
+rule existing_cadscore:
+    output:
+        "cadscore.tab"
+    shell:
+        """
+        ls -1 optimized/*_wt.openmm.ener \
+            | head -n 3 \
+            | while read FILE
+              do
+                BASE=$(basename $FILE _wt.openmm.ener)
+
+                test -e optimized/${{BASE}}.pdb    || continue
+                test -e optimized/${{BASE}}_wt.pdb || continue
+
+                voronota-cadscore --input-target optimized/${{BASE}}_wt.pdb --input-model optimized/${{BASE}}.pdb \
+                    | (read TARGET MODEL QUERY NRES SCORE STARGET STOTAL && echo $TARGET $SCORE)
+              done | tee {output}
+        """
