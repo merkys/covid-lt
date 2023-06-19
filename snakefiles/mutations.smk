@@ -388,7 +388,7 @@ rule existing_openmm_energy:
                             | xargs -i echo -en "\t"{{}}
                       done
                 echo
-              done >> {output}
+              done | sort -k 1b,1 >> {output}
         """
 
 rule openmm_energy:
