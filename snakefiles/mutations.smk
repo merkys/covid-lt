@@ -516,16 +516,15 @@ rule existing_cadscore:
         "cadscore.tab"
     shell:
         """
-        ls -1 optimized/*_wt.openmm.ener \
-            | head -n 3 \
+        echo mutation score target_area model_area | sed 's/ /\t/g' > {output}
+        ls -1 optimized/*.cadscore \
             | while read FILE
               do
-                BASE=$(basename $FILE _wt.openmm.ener)
+                test -s $FILE || continue
 
-                test -e optimized/${{BASE}}.pdb    || continue
-                test -e optimized/${{BASE}}_wt.pdb || continue
+                MUT=$(basename $FILE .cadscore | cut -d _ -f 1-2)
+                echo -en "$MUT\t"
 
-                voronota-cadscore --input-target optimized/${{BASE}}_wt.pdb --input-model optimized/${{BASE}}.pdb \
-                    | (read TARGET MODEL QUERY NRES SCORE STARGET STOTAL && echo $TARGET $SCORE)
-              done | tee {output}
+                sed 's/ /\t/g' $FILE | cut -f 5-
+              done | sort -k 1b,1 >> {output}
         """
