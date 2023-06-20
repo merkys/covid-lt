@@ -1,7 +1,7 @@
 First of all, all PDB files containing chains with confident matches of SARS2 spike glycoprotein (PFAM ID P0DTC2) were downloaded from the Protein DataBank.
 Missing residues and atoms in the downloaded files were added using ProMod3 tool [10.1371/journal.pcbi.1008667].
 Chains coresponding to the SARS2 spike glycoprotein were then renumbered in the fixed PDB files in order to have a consistent numbering of residues.
-The renumbered PDB files were used as inputs in the following process steps.
+The renumbered PDB files were then used as inputs in the following process steps.
 
 Contact detection inside complexes was performed in order to identify the contacting chains and residue pairs.
 For this task Voronota tool [doi:10.1002/jcc.23538] has been employed.
