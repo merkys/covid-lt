@@ -16,5 +16,7 @@ For each of the categories a contact map was generated as a real-valued N×M mat
 Each element in these contact matrices corresponds to distance value between a residue in SARS2 spike glycoprotein chain and the nearest residue in its complex partner chain.
 
 To compare complexes inside each of the categories, a distance function was defined as the Euclidean distance between two rows in the aforementioned contact map.
-Hierarchical clustering was then used to group together similar complexes and the resulting tree was cut at height of 140 in order to produce a tractable number of clusters (16).
+Hierarchical clustering was then used to group together similar complexes and the resulting tree was cut at height of 140 in order to produce a tractable number of clusters.
 Clusters were then manually analyzed to assess the similarity of the complexes.
+Complexes with ACE2 were very similar, therefore all of them fell into the same cluster.
+Complexes with antibodies were divided into 16 clusters, roughly corresponding to the different epitopes along the SARS2 spike glycoprotein chain.
