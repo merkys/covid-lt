@@ -8,6 +8,8 @@ The renumbered PDB files were then used as inputs in the following process steps
 Contact detection inside complexes was performed in order to identify the contacting chains and residue pairs.
 For this task Voronota tool [doi:10.1002/jcc.23538] has been employed.
 Voronota decomposes protein structure into non-overlapping Voronoi cells with each atom residing in the center of a cell.
+Atoms in the neighbouring Voronoi cells were deemed to be contacting.
+By extension, any pair of residues or chains was deemed to be in contact if it had at least one pair of contacting atoms.
 Contacts between residues were annotated as salt bridges and hydrophobic contacts according to the definitions used in ProteinTools package [doi:10.1093/nar/gkab375].
 Possible hydrogen bonds were detected using Propka tool [doi:10.1021/ct100578z].
 
