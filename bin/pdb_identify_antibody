@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+
+from pdbio import PDBFile
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+args = parser.parse_args()
+
+for filename in args.files:
+    pdb = PDBFile(filename)
+
+    for chain in pdb:
+        antibody_type = chain.antibody_type()
+        if not antibody_type:
+            continue
+        print(filename, chain.name, antibody_type, sep="\t")
