@@ -13,9 +13,9 @@ By extension, any pair of residues or chains was deemed to be in contact if it h
 Contacts between residues were annotated as salt bridges and hydrophobic contacts according to the definitions used in ProteinTools package [doi:10.1093/nar/gkab375].
 Possible hydrogen bonds were detected using Propka tool [doi:10.1021/ct100578z].
 
-Two sets of complexes were extracted from the downloaded files, one containing complexes with ACE2 protein chains (PFAM ID PF01401) and another containing complexes with antibody chains, identified as such by ANARCI tool [https://github.com/oxpig/ANARCI].
-Extracted complexes with ACE2 each contains two protein chains: SARS2 spike glycoprotein chain and ACE2 chain.
-Complexes with antibodies each consists of three protein chains: SARS2 spike glycoprotein chain and two antibody chains, heavy and light.
+Two sets of complexes were extracted from the downloaded files, one containing complexes with ACE2 protein chains (PFAM ID PF01401) and the another containing complexes with antibody chains, identified as such by ANARCI tool [https://github.com/oxpig/ANARCI], with some PDB files contributing complexes to both sets.
+Extracted complexes with ACE2 contain two protein chains each: a SARS2 spike glycoprotein chain and an ACE2 chain.
+Complexes with antibodies consist of three protein chains each: a SARS2 spike glycoprotein chain and two antibody chains, heavy and light chain.
 In case of a selection ambiguity (for example, multiple antibody chains in one structure), the number of contacts between chains was maximized.
 
 For each of the sets a contact map was generated as a real-valued N×M matrix where N is the number of complexes and M is the number of residues in SARS2 spike glycoprotein chain.
