@@ -244,8 +244,8 @@ rule cd_hit:
         rm -rf $TMP_DIR
         """
 
-# Fix missing atoms and residues in PDB using Jackal.
-# Prior to running profix, bin/pdb_align is called to align structure numbering to sequence numbering.
+# Fix missing atoms and residues in PDB files.
+# Prior to fixing, bin/pdb_align is called to align structure numbering to sequence numbering.
 # TODO: Preserve original LINK, SSBOND etc. records.
 rule fix_pdb:
     input:
