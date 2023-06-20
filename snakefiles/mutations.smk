@@ -478,6 +478,7 @@ rule existing_UEP:
         "uep.tab"
     shell:
         """
+        echo -e "mutation\tUEP" > {output}
         ls -1 optimized/*.uep.csv \
             | while read FILE
               do
@@ -485,7 +486,7 @@ rule existing_UEP:
                 MUT=$(basename $FILE | cut -d _ -f 2)
                 DDG=$(bin/process-uep $FILE --map optimized/$(basename $FILE .uep.csv).map --mutation $MUT)
                 echo $DDG | grep --silent . && echo -e ${{PDB}}_${{MUT}}"\t"$DDG || true
-              done | tee {output}
+              done | sort -k 1b,1 >> {output}
         """
 
 rule UEP:
