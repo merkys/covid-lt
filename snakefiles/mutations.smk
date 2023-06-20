@@ -120,6 +120,7 @@ rule binding_energy_EvoEF:
         "binding_energy_EvoEF.tab"
     shell:
         """
+        echo -e "mutation\tEvoEF" > {output}
         ls -1 optimized/*.pdb \
             | grep -v _wt \
             | xargs -n 1 basename \
@@ -142,7 +143,7 @@ rule binding_energy_EvoEF:
                     | grep ^Total \
                     | xargs \
                     | awk '{{print "'$MUT'\t" $3 - $6}}'
-              done > {output}
+              done | sort -k 1b,1 >> {output}
         """
 
 rule binding_energy_EvoEF2:
@@ -152,6 +153,7 @@ rule binding_energy_EvoEF2:
         "binding_energy_EvoEF2.tab"
     shell:
         """
+        echo -e "mutation\tEvoEF2" > {output}
         ls -1 optimized/*.pdb \
             | grep -v _wt \
             | xargs -n 1 basename \
@@ -172,7 +174,7 @@ rule binding_energy_EvoEF2:
                     | grep ^Total \
                     | xargs \
                     | awk '{{print "'$MUT'\t" $3 - $6}}'
-              done > {output}
+              done | sort -k 1b,1 >> {output}
         """
 
 rule dssp:
