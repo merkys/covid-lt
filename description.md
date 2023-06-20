@@ -14,6 +14,8 @@ The structures having SARS2 spike glycoprotein were then divided into three cate
 ACE2 and antibody categories were then analyzed.
 For each of the categories a contact map was generated as a real-valued N×M matrix where N is the number of complexes and M is the number of residues in SARS2 spike glycoprotein chain.
 Each element in these contact matrices corresponds to distance value between a residue in SARS2 spike glycoprotein chain and the nearest residue in its complex partner chain.
+For positions in SARS2 spike glycoprotein chain for which no contacts have been detected by Voronota a preselected value of 20 Å is recorded.
+We argue that this value fares well in the comparison of complex contacts.
 
 To compare complexes inside each of the categories, Euclidean distance between two rows in the aforementioned contact map was used.
 Hierarchical clustering was then used to group together similar complexes and the resulting tree was cut at height of 140 in order to produce a tractable number of clusters.
