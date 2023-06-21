@@ -1,33 +1,50 @@
 #!/usr/bin/env python3
 
-from pdbio.pdbfile import PDBFile
+from pdbio import PDBFile
+from re import search
 from warnings import warn
 import argparse, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
 parser.add_argument('--adjust-by', type=int, help='Instead of renumbering from 1, adjust residue numbers by adding the specified value')
+parser.add_argument('--input-map', help='Apply renumbering from a map in the given file')
 parser.add_argument('--output-map', help='Specify a file to store renumbering map')
 args = parser.parse_args()
 
 pdb = PDBFile(args.files[0]) # Only the first file is processed for now
 
 residue_map = {}
+if args.input_map:
+    for line in open(args.input_map, 'r'):
+        match = search('^(.)(\d+)(\D)?\s+(.)(\d+)(\D)?$', line)
+        if not match:
+            continue
+        left_icode = match.group(3) if match.group(3) else ' '
+        right_icode = match.group(6) if match.group(6) else ' '
+        key = match.group(1) + match.group(2) + left_icode
+        residue_map[key] = [match.group(4), int(match.group(5)), right_icode]
 
 for chain in pdb:
     def renumber_plain(number, icode):
         key = chain.name + str(number) + icode
         if key not in residue_map:
-            residue_map[key] = len(residue_map) + 1
-        return residue_map[key], ' '
+            residue_map[key] = [chain.name, len(residue_map) + 1, ' ']
+        return residue_map[key][1], residue_map[key][2]
 
     def renumber_adjust(number, icode):
         key = chain.name + str(number) + icode
-        residue_map[key] = number + args.adjust_by
-        return number + args.adjust_by, icode
+        residue_map[key] = [chain.name, number + args.adjust_by, icode]
+        return residue_map[key][1], residue_map[key][2]
+
+    def renumber_map(number, icode):
+        key = chain.name + str(number) + icode
+        return residue_map[key][1], residue_map[key][2]
 
     if args.adjust_by:
         chain.renumber(renumber_adjust)
+    elif args.input_map:
+        chain.renumber(renumber_map)
     else:
         chain.renumber(renumber_plain)
 
@@ -36,4 +53,7 @@ print(pdb, end='')
 if args.output_map:
     with open(args.output_map, 'w') as out:
         for key in residue_map:
-            print(key, key[0] + str(residue_map[key]), sep="\t", file=out)
+            renamed = residue_map[0] + str(residue_map[1])
+            if residue_map[2] != ' ':
+                renamed = renamed + residue_map[2]
+            print(key, renamed, sep="\t", file=out)
