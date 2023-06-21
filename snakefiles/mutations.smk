@@ -545,3 +545,24 @@ rule prodigy:
             $(echo {wildcards.partner1} | grep -o . | xargs echo | sed 's/ /,/g') \
             $(echo {wildcards.partner2} | grep -o . | xargs echo | sed 's/ /,/g') > {output}
         """
+
+rule existing_prodigy:
+    output:
+        "prodigy.tab"
+    shell:
+        """
+        echo -e "mutation\tprodigy_affinity" > {output}
+        ls -1 optimized/*_wt.prodigy.log \
+            | xargs -i basename {{}} _wt.prodigy.log \
+            | while read BASE
+              do
+                test -s optimized/${{BASE}}.prodigy.log    || continue
+                test -s optimized/${{BASE}}_wt.prodigy.log || continue
+
+                echo -en $(echo $BASE | cut -d _ -f 1-2)"\t"
+                grep --no-filename 'Predicted binding affinity' optimized/${{BASE}}_wt.prodigy.log optimized/${{BASE}}.prodigy.log \
+                    | awk '{{print $NF}}' \
+                    | xargs echo \
+                    | awk '{{print $1 - $2}}'
+              done | sort -k 1b,1 >> {output}
+        """
