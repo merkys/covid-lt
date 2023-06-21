@@ -36,4 +36,4 @@ print(pdb, end='')
 if args.output_map:
     with open(args.output_map, 'w') as out:
         for key in residue_map:
-            print(key, residue_map[key], sep="\t", file=out)
+            print(key, key[0] + str(residue_map[key]), sep="\t", file=out)
