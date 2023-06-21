@@ -531,3 +531,17 @@ rule existing_cadscore:
                 sed 's/ /\t/g' $FILE | cut -f 5-
               done | sort -k 1b,1 >> {output}
         """
+
+rule prodigy:
+    input:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.prodigy.log"
+    singularity:
+        "prodigy.sif"
+    shell:
+        """
+        prodigy {input} --selection \
+            $(echo {wildcards.partner1} | grep -o . | xargs echo | sed 's/ /,/g') \
+            $(echo {wildcards.partner2} | grep -o . | xargs echo | sed 's/ /,/g') > {output}
+        """
