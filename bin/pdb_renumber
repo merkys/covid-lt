@@ -20,10 +20,12 @@ if args.input_map:
         match = search('^(.)(\d+)(\D)?\s+(.)(\d+)(\D)?$', line)
         if not match:
             continue
+        left_chain, left_residue = match.group(1), match.group(2)
+        right_chain, right_residue = match.group(4), match.group(5)
         left_icode = match.group(3) if match.group(3) else ' '
         right_icode = match.group(6) if match.group(6) else ' '
-        key = match.group(1) + match.group(2) + left_icode
-        residue_map[key] = [match.group(4), int(match.group(5)), right_icode]
+        key = left_chain + left_residue + left_icode
+        residue_map[key] = [right_chain, int(right_residue), right_icode]
 
 for chain in pdb:
     def renumber_plain(number, icode):
