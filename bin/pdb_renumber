@@ -10,6 +10,7 @@ parser.add_argument('files', nargs='*', default=[sys.stdin])
 parser.add_argument('--adjust-by', type=int, help='Instead of renumbering from 1, adjust residue numbers by adding the specified value')
 parser.add_argument('--input-map', help='Apply renumbering from a map in the given file')
 parser.add_argument('--output-map', help='Specify a file to store renumbering map')
+parser.add_argument('--reverse-input-map', action='store_true', help='Reverse the input map')
 args = parser.parse_args()
 
 pdb = PDBFile(args.files[0]) # Only the first file is processed for now
@@ -17,13 +18,16 @@ pdb = PDBFile(args.files[0]) # Only the first file is processed for now
 residue_map = {}
 if args.input_map:
     for line in open(args.input_map, 'r'):
-        match = search('^(.)(\d+)(\D)?\s+(.)(\d+)(\D)?$', line)
+        match = search('^(.)(\d+)(\D)?\s+(.)(\d+)(\D)?$', line.rstrip())
         if not match:
             continue
         left_chain, left_residue = match.group(1), match.group(2)
         right_chain, right_residue = match.group(4), match.group(5)
         left_icode = match.group(3) if match.group(3) else ' '
         right_icode = match.group(6) if match.group(6) else ' '
+        if args.reverse_input_map:
+            left_chain, left_residue, left_icode, right_chain, right_residue, right_icode = \
+                right_chain, right_residue, right_icode, left_chain, left_residue, left_icode
         key = left_chain + left_residue + left_icode
         residue_map[key] = [right_chain, int(right_residue), right_icode]
 
