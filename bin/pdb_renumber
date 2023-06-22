@@ -59,7 +59,7 @@ print(pdb, end='')
 if args.output_map:
     with open(args.output_map, 'w') as out:
         for key in residue_map:
-            renamed = residue_map[0] + str(residue_map[1])
-            if residue_map[2] != ' ':
-                renamed = renamed + residue_map[2]
+            renamed = residue_map[key][0] + str(residue_map[key][1])
+            if residue_map[key][2] != ' ':
+                renamed = renamed + residue_map[key][2]
             print(key, renamed, sep="\t", file=out)
