@@ -35,7 +35,7 @@ parser.add_argument('--implicit-solvent', help='Implicit solvent to use')
 parser.add_argument('--solute-dielectric', type=float, help='Dielectric constant of solute')
 parser.add_argument('--solvent-dielectric', type=float, help='Dielectric constant of solvent')
 parser.add_argument('--add-missing-hydrogens', action='store_true', help='Add missing hydrogen atoms')
-parser.add_argument('--constrain', choices=['backbone', 'all', 'none'], help='Apply harmonic restraints on the selected part of the structure', default='none')
+parser.add_argument('--constrain', choices=['heavy', 'backbone', 'all', 'none'], help='Apply harmonic restraints on the selected part of the structure', default='none')
 parser.add_argument('--split-nonbonded-force', action='store_true', help='Split nonbonded force into Lennard-Jones and Coulomb terms')
 parser.add_argument('--no-LJ', action='store_true', help='Turn off the Lennard-Jones term of the nonbonded force')
 parser.add_argument('--no-Coulomb', action='store_true', help='Turn off the Coulomb term of the nonbonded force')
@@ -137,6 +137,8 @@ if args.constrain != 'none':
 
     for atom in struct.topology.atoms():
         if args.constrain == 'backbone' and atom.name not in ['C', 'CA', 'N', 'O']:
+            continue
+        if args.constrain == 'heavy' and atom.name.startswith('H'):
             continue
         restraint.addParticle(atom.index, struct.positions[atom.index])
 
