@@ -15,7 +15,7 @@ rule optimize_complex:
                 | bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} \
                 | PYTHONPATH=. bin/pdb_renumber --output-map {output.map} \
                 | PYTHONPATH=. bin/pdb_resolve_alternate_locations \
-                | bin/pdb_openmm_minimize --forcefield amber14-all.xml --constrain all --add-missing-hydrogens --constrain backbone --max-iterations 100 \
+                | bin/pdb_openmm_minimize --forcefield amber14-all.xml --add-missing-hydrogens --constrain heavy --max-iterations 100 \
                 | PYTHONPATH=. bin/pdb_rename_chains --source <(grep ^ATOM {input} | bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2}) > {output.pdb}
         else
             echo -n > {output.map}
