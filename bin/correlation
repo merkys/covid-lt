@@ -15,4 +15,5 @@ if( length(files) != 0 ) {
 }
 
 D = read.csv(file, header=FALSE, sep="\t", quote="")
-cor.test(D[,options$options$first], D[,options$options$second])
+result = cor.test(D[,options$options$first], D[,options$options$second])
+cat( as.vector( result$estimate ), "\t", result$p.value, "\n" )
