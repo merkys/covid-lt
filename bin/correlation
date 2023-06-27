@@ -6,6 +6,7 @@ library( "optparse" )
 parser <- OptionParser()
 parser <- add_option(parser, c( "--first" ),  type = 'double', default = 1)
 parser <- add_option(parser, c( "--second" ), type = 'double', default = 2)
+parser <- add_option(parser, c( '--input-header' ), dest = 'input_header', action = 'store_true', default = FALSE )
 options = parse_args(parser, positional_arguments = TRUE)
 
 file = '/dev/stdin'
@@ -14,6 +15,6 @@ if( length(files) != 0 ) {
     file = files[1]
 }
 
-D = read.csv(file, header=FALSE, sep="\t", quote="")
+D = read.csv(file, header=options$options$input_header, sep="\t", quote="")
 result = cor.test(D[,options$options$first], D[,options$options$second])
 cat( as.vector( result$estimate ), "\t", result$p.value, "\n" )
