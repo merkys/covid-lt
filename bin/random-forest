@@ -13,6 +13,7 @@ parser <- add_option(parser, c( '--repeat' ), dest = 'rep', type = 'double', def
 parser <- add_option(parser, c( '--method' ), type = 'character', default = 'rf')
 parser <- add_option(parser, c( '--use-caret' ), dest = 'caret', action = 'store_true', default = FALSE)
 parser <- add_option(parser, c( '--importance-plot' ), type = 'character', default = NA)
+parser <- add_option(parser, c( '--tune-grid' ), type = 'character', default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
 D = read.csv( options$args[1], quote="", sep="\t" )
@@ -24,6 +25,11 @@ if( train_size < 1 ) {
 
 if( options$options$caret ) {
     library( 'caret' )
+}
+
+tune_grid = NULL
+if( !is.na( options$options$tune ) ) {
+    tune_grid = read.csv( options$options$tune, quote="", sep="\t" )
 }
 
 best_model = NA
@@ -44,7 +50,7 @@ for (i in 1:options$options$rep) {
 
     model = NULL
     if( options$options$caret ) {
-        model = train( ddG ~ ., data = train, method = options$options$method )
+        model = train( ddG ~ ., data = train, method = options$options$method, tuneGrid = tune_grid )
     } else {
         model = randomForest( formula = ddG ~ ., data = train )
     }
