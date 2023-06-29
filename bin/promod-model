@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+
+from Bio import pairwise2, SeqIO
+from Bio.pairwise2 import format_alignment
+from Bio.Seq import MutableSeq
+from Bio.Align import substitution_matrices
+
+from ost import io, seq
+from pdbio.pdbfile import PDBFile
+from promod3 import modelling
+from tempfile import NamedTemporaryFile
+from warnings import filterwarnings, warn
+import argparse, re, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*')
+parser.add_argument('--template', required=True, help='PDB structure to use as template. SEQRES entries not required. Missing residues must be fixed')
+parser.add_argument('--sequences', required=True, help='Fasta file with new sequences. Must have one sequence per chain. Title must follow this format ">PDB|<chain>" ')
+parser.add_argument('--trim', action='store_true', help='Trim nonmodelled residues')
+parser.add_argument('--simulate', action='store_true', help='Perform a simulation on resulting model')
+parser.add_argument('--forcefield', help='Specify the forcefield ("AMBER" by default)', choices=['AMBER', 'CHARMM'], default='AMBER')
+args = parser.parse_args()
+
+# temporary_file = NamedTemporaryFile('w+')
+# temporary_file.write(sys.stdin.read())
+# file = temporary_file.name
+
+# read expected sequences
+fastaf = open(args.sequences,"r")
+pdb_seqs_tobe= {}
+for record in SeqIO.parse(fastaf, "fasta"):
+    chain = record.id.split("|")[1]
+    pdb_seqs_tobe[chain] = str(record.seq)
+
+pdb = io.LoadPDB(args.template)
+pdbfile = PDBFile(args.template)
+
+alignments = seq.AlignmentList()
+matrix = substitution_matrices.load("BLOSUM62")
+
+chains = list() # to keep original
+for chain in pdbfile:
+    atom_seq = chain.sequence_atom()
+    seqres_seq = pdb_seqs_tobe[chain.name] # in this case not real seqres_seq - supply expected sequences as a separate fasta file
+    # NW parameters taken from https://www.arabidopsis.org/Blast/BLASToptions.jsp
+    #align = pairwise2.align.globalms(seqres_seq, atom_seq, 1, -3, -5, -2, one_alignment_only=True)[0]
+    align = pairwise2.align.globalds(seqres_seq, atom_seq, matrix, -11, -1, penalize_end_gaps=(False, False),one_alignment_only=True)[0]
+    sequence = MutableSeq(align[0])
+    structure = MutableSeq(align[1])
+    pos = 0
+    while pos < len(structure):
+        if structure[pos] == 'X':
+            structure[pos] = '-'
+            if sequence[pos] == '-':
+                del(structure[pos])
+                del(sequence[pos])
+                continue
+        pos += 1
+
+    if args.trim:
+        start = re.search('^(-+)', str(structure))
+        end = re.search('(-+)$', str(structure))
+        if start:
+            start = len(start.group(1))
+        if end:
+            end = -len(end.group(1))
+        structure = structure[start:end]
+        sequence = sequence[start:end]
+
+    alignment = seq.CreateAlignment(seq.CreateSequence('trg_' + chain.name, str(sequence)),
+                                    seq.CreateSequence('tpl_' + chain.name, str(structure)))
+    # There must be an easier way to do this...
+    view = pdb.CreateFullView()
+    for ch in view.chains:
+        if str(ch) != chain.name:
+            view.RemoveChain(ch)
+    alignment.AttachView(1, view)
+    alignments.append(alignment)
+    chains.append(str(chain.name)) 
+
+handle = modelling.BuildRawModel(alignments,include_ligands=True,chain_names="".join(chains))
+modelling.CloseGaps(handle)
+modelling.BuildSidechains(handle)
+model = handle.model
+
+
+
+if args.simulate:
+    from ost.mol import mm
+    # Parameters as suggested by Gabriel Studer
+    settings = mm.Settings()
+    # Find the most suitable platform
+    for platform in [mm.Platform.CUDA, mm.Platform.OpenCL, mm.Platform.CPU, mm.Platform.Reference]:
+        settings.platform = platform
+        if mm.Simulation.IsPlatformAvailable(settings):
+            break
+
+    settings.integrator = mm.LangevinIntegrator(310, 1, 0.002)
+    settings.init_temperature = 0
+    settings.nonbonded_method = mm.NonbondedMethod.CutoffNonPeriodic
+    settings.keep_ff_specific_naming = False
+
+    if args.forcefield == 'AMBER':
+        settings.forcefield = mm.LoadAMBERForcefield()
+    if args.forcefield == 'CHARMM':
+        settings.forcefield = mm.LoadCHARMMForcefield()
+
+    simulation = mm.Simulation(model, settings)
+    model = simulation.GetEntity()
+
+# Check if the resulting PDB file does not have gaps
+output_pdb_file = NamedTemporaryFile()
+io.SavePDB(model, output_pdb_file.name, )
+pdb = PDBFile(output_pdb_file.name)
+for chain in pdb:
+    if not chain.is_contiguous():
+        warn('{}: chain {} is not contiguous after fixing'.format(file, chain.name))
+
+    # Not sure why, but ProMod3 adds OXT atoms as H, not O.
+    for residue in chain:
+        for atom in residue:
+            if atom.name() == 'OXT':
+                atom.element('O')
+print(pdb, end='')
