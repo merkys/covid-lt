@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+from Bio import SeqIO
+from re import fullmatch
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--replace', action='append', help='Specify replacements', default=[])
+args = parser.parse_args()
+
+replacements = []
+for replacement in args.replace:
+    m = fullmatch('([A-Z])([A-Z])([0-9]+)([A-Z])', replacement)
+    if not m:
+        continue
+    replacements.append({ 'from': m.group(1), 'chain': m.group(2), 'position': int(m.group(3)), 'to': m.group(4) })
+
+for filename in args.files:
+    for sequence in SeqIO.parse(filename, 'fasta'):
+        seq = sequence.seq.tomutable()
+        for replacement in replacements:
+            if replacement['chain'] != sequence.id[5]:
+                continue # Not the same chain
+            if replacement['from'] != sequence[replacement['position']]:
+                continue # TODO: Warn, not the same
+            seq[replacement['position']] = replacement['to']
+        sequence.seq = seq
+        SeqIO.write(sequence, sys.stdout, 'fasta')
