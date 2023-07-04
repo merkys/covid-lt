@@ -5,11 +5,22 @@
 INPUT_PDB=
 MUTATION=
 
+EVOEF2_CMD=EvoEF2
+WT=
+
 while [ $# -gt 0 ]
 do
     case $1 in
         --mutation)
             MUTATION="$2"
+            shift
+            ;;
+        --EvoEF2-command)
+            EVOEF2_CMD="$2"
+            shift
+            ;;
+        --wt)
+            WT="$2"
             shift
             ;;
         -*) echo "`basename $0`: unknown option $1" >&2 ; exit 1 ;;
@@ -36,8 +47,10 @@ fi
 
 (
     cd $TMPDIR
-    EvoEF2 --command BuildMutant --pdb input.pdb --mutant_file <(echo $MUTATION) >&2
+    ${EVOEF2_CMD} --command BuildMutant --pdb input.pdb --mutant_file <(echo $MUTATION) >&2
     cat input_Model_0001.pdb
 )
+
+test -n "$WT" -a -e "$TMPDIR"/input_Model_0001_WT.pdb && mv "$TMPDIR"/input_Model_0001_WT.pdb $WT
 
 rm -rf "$TMPDIR"
