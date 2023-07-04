@@ -2,6 +2,7 @@
 
 from Bio import SeqIO
 from re import fullmatch
+from warnings import warn
 import argparse, sys
 
 parser = argparse.ArgumentParser()
@@ -14,7 +15,7 @@ for replacement in args.replace:
     m = fullmatch('([A-Z])([A-Z])([0-9]+)([A-Z])', replacement)
     if not m:
         continue
-    replacements.append({ 'from': m.group(1), 'chain': m.group(2), 'position': int(m.group(3)), 'to': m.group(4) })
+    replacements.append({ 'from': m.group(1), 'chain': m.group(2), 'position': int(m.group(3)), 'to': m.group(4), 'full': replacement })
 
 for filename in args.files:
     for sequence in SeqIO.parse(filename, 'fasta'):
@@ -22,8 +23,9 @@ for filename in args.files:
         for replacement in replacements:
             if replacement['chain'] != sequence.id[5]:
                 continue # Not the same chain
-            if replacement['from'] != sequence[replacement['position']]:
+            if replacement['from'] != sequence[replacement['position']-1]:
+                warn('{}: mutation {} cannot be performed, residue mismatch'.format(filename, replacement['full']))
                 continue # TODO: Warn, not the same
-            seq[replacement['position']] = replacement['to']
+            seq[replacement['position']-1] = replacement['to']
         sequence.seq = seq
         SeqIO.write(sequence, sys.stdout, 'fasta')
