@@ -126,7 +126,7 @@ rule binding_energy_EvoEF:
             | xargs -n 1 basename \
             | while read BASE
               do
-                MUTATED=EvoEF2/$BASE
+                MUTATED=$BASE
                 WT=$(echo $BASE | cut -d _ -f 1).pdb
 
                 test -s $MUTATED || continue
@@ -159,7 +159,7 @@ rule binding_energy_EvoEF2:
             | xargs -n 1 basename \
             | while read BASE
               do
-                MUTATED=EvoEF2/$BASE
+                MUTATED=$BASE
                 WT=$(echo $BASE | cut -d _ -f 1).pdb
 
                 test -s $MUTATED || continue
@@ -404,13 +404,13 @@ rule openmm_energy:
         """
         (
             sed 's/HSE/HIS/g' {input} \
-                | bin/pdb_openmm_minimize --forcefield amber14-all.xml --forcefield implicit/hct.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
             sed 's/HSE/HIS/g' {input} \
                 | bin/pdb_select --chain {wildcards.partner1} \
-                | bin/pdb_openmm_minimize --forcefield amber14-all.xml --forcefield implicit/hct.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
             sed 's/HSE/HIS/g' {input} \
                 | bin/pdb_select --chain {wildcards.partner2} \
-                | bin/pdb_openmm_minimize --forcefield amber14-all.xml --forcefield implicit/hct.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
         ) > {output}
         """
 
