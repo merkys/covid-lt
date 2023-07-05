@@ -16,6 +16,7 @@ replacements = []
 for replacement in args.replace:
     m = fullmatch('([A-Z])([A-Z])([0-9]+)([A-Z])', replacement)
     if not m:
+        warn('mutation {} cannot be parsed'.format(replacement))
         continue
     replacements.append({ 'from': m.group(1), 'chain': m.group(2), 'position': int(m.group(3)), 'to': m.group(4), 'full': replacement })
 
@@ -23,6 +24,7 @@ insertions = []
 for insertion in args.insert:
     m = fullmatch('([A-Z])([0-9]+)([A-Z])', insertion)
     if not m:
+        warn('insertion {} cannot be parsed'.format(insertion))
         continue
     insertions.append({ 'chain': m.group(1), 'position': int(m.group(2)), 'residue': m.group(3), 'full': insertion })
 
@@ -30,6 +32,7 @@ deletions = []
 for deletion in args.delete:
     m = fullmatch('([A-Z])([A-Z])([0-9]+)', deletion)
     if not m:
+        warn('deletion {} cannot be parsed'.format(deletion))
         continue
     deletions.append({ 'residue': m.group(1), 'chain': m.group(2), 'position': int(m.group(3)), 'full': deletion })
 
