@@ -24,7 +24,14 @@ for insertion in args.insert:
     m = fullmatch('([A-Z])([0-9]+)([A-Z])', insertion)
     if not m:
         continue
-    insertions.append({ 'chain': m.group(1), 'position': int(m.group(2)), 'residue': m.group(3) })
+    insertions.append({ 'chain': m.group(1), 'position': int(m.group(2)), 'residue': m.group(3), 'full': insertion })
+
+deletions = []
+for deletion in args.delete:
+    m = fullmatch('([A-Z])([A-Z])([0-9]+)', deletion)
+    if not m:
+        continue
+    deletions.append({ 'residue': m.group(1), 'chain': m.group(2), 'position': int(m.group(3)), 'full': deletion })
 
 for filename in args.files:
     for sequence in SeqIO.parse(filename, 'fasta'):
@@ -40,5 +47,12 @@ for filename in args.files:
             if insertion['chain'] != sequence.id[5]:
                 continue # Not the same chain
             seq = seq[0:insertion['position']] + insertion['residue'] + seq[insertion['position']:]
+        for deletion in deletions:
+            if deletion['chain'] != sequence.id[5]:
+                continue # Not the same chain
+            if deletion['residue'] != sequence[deletion['position']-1]:
+                warn('{}: deletion {} cannot be performed, residue mismatch'.format(filename, deletion['full']))
+                continue
+            seq = seq[0:deletion['position']-1] + seq[deletion['position']:]
         sequence.seq = seq
         SeqIO.write(sequence, sys.stdout, 'fasta')
