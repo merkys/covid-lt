@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+
+# List residues and their numbers
+
+from Bio.Data.IUPACData import protein_letters_3to1
+import sys
+
+for line in sys.stdin:
+    print(protein_letters_3to1[line.strip().capitalize()])
