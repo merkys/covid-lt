@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+from Bio import SeqIO
+from re import fullmatch
+from warnings import warn
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--replace', action='append', help='Specify replacements', default=[])
+parser.add_argument('--insert', action='append', help='Specify insertions', default=[])
+parser.add_argument('--delete', action='append', help='Specify deletions', default=[])
+args = parser.parse_args()
+
+replacements = []
+for replacement in args.replace:
+    m = fullmatch('([A-Z])([A-Z])([0-9]+)([A-Z])', replacement)
+    if not m:
+        warn('mutation {} cannot be parsed'.format(replacement))
+        continue
+    replacements.append({ 'from': m.group(1), 'chain': m.group(2), 'position': int(m.group(3)), 'to': m.group(4), 'full': replacement })
+
+insertions = []
+for insertion in args.insert:
+    m = fullmatch('([A-Z])([0-9]+)([A-Z])', insertion)
+    if not m:
+        warn('insertion {} cannot be parsed'.format(insertion))
+        continue
+    insertions.append({ 'chain': m.group(1), 'position': int(m.group(2)), 'residue': m.group(3), 'full': insertion })
+
+deletions = []
+for deletion in args.delete:
+    m = fullmatch('([A-Z])([A-Z])([0-9]+)', deletion)
+    if not m:
+        warn('deletion {} cannot be parsed'.format(deletion))
+        continue
+    deletions.append({ 'residue': m.group(1), 'chain': m.group(2), 'position': int(m.group(3)), 'full': deletion })
+
+for filename in args.files:
+    for sequence in SeqIO.parse(filename, 'fasta'):
+        seq = sequence.seq.tomutable()
+        for replacement in replacements:
+            if replacement['chain'] != sequence.id[5]:
+                continue # Not the same chain
+            if replacement['from'] != sequence[replacement['position']-1]:
+                warn('{}: mutation {} cannot be performed, residue mismatch'.format(filename, replacement['full']))
+                continue # TODO: Warn, not the same
+            seq[replacement['position']-1] = replacement['to']
+        for insertion in insertions:
+            if insertion['chain'] != sequence.id[5]:
+                continue # Not the same chain
+            seq = seq[0:insertion['position']] + insertion['residue'] + seq[insertion['position']:]
+        for deletion in deletions:
+            if deletion['chain'] != sequence.id[5]:
+                continue # Not the same chain
+            if deletion['residue'] != sequence[deletion['position']-1]:
+                warn('{}: deletion {} cannot be performed, residue mismatch'.format(filename, deletion['full']))
+                continue
+            seq = seq[0:deletion['position']-1] + seq[deletion['position']:]
+        sequence.seq = seq
+        SeqIO.write(sequence, sys.stdout, 'fasta')

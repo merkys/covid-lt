@@ -10,70 +10,58 @@ except ModuleNotFoundError:
     from simtk import openmm
     from simtk.openmm import OpenMMException, app as openmm_app
 
+from copy import deepcopy
 from tempfile import NamedTemporaryFile
 import argparse, sys
 
-def print_forces(system, simulation):
+def print_forces(system, simulation, unit):
     """
     Based on https://openmm.github.io/openmm-cookbook/dev/notebooks/cookbook/Analyzing%20Energy%20Contributions.html
     """
-    state = simulation.context.getState(getEnergy=True, getPositions=True)
-    print('PotentialEnergy', state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
+    state = simulation.context.getState(getEnergy=True)
+    print('PotentialEnergy', state.getPotentialEnergy() / unit, sep="\t")
     for i, force in enumerate(system.getForces()):
         state = simulation.context.getState(getEnergy=True, groups={i})
-        print(force.__class__.__name__, state.getPotentialEnergy() / openmm.unit.kilojoule_per_mole, sep="\t")
+        try:
+            print(force.getName(), state.getPotentialEnergy() / unit, sep="\t")
+        except AttributeError: # OpenMM 7.5.1 does not have names for forces
+            print(force.__class__.__name__, state.getPotentialEnergy() / unit, sep="\t")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--platform', help='Specify the platform to use for the simulation (by default the fastest available is used)')
 parser.add_argument('--forcefield', action='append', help='Specify the forcefield, may be multiple (["amber99sb.xml"] by default)', default=[])
 parser.add_argument('--implicit-solvent', help='Implicit solvent to use')
+parser.add_argument('--solute-dielectric', type=float, help='Dielectric constant of solute')
+parser.add_argument('--solvent-dielectric', type=float, help='Dielectric constant of solvent')
+parser.add_argument('--add-missing-hydrogens', action='store_true', help='Add missing hydrogen atoms')
+parser.add_argument('--constrain', choices=['heavy', 'backbone', 'all', 'none'], help='Apply harmonic restraints on the selected part of the structure', default='none')
+parser.add_argument('--split-nonbonded-force', action='store_true', help='Split nonbonded force into Lennard-Jones and Coulomb terms')
+parser.add_argument('--no-LJ', action='store_true', help='Turn off the Lennard-Jones term of the nonbonded force')
+parser.add_argument('--no-Coulomb', action='store_true', help='Turn off the Coulomb term of the nonbonded force')
 parser.add_argument('--max-iterations', type=int, help='Maximum number of iterations', default=1)
 parser.add_argument('--print-forces', action='store_true', help='Suppress normal output, print forces instead')
+parser.add_argument('--force-unit', choices=['kJ/mol', 'kcal/mol'], help='Unit for force', default='kJ/mol')
 args = parser.parse_args()
 
 forcefields = args.forcefield
 if not len(forcefields):
     forcefields = ['amber99sb.xml']
 
-constraints = openmm_app.HBonds
-tolerance = 2.39
+unit = openmm.unit.kilojoule_per_mole
+if args.force_unit == 'kcal/mol':
+    unit = openmm.unit.kilocalorie_per_mole
 
-# FIXME: ParMed could be used to get OpenMM energies separated into terms, see https://github.com/openmm/openmm/issues/1463
+system_attributes = {
+    'constraints': openmm_app.HBonds,
+    'nonbondedMethod': openmm_app.CutoffNonPeriodic,
+    'nonbondedCutoff': 12*openmm.unit.angstrom,
+}
 
-struct = None
-system = None
-if len(args.files) == 2: # Assume prmtop and inpcrd pair
-    from parmed import load_file
-    files = args.files
-    if files[1].endswith('.prmtop'): # order must be: prmtop, inpcrd
-        files[0], files[1] = files[1], files[0]
-    struct = load_file(*files)
-    implicit_solvent = None
-    if args.implicit_solvent:
-        import importlib
-        implicit_solvent = getattr(importlib.import_module('openmm.app.amberprmtopfile'), args.implicit_solvent)
-    system = struct.createSystem(constraints=constraints, implicitSolvent=implicit_solvent)
-else: # Assume plain PDB
-    struct = None
-    if len(args.files):
-        struct = openmm_app.PDBFile(args.files[0]) # for now
-    else:
-        temporary_file = NamedTemporaryFile('w+')
-        temporary_file.write(sys.stdin.read())
-        struct = openmm_app.PDBFile(temporary_file.name)
-    force_field = openmm_app.ForceField(*forcefields)
-
-    try:
-        system = force_field.createSystem(struct.topology, constraints=constraints)
-    except ValueError as error:
-        raise ValueError(str(error) + ' OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
-
-    # stiffness omitted here
-
-# Splitting forces one force per group in order to be able to access them later
-for i, f in enumerate(system.getForces()):
-    f.setForceGroup(i)
+if args.solute_dielectric:
+    system_attributes['soluteDielectric'] = args.solute_dielectric
+if args.solvent_dielectric:
+    system_attributes['solventDielectric'] = args.solvent_dielectric
 
 # Find the most suitable platform
 platform = None
@@ -87,18 +75,124 @@ else:
         except OpenMMException:
             pass # try next until something is found
 
-integrator = openmm.LangevinIntegrator(0, 0.01, 0.0)
-simulation = openmm_app.Simulation(struct.topology, system, integrator, platform)
+# FIXME: ParMed could be used to get OpenMM energies separated into terms, see https://github.com/openmm/openmm/issues/1463
+
+struct = None
+system = None
+topology = None
+if len(args.files) == 2 and list(filter(lambda x: x.endswith('.prmtop'), args.files)): # Assume prmtop and inpcrd pair
+    from parmed import load_file
+    files = args.files
+    if files[1].endswith('.prmtop'): # order must be: prmtop, inpcrd
+        files[0], files[1] = files[1], files[0]
+    struct = load_file(*files)
+    implicit_solvent = None
+    if args.implicit_solvent:
+        import importlib
+        implicit_solvent = getattr(importlib.import_module('openmm.app.amberprmtopfile'), args.implicit_solvent)
+    system = struct.createSystem(implicitSolvent=implicit_solvent, **system_attributes)
+    topology = struct.topology
+else: # Assume plain PDB
+    if len(args.files) == 2: # Assume PDB + PSF pair
+        # Implemented according to https://parmed.github.io/ParmEd/html/omm_charmm.html
+        struct = openmm_app.PDBFile(args.files[0])
+        psf = openmm_app.CharmmPsfFile(args.files[1]) # Assume second file is PSF
+        system = psf.createSystem(openmm_app.CharmmParameterSet(*forcefields),
+                                  **system_attributes)
+        topology = psf.topology
+    else: # Assume just a PDB file
+        if len(args.files):
+            struct = openmm_app.PDBFile(args.files[0]) # for now
+        else:
+            temporary_file = NamedTemporaryFile('w+')
+            temporary_file.write(sys.stdin.read())
+            struct = openmm_app.PDBFile(temporary_file.name)
+        force_field = openmm_app.ForceField(*forcefields)
+
+        if args.add_missing_hydrogens:
+            # According to http://docs.openmm.org/latest/userguide/application/03_model_building_editing.html
+            modeller = openmm_app.modeller.Modeller(struct.topology, struct.positions)
+            modeller.addHydrogens(force_field, platform=platform)
+            struct = modeller
+
+        if 'charmm_polar_2013.xml' in forcefields or 'charmm_polar_2019.xml' in forcefields:
+            modeller = openmm_app.modeller.Modeller(struct.topology, struct.positions)
+            modeller.addExtraParticles(force_field, platform=platform)
+
+        try:
+            system = force_field.createSystem(struct.topology, **system_attributes)
+        except ValueError as error:
+            raise ValueError(str(error) + '. OpenMM is sensitive to HIS/HSE, the problem may be fixed by replacing all HSE with HIS')
+        topology = struct.topology
+
+if args.constrain != 'none':
+    # Restraining the backbone according to:
+    # https://openmm.github.io/openmm-cookbook/dev/notebooks/restraints_constraints_forces/Restraining%20Atom%20Positions.html
+    restraint = openmm.CustomExternalForce('k * ((x-x0)^2+(y-y0)^2+(z-z0)^2)')
+    system.addForce(restraint)
+    restraint.addGlobalParameter('k', 5*openmm.unit.kilocalorie_per_mole/(openmm.unit.angstrom**2))
+    restraint.addPerParticleParameter('x0')
+    restraint.addPerParticleParameter('y0')
+    restraint.addPerParticleParameter('z0')
+
+    for atom in struct.topology.atoms():
+        if args.constrain == 'backbone' and atom.name not in ['C', 'CA', 'N', 'O']:
+            continue
+        if args.constrain == 'heavy' and atom.name.startswith('H'):
+            continue
+        restraint.addParticle(atom.index, struct.positions[atom.index])
+
+# Find the nonbonded force
+nonbonded_force = list(filter(lambda f: isinstance(f, openmm.NonbondedForce), system.getForces()))[0]
+
+# Split the nonbonded forces if required
+if args.split_nonbonded_force or args.no_LJ or args.no_Coulomb:
+    LJ = nonbonded_force
+    Coulomb = deepcopy(nonbonded_force)
+
+    try:
+        LJ.setName('LJForce')
+        Coulomb.setName('CoulombForce')
+    except AttributeError: # OpenMM 7.5.1 does not have names for forces
+        pass
+
+    system.addForce(Coulomb)
+
+    for i in range(0, nonbonded_force.getNumParticles()): # Adjust force parameters for particles
+        charge, sigma, epsilon = nonbonded_force.getParticleParameters(i)
+        if args.no_LJ:
+            epsilon = 0
+        if args.no_Coulomb:
+            charge = 0
+        LJ.setParticleParameters(i, 0, sigma, epsilon)
+        Coulomb.setParticleParameters(i, charge, sigma, 0)
+
+    for i in range(0, nonbonded_force.getNumExceptions()): # Adjust force parameters for exceptions
+        particle1, particle2, chargeProd, sigma, epsilon = nonbonded_force.getExceptionParameters(i)
+        if args.no_LJ:
+            epsilon = 0
+        if args.no_Coulomb:
+            chargeProd = 0
+        LJ.setExceptionParameters(i, particle1, particle2, 0, sigma, epsilon)
+        Coulomb.setExceptionParameters(i, particle1, particle2, chargeProd, sigma, 0)
+
+# Splitting forces one force per group in order to be able to access them later
+for i, f in enumerate(system.getForces()):
+    f.setForceGroup(i)
+
+integrator = openmm.LangevinIntegrator(310 * openmm.unit.kelvin, 0.01, 1 * openmm.unit.femtosecond)
+simulation = openmm_app.Simulation(topology, system, integrator, platform)
 simulation.context.setPositions(struct.positions)
 
 if args.print_forces:
-    print_forces(system, simulation)
+    print_forces(system, simulation, unit)
 
 if args.max_iterations:
-    simulation.minimizeEnergy(maxIterations=args.max_iterations, tolerance=tolerance)
+    simulation.minimizeEnergy(maxIterations=args.max_iterations)
 
     if args.print_forces:
-        print_forces(system, simulation)
-    else:
-        state = simulation.context.getState(getEnergy=True, getPositions=True)
-        openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)
+        print_forces(system, simulation, unit)
+
+if not args.print_forces:
+    state = simulation.context.getState(getPositions=True)
+    openmm_app.PDBFile.writeFile(simulation.topology, state.getPositions(), sys.stdout)

@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+# Change CHARMM atom types to AMBER
+
+from pdbio import PDBFile
+import sys
+
+for filename in sys.argv[1:]:
+    pdb = PDBFile(filename)
+    for chain in pdb:
+        for residue in chain:
+            for atom in residue:
+                atom.charmm_to_amber()
+    print(pdb, end='')

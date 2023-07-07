@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+
+# List residues and their numbers
+
+from Bio.Data.IUPACData import protein_letters_3to1
+from pdbio import PDBFile
+import argparse, sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+args = parser.parse_args()
+
+for filename in args.files:
+    pdb = PDBFile(filename)
+    for chain in pdb:
+        for residue in chain:
+            position = str(residue.number())
+            if residue.icode() != ' ':
+                position = position + residue.icode()
+            print(chain.name, position, protein_letters_3to1[residue.resname().capitalize()], sep="\t")

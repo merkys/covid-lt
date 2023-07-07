@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# Wrapper for sander
+
+PRMTOP_FILE=
+INPCRD_FILE=
+
+TAR_INPUT=false
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+        -p|--prm|--prmtop)
+            PRMTOP_FILE="$2"
+            shift
+            ;;
+        -i|-c|--inp|--crd|--inpcrd)
+            INPCRD_FILE="$2"
+            shift
+            ;;
+        --tar|--input-tar)
+            TAR_INPUT=true
+            ;;
+    esac
+    shift
+done
+
+TMP_DIR=$(mktemp --directory)
+
+if $TAR_INPUT
+then
+    (
+        cd "${TMP_DIR}"
+
+        cat "$@" > input.tar
+        tar -xf input.tar && rm input.tar
+        mv PRMTOP_FILE prmtop
+        mv INPCRD_FILE inpcrd
+    )
+else
+    cat $PRMTOP_FILE > $TMP_DIR/prmtop
+    cat $INPCRD_FILE > $TMP_DIR/inpcrd
+fi
+
+(
+    cd "${TMP_DIR}"
+
+    cat > mdin <<END
+
+&cntrl
+  imin = 1,
+  ntpr = 1000,
+  ntwx = 1000,
+  nstlim = 10000,
+  cut = 12.0,
+  igb = 5,
+  gbsa = 1,
+  intdiel = 2.0,
+  extdiel = 80.0,
+/
+
+&gb
+  igb = 5,
+/
+
+&pb
+  istrng = 0.15,
+  cavity_surften = 0.005,
+/
+END
+
+    sander -i mdin -o mdout -p prmtop -c inpcrd
+    cat mdout
+)
+
+rm -rf "${TMP_DIR}"

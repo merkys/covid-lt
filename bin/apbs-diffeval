@@ -1,0 +1,36 @@
+#!/bin/bash
+
+MUT=$1
+
+PARTNER1=$2
+PARTNER2=$3
+
+CHAINS=$(echo ${PARTNER1}${PARTNER2} | grep -o . | sort | xargs | sed 's/ //g')
+
+PDB_FILE=$(mktemp)
+PQR_FILE=$(mktemp)
+
+(
+    for FILE in ${MUT}_${CHAINS}.pdb ${MUT}_${CHAINS}_wt.pdb
+    do
+        pdb2pqr ${FILE} ${PQR_FILE}
+        bin/apbs-pbe ${PQR_FILE} \
+            | grep '^  Global net ELEC energy' \
+            | awk '{print $6 / 4.184}'
+    done
+
+    for PARTNER in $PARTNER1 $PARTNER2
+    do
+        for FILE in ${MUT}_${CHAINS}_wt.pdb ${MUT}_${CHAINS}.pdb
+        do
+            bin/pdb_select --chain ${PARTNER} ${FILE} > ${PDB_FILE}
+            pdb2pqr ${PDB_FILE} ${PQR_FILE}
+            bin/apbs-pbe ${PQR_FILE} \
+                | grep '^  Global net ELEC energy' \
+                | awk '{print $6 / 4.184}'
+        done
+    done
+
+) | perl -le 'while (<>) {print $_ * (-1) ** ($. + 1)}'
+
+rm -f ${PDB_FILE} ${PQR_FILE}

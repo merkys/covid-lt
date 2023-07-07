@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Input script designed according to:
+# https://apbs.readthedocs.io/en/latest/using/examples/solvation-energies.html#polar-solvation
+
+INPUT_FILE=$(mktemp)
+
+cat > ${INPUT_FILE} <<END
+read
+    mol pqr $1
+end
+END
+
+CELL=$(bin/pbeq-mesh $1 | cut -d ' ' -f 2 | cut -d . -f 1 | xargs -i expr {} + 50 | xargs)
+
+cat >> ${INPUT_FILE} <<END
+elec name wat
+  mg-auto               # Specify the mode for APBS to run
+  dime 161 161 161      # The grid dimensions
+  cglen ${CELL}
+  fglen ${CELL}
+  cgcent mol 1
+  fgcent mol 1
+  mol 1                 # Perform the calculation on the molecule
+  lpbe                  # Solve the linearized Poisson-Boltzmann equation
+  bcfl sdh              # Use all multipole moments when calculating the potential
+  pdie 2                # Solute dielectric
+  sdie 80               # Solvent dielectric
+  chgm spl2             # Spline-based discretization of the delta functions
+  srfm mol              # Molecular surface definition
+  srad 1.4              # Solvent probe radius (for molecular surface)
+  swin 0.3              # Solvent surface spline window (not used here)
+  sdens 10.0            # Sphere density for accessibility object (typical value)
+  temp 300              # Temperature
+  calcenergy total      # Calculate energies
+  calcforce no          # Do not calculate forces
+end
+print energy wat end
+quit
+END
+
+apbs ${INPUT_FILE}
+
+rm -f ${INPUT_FILE}

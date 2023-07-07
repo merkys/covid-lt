@@ -11,10 +11,10 @@ class Chain:
         self.name = name
 
     def __iter__(self):
-        iter_residue_line = -1
+        iter_residue_line = 0
         while iter_residue_line < len(self.parent.content)-1:
-            iter_residue_line += 1
             if not self.parent.content[iter_residue_line].startswith('ATOM  ') or self.parent.content[iter_residue_line][21] != self.name:
+                iter_residue_line += 1
                 continue
             start, end = iter_residue_line, iter_residue_line
             atom = self.parent.content[start]
@@ -47,7 +47,7 @@ class Chain:
 
     def antibody_type(self):
         from anarci import run_anarci
-        _, numbered, details, _ = run_anarci([(self.name, self.sequence())], scheme='chothia', allow=set(self.anarci_chain_types.keys()))
+        _, numbered, details, _ = run_anarci([(self.name, self.sequence(replace_unknown_with='X'))], scheme='chothia', allow=set(self.anarci_chain_types.keys()))
         numbered = numbered[0]
         details = details[0]
         if numbered is None:
@@ -75,22 +75,26 @@ class Chain:
                 return None, *func(number, icode)
         self.parent.renumber(_renumber_this_chain)
 
-    def sequence(self):
-        sequence = self.sequence_seqres()
+    def sequence(self, **kwargs):
+        sequence = self.sequence_seqres(**kwargs)
         if sequence:
             return sequence
         else:
             return self.sequence_atom()
 
-    def sequence_atom(self):
+    def sequence_atom(self, with_gaps=False):
         sequence = None
+        position = 1
         for residue in self:
             if sequence is None:
                 sequence = ''
+            if with_gaps and residue.number() > position:
+                sequence = sequence + '-' * (residue.number() - position)
             sequence = sequence + protein_letters_3to1[residue.resname().capitalize()]
+            position = residue.number() + 1
         return sequence
 
-    def sequence_seqres(self):
+    def sequence_seqres(self, replace_unknown_with=None):
         sequence = None
         for line in self.parent.get('SEQRES'):
             if line[11] != self.name:
@@ -100,7 +104,13 @@ class Chain:
             for i in range(0,13):
                 residue = line[19+i*4:22+i*4]
                 if residue != '   ':
-                    sequence = sequence + protein_letters_3to1[residue.capitalize()]
+                    try:
+                        sequence = sequence + protein_letters_3to1[residue.capitalize()]
+                    except KeyError:
+                        if replace_unknown_with is not None:
+                            sequence = sequence + replace_unknown_with
+                        else:
+                            raise ValueError('unknown residue: {}'.format(residue))
         return sequence
 
     def within(self, distance, result_class='Chain', prefilter=None):

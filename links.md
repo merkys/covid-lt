@@ -116,6 +116,12 @@ HADDOCK
 * HADDOCK 3: https://www.bonvinlab.org/software/haddock3/
 * HADDOCK 3 GitHub: https://github.com/haddocking/haddock3
 
+UEP
+===
+
+* Source: https://github.com/pepamengual/UEP
+* Paper: https://digital.csic.es/bitstream/10261/262444/5/UEP_posprint.pdf
+
 YANK
 ====
 

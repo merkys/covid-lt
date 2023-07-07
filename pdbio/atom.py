@@ -4,6 +4,12 @@ class Atom:
         self.parent = parent
         self.line = line
 
+    def alternate_location(self, altloc=None):
+        old_altloc = self.parent.parent.parent.content[self.line][16]
+        if altloc:
+            self.parent.parent.parent.content[self.line] = self.parent.parent.parent.content[self.line][:16] + altloc + self.parent.parent.parent.content[self.line][17:]
+        return old_altloc
+
     def element(self, element=None):
         old_element = self.parent.parent.parent.content[self.line][76:78].strip()
         if element:
@@ -13,15 +19,24 @@ class Atom:
             elif len(element) > 2:
                 element = element[0:2]
             self.parent.parent.parent.content[self.line] = self.parent.parent.parent.content[self.line][:76] + element + self.parent.parent.parent.content[self.line][78:]
-        return(old_element)
+        return old_element
 
     def coords(self):
         return [float(self.parent.parent.parent.content[self.line][30:38]),
                 float(self.parent.parent.parent.content[self.line][38:46]),
                 float(self.parent.parent.parent.content[self.line][46:54])]
 
-    def name(self):
-        return self.parent.parent.parent.content[self.line][12:16].strip()
+    def name(self, name=None):
+        old_name = self.parent.parent.parent.content[self.line][12:16].strip()
+        if name:
+            if len(name) > 4:
+                raise ValueError("atom name cannot be longer than 4 characters")
+            if len(name) < 4:
+                name = ' ' + name
+            while len(name) < 4:
+                name = name + ' '
+            self.parent.parent.parent.content[self.line] = self.parent.parent.parent.content[self.line][:12] + name + self.parent.parent.parent.content[self.line][16:]
+        return old_name
 
     @property
     def number(self):
@@ -44,3 +59,11 @@ class Atom:
     def within(self, distance):
         cKDTree, atoms = self.parent.parent.parent._get_cKDTree()
         return [atoms[x] for x in cKDTree.query_ball_point( self.coords(), distance )]
+
+    def charmm_to_amber(self):
+        charmm_to_amber = { 'HA1': 'HA', 'HB1': 'HB3', 'HN': 'H', 'OT1': 'O', 'OT2': 'OXT' }
+        if self.name() in charmm_to_amber:
+            self.name(charmm_to_amber[self.name()])
+
+    def delete(self):
+        self.parent.parent.parent.content[self.line] = ''

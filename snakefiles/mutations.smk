@@ -4,6 +4,8 @@ wildcard_constraints:
     maybe_wt = "(_wt)?",
     mutation = "[A-Z]{2}-?\d+[a-z]?[A-Z]",
     mutation_maybe_wt = "[A-Z]{2}-?\d+[a-z]?[A-Z](_wt)?",
+    partner1 = "[A-Za-z]+",
+    partner2 = "[A-Za-z]+",
     pdbid = "[A-Z0-9]{4}",
     type = "[A-Za-z0-9]+"
 
@@ -19,42 +21,21 @@ def skempi_filtered():
 def input_complexes():
     complexes = []
     for fields in skempi_filtered():
-        partners = ''.join(sorted(chain[0] for chain in fields[1].split('.') + fields[2].split('.')))
-        complexes.append("{}_{}{}{}_{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], partners))
-        complexes.append("{}_{}{}{}_{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], partners))
+        partner1 = ''.join(sorted(chain[0] for chain in fields[1].split('.')))
+        partner2 = ''.join(sorted(chain[0] for chain in fields[2].split('.')))
+        complexes.append("{}_{}{}{}_{}_{}".format(   fields[0], fields[4][0], fields[3][0], fields[4][1:], partner1, partner2))
+        complexes.append("{}_{}{}{}_{}_{}_wt".format(fields[0], fields[4][0], fields[3][0], fields[4][1:], partner1, partner2))
     return complexes
-
-def skempi_get_details(mutation):
-    if mutation[1].isalpha(): # chain given
-        mutation = mutation[0] + mutation[2:]
-    for fields in skempi_filtered():
-        if fields[4] == mutation:
-            return fields
-    return None
 
 rule all_complexes:
     input:
         expand("{complex}.pdb", complex=input_complexes())
 
-rule mutated_complex:
-    input:
-        "{pdbid}.pdb"
-    output:
-        mutation = "{pdbid}_{mutation}_{chains}.pdb",
-        wt = "{pdbid}_{mutation}_{chains}_wt.pdb"
-    log:
-        "{pdbid}_{mutation}_{chains}.log"
-    singularity:
-        "container.sif"
-    shell:
-        """
-        echo -n > {output.mutation}
-        echo -n > {output.wt}
-        if [ -s {input} ]
-        then
-            PATH=~/bin:$PATH bin/FoldX-mutate {input} {wildcards.mutation} rotabase.txt {output.wt} > {output.mutation} 2> {log} || echo Processing {input} failed >&2
-        fi
-        """
+# Alternative ways to produce mutants:
+
+# include: "snakefiles/mutations/mutated_complex/FoldX.smk"
+include: "snakefiles/mutations/mutated_complex/EvoEF1.smk"
+# include: "snakefiles/mutations/mutated_complex/EvoEF2.smk"
 
 rule all_original_pdbs:
     input:
@@ -69,50 +50,10 @@ rule original_pdb:
         chmod -w {output} 2>/dev/null || true # Intentional
         """
 
-rule optimize_complex:
-    input:
-        "{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
-    output:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
-    log:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}.map"
-    shell:
-        """
-        mkdir --parents $(dirname {output})
-        if [ -s {input} ]
-        then
-            grep ^ATOM {input} \
-                | bin/pdb_select --chain {wildcards.chains} \
-                | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
-                | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments \
-                | bin/namd-minimize forcefields/par_all22_prot.prm \
-                | tar -x --to-stdout output.coor > {output}
-        else
-            echo -n > {output}
-        fi
-        """
+# Alternative ways to optimize complexes:
 
-rule optimize_chain:
-    input:
-        "{pdbid}_{mutation}_{chains}{maybe_wt}.pdb"
-    output:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}_{chain}.pdb"
-    log:
-        "optimized/{pdbid}_{mutation}_{chains}{maybe_wt}_{chain}.map"
-    shell:
-        """
-        mkdir --parents $(dirname {output})
-        if ! grep ^ATOM {input} \
-            | bin/pdb_select --chain {wildcards.chain} \
-            | PYTHONPATH=. bin/pdb_renumber --output-map {log} \
-            | bin/vmd-pdb-to-psf /dev/stdin --topology forcefields/top_all22_prot.rtf --no-split-chains-into-segments \
-            | bin/namd-minimize forcefields/par_all22_prot.prm \
-            | tar -x --to-stdout output.coor > {output}
-        then
-            echo -n > {output}
-            echo -n > {log}
-        fi
-        """
+# include: "snakefiles/mutations/optimize_complex/namd.smk"
+include: "snakefiles/mutations/optimize_complex/OpenMM.smk"
 
 def list_chains(name):
     name_parts = name.split('_')
@@ -122,59 +63,32 @@ def list_chains(name):
 
 rule all_optimized:
     input:
-        [expand("optimized/{cplx}_{chain}.pdb", cplx=cplx, chain=list_chains(cplx)) for cplx in input_complexes()],
         expand("optimized/{cplx}.pdb", cplx=input_complexes())
 
-rule all_energies:
+rule all_charmm_energy:
     input:
-        [expand("optimized/{cplx}_{chain}.ener", cplx=cplx, chain=list_chains(cplx)) for cplx in input_complexes()],
-        expand("optimized/{cplx}.ener", cplx=input_complexes())
-    output:
-        solv = "solv.tab",
-        vdw = "vdw.tab"
-    shell:
-        """
-        echo -n > {output.solv}
-        echo -n > {output.vdw}
-        for STRUCT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+\.ener$' | xargs -i basename {{}} .ener | sort | uniq)
-        do
-            MUT=$(echo $STRUCT | cut -d _ -f 1-2)
+        expand("optimized/{cplx}.charmm.ener", cplx=input_complexes())
 
-            test -s optimized/${{STRUCT}}.ener || continue
-            test -s optimized/${{STRUCT}}_wt.ener || continue
-
-            echo -en "$MUT\t" >> {output.solv}
-            echo -en "$MUT\t" >> {output.vdw}
-
-            grep -h 'Electrostatic energy' optimized/${{STRUCT}}.ener optimized/${{STRUCT}}_wt.ener \
-                | awk '{{print $5}}' | xargs echo | awk '{{print $1 - $2}}' >> {output.solv}
-
-            CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
-
-            (
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}.ener    | awk '{{print  $3}}'
-                grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt.ener | awk '{{print -$3}}'
-                for CH in $(echo $CHAIN | grep -o .)
-                do
-                    grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_${{CH}}.ener    | awk '{{print -$3}}'
-                    grep --no-filename '^ENER EXTERN>' optimized/${{STRUCT}}_wt_${{CH}}.ener | awk '{{print  $3}}'
-                done
-            ) | bin/sum >> {output.vdw}
-        done
-        """
-
-rule energy:
+rule charmm_energy:
     input:
-        "{name}.pdb"
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
     output:
-        "{name}.ener"
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.charmm.ener"
     shell:
         """
         if [ -s {input} ]
         then
-            if ! PYTHONPATH=. bin/pdb_renumber {input} \
-                | bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --pbeq \
-                | grep -e ^ENER -e 'Electrostatic energy' > {output}
+            if ! (PYTHONPATH=. bin/pdb_renumber {input} \
+                    | PYTHONPATH=. bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --gbsa \
+                    | grep -e ^ENER -e '^ Parameter: TOTAL' && \
+                  bin/pdb_select --chain {wildcards.partner1} {input} \
+                    | PYTHONPATH=. bin/pdb_renumber \
+                    | PYTHONPATH=. bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --gbsa \
+                    | grep -e ^ENER -e '^ Parameter: TOTAL' && \
+                  bin/pdb_select --chain {wildcards.partner2} {input} \
+                    | PYTHONPATH=. bin/pdb_renumber \
+                    | PYTHONPATH=. bin/pdb_charmm_energy /dev/stdin --topology forcefields/top_all36_prot.rtf --parameters forcefields/par_all36m_prot.prm --gbsa \
+                    | grep -e ^ENER -e '^ Parameter: TOTAL') > {output}
             then
                 echo -n > {output}
             fi
@@ -198,6 +112,70 @@ rule fold_energy:
                 echo -en $(basename $FILE .log)"\t"
                 grep '^DIFF>' $FILE | tail -n 1 | cut -f 2
               done > {output}
+        """
+
+rule binding_energy_EvoEF:
+#     input:
+#         expand("optimized/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
+    output:
+        "binding_energy_EvoEF.tab"
+    shell:
+        """
+        echo -e "mutation\tEvoEF" > {output}
+        ls -1 optimized/*.pdb \
+            | grep -v _wt \
+            | xargs -n 1 basename \
+            | while read BASE
+              do
+                MUTATED=$BASE
+                WT=$(echo $BASE | cut -d _ -f 1).pdb
+
+                test -s $MUTATED || continue
+                test -s $WT || continue
+
+                grep --silent ^MODEL $WT && continue || true
+
+                MUT=$(echo $BASE | cut -d _ -f 1-2)
+
+                (
+                    EvoEF --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $MUTATED
+                    EvoEF --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $WT
+                ) \
+                    | grep ^Total \
+                    | xargs \
+                    | awk '{{print "'$MUT'\t" $3 - $6}}'
+              done | sort -k 1b,1 >> {output}
+        """
+
+rule binding_energy_EvoEF2:
+#     input:
+#         expand("optimized/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
+    output:
+        "binding_energy_EvoEF2.tab"
+    shell:
+        """
+        echo -e "mutation\tEvoEF2" > {output}
+        ls -1 optimized/*.pdb \
+            | grep -v _wt \
+            | xargs -n 1 basename \
+            | while read BASE
+              do
+                MUTATED=$BASE
+                WT=$(echo $BASE | cut -d _ -f 1).pdb
+
+                test -s $MUTATED || continue
+                test -s $WT || continue
+
+                MUT=$(echo $BASE | cut -d _ -f 1-2)
+
+                (
+                    EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $MUTATED
+                    EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $WT
+                ) \
+                    | grep ^Total \
+                    | xargs \
+                    | awk '{{print "'$MUT'\t" $3 - $6}}'
+              done | sort -k 1b,1 >> {output}
         """
 
 rule dssp:
@@ -335,4 +313,257 @@ rule train_data_skempi:
             | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $13 "\t" $14 "\t" $15 "\t" $16 "\t" $17 "\t" $18 "\t" $19 "\t" $7}}' \
             | sed 's/\r//g' \
             | sort >> {output}
+        """
+
+rule pdb2pqr:
+    input:
+        "{name}.pdb"
+    output:
+        "{name}.pqr"
+    singularity:
+        "apbs.sif"
+    shell:
+        "pdb2pqr {input} {output}"
+
+rule apbs:
+    input:
+        mut = "{name}.pqr",
+        wt = "{name}_wt.pqr"
+    output:
+        "{name}.apbs.out"
+    singularity:
+        "apbs.sif"
+    shell:
+        "bin/apbs-pbe {input.mut} {input.wt} > {output} 2>&1"
+
+rule apbs_partners:
+    input:
+        mut = "optimized/{name}_{partner1}_{partner2}.pdb",
+        wt = "optimized/{name}_{partner1}_{partner2}_wt.pdb"
+    output:
+        "optimized/{name}_{partner1}_{partner2}.apbs.solv"
+    singularity:
+        "apbs.sif"
+    shell:
+        """
+        PYTHONPATH=. bin/apbs-diffeval {wildcards.name} {wildcards.partner1} {wildcards.partner2} > {output}
+        """
+
+rule charmm_partners:
+    input:
+        mut = "optimized/{name}_{partner1}_{partner2}.pdb",
+        wt = "optimized/{name_{partner1}_{partner2}_wt.pdb"
+    output:
+        "optimized/{name}_{partner1}_{partner2}.charmm.solv"
+    shell:
+        """
+        PYTHONPATH=. bin/charmm-diffeval {wildcards.name} {wildcards.partner1} {wildcards.partner2} > {output}
+        """
+
+rule all_openmm_energy:
+    input:
+        expand("optimized/{cplx}.openmm.ener", cplx=input_complexes())
+
+rule existing_openmm_energy:
+    output:
+        "openmm.tab"
+    shell:
+        """
+        cut -f 1 optimized/*.openmm.ener | sort | uniq | xargs echo mutation | sed 's/ /\t/g' > {output}
+        ls -1 optimized/*_wt.openmm.ener \
+            | while read FILE
+              do
+                BASE=$(basename $FILE _wt.openmm.ener)
+
+                test -e optimized/${{BASE}}.openmm.ener    || continue
+                test -e optimized/${{BASE}}_wt.openmm.ener || continue
+
+                echo -en $(echo $BASE | cut -d _ -f 1-2)
+                cut -f 1 optimized/${{BASE}}.openmm.ener optimized/${{BASE}}_wt.openmm.ener \
+                    | sort \
+                    | uniq \
+                    | while read FORCE
+                      do
+                        grep --no-filename ^$FORCE optimized/${{BASE}}.openmm.ener optimized/${{BASE}}_wt.openmm.ener \
+                            | cut -f 2 \
+                            | xargs \
+                            | awk '{{print $1 - $2 - $3 - $4 + $5 + $6}}' \
+                            | xargs -i echo -en "\t"{{}}
+                      done
+                echo
+              done | sort -k 1b,1 >> {output}
+        """
+
+rule openmm_energy:
+    input:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.openmm.ener"
+    singularity:
+        "container.sif"
+    shell:
+        """
+        (
+            sed 's/HSE/HIS/g' {input} \
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+            sed 's/HSE/HIS/g' {input} \
+                | bin/pdb_select --chain {wildcards.partner1} \
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+            sed 's/HSE/HIS/g' {input} \
+                | bin/pdb_select --chain {wildcards.partner2} \
+                | bin/pdb_openmm_minimize --forcefield charmm36.xml --forcefield implicit/gbn2.xml --print-forces --max-iterations 0 --force-unit kcal/mol --split-nonbonded-force
+        ) > {output}
+        """
+
+rule all_delphi_energy:
+    input:
+        expand("optimized/{cplx}.delphi.ener", cplx=input_complexes())
+    output:
+        "delphi.tab"
+    shell:
+        """
+        ls -1 optimized/*_wt.delphi.ener \
+            | while read FILE
+              do
+                BASE=$(basename $FILE _wt.delphi.ener)
+
+                grep --silent '^ Energy> Corrected reaction field energy' optimized/${{BASE}}.delphi.ener || continue
+                grep --silent '^ Energy> Corrected reaction field energy' optimized/${{BASE}}_wt.delphi.ener || continue
+
+                DIFF=$(grep --no-filename '^ Energy> Corrected reaction field energy' optimized/${{BASE}}.delphi.ener optimized/${{BASE}}_wt.delphi.ener \
+                    | awk '{{print $7}}' \
+                    | xargs \
+                    | awk '{{print $1 - $2 - $3 - $4 + $5 + $6}}')
+                echo -e $(echo $BASE | cut -d _ -f 1-2)"\t"${{DIFF}}
+              done | tee {output}
+        """
+
+rule delphi_energy:
+    input:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.delphi.ener"
+    shell:
+        """
+        (
+            bin/pdb_delphi_energy {input}
+            bin/pdb_select --chain {wildcards.partner1} {input} | bin/pdb_delphi_energy
+            bin/pdb_select --chain {wildcards.partner2} {input} | bin/pdb_delphi_energy
+        ) > {output}
+        """
+
+rule all_sander_energy:
+    input:
+        expand("optimized/{cplx}.sander.ener", cplx=input_complexes())
+
+rule sander_energy:
+    input:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.sander.ener"
+    shell:
+        """
+        (
+            grep ^ATOM {input} | bin/tleap --output-tar --source leaprc.protein.ff19SB 2>/dev/null | bin/sander --input-tar
+            grep ^ATOM {input} | bin/pdb_select --chain {wildcards.partner1} | bin/tleap --output-tar --source leaprc.protein.ff19SB 2>/dev/null | bin/sander --input-tar
+            grep ^ATOM {input} | bin/pdb_select --chain {wildcards.partner2} | bin/tleap --output-tar --source leaprc.protein.ff19SB 2>/dev/null | bin/sander --input-tar
+        ) > {output}
+        """
+
+rule all_UEP:
+    input:
+        expand("optimized/{complex}.uep.csv", complex=filter(lambda x: x.endswith("_wt"), input_complexes()))
+
+rule existing_UEP:
+    output:
+        "uep.tab"
+    shell:
+        """
+        echo -e "mutation\tUEP" > {output}
+        ls -1 optimized/*.uep.csv \
+            | while read FILE
+              do
+                PDB=$(basename $FILE | cut -d _ -f 1)
+                MUT=$(basename $FILE | cut -d _ -f 2)
+                DDG=$(bin/process-uep $FILE --map optimized/$(basename $FILE .uep.csv).map --mutation $MUT)
+                echo $DDG | grep --silent . && echo -e ${{PDB}}_${{MUT}}"\t"$DDG || true
+              done | sort -k 1b,1 >> {output}
+        """
+
+rule UEP:
+    input:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.uep.csv"
+    singularity:
+        "UEP.sif"
+    shell:
+        """
+        TMPFILE=$(mktemp --suffix .pdb)
+        sed 's/HSE/HIS/g' {input} > $TMPFILE
+        PYTHONPATH=UEP python3 UEP/UEP.py --pdb $TMPFILE --interface {wildcards.partner1},{wildcards.partner2}
+        rm -f $TMPFILE
+        mv /tmp/$(basename $TMPFILE .pdb)_UEP_*.csv {output}
+        """
+
+rule cadscore:
+    input:
+        mutation = "optimized/{pdbid}_{mutation}_{partner1}_{partner2}.pdb",
+        wt = "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}.cadscore"
+    shell:
+        "voronota-cadscore --input-target {input.wt} --input-model {input.mutation} > {output}"
+
+rule existing_cadscore:
+    output:
+        "cadscore.tab"
+    shell:
+        """
+        echo mutation score target_area model_area | sed 's/ /\t/g' > {output}
+        ls -1 optimized/*.cadscore \
+            | while read FILE
+              do
+                test -s $FILE || continue
+
+                MUT=$(basename $FILE .cadscore | cut -d _ -f 1-2)
+                echo -en "$MUT\t"
+
+                sed 's/ /\t/g' $FILE | cut -f 5-
+              done | sort -k 1b,1 >> {output}
+        """
+
+rule prodigy:
+    input:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.prodigy.log"
+    singularity:
+        "prodigy.sif"
+    shell:
+        """
+        prodigy {input} --selection \
+            $(echo {wildcards.partner1} | grep -o . | xargs echo | sed 's/ /,/g') \
+            $(echo {wildcards.partner2} | grep -o . | xargs echo | sed 's/ /,/g') > {output}
+        """
+
+rule existing_prodigy:
+    output:
+        "prodigy.tab"
+    shell:
+        """
+        echo -e "mutation\tprodigy_affinity" > {output}
+        ls -1 optimized/*_wt.prodigy.log \
+            | xargs -i basename {{}} _wt.prodigy.log \
+            | while read BASE
+              do
+                test -s optimized/${{BASE}}.prodigy.log    || continue
+                test -s optimized/${{BASE}}_wt.prodigy.log || continue
+
+                echo -en $(echo $BASE | cut -d _ -f 1-2)"\t"
+                grep --no-filename 'Predicted binding affinity' optimized/${{BASE}}_wt.prodigy.log optimized/${{BASE}}.prodigy.log \
+                    | awk '{{print $NF}}' \
+                    | xargs echo \
+                    | awk '{{print $1 - $2}}'
+              done | sort -k 1b,1 >> {output}
         """

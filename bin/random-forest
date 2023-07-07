@@ -2,12 +2,18 @@
 
 # Developed according to example in https://www.statology.org/random-forest-in-r/
 
+# Caret usage: https://cran.r-project.org/web/packages/caret/index.html
+
 library( 'optparse' )
 library( 'randomForest' )
 
 parser <- OptionParser()
 parser <- add_option(parser, c( '--train-size' ), type = 'double', default = 0.8)
 parser <- add_option(parser, c( '--repeat' ), dest = 'rep', type = 'double', default = 1)
+parser <- add_option(parser, c( '--method' ), type = 'character', default = 'rf')
+parser <- add_option(parser, c( '--use-caret' ), dest = 'caret', action = 'store_true', default = FALSE)
+parser <- add_option(parser, c( '--importance-plot' ), type = 'character', default = NA)
+parser <- add_option(parser, c( '--tune-grid' ), type = 'character', default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
 D = read.csv( options$args[1], quote="", sep="\t" )
@@ -16,6 +22,18 @@ train_size = options$options$train
 if( train_size < 1 ) {
     train_size = round( length(D[,1]) * train_size )
 }
+
+if( options$options$caret ) {
+    library( 'caret' )
+}
+
+tune_grid = NULL
+if( !is.na( options$options$tune ) ) {
+    tune_grid = read.csv( options$options$tune, quote="", sep="\t" )
+}
+
+best_model = NA
+best_model_mse = NA
 
 errors = numeric( options$options$rep * ( length(D[,1]) - train_size ) )
 
@@ -30,11 +48,26 @@ for (i in 1:options$options$rep) {
     names(train) = names(D)[2:length(D)]
     names(test)  = names(D)[2:length(D)]
 
-    model = randomForest( formula = ddG ~ ., data = train )
+    model = NULL
+    if( options$options$caret ) {
+        model = train( ddG ~ ., data = train, method = options$options$method, tuneGrid = tune_grid )
+    } else {
+        model = randomForest( formula = ddG ~ ., data = train )
+    }
 
     P = predict(model, newdata=test)
 
     errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
+
+    if( is.na( best_model ) || best_model_mse > sqrt(mean((P - test$ddG)^2)) ) {
+        best_model = model
+        best_model_mse = sqrt(mean((P - test$ddG)^2))
+    }
+}
+
+if( !is.na( options$options$importance ) ) {
+    svg( options$options$importance )
+    varImpPlot( best_model )
 }
 
 cat("RMSE", sqrt(mean(errors**2)), "\n")

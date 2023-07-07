@@ -4,20 +4,33 @@
 # See https://github.com/biopython/biopython/issues/3887
 
 from Bio import PDB, SeqIO
-import sys, warnings
+import argparse, sys, warnings
 
 warnings.filterwarnings('ignore', category=PDB.PDBExceptions.PDBConstructionWarning)
 
 progname = sys.argv[0]
 type = progname[progname.find('_')+1:progname.find('2')]
 
-files = sys.argv[1:]
-if len(files) == 0:
-    files = [sys.stdin]
+parser = argparse.ArgumentParser()
+parser.add_argument('files', nargs='*', default=[sys.stdin])
+parser.add_argument('--unfold', action='store_true', help='Do not fold lines in the output')
+parser.add_argument('--with-initial-gaps', action='store_true', help='Preserve initial gaps')
+args = parser.parse_args()
 
-for file in files:
-    try:
-        SeqIO.convert(file, 'pdb-' + type, sys.stdout, 'fasta')
-    except ValueError as e:
-        if e.args[0] != "Empty file.":
-            raise e
+output_format = 'fasta'
+if args.unfold:
+    output_format = 'fasta-2line'
+
+for filename in args.files:
+    if type == 'atom' and args.with_initial_gaps:
+        from pdbio import PDBFile
+        pdb = PDBFile(filename)
+        for chain in pdb:
+            print('>', chain.name, sep='')
+            print(chain.sequence_atom(with_gaps=True))
+    else:
+        try:
+            SeqIO.convert(filename, 'pdb-' + type, sys.stdout, output_format)
+        except ValueError as e:
+            if e.args[0] != "Empty file.":
+                raise e

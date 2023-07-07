@@ -4,6 +4,7 @@ INPUT_PDB=
 INPUT_RTF= # topology
 INPUT_PRM= # parameters
 
+GBSA=
 PBEQ=
 PBEQ_DCEL=1.0
 SEQUENCE_FROM_SEQRES=
@@ -18,6 +19,9 @@ do
         -p|--parameters|--param|--par|--prm)
             INPUT_PRM="$2"
             shift
+            ;;
+        --gbsa)
+            GBSA=1
             ;;
         --pbeq)
             PBEQ=1
@@ -107,25 +111,34 @@ HBUILD SELEct HYDRogen END
 
 !Check for remaining missing atoms
 PRINt COOR SELEct .NOT. INITialized END
- 
-ENERgy
 ENDSCRIPT
+
+test -n "$GBSA" && echo GBorn gbsw igb=1 epsin=2 epsout=80 >> $TMPDIR/energy.inp
+
+echo ENERgy >> $TMPDIR/energy.inp
 
 if [ -n "$PBEQ" ]
 then
 
 # PBEQ module is described in https://academiccharmm.org/documentation/version/c47b2/pbeq
+# More about solvation is described in http://charmm.sunhwanj.com/html/pbeq.html
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
 PBEQ
-   SOLVE epsw 80 epsp 2 -
+    scalar wmain = radius
+
+    SOLVE epsw 80 epsp 2 -
         dcel $PBEQ_DCEL -
 ENDSCRIPT
 
-pdb_box $TMPDIR/input.pdb | bin/pbeq-mesh $PBEQ_DCEL >> $TMPDIR/energy.inp
+bin/pbeq-mesh $TMPDIR/input.pdb $PBEQ_DCEL >> $TMPDIR/energy.inp
 
 cat >> $TMPDIR/energy.inp <<ENDSCRIPT
-        maxi 1000 select all end
+    set ener80 = ?ENPB
+
+    CALC total = @ener80
+
+    RESET
 END
 ENDSCRIPT
 fi
