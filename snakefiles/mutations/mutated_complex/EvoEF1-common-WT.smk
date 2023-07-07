@@ -20,3 +20,11 @@ rule mutated_complex:
             echo -n > {output}
         fi
         """
+
+rule wild_type:
+    input:
+        "{pdbid}.pdb"
+    output:
+        expand("{complex}.pdb", complex=filter(lambda x: x.startswith("{pdbid}_") and x.endswith("_wt"), input_complexes()))
+    shell:
+        "touch {output}"
