@@ -42,6 +42,7 @@ MUT_POS=$(echo $MUTATION   | grep -o '[0-9]\+' | head -n 1)
 if [ "$(bin/pdb_select $TMPDIR/input.pdb --chain $MUT_CHAIN --residues $MUT_POS- | bin/pdb_atom2fasta | grep -v '^>' | head -n 1 | cut -c 1)" != "$MUT_RES" ]
 then
     echo $(basename $0): $INPUT_PDB: residue in mutated position does not match the declared one >&2
+    rm -rf "$TMPDIR"
     exit 1
 fi
 
