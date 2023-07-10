@@ -502,7 +502,7 @@ rule UEP:
         """
         TMPFILE=$(mktemp --suffix .pdb)
         sed 's/HSE/HIS/g' {input} > $TMPFILE
-        PYTHONPATH=UEP python3 UEP/UEP.py --pdb $TMPFILE --interface {wildcards.partner1},{wildcards.partner2}
+        PYTHONPATH=dependencies/UEP python3 dependencies/UEP/UEP.py --pdb $TMPFILE --interface {wildcards.partner1},{wildcards.partner2}
         rm -f $TMPFILE
         mv /tmp/$(basename $TMPFILE .pdb)_UEP_*.csv {output}
         """
