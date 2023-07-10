@@ -37,7 +37,7 @@ rule wild_type:
         else
             voronota-contacts -i {input} \
                 | bin/vorocontacts2tab \
-                | bin/select-contacts --between {wildcards.partner1} --between {wildcards.partner2} --exclude-self \
+                | bin/select-contacts --between {wildcards.partner1} --between {wildcards.partner2} --exclude-self --exclude-hetero \
                 | cut -f 1-3,6-8 \
                 | while read CHAIN1 POS1 RESIDUE1 CHAIN2 POS2 RESIDUE2
                   do
