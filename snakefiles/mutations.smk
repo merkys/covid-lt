@@ -497,7 +497,7 @@ rule UEP:
     output:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.uep.csv"
     singularity:
-        "UEP.sif"
+        "containers/uep.sif"
     shell:
         """
         TMPFILE=$(mktemp --suffix .pdb)
