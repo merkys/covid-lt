@@ -1,3 +1,5 @@
+# Extract S1-ACE2 complex from renumbered PDB files.
+
 # TODO: Handle complicated complexes (now only S1-ACE2 pairs are extracted)
 rule extract_ACE2_complex:
     input:

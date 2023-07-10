@@ -1,3 +1,5 @@
+# Extract S1-antibody complexes from renumbered PDB files.
+
 rule extract_antibody_complex:
     input:
         pdb = output_dir + "pdb/P0DTC2/{pdbid}.pdb",
