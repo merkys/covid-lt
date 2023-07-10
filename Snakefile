@@ -93,7 +93,6 @@ rule download_pdb:
 
 # Contact identification using voronota-contacts (see https://bioinformatics.lt/wtsam/vorocontacts).
 # Contacts between chains define the contact surfaces.
-# For this project, of interest are contacts between S1, ACE2 and antibody chains
 rule vorocontacts_out:
     input:
         "{prefix}/{pdbid}.pdb"
@@ -111,6 +110,8 @@ rule vorocontacts_out:
         test -s {output} || cat {log} >&2
         """
 
+# Run voronota-contacts using custom probe setting.
+# The code in the rule has been taken from voronota-contacts as it has no CLI option to control the probe size.
 rule vorocontacts_custom_probe_out:
     input:
         "{prefix}/{pdbid}.pdb"
@@ -150,6 +151,7 @@ rule vorocontacts_custom_probe_tab:
     shell:
         "bin/vorocontacts2tab {input} > {output}"
 
+# propka identifies hydrogen bonds
 rule propka_out:
     input:
         "{prefix}/{pdbid}.pdb"

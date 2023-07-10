@@ -1,3 +1,5 @@
+# Download and merge PRODIGY and SKEMPI datasets.
+
 rule get_prodigy_dataset:
     output:
         "dG-datasets/prodigy.csv"

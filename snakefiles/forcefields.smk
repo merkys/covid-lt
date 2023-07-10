@@ -1,3 +1,5 @@
+# Measure forces of complexes using different forcefields.
+
 wildcard_constraints:
     ff = "[a-zA-Z0-9_]+",
     ff1 = "[a-zA-Z0-9_]+",
