@@ -1,0 +1,11 @@
+# Prepare environment to run UEP.
+# compress_pickle is not packaged, thus it has to be downloaded via pip.
+
+Bootstrap: docker
+From: debian:testing
+
+%post
+    apt-get update
+
+    apt-get install --yes python3-pandas python3-pip python3-prody
+    pip3 install --break-system-packages compress_pickle

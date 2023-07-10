@@ -1,0 +1,4 @@
+[submodule "dependencies/UEP"]
+	path = dependencies/UEP
+	url = https://github.com/merkys/UEP
+	branch = relative-path

@@ -497,12 +497,12 @@ rule UEP:
     output:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.uep.csv"
     singularity:
-        "UEP.sif"
+        "containers/uep.sif"
     shell:
         """
         TMPFILE=$(mktemp --suffix .pdb)
         sed 's/HSE/HIS/g' {input} > $TMPFILE
-        PYTHONPATH=UEP python3 UEP/UEP.py --pdb $TMPFILE --interface {wildcards.partner1},{wildcards.partner2}
+        PYTHONPATH=dependencies/UEP python3 dependencies/UEP/UEP.py --pdb $TMPFILE --interface {wildcards.partner1},{wildcards.partner2}
         rm -f $TMPFILE
         mv /tmp/$(basename $TMPFILE .pdb)_UEP_*.csv {output}
         """
@@ -540,7 +540,7 @@ rule prodigy:
     output:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.prodigy.log"
     singularity:
-        "prodigy.sif"
+        "containers/prodigy.sif"
     shell:
         """
         prodigy {input} --selection \
