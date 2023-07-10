@@ -322,7 +322,7 @@ rule pdb2pqr:
     output:
         "{name}.pqr"
     singularity:
-        "apbs.sif"
+        "containers/apbs.sif"
     shell:
         "pdb2pqr {input} {output}"
 
@@ -333,7 +333,7 @@ rule apbs:
     output:
         "{name}.apbs.out"
     singularity:
-        "apbs.sif"
+        "containers/apbs.sif"
     shell:
         "bin/apbs-pbe {input.mut} {input.wt} > {output} 2>&1"
 
@@ -344,7 +344,7 @@ rule apbs_partners:
     output:
         "optimized/{name}_{partner1}_{partner2}.apbs.solv"
     singularity:
-        "apbs.sif"
+        "containers/apbs.sif"
     shell:
         """
         PYTHONPATH=. bin/apbs-diffeval {wildcards.name} {wildcards.partner1} {wildcards.partner2} > {output}
