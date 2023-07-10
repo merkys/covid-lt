@@ -540,7 +540,7 @@ rule prodigy:
     output:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.prodigy.log"
     singularity:
-        "prodigy.sif"
+        "containers/prodigy.sif"
     shell:
         """
         prodigy {input} --selection \

@@ -1,0 +1,6 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    apt-get update
+    apt-get install --yes python3-prodigy
