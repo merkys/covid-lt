@@ -15,6 +15,7 @@ rule mutated_complex:
         fi
 
         if ! bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
+            | PYTHONPATH=. bin/pdb_resolve_alternate_locations \
             | bin/EvoEF2-mutate --mutation {wildcards.mutation} --EvoEF2-command EvoEF > {output} 2> {log}
         then
             echo -n > {output}
@@ -37,6 +38,7 @@ rule wild_type:
         else
             TMPFILE=$(mktemp --suffix .pdb)
             bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
+                | PYTHONPATH=. bin/pdb_resolve_alternate_locations \
                 | grep ^ATOM > $TMPFILE
             voronota-contacts -i $TMPFILE \
                 | bin/vorocontacts2tab \
