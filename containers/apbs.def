@@ -1,0 +1,6 @@
+Bootstrap: docker
+From: debian:testing
+
+%post
+    apt-get update
+    apt-get install --yes apbs pdb2pqr
