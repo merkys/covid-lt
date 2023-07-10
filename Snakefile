@@ -29,7 +29,7 @@ rule container:
     output:
         "{base}.sif"
     shell:
-        "sudo singularity build {output} {input}"
+        "singularity build {output} {input}"
 
 rule pdb_seqres_fa:
     output:
