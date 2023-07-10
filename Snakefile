@@ -392,6 +392,8 @@ rule prodigy:
         "{path}.prodigy"
     log:
         "{path}.prodigy.log"
+    singularity:
+        "containers/prodigy.sif"
     shell:
         """
         if ! prodigy -q {input} > {output} 2> {log}
