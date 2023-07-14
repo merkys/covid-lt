@@ -3,8 +3,6 @@ rule mutated_complex:
         "{pdbid}.pdb"
     output:
         "{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
-    log:
-        "{pdbid}_{mutation}_{partner1}_{partner2}.log"
     shell:
         """
         TMPFILE=$(mktemp --suffix .pdb)
