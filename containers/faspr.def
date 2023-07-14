@@ -1,0 +1,17 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    apt-get update
+
+    apt-get install --yes g++ git
+
+    git clone https://github.com/tommyhuangthu/FASPR && cd FASPR
+    git checkout 345441fc58aafb6ffa0cba236f10ae5a3a55cbe6 # This is MIT
+
+    sed -i 's/dun2010bbdep\.bin/..\/share\/faspr\/dun2010bbdep.bin/' src/FASPR.cpp
+    g++ -O3 --fast-math -o FASPR src/*.cpp
+
+    cp FASPR /usr/bin
+    mkdir --parents /usr/share/faspr
+    cp dun2010bbdep.bin /usr/share/faspr
