@@ -35,8 +35,9 @@ rule all_complexes:
 
 # include: "snakefiles/mutations/mutated_complex/FoldX.smk"
 # include: "snakefiles/mutations/mutated_complex/EvoEF1.smk"
-include: "snakefiles/mutations/mutated_complex/EvoEF1-common-WT.smk"
+# include: "snakefiles/mutations/mutated_complex/EvoEF1-common-WT.smk"
 # include: "snakefiles/mutations/mutated_complex/EvoEF2.smk"
+include: "snakefiles/mutations/mutated_complex/FASPR.smk"
 
 rule all_original_pdbs:
     input:
