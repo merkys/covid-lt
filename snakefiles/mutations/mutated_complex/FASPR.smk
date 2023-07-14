@@ -31,5 +31,4 @@ rule wild_type:
             | PYTHONPATH=. bin/pdb_resolve_alternate_locations \
             | grep ^ATOM \
             | FASPR -i /dev/stdin -o {output} > /dev/null
-        fi
         """
