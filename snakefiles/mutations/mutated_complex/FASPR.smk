@@ -5,10 +5,11 @@ rule mutated_complex:
         "{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
     shell:
         """
+        rm -f {output}
         TMPFILE=$(mktemp --suffix .pdb)
         bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
             | PYTHONPATH=. bin/pdb_resolve_alternate_locations > $TMPFILE
-        if ! bin/pdb_atom2fasta $TMPFILE \
+        bin/pdb_atom2fasta $TMPFILE \
             | bin/fasta2pdb_seqres \
             | bin/pdb_mutate_seqres --replace {wildcards.mutation} \
             | bin/pdb_seqres2fasta \
@@ -17,10 +18,8 @@ rule mutated_complex:
             | grep -v X \
             | xargs echo \
             | sed 's/ //g' \
-            | FASPR -i $TMPFILE -s /dev/stdin -o {output}
-        then
-            echo -n > {output}
-        fi
+            | FASPR -i $TMPFILE -s /dev/stdin -o {output} || true
+        test -e {output} || echo -n > {output}
         rm $TMPFILE
         """
 
@@ -31,11 +30,10 @@ rule wild_type:
         "{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
     shell:
         """
-        if ! bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
+        rm -f {output}
+        bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
             | PYTHONPATH=. bin/pdb_resolve_alternate_locations \
             | grep ^ATOM \
             | FASPR -i /dev/stdin -o {output}
-        then
-            echo -n > {output}
-        fi
+        test -e {output} || echo -n > {output}
         """
