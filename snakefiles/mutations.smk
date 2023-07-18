@@ -588,14 +588,16 @@ rule existing_esm:
         "esm.tab"
     shell:
         """
+        echo -e "mutation\tesm" > {output}
         ls -1 *.esm.log \
             | while read FILE
               do
                 grep --silent log_likelihood $FILE || continue # Skip failed files
+                echo -en $(echo $FILE | cut -d _ -f 1-2)"\t"
                 (
                     head -n 2 $FILE | tail -n 1 | cut -d , -f 2
                     grep '^Log likelihood:' $FILE \
                         | cut -d ' ' -f 3
                 ) | xargs echo | awk '{{print $1 - $2}}'
-              done > {output}
+              done | sort -k 1b,1 >> {output}
         """
