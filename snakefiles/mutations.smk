@@ -569,3 +569,16 @@ rule existing_prodigy:
                     | awk '{{print $1 - $2}}'
               done | sort -k 1b,1 >> {output}
         """
+
+rule esm:
+    input:
+        pdb = "{pdbid}.pdb",
+        mut = "{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
+    output:
+        "{pdbid}_{mutation}_{partner1}_{partner2}.esm.log"
+    shell:
+        """
+        ( python3 externals/esm/score_log_likelihoods.py {input.pdb} \
+            <(bin/pdb_select --chain $(echo {wildcards.mutation} | cut -c 2) {input.mut} | bin/pdb_atom2fasta | sed 's/X//g') \
+            --chain $(echo {wildcards.mutation} | cut -c 2) --outpath /dev/stdout 2>/dev/null ) > {output} || true
+        """
