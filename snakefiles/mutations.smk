@@ -582,3 +582,20 @@ rule esm:
             <(bin/pdb_select --chain $(echo {wildcards.mutation} | cut -c 2) {input.mut} | bin/pdb_atom2fasta | sed 's/X//g') \
             --chain $(echo {wildcards.mutation} | cut -c 2) --outpath /dev/stdout 2>/dev/null ) > {output} || true
         """
+
+rule existing_esm:
+    output:
+        "esm.tab"
+    shell:
+        """
+        ls -1 *.esm.log \
+            | while read FILE
+              do
+                grep --silent log_likelihood $FILE || continue # Skip failed files
+                (
+                    head -n 2 $FILE | tail -n 1 | cut -d , -f 2
+                    grep '^Log likelihood:' $FILE \
+                        | cut -d ' ' -f 3
+                ) | xargs echo | awk '{{print $1 - $2}}'
+              done > {output}
+        """
