@@ -2,7 +2,7 @@ rule mutated_complex:
     input:
         "{pdbid}.pdb"
     output:
-        "{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
+        "faspr/{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
     shell:
         """
         rm -f {output}
@@ -27,7 +27,7 @@ rule wild_type:
     input:
         "{pdbid}.pdb"
     output:
-        "{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+        "faspr/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
     shell:
         """
         rm -f {output}
@@ -36,4 +36,16 @@ rule wild_type:
             | grep ^ATOM \
             | FASPR -i /dev/stdin -o {output}
         test -e {output} || echo -n > {output}
+        """
+
+rule faspr_simulate:
+    input:
+        "faspr/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        "{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    singularity:
+        "container.sif"
+    shell:
+        """
+        PYTHONPATH=. bin/promod-fix-pdb --do-not-fill-gaps --simulate {input} > {output}
         """
