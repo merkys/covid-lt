@@ -27,11 +27,12 @@ else:
     file = temporary_file.name
 
 pdb = io.LoadPDB(file)
-pdbfile = PDBFile(file)
-
 alignments = seq.AlignmentList()
 
-for chain in pdbfile:
+original_chains = []
+for chain in PDBFile(file):
+    original_chains.append(chain.name)
+
     atom_seq = chain.sequence_atom()
     seqres_seq = chain.sequence_seqres()
     # NW parameters taken from https://www.arabidopsis.org/Blast/BLASToptions.jsp
@@ -99,11 +100,19 @@ if args.simulate:
     simulation = mm.Simulation(model, settings)
     model = simulation.GetEntity()
 
-# Check if the resulting PDB file does not have gaps
 output_pdb_file = NamedTemporaryFile()
 io.SavePDB(model, output_pdb_file.name)
+
 pdb = PDBFile(output_pdb_file.name)
+
+# Restore the original chain names
+chains_now = []
 for chain in pdb:
+    chains_now.append(chain.name)
+pdb.rename_chains(dict(zip(chains_now, original_chains)))
+
+for chain in pdb:
+    # Check if the resulting PDB file does not have gaps
     if not chain.is_contiguous():
         warn('{}: chain {} is not contiguous after fixing'.format(file, chain.name))
 
