@@ -601,3 +601,13 @@ rule existing_esm:
                 ) | xargs echo | awk '{{print $1 - $2}}'
               done | sort -k 1b,1 >> {output}
         """
+
+rule chain_seqres:
+    input:
+        "{pdbid}.pdb"
+    output:
+        "{pdbid}_{chain}.fa"
+    shell:
+        """
+        bin/pdb_select --chain {wildcards.chain} {input} | bin/pdb_seqres2fasta > {output}
+        """
