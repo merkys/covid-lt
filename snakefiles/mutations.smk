@@ -7,6 +7,9 @@ wildcard_constraints:
     partner1 = "[A-Za-z]+",
     partner2 = "[A-Za-z]+",
     pdbid = "[A-Z0-9]{4}",
+    position = "-?\d+[a-z]?",
+    res1 = "[A-Z]",
+    res2 = "[A-Z]",
     type = "[A-Za-z0-9]+"
 
 def skempi_filtered():
@@ -610,4 +613,23 @@ rule chain_seqres:
     shell:
         """
         bin/pdb_select --chain {wildcards.chain} {input} | bin/pdb_seqres2fasta > {output}
+        """
+
+rule provean:
+    input:
+        "{pdbid}_{chain}.fa"
+    output:
+        "{pdbid}_{res1}{chain}{position}{res2}.provean.log"
+    singularity:
+        "containers/provean.sif"
+    shell:
+        """
+        FASTA_FILE=$(realpath {input})
+        MUT_FILE=$(mktemp)
+
+        echo {output} | cut -d _ -f 2 | cut -d . -f 1 > $MUT_FILE
+
+        (cd ~/databases/nr/2011-08 && provean -q $FASTA_FILE -v $MUT_FILE --psiblast psiblast --cdhit cdhit --blastdbcmd blastdbcmd -d nr) > {output}
+
+        rm $MUT_FILE
         """
