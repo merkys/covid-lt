@@ -633,3 +633,7 @@ rule provean:
 
         rm $MUT_FILE
         """
+
+rule all_provean:
+    input:
+        ["{}_{}{}{}.provean.log".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]) for fields in skempi_filtered()]
