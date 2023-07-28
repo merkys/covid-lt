@@ -1,0 +1,15 @@
+Bootstrap: docker
+From: ubuntu:xenial
+
+%post
+    apt-get update
+
+    # Build PROVEAN
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes dctrl-tools equivs git git-buildpackage
+
+    mkdir debian-packages && cd debian-packages
+    git clone https://salsa.debian.org/med-team/provean && cd provean && git checkout ubuntu/xenial
+    mk-build-deps --install --tool 'apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' --remove
+    rm -f *.buildinfo *.changes
+    gbp buildpackage -uc -us --git-ignore-branch
+    debi
