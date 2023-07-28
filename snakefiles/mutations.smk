@@ -629,7 +629,7 @@ rule provean:
 
         echo {output} | cut -d _ -f 2 | cut -d . -f 1 > $MUT_FILE
 
-        (cd ~/databases/nr/2011-08 && provean -q $FASTA_FILE -v $MUT_FILE --psiblast psiblast --cdhit cdhit --blastdbcmd blastdbcmd -d nr) > {output}
+        (cd databases/nr/2011-08 && provean -q $FASTA_FILE -v $MUT_FILE --psiblast psiblast --cdhit cdhit --blastdbcmd blastdbcmd -d nr) > {output}
 
         rm $MUT_FILE
         """
