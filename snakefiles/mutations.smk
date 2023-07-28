@@ -627,7 +627,7 @@ rule provean:
         FASTA_FILE=$(realpath {input})
         MUT_FILE=$(mktemp)
 
-        echo {output} | cut -d _ -f 2 | cut -d . -f 1 > $MUT_FILE
+        echo {output} | cut -d _ -f 2 | cut -d . -f 1 | cut -c 1,3- > $MUT_FILE
 
         (cd databases/nr/2011-08 && provean -q $FASTA_FILE -v $MUT_FILE --psiblast psiblast --cdhit cdhit --blastdbcmd blastdbcmd -d nr) > {output}
 
