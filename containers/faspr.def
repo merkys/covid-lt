@@ -1,0 +1,13 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    apt-get update
+
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes git git-buildpackage
+
+    mkdir debian-packages && cd debian-packages
+    git clone https://salsa.debian.org/merkys/faspr && cd faspr
+    make -f debian/rules get-orig-source
+    gbp buildpackage -uc -us --git-overlay --git-export-dir=.. --git-no-pristine-tar
+    debi

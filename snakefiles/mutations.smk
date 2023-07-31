@@ -7,6 +7,9 @@ wildcard_constraints:
     partner1 = "[A-Za-z]+",
     partner2 = "[A-Za-z]+",
     pdbid = "[A-Z0-9]{4}",
+    position = "-?\d+[a-z]?",
+    res1 = "[A-Z]",
+    res2 = "[A-Z]",
     type = "[A-Za-z0-9]+"
 
 def skempi_filtered():
@@ -35,8 +38,9 @@ rule all_complexes:
 
 # include: "snakefiles/mutations/mutated_complex/FoldX.smk"
 # include: "snakefiles/mutations/mutated_complex/EvoEF1.smk"
-include: "snakefiles/mutations/mutated_complex/EvoEF1-common-WT.smk"
+# include: "snakefiles/mutations/mutated_complex/EvoEF1-common-WT.smk"
 # include: "snakefiles/mutations/mutated_complex/EvoEF2.smk"
+include: "snakefiles/mutations/mutated_complex/FASPR.smk"
 
 rule all_original_pdbs:
     input:
@@ -322,7 +326,7 @@ rule pdb2pqr:
     output:
         "{name}.pqr"
     singularity:
-        "apbs.sif"
+        "containers/apbs.sif"
     shell:
         "pdb2pqr {input} {output}"
 
@@ -333,7 +337,7 @@ rule apbs:
     output:
         "{name}.apbs.out"
     singularity:
-        "apbs.sif"
+        "containers/apbs.sif"
     shell:
         "bin/apbs-pbe {input.mut} {input.wt} > {output} 2>&1"
 
@@ -344,7 +348,7 @@ rule apbs_partners:
     output:
         "optimized/{name}_{partner1}_{partner2}.apbs.solv"
     singularity:
-        "apbs.sif"
+        "containers/apbs.sif"
     shell:
         """
         PYTHONPATH=. bin/apbs-diffeval {wildcards.name} {wildcards.partner1} {wildcards.partner2} > {output}
@@ -513,6 +517,8 @@ rule cadscore:
         wt = "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
     output:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}.cadscore"
+    singularity:
+        "containers/voronota.sif"
     shell:
         "voronota-cadscore --input-target {input.wt} --input-model {input.mutation} > {output}"
 
@@ -568,3 +574,68 @@ rule existing_prodigy:
                     | awk '{{print $1 - $2}}'
               done | sort -k 1b,1 >> {output}
         """
+
+rule esm:
+    input:
+        pdb = "{pdbid}.pdb",
+        mut = "{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
+    output:
+        "{pdbid}_{mutation}_{partner1}_{partner2}.esm.log"
+    shell:
+        """
+        ( python3 externals/esm/score_log_likelihoods.py {input.pdb} \
+            <(bin/pdb_select --chain $(echo {wildcards.mutation} | cut -c 2) {input.mut} | bin/pdb_atom2fasta | sed 's/X//g') \
+            --chain $(echo {wildcards.mutation} | cut -c 2) --outpath /dev/stdout 2>/dev/null ) > {output} || true
+        """
+
+rule existing_esm:
+    output:
+        "esm.tab"
+    shell:
+        """
+        echo -e "mutation\tesm" > {output}
+        ls -1 *.esm.log \
+            | while read FILE
+              do
+                grep --silent log_likelihood $FILE || continue # Skip failed files
+                echo -en $(echo $FILE | cut -d _ -f 1-2)"\t"
+                (
+                    head -n 2 $FILE | tail -n 1 | cut -d , -f 2
+                    grep '^Log likelihood:' $FILE \
+                        | cut -d ' ' -f 3
+                ) | xargs echo | awk '{{print $1 - $2}}'
+              done | sort -k 1b,1 >> {output}
+        """
+
+rule chain_seqres:
+    input:
+        "{pdbid}.pdb"
+    output:
+        "{pdbid}_{chain}.fa"
+    shell:
+        """
+        bin/pdb_select --chain {wildcards.chain} {input} | bin/pdb_seqres2fasta > {output}
+        """
+
+rule provean:
+    input:
+        "{pdbid}_{chain}.fa"
+    output:
+        "{pdbid}_{res1}{chain}{position}{res2}.provean.log"
+    singularity:
+        "containers/provean.sif"
+    shell:
+        """
+        FASTA_FILE=$(realpath {input})
+        MUT_FILE=$(mktemp)
+
+        echo {output} | cut -d _ -f 2 | cut -d . -f 1 | cut -c 1,3- > $MUT_FILE
+
+        (cd databases/nr/2011-08 && provean -q $FASTA_FILE -v $MUT_FILE --psiblast psiblast --cdhit cdhit --blastdbcmd blastdbcmd -d nr) > {output}
+
+        rm $MUT_FILE
+        """
+
+rule all_provean:
+    input:
+        ["{}_{}{}{}.provean.log".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]) for fields in skempi_filtered()]

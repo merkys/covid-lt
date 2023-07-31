@@ -1,0 +1,6 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes voronota

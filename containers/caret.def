@@ -1,0 +1,8 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    apt-get update
+
+    apt-get install --yes r-cran-caret r-cran-randomforest r-cran-optparse r-cran-truncnorm
+    Rscript -e 'install.packages("brnn")'

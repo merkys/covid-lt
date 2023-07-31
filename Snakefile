@@ -33,7 +33,7 @@ rule container:
     output:
         "{base}.sif"
     shell:
-        "sudo singularity build {output} {input}"
+        "singularity build {output} {input}"
 
 rule pdb_seqres_fa:
     output:
@@ -101,7 +101,7 @@ rule vorocontacts_out:
     log:
         "{prefix}/vorocontacts/{pdbid}.log"
     singularity:
-        "container.sif"
+        "containers/voronota.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -120,7 +120,7 @@ rule vorocontacts_custom_probe_out:
     log:
         "{prefix}/vorocontacts/probe-{probe}/{pdbid}.log"
     singularity:
-        "container.sif"
+        "containers/voronota.sif"
     shell:
         """
         mkdir --parents $(dirname {output})

@@ -4,7 +4,7 @@ rule voromqa:
     output:
         "{path}/{pdbid}.voromqa"
     singularity:
-        "container.sif"
+        "containers/voronota.sif"
     shell:
         "voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || echo WARNING: {output}: rule failed >&2"
 
@@ -49,7 +49,7 @@ rule qmean:
     log:
         "{path}/{pdbid}.qmean.log"
     singularity:
-        "container.sif"
+        "containers/qmean.sif"
     shell:
         """
         if ! bin/qmean {input} > {output} 2> {log}

@@ -1,0 +1,16 @@
+Bootstrap: docker
+From: debian:unstable
+
+%post
+    apt-get update
+
+    # Build QMEAN
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes dctrl-tools git git-buildpackage
+
+    git clone https://salsa.debian.org/debichem-team/qmean
+    cd qmean
+    tbl-dctrl --no-heading -d , debian/control | cut -d , -f 5 | cut -d ' ' -f 2 | DEBIAN_FRONTEND=noninteractive xargs apt-get install --yes
+    uscan --download-current-version
+
+    DEB_BUILD_OPTIONS=nocheck gbp buildpackage -uc -us --git-overlay --git-export-dir=.. --git-no-pristine-tar
+    debi

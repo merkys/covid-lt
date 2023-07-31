@@ -39,6 +39,6 @@ for pdb in args.files:
                     if resname == '   ' or pos not in mutations_for_chain:
                         continue
                     if mutations_for_chain[pos]['from'] != resname:
-                        warn('chain {} position {} is {} while mutation requests {}'.format(chain, pos, mutations_for_chain[pos]['from'], mutations_for_chain[pos]['to']))
+                        raise ValueError('chain {} position {} is {} while mutation requests {}'.format(chain, pos, resname, mutations_for_chain[pos]['from']))
                     line = line[0:19+i*4] + mutations_for_chain[pos]['to'] + line[22+i*4:]
         print(line, end='')

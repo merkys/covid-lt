@@ -43,6 +43,5 @@ rule wild_type:
         echo -n > {output.map}
         bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
             | PYTHONPATH=. bin/pdb_align --output-map {output.map} \
-            | PYTHONPATH=. bin/promod-fix-pdb --simulate \
-            | PYTHONPATH=. bin/pdb_rename_chains --source <(grep ^ATOM {input} | bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2}) > {output.pdb} || echo -n > {output.pdb}
+            | PYTHONPATH=. bin/promod-fix-pdb --simulate > {output.pdb} || echo -n > {output.pdb}
         """
