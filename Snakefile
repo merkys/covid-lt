@@ -153,7 +153,7 @@ rule propka_out:
     log:
         "{prefix}/propka/{pdbid}.log"
     singularity:
-        "container.sif"
+        "containers/propka.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
