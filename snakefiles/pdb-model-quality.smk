@@ -49,7 +49,7 @@ rule qmean:
     log:
         "{path}/{pdbid}.qmean.log"
     singularity:
-        "container.sif"
+        "containers/qmean.sif"
     shell:
         """
         if ! bin/qmean {input} > {output} 2> {log}
