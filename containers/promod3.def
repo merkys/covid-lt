@@ -1,0 +1,8 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    echo libcifpp-data libcifpp/update boolean false | debconf-set-selections
+
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes muscle3 python3-biopython python3-ost python3-promod3
