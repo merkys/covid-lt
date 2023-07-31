@@ -73,6 +73,8 @@ rule complex_contact_main:
         "{prefix}/dist-matrices/contact.m"
     output:
         "{prefix}/clusters/clusters.lst"
+    singularity:
+        "containers/r-cran.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -152,6 +154,8 @@ rule complex_dist_matrix:
         distances = "{prefix}/contact-maps/distances/..tab"
     output:
         "{prefix}/dist-matrices/{base}.m"
+    singularity:
+        "containers/r-cran.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
