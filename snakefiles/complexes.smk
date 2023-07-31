@@ -78,7 +78,7 @@ rule complex_contact_main:
     shell:
         """
         mkdir --parents $(dirname {output})
-        bin/make-clusters {input} --method hclust --hclust-method complete --cut-height 140 > {output}
+        bin/make-clusters {input} --method hclust --hclust-method complete --cut-height 135 > {output}
         """
 
 rule conserved_contacts:
