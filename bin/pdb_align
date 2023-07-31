@@ -33,7 +33,7 @@ residue_map = {}
 
 for chain in pdb:
     atom_seq = chain.sequence_atom().replace('X', '-')
-    seqres_seq = chain.sequence_seqres().replace('X', '-') # TODO: Check if not None
+    seqres_seq = chain.sequence_seqres(replace_unknown_with='X').replace('X', '-') # TODO: Check if not None
 
     if atom_seq.count('-') == len(atom_seq) or seqres_seq.count('-') == len(seqres_seq):
         warn('ATOM and/or SEQRES sequence for chain {} is undefined'.format(chain.name))
