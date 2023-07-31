@@ -38,7 +38,7 @@ for chain in PDBFile(file):
         continue
 
     atom_seq = chain.sequence_atom()
-    seqres_seq = chain.sequence_seqres()
+    seqres_seq = chain.sequence_seqres(replace_unknown_with='-')
     # NW parameters taken from https://www.arabidopsis.org/Blast/BLASToptions.jsp
     align = pairwise2.align.globalms(seqres_seq, atom_seq, 1, -3, -5, -2, one_alignment_only=True)[0]
     sequence = MutableSeq(align[0])
