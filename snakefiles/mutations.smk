@@ -517,6 +517,8 @@ rule cadscore:
         wt = "optimized/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
     output:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}.cadscore"
+    singularity:
+        "containers/voronota.sif"
     shell:
         "voronota-cadscore --input-target {input.wt} --input-model {input.mutation} > {output}"
 

@@ -4,7 +4,7 @@ rule voromqa:
     output:
         "{path}/{pdbid}.voromqa"
     singularity:
-        "container.sif"
+        "containers/voronota.sif"
     shell:
         "voronota-voromqa -i {input} | cut -d ' ' -f 2- > {output} || echo WARNING: {output}: rule failed >&2"
 
