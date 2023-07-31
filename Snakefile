@@ -252,10 +252,10 @@ rule fix_pdb:
         pdb_input_dir + "{pdbid}.pdb"
     output:
         output_dir + "pdb/fixed/{pdbid}.pdb"
-    singularity:
-        "container.sif"
     log:
         output_dir + "pdb/fixed/{pdbid}.log"
+    singularity:
+        "containers/promod3.sif"
     shell:
         """
         mkdir --parents {output_dir}pdb/fixed
@@ -289,6 +289,8 @@ rule renumber_S1:
         output_dir + "pdb/P0DTC2/{pdbid}.pdb"
     log:
         output_dir + "pdb/P0DTC2/{pdbid}.log"
+    singularity:
+        "containers/promod3.sif"
     shell:
         """
         if ! bin/pdb_renumber_S1 {input.pdb} --blastp {input.blastp} --align-with {input.seq} > {output} 2> {log}
