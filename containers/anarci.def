@@ -1,0 +1,9 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    apt-get update
+
+    # Install ANARCI
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes git hmmer python3-biopython python3-networkx python3-pip
+    pip3 install --break-system-packages git+https://github.com/merkys/ANARCI.git@fix-install
