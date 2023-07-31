@@ -261,7 +261,8 @@ rule fix_pdb:
         mkdir --parents {output_dir}pdb/fixed
         echo -n > {output} # Clear the file if exists
         TMP_DIR=$(mktemp --directory)
-        PYTHONPATH=. bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb 2> {log} || true
+        grep -e ^HEADER -e ^SEQRES -e ^ATOM {input} \
+            | PYTHONPATH=. bin/pdb_align {input} > $TMP_DIR/{wildcards.pdbid}.pdb 2> {log} || true
         if [ ! -s $TMP_DIR/{wildcards.pdbid}.pdb ]
         then
             echo WARNING: {output}: rule failed >&2
