@@ -7,7 +7,7 @@ rule extract_antibody_complex:
     output:
         output_dir + "pdb/antibodies/complexes/{pdbid}.pdb"
     singularity:
-        "container.sif"
+        "containers/anarci.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
