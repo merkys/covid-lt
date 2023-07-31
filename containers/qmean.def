@@ -18,9 +18,4 @@ From: debian:unstable
     DEBIAN_FRONTEND=noninteractive apt-get install --yes sudo # Must not be removed
     tbl-dctrl --no-heading -d , debian/control | cut -d , -f 5 | cut -d ' ' -f 2 | xargs apt-get autoremove --yes
     apt-get autoremove --yes dctrl-tools git git-buildpackage
-
-    # Install QMEAN and its dependencies
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes ../libqmean-dev_*.deb ../python3-qmean_*.deb ../qmean-data_*.deb
-
-    # Install project dependencies from Debian repositories
-    apt-get install --yes bsdmainutils cd-hit hhsuite hmmer libopenmm-plugins moreutils muscle python3-biopython python3-networkx python3-ost python3-parmed python3-propka python3-pydot python3-simtk r-base-core r-cran-optparse voronota
+    debi
