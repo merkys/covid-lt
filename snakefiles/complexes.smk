@@ -27,8 +27,6 @@ rule complex_contact_map:
         vorocontacts_tabs = vorocontacts_tabs
     output:
         "{prefix}/contact-maps/{dirname}/{search}.tab"
-    singularity:
-        "container.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
@@ -46,8 +44,6 @@ rule complex_contact_map_custom_probe:
         vorocontacts_tabs = vorocontacts_tabs
     output:
         "{prefix}/contact-maps/probe-{probe}/{dirname}/{search}.tab"
-    singularity:
-        "container.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
