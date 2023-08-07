@@ -7,7 +7,7 @@ Cluster 1
 Antibodies in this cluster contact mostly with S1 beta strand containing aminoacid 380 (heavy chain).
 Most frequent antibodies found in this cluster are CR3022, EY6A and S304.
 CR3022 has originated from a patient recovered from SARS [https://directorsblog.nih.gov/2020/04/14/antibody-points-to-possible-weak-spot-on-novel-coronavirus/].
-EY6A [https://www.nature.com/articles/s41594-020-0480-y] and COVA1-16 [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7687367/] have been isolated from a patient recovering from COVID-19
+EY6A [https://www.nature.com/articles/s41594-020-0480-y] and COVA1-16 [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7687367/] have been isolated from a patient recovering from COVID-19.
 
 Cluster 2
 ---------
