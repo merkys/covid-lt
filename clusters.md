@@ -41,34 +41,16 @@ No sources seem to mention the origin of COVOX-45.
 Cluster 7
 ---------
 
-NEW
-===
-
-Antibodies in Cluster 6 contact with S1 NTD, specifically, with strands containing residues 145 and 250.
+Antibodies in this cluster contact with S1 NTD, specifically, with strands containing residues 145 and 250.
 Cluster is composed of many different antibodies.
-
-OLD
-===
-
-Antibodies in Cluster 7 contact with beta strand containing S1 position 378.
-Cluster is composed of many different antibodies.
-Cluster contains antibody H014 which was extracted from mice and humanized [https://www.science.org/doi/10.1126/science.abc5881].
-
 
 Cluster 8
 ---------
 
-NEW
-===
-
-Seems to be not well-aligned.
-
-OLD
-===
-
-Contacts are mostly concentrated at the loops joining S1's RBD beta sheet with the RBM.
-RBM contacts are also observed.
+Antibodies in this cluster contact mostly with beta strand containing S1 position 378.
+Contacts with RBM are very rare.
 Cluster is composed of many different antibodies.
+Cluster contains antibody H014 which was extracted from mice and humanized [https://www.science.org/doi/10.1126/science.abc5881].
 
 Cluster 9
 ---------
