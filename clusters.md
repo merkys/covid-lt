@@ -1,4 +1,4 @@
-Clusters were identified by choosing cutting height of 140 in hierarchical clustering result.
+Clusters were identified by choosing cutting height of 135 in hierarchical clustering result.
 The outcome is 16 clusters.
 
 Cluster 1

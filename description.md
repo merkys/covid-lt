@@ -26,7 +26,7 @@ We argue that this value fares well in the comparison of complex contacts, which
 
 To compare complexes inside each of the sets, Euclidean distance between every pair of rows in the aforementioned contact map was used.
 Hierarchical clustering was then performed to group together similar complexes using hclust() function from R package.
-The resulting tree was cut at height of 140 in order to produce a tractable number of clusters.
+The resulting tree was cut at height of 135 in order to produce a tractable number of clusters.
 Clusters were then manually analyzed to assess the similarity of the complexes.
 Complexes with ACE2 were very similar, therefore all of them fell into the same cluster.
 Complexes with antibodies were divided into 16 clusters, roughly corresponding to the different epitopes along the SARS2 spike glycoprotein chain.
