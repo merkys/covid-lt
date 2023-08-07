@@ -38,6 +38,11 @@ There are contacts with RBM, but these do not seem to be conserved.
 Three out of four complexes containing antibody COVOX-45 are found in this cluster.
 No sources seem to mention the origin of COVOX-45.
 
+Cluster 6
+---------
+
+...
+
 Cluster 7
 ---------
 
@@ -101,7 +106,8 @@ In all of the complexes, heavy chain of the antibody binds to S1 by inserting a 
 Cluster 15
 ----------
 
-...
+This cluster contains a single complex, PDB ID 7UAR.
+Antibody chains contact with beta strand around position 288 and loop regions of NTD.
 
 Cluster 16
 ----------
