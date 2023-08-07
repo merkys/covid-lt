@@ -41,7 +41,8 @@ No sources seem to mention the origin of COVOX-45.
 Cluster 6
 ---------
 
-...
+Cluster is defined primarily by antibody contacts with RBM and RBD loops.
+Cluster is composed of many different antibodies.
 
 Cluster 7
 ---------
