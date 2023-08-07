@@ -17,7 +17,7 @@ cat $@ | \
         then
             if echo "${LINE[$POS]}" | grep --quiet "$PATTERN"
             then
-                POS=$(echo $POS + 1 | bc)
+                POS=$(expr $POS + 1)
                 if [ -n "$FIELDS" ]
                 then
                     echo -en "\t${LINE[$POS]}"
