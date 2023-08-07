@@ -1,6 +1,6 @@
 # Directory names must have trailing slashes if not empty.
-pdb_input_dir: pdb/pristine/
-output_dir: ''
+pdb_input_dir: outputs/pdb/pristine/
+output_dir: outputs/
 
 # List of PDB IDs for testing purposes. If empty, all interesting PDB files are processed.
 pdb_id_list: # 7DK2

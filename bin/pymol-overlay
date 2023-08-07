@@ -7,12 +7,17 @@ REST=
 
 DIR=outputs/pdb/antibodies/complexes
 
+COLOR_ANTIBODY_CHAINS=false
+
 while [ $# -gt 0 ]
 do
     case $1 in
         -d|--directory|--dir)
             DIR="$2"
             shift
+        ;;
+        --color-antibody-chains)
+            COLOR_ANTIBODY_CHAINS=true
         ;;
         -*) echo "`basename $0`: unknown option $1" >&2 ; exit 1 ;;
         *)
@@ -32,8 +37,17 @@ done
     do
         echo align $PDB and chain A, $FIRST and chain A
     done
+
     echo center
     echo select s1, all and chain A
     echo color white, s1
+
+    if $COLOR_ANTIBODY_CHAINS
+    then
+        echo select heavy, chain H
+        echo color red, heavy
+        echo select light, chain L
+        echo color green, light
+    fi
 ) \
     | pymol $(echo $FIRST $REST | tr ' ' '\n' | xargs -i echo $DIR/{}.pdb) -u /dev/stdin > /dev/null
