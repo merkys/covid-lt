@@ -87,6 +87,8 @@ rule conserved_contacts:
         tab = "{prefix}/contact-maps/distances/{base}.tab"
     output:
         "{prefix}/clusters/contacts-{base}.tab"
+    singularity:
+        "containers/r-cran.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
