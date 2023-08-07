@@ -8,7 +8,7 @@ rule extract_ACE2_complex:
     output:
         output_dir + "pdb/ACE2/complexes/{pdbid}.pdb"
     singularity:
-        "container.sif"
+        "containers/anarci.sif"
     shell:
         """
         mkdir --parents $(dirname {output})
