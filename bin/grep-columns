@@ -27,7 +27,7 @@ cat $@ | \
                     FIELDS=$POS
                 fi
             else
-                POS=$(echo $POS + 1 | bc)
+                POS=$(expr $POS + 1)
             fi
         else
             CONTINUE=false
