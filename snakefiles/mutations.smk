@@ -639,3 +639,16 @@ rule provean:
 rule all_provean:
     input:
         ["{}_{}{}{}.provean.log".format(fields[0], fields[4][0], fields[3][0], fields[4][1:]) for fields in skempi_filtered()]
+    output:
+        "provean.tab"
+    shell:
+        """
+        echo -e "mutation\tprovean" > {output}
+        ls -1 *.provean.log \
+            | while read FILE
+              do
+                grep --silent 'PROVEAN scores' $FILE || continue # Skip failed files
+                echo -en $(echo $FILE | cut -d . -f 1)"\t"
+                tail -n 1 $FILE | cut -f 2
+              done | sort -k 1b,1 >> {output}
+        """
