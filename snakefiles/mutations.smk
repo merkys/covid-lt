@@ -614,7 +614,9 @@ rule chain_seqres:
         "{pdbid}_{chain}.fa"
     shell:
         """
-        bin/pdb_select --chain {wildcards.chain} {input} | PYTHONPATH=. bin/pdb_atom2fasta --replace-unknown-with X --with-initial-gaps | sed 's/-/X/g' > {output}
+        bin/pdb_select --chain {wildcards.chain} {input} \
+            | PYTHONPATH=. bin/pdb_atom2fasta --replace-unknown-with X --with-initial-gaps \
+            | sed 's/-/X/g' > {output}
         """
 
 rule provean:
