@@ -14,6 +14,7 @@ type = progname[progname.find('_')+1:progname.find('2')]
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
 parser.add_argument('--unfold', action='store_true', help='Do not fold lines in the output')
+parser.add_argument('--replace-unknown-with', help='Replace unknown residues with a symbol', default=None)
 parser.add_argument('--with-initial-gaps', action='store_true', help='Preserve initial gaps') # FIXME: Rename to '--with-gaps'
 args = parser.parse_args()
 
@@ -22,12 +23,12 @@ if args.unfold:
     output_format = 'fasta-2line'
 
 for filename in args.files:
-    if type == 'atom' and args.with_initial_gaps:
+    if type == 'atom' and (args.replace_unknown_with or args.with_initial_gaps):
         from pdbio import PDBFile
         pdb = PDBFile(filename)
         for chain in pdb:
             print('>', chain.name, sep='')
-            print(chain.sequence_atom(with_gaps=True))
+            print(chain.sequence_atom(replace_unknown_with=args.replace_unknown_with, with_gaps=args.with_initial_gaps))
     else:
         try:
             SeqIO.convert(filename, 'pdb-' + type, sys.stdout, output_format)
