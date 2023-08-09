@@ -82,7 +82,7 @@ class Chain:
         else:
             return self.sequence_atom()
 
-    def sequence_atom(self, with_gaps=False):
+    def sequence_atom(self, replace_unknown_with=None, with_gaps=False):
         sequence = None
         position = 1
         for residue in self:
@@ -90,7 +90,13 @@ class Chain:
                 sequence = ''
             if with_gaps and residue.number() > position:
                 sequence = sequence + '-' * (residue.number() - position)
-            sequence = sequence + protein_letters_3to1[residue.resname().capitalize()]
+            try:
+                sequence = sequence + protein_letters_3to1[residue.resname().capitalize()]
+            except KeyError:
+                if replace_unknown_with is not None:
+                    sequence = sequence + replace_unknown_with
+                else:
+                    raise ValueError('unknown residue: {}'.format(residue))
             position = residue.number() + 1
         return sequence
 
