@@ -178,8 +178,8 @@ rule variable_sequence_msa:
     output:
         "{prefix}/sequences/variable.msa"
     singularity:
-        "container.sif"
+        "containers/promod3.sif"
     shell:
         """
-        find {wildcards.prefix}/sequences -name '*.fa' | sort | xargs cat | muscle | bin/afasta-filter > {output}
+        find {wildcards.prefix}/sequences -name '*.fa' | sort | xargs cat | muscle3 | bin/afasta-filter > {output}
         """
