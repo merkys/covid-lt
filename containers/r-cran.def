@@ -4,3 +4,6 @@ From: debian:bookworm
 %post
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install --yes moreutils r-base-core r-cran-ape r-cran-devtools r-cran-optparse r-cran-seqinr
+
+    # Install ggtree
+    echo 'library("devtools"); install_github("YuLab-SMU/ggtree", lib="/usr/local/lib/R/site-library")' | Rscript -
