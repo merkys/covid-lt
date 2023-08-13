@@ -621,14 +621,15 @@ rule chain_seqres:
 
 rule provean:
     input:
-        "{pdbid}_{chain}.fa"
+        seq = "{pdbid}_{chain}.fa",
+        db = "databases/nr/2011-08/nr.pal"
     output:
         "{pdbid}_{res1}{chain}{position}{res2}.provean.log"
     singularity:
         "containers/provean.sif"
     shell:
         """
-        FASTA_FILE=$(realpath {input})
+        FASTA_FILE=$(realpath {input.seq})
         MUT_FILE=$(mktemp)
 
         echo {output} | cut -d _ -f 2 | cut -d . -f 1 | cut -c 1,3- > $MUT_FILE
@@ -653,4 +654,22 @@ rule all_provean:
                 echo -en $(echo $FILE | cut -d . -f 1)"\t"
                 tail -n 1 $FILE | cut -f 2
               done | sort -k 1b,1 >> {output}
+        """
+
+rule provean_nr:
+    output:
+        "databases/nr/2011-08/nr.pal"
+    shell:
+        """
+        mkdir --parents databases/nr/2011-08
+        (
+            cd databases/nr/2011-08
+            for NUMBER in $(seq 0 5)
+            do
+                wget ftp://ftp.jcvi.org/data/provean/nr_Aug_2011/nr.0$NUMBER.tar.gz
+                wget ftp://ftp.jcvi.org/data/provean/nr_Aug_2011/nr.0$NUMBER.tar.gz.md5
+                md5sum --check nr.0$NUMBER.tar.gz.md5
+                tar -xf nr.0$NUMBER.tar.gz
+            done
+        )
         """
