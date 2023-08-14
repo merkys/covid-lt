@@ -183,3 +183,17 @@ rule variable_sequence_msa:
         """
         find {wildcards.prefix}/sequences -name '*.fa' | sort | xargs cat | muscle3 | bin/afasta-filter > {output}
         """
+
+rule variable_sequence_tree:
+    input:
+        msa = "{prefix}/sequences/variable.msa",
+        clusters = "{prefix}/clusters/clusters.lst"
+    output:
+        "{prefix}/clusters/clusters.svg"
+    singularity:
+        "containers/r-cran.sif"
+    shell:
+        """
+        cat {input.msa} \
+            | bin/afasta-phylo --use-ggtree --clusters {input.clusters} --branch-length 10 > {output}
+        """
