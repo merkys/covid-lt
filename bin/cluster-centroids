@@ -1,0 +1,19 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+options = parse_args(parser, positional_arguments = TRUE)
+
+distances_file = options$args[1]
+clusters_file = options$args[2]
+
+distances_table = read.table( distances_file )
+names( distances_table ) = substr( names( distances_table ), 1, 5 )
+colnames( distances_table ) = substr( colnames( distances_table ), 1, 5 )
+
+distances = as.dist( distances_table )
+clusters = read.delim( file = clusters_file, header = FALSE, sep = " " )
+
+for (i in 1:length(clusters)) {
+    
+}
