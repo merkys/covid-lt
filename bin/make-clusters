@@ -16,10 +16,10 @@ if( length(files) != 0 ) {
 
 input = read.table( file )
 distances = as.dist( input )
-MDS = cmdscale( distances )
 
 clusters = NULL
 if(        options$options$method == "kmeans" ) {
+    MDS = cmdscale( distances )
     kmeans_out = kmeans( MDS, options$options$number )
     clusters = kmeans_out$cluster
 } else if( options$options$method == "hclust" ) {
