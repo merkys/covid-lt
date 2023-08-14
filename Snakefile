@@ -36,6 +36,8 @@ rule svg_to_png:
         "{base}.svg"
     output:
         "{base}.png"
+    singularity:
+        "containers/inkscape.sif"
     shell:
         "inkscape --without-gui {input} --export-png {output}"
 
