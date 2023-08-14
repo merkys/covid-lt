@@ -195,5 +195,5 @@ rule variable_sequence_tree:
     shell:
         """
         cat {input.msa} \
-            | bin/afasta-phylo --use-ggtree --clusters {input.clusters} --branch-length 10 > {output}
+            | bin/afasta-phylo --use-ggtree --clusters {input.clusters} --branch-length none > {output}
         """
