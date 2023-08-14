@@ -31,6 +31,14 @@ rule container:
     shell:
         "singularity build {output} {input}"
 
+rule svg_to_png:
+    input:
+        "{base}.svg"
+    output:
+        "{base}.png"
+    shell:
+        "inkscape --without-gui {input} --export-png {output}"
+
 rule pdb_seqres_fa:
     output:
         "pdb_seqres.fa"
