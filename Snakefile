@@ -39,7 +39,7 @@ rule svg_to_png:
     singularity:
         "containers/inkscape.sif"
     shell:
-        "inkscape --without-gui {input} --export-png {output}"
+        "inkscape --export-type png {input}"
 
 rule pdb_seqres_fa:
     output:
