@@ -9,11 +9,26 @@ clusters_file = options$args[2]
 
 distances_table = read.table( distances_file )
 names( distances_table ) = substr( names( distances_table ), 1, 5 )
-colnames( distances_table ) = substr( colnames( distances_table ), 1, 5 )
+colnames( distances_table ) = substr( colnames( distances_table ), 2, 6 )
+names = names( distances_table )
 
 distances = as.dist( distances_table )
 clusters = read.delim( file = clusters_file, header = FALSE, sep = " " )
 
-for (i in 1:length(clusters)) {
-    
+clusters_handle = file( clusters_file, open = "r" )
+while (length(line <- readLines(clusters_handle, n = 1, warn = FALSE)) > 0) {
+    cluster = strsplit( line, ' ', fixed = TRUE )[[1]]
+    indices = which(names %in% cluster)
+    repr = NULL
+    repr_rmsd = NaN
+    for (element in cluster) {
+        id = which(names == element)[1]
+        rmsd = sqrt((sum( distances_table[id, indices]^2 ) - distances_table[id, id]^2) / (length(cluster)-1))
+        if( is.na( repr_rmsd ) || rmsd < repr_rmsd ) {
+            repr = id
+            repr_rmsd = rmsd
+        }
+    }
+    cat(names[repr], "\n", sep = "")
 }
+close( clusters_handle )
