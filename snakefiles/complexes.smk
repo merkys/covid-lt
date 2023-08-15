@@ -197,3 +197,14 @@ rule variable_sequence_tree:
         cat {input.msa} \
             | bin/afasta-phylo --use-ggtree --clusters {input.clusters} --branch-length none > {output}
         """
+
+rule centroids:
+    input:
+        dist = "{prefix}/dist-matrices/contact.m",
+        clusters = "{prefix}/clusters/clusters.lst"
+    output:
+        "{prefix}/clusters/centroids.lst"
+    singularity:
+        "containers/r-cran.sif"
+    shell:
+        "bin/cluster-centroids {input.dist} {input.clusters} > {output}"
