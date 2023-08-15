@@ -22,7 +22,7 @@ while (length(line <- readLines(clusters_handle, n = 1, warn = FALSE)) > 0) {
         id = which(names == element)[1]
         rmsd[i] = sqrt((sum( distances_table[id, indices]^2 ) - distances_table[id, id]^2) / (length(cluster)-1))
     }
-    order = order(-rmsd)
+    order = order(rmsd)
     for (i in 1:min(3, length(cluster))) {
         cat(cluster[order[i]], rmsd[order[i]], "", sep="\t")
     }
