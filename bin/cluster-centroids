@@ -16,16 +16,16 @@ clusters_handle = file( clusters_file, open = "r" )
 while (length(line <- readLines(clusters_handle, n = 1, warn = FALSE)) > 0) {
     cluster = strsplit( line, ' ', fixed = TRUE )[[1]]
     indices = which(names %in% cluster)
-    repr = NULL
-    repr_rmsd = NaN
-    for (element in cluster) {
+    rmsd = numeric( length(cluster) )
+    for (i in 1:length(cluster) ) {
+        element = cluster[i]
         id = which(names == element)[1]
-        rmsd = sqrt((sum( distances_table[id, indices]^2 ) - distances_table[id, id]^2) / (length(cluster)-1))
-        if( is.na( repr_rmsd ) || rmsd < repr_rmsd ) {
-            repr = id
-            repr_rmsd = rmsd
-        }
+        rmsd[i] = sqrt((sum( distances_table[id, indices]^2 ) - distances_table[id, id]^2) / (length(cluster)-1))
     }
-    cat(names[repr], "\n", sep = "")
+    order = order(-rmsd)
+    for (i in 1:min(3, length(cluster))) {
+        cat(cluster[order[i]], rmsd[order[i]], "", sep="\t")
+    }
+    cat("\n")
 }
 close( clusters_handle )
