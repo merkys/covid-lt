@@ -1,0 +1,31 @@
+#!/usr/bin/Rscript --vanilla
+
+library( "optparse" )
+parser <- OptionParser()
+options = parse_args(parser, positional_arguments = TRUE)
+
+distances_file = options$args[1]
+clusters_file = options$args[2]
+
+distances_table = read.table( distances_file )
+names( distances_table ) = substr( names( distances_table ), 1, 5 )
+colnames( distances_table ) = substr( colnames( distances_table ), 2, 6 )
+names = names( distances_table )
+
+clusters_handle = file( clusters_file, open = "r" )
+while (length(line <- readLines(clusters_handle, n = 1, warn = FALSE)) > 0) {
+    cluster = strsplit( line, ' ', fixed = TRUE )[[1]]
+    indices = which(names %in% cluster)
+    rmsd = numeric( length(cluster) )
+    for (i in 1:length(cluster) ) {
+        element = cluster[i]
+        id = which(names == element)[1]
+        rmsd[i] = sqrt((sum( distances_table[id, indices]^2 ) - distances_table[id, id]^2) / (length(cluster)-1))
+    }
+    order = order(rmsd)
+    for (i in 1:min(3, length(cluster))) {
+        cat(cluster[order[i]], rmsd[order[i]], "", sep="\t")
+    }
+    cat("\n")
+}
+close( clusters_handle )
