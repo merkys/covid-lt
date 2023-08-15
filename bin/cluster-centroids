@@ -12,9 +12,6 @@ names( distances_table ) = substr( names( distances_table ), 1, 5 )
 colnames( distances_table ) = substr( colnames( distances_table ), 2, 6 )
 names = names( distances_table )
 
-distances = as.dist( distances_table )
-clusters = read.delim( file = clusters_file, header = FALSE, sep = " " )
-
 clusters_handle = file( clusters_file, open = "r" )
 while (length(line <- readLines(clusters_handle, n = 1, warn = FALSE)) > 0) {
     cluster = strsplit( line, ' ', fixed = TRUE )[[1]]
