@@ -1,6 +1,6 @@
 First of all, all PDB files containing chains with confident matches of SARS2 spike glycoprotein (PFAM ID P0DTC2) were downloaded from the Protein DataBank.
 Missing residues and atoms in the downloaded files were added using ProMod3 tool [10.1371/journal.pcbi.1008667] by performing homology modeling of the sequence in PDB SEQRES records using the atom positions from the same PDB entry as a template.
-Hydrogen and chain terminal atoms were added by creating a ProMod3 simulation.
+Hydrogen and chain terminal atoms were added by running a ProMod3 simulation.
 After restoring the missing parts of the structure, chains coresponding to the SARS2 spike glycoprotein were renumbered in order to have a consistent numbering of residues.
 Renumbering was carried out by aligning the sequence of a structure against the SARS2 spike glycoprotein sequence from PFAM ID P0DTC2.
 The renumbered PDB files were then used as inputs in the following process steps.
