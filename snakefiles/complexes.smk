@@ -14,7 +14,7 @@ def propka_tabs(wildcards):
 
 def vorocontacts_tabs(wildcards):
     from glob import glob
-    path = "vorocontacts/{pdbid}.tab"
+    path = "vorocontacts/probe-13/{pdbid}.tab"
     prefix = wildcards.get("prefix")
     if wildcards.get("probe"):
         path = "vorocontacts/probe-" + wildcards.get("probe") + "/{pdbid}.tab"
@@ -31,10 +31,10 @@ rule complex_contact_map:
         """
         mkdir --parents $(dirname {output})
         comm -1 -2 \
-            <(ls -1 {wildcards.prefix}/vorocontacts/*.tab | xargs -i basename {{}} .tab | sort) \
+            <(ls -1 {wildcards.prefix}/vorocontacts/probe-13/*.tab | xargs -i basename {{}} .tab | sort) \
             <(ls -1 {wildcards.prefix}/propka/*.tab | xargs -i basename {{}} .tab | sort) \
           | xargs bin/S1-contact-map --filter "{wildcards.search}" --pdb-input-dir "{pdb_input_dir}" --output-dir "{output_dir}" \
-            --propka-dir {wildcards.prefix}/propka --vorocontacts-dir {wildcards.prefix}/vorocontacts --output-{wildcards.dirname} \
+            --propka-dir {wildcards.prefix}/propka --vorocontacts-dir {wildcards.prefix}/vorocontacts/probe-13 --output-{wildcards.dirname} \
             --merge-antibody-chains --S1-chain A > {output}
         """
 
