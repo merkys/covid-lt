@@ -11,22 +11,22 @@ class Chain:
         self.name = name
 
     def __iter__(self):
-        iter_residue_line = 0
-        while iter_residue_line < len(self.parent.content)-1:
-            if not self.parent.content[iter_residue_line].startswith('ATOM  ') or self.parent.content[iter_residue_line][21] != self.name:
-                iter_residue_line += 1
+        self.iter_residue_line = 0
+        while self.iter_residue_line < len(self.parent.content)-1:
+            if not self.parent.content[self.iter_residue_line].startswith('ATOM  ') or self.parent.content[self.iter_residue_line][21] != self.name:
+                self.iter_residue_line += 1
                 continue
-            start, end = iter_residue_line, iter_residue_line
+            start, end = self.iter_residue_line, self.iter_residue_line
             atom = self.parent.content[start]
             this_chain, this_number, this_icode = atom[21], int(atom[22:26]), atom[26]
-            while iter_residue_line + 1 < len(self.parent.content):
-                iter_residue_line += 1
-                if not self.parent.content[iter_residue_line].startswith('ATOM  '):
+            while self.iter_residue_line + 1 < len(self.parent.content):
+                self.iter_residue_line += 1
+                if not self.parent.content[self.iter_residue_line].startswith('ATOM  '):
                     continue
-                atom = self.parent.content[iter_residue_line]
+                atom = self.parent.content[self.iter_residue_line]
                 chain, number, icode = atom[21], int(atom[22:26]), atom[26]
                 if [this_chain, this_number, this_icode] == [chain, number, icode]:
-                    end = iter_residue_line
+                    end = self.iter_residue_line
                 else:
                     break
             yield Residue(self, start, end)
