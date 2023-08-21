@@ -104,30 +104,17 @@ Cluster 11 (OLD)
 
 This cluster seems to be an artefact as it can be broken into three sub-clusters having no epitope overlap.
 
-Cluster 12 (NEW)
+Cluster 12
 ----------
 
 In the complexes of this cluster heavy chains of antibodies contact with S1's NTD strand containing position 85.
 S1 chains in these complexes "wrap" themselves around the antibodies.
 All complexes in the cluster contain non-neutralizing antibody S2L20 [https://www.science.org/doi/10.1126/science.abl8506].
 
-Cluster 12 (OLD)
-----------
-
-Cluster is composed of a single complex containing DH1052 antibody which is described as non-neutralizing, albeit reducing virus concentrations in infected mice [https://www.news-medical.net/news/20210106/Are-SARS-CoV-2-antibodies-associated-with-disease-enhancement.aspx].
-The epitope of this complex lacks many residues in the original PDB file.
-
-Cluster 13 (NEW)
+Cluster 13
 ----------
 
 In this cluster heavy chain of the antibody binds to S1 by inserting a loop into beta barrel structure at S1's NTD.
-
-Cluster 13 (OLD)
-----------
-
-In the complexes of this cluster heavy chains of antibodies contact with S1's NTD strand containing position 85.
-S1 chains in these complexes "wrap" themselves around the antibodies.
-All complexes in the cluster contain non-neutralizing antibody S2L20 [https://www.science.org/doi/10.1126/science.abl8506].
 
 Cluster 14 (NEW)
 ----------
