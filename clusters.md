@@ -4,7 +4,8 @@ The outcome is 16 clusters.
 Cluster 1
 ---------
 
-Antibodies in this cluster contact mostly with S1 beta strand containing aminoacid 380 (heavy chain).
+Antibodies in this cluster contact mostly with S1 beta strand containing aminoacid 380 and the following helix (both by heavy chain).
+S1 and antibody chains overly very well.
 Most frequent antibodies found in this cluster are CR3022, EY6A and S304.
 CR3022 has originated from a patient recovered from SARS [https://directorsblog.nih.gov/2020/04/14/antibody-points-to-possible-weak-spot-on-novel-coronavirus/].
 EY6A [https://www.nature.com/articles/s41594-020-0480-y] and COVA1-16 [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7687367/] have been isolated from a patient recovering from COVID-19.
@@ -12,7 +13,7 @@ EY6A [https://www.nature.com/articles/s41594-020-0480-y] and COVA1-16 [https://w
 Cluster 2
 ---------
 
-Antibodies in this cluster contact mostly with S1 helices containing residues 340 (heavy chain) and 440 (light chain).
+Antibodies in this cluster contact mostly with S1 helices containing residues 340 (mostly heavy chains) and 440 (mostly light chains).
 Most frequently seen antibody is S309, but it is not the only one.
 
 Cluster 3
