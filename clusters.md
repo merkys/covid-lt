@@ -41,20 +41,27 @@ Three out of four complexes containing antibody COVOX-45 are found in this clust
 No sources seem to mention the origin of COVOX-45.
 
 FIXME: The epitope is N-terminal
+FIXME: This may be confused with Cluster 4
 
 Cluster 6
 ---------
 
-Cluster is defined primarily by antibody contacts with RBM and RBD loops.
+Cluster is defined primarily by antibody contacts with beta strand containing S1 position 377.
+RBM contacts are observed very rarely.
 Cluster is composed of many different antibodies.
 
 Cluster 7
 ---------
 
-Antibodies in this cluster contact with S1 NTD, specifically, with strands containing residues 145 and 250.
+Antibodies in this cluster contact with loops connecting RBD beta strands with RBM.
+
+Cluster 8 (NEW)
+---------
+
+Antibodies in this cluster contact with S1 NTD loops.
 Cluster is composed of many different antibodies.
 
-Cluster 8
+Cluster 8 (OLD)
 ---------
 
 Antibodies in this cluster contact mostly with beta strand containing S1 position 378.
@@ -62,38 +69,72 @@ Contacts with RBM are very rare.
 Cluster is composed of many different antibodies.
 Cluster contains antibody H014 which was extracted from mice and humanized [https://www.science.org/doi/10.1126/science.abc5881].
 
-Cluster 9
+Cluster 9 (NEW)
+---------
+
+Antibodies in this cluster contact with loops connecting RBD beta strands with RBM.
+
+Cluster 9 (OLD)
 ---------
 
 Contacts are mostly conserved at RBD loops.
 Contacts with RBM itself are not very well conserved.
 Most frequent antibody is COVA1-16.
 
-Cluster 10
+Cluster 10 (NEW)
+----------
+
+Contacts in this cluster are very few and are concentrated at S1 CTD.
+Might be an artefact.
+
+Cluster 10 (OLD)
 ----------
 
 Both antibody chains in this cluster contact with inter-sheet loops at S1's NTD.
 Cluster is composed of different antibodies.
 
-Cluster 11
-----------
-
-This cluster seems to be an artefact as it can be broken into three sub-clusters having no epitope overlap.
-
-Cluster 12
+Cluster 11 (NEW)
 ----------
 
 Cluster is composed of a single complex containing DH1052 antibody which is described as non-neutralizing, albeit reducing virus concentrations in infected mice [https://www.news-medical.net/news/20210106/Are-SARS-CoV-2-antibodies-associated-with-disease-enhancement.aspx].
 The epitope of this complex lacks many residues in the original PDB file.
 
-Cluster 13
+Cluster 11 (OLD)
+----------
+
+This cluster seems to be an artefact as it can be broken into three sub-clusters having no epitope overlap.
+
+Cluster 12 (NEW)
 ----------
 
 In the complexes of this cluster heavy chains of antibodies contact with S1's NTD strand containing position 85.
 S1 chains in these complexes "wrap" themselves around the antibodies.
 All complexes in the cluster contain non-neutralizing antibody S2L20 [https://www.science.org/doi/10.1126/science.abl8506].
 
-Cluster 14
+Cluster 12 (OLD)
+----------
+
+Cluster is composed of a single complex containing DH1052 antibody which is described as non-neutralizing, albeit reducing virus concentrations in infected mice [https://www.news-medical.net/news/20210106/Are-SARS-CoV-2-antibodies-associated-with-disease-enhancement.aspx].
+The epitope of this complex lacks many residues in the original PDB file.
+
+Cluster 13 (NEW)
+----------
+
+In this cluster heavy chain of the antibody binds to S1 by inserting a loop into beta barrel structure at S1's NTD.
+
+Cluster 13 (OLD)
+----------
+
+In the complexes of this cluster heavy chains of antibodies contact with S1's NTD strand containing position 85.
+S1 chains in these complexes "wrap" themselves around the antibodies.
+All complexes in the cluster contain non-neutralizing antibody S2L20 [https://www.science.org/doi/10.1126/science.abl8506].
+
+Cluster 14 (NEW)
+----------
+
+Cluster is made of one single complex where contacts are centered at S1 loops containing residues 520 and 560.
+
+Cluster 14 (OLD)
 ----------
 
 Cluster is made of three complexes containing two different antibodies.
