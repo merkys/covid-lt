@@ -85,7 +85,8 @@ Cluster 10 (NEW)
 ----------
 
 Contacts in this cluster are very few and are concentrated at S1 CTD.
-Might be an artefact.
+All antibodies in this cluster are 2G12.
+Structures might not be well modelled in this cluster.
 
 Cluster 10 (OLD)
 ----------
@@ -132,6 +133,7 @@ Cluster 15
 
 This cluster contains a single complex, PDB ID 7UAR.
 Antibody chains contact with beta strand around position 288 and loop regions of NTD.
+Antibody, C1717, is reported to be neutralizing.
 
 Cluster 16
 ----------
