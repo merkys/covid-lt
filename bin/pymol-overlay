@@ -49,5 +49,8 @@ done
         echo select light, chain L
         echo color green, light
     fi
+
+    echo show cartoon
+    echo hide lines
 ) \
     | pymol $(echo $FIRST $REST | tr ' ' '\n' | xargs -i echo $DIR/{}.pdb) -u /dev/stdin > /dev/null
