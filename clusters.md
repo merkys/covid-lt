@@ -115,18 +115,12 @@ All complexes in the cluster contain non-neutralizing antibody S2L20 [https://ww
 Cluster 13
 ----------
 
-In this cluster heavy chain of the antibody binds to S1 by inserting a loop into beta barrel structure at S1's NTD.
+In this cluster heavy chain of the antibody binds to S1 NTD by inserting a loop into the beta barrel structure.
 
-Cluster 14 (NEW)
+Cluster 14
 ----------
 
 Cluster is made of one single complex where contacts are centered at S1 loops containing residues 520 and 560.
-
-Cluster 14 (OLD)
-----------
-
-Cluster is made of three complexes containing two different antibodies.
-In all of the complexes, heavy chain of the antibody binds to S1 by inserting a loop into beta barrel structure at S1's NTD.
 
 Cluster 15
 ----------
