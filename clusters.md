@@ -120,7 +120,9 @@ In this cluster heavy chain of the antibody binds to S1 NTD by inserting a loop 
 Cluster 14
 ----------
 
-Cluster is made of one single complex where contacts are centered at S1 loops containing residues 520 and 560.
+Cluster is made of one single complex, PDB ID 7S0E.
+Antibody chains contact with S1 loops containing residues 520 and 560.
+Antibody, N-612-007, has been reported to be partially neutralizing [https://doi.org/10.1016/J.CELREP.2022.110348].
 
 Cluster 15
 ----------
