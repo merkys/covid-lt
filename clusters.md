@@ -74,18 +74,12 @@ Contacts are mostly conserved at RBD loops.
 Contacts with RBM itself are not very well conserved.
 Most frequent antibody is COVA1-16.
 
-Cluster 10 (NEW)
+Cluster 10
 ----------
 
 Contacts in this cluster are very few and are concentrated at S1/S2 boundary.
 All antibodies in this cluster are 2G12.
 Structures might not be well modelled in this cluster.
-
-Cluster 10 (OLD)
-----------
-
-Both antibody chains in this cluster contact with inter-sheet loops at S1's NTD.
-Cluster is composed of different antibodies.
 
 Cluster 11
 ----------
