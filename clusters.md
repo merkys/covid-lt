@@ -93,6 +93,7 @@ Cluster 11
 Cluster is composed of a single complex, PDB ID 7LAB.
 It contains DH1052 antibody which is described as non-neutralizing, albeit reducing virus concentrations in infected mice [https://www.news-medical.net/news/20210106/Are-SARS-CoV-2-antibodies-associated-with-disease-enhancement.aspx].
 The epitope of this complex is located at the loops between beta strands in NTD's beta sandwich.
+It resembles the epitope of Cluster 8, but there are additional contacts with CTD2.
 The epitope of this complex lacks many residues in the original PDB file.
 
 Cluster 12
