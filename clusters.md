@@ -115,13 +115,13 @@ All complexes in the cluster contain non-neutralizing antibody S2L20 [https://ww
 Cluster 13
 ----------
 
-In this cluster heavy chain of the antibody binds to S1 NTD by inserting a loop into the beta barrel structure.
+In this cluster heavy chain of the antibody binds to S1 NTD by inserting a loop into the beta sandwich structure.
 
 Cluster 14
 ----------
 
 Cluster is made of one single complex, PDB ID 7S0E.
-Antibody chains contact with S1 loops containing residues 520 and 560.
+Antibody chains contact with S1 CTD loops containing residues 520 and 560.
 Antibody, N-612-007, has been reported to be partially neutralizing [https://doi.org/10.1016/J.CELREP.2022.110348].
 
 Cluster 15
