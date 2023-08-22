@@ -28,20 +28,13 @@ Cluster 4
 
 Contacts are mostly concentrated at the RBM, usually it is the heavy antibody chain that is located closest to the RBM.
 Contacts, mostly with light antibody chains, are observed with beta strand containing S1 position 355.
-Cluster is composed of many different antibodies.
+Cluster is composed of many different antibodies, there are several occurrences of COVOX-45 antibody.
+No sources seem to mention the origin of COVOX-45.
 
 Cluster 5
 ---------
 
-This cluster is defined mostly by antibody contacts with beta strand containing S1 position 355.
-However, the same is observed in Cluster 4 too.
-S1 structures in this cluster are very well aligned, some variation is observed in antibody structures.
-There are contacts with RBM, but these do not seem to be conserved.
-Three out of four complexes containing antibody COVOX-45 are found in this cluster.
-No sources seem to mention the origin of COVOX-45.
-
-FIXME: The epitope is N-terminal
-FIXME: This may be confused with Cluster 4
+This cluster is defined by antibody contacts with S1 NTD.
 
 Cluster 6
 ---------
@@ -84,7 +77,7 @@ Most frequent antibody is COVA1-16.
 Cluster 10 (NEW)
 ----------
 
-Contacts in this cluster are very few and are concentrated at S1 CTD.
+Contacts in this cluster are very few and are concentrated at S1/S2 boundary.
 All antibodies in this cluster are 2G12.
 Structures might not be well modelled in this cluster.
 
@@ -121,7 +114,7 @@ Cluster 14
 ----------
 
 Cluster is made of one single complex, PDB ID 7S0E.
-Antibody chains contact with S1 CTD loops containing residues 520 and 560.
+Antibody chains contact with S1 CTD1 loops containing residues 520 and 560.
 Antibody, N-612-007, has been reported to be partially neutralizing [https://doi.org/10.1016/J.CELREP.2022.110348].
 
 Cluster 15
