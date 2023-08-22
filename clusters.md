@@ -87,18 +87,13 @@ Cluster 10 (OLD)
 Both antibody chains in this cluster contact with inter-sheet loops at S1's NTD.
 Cluster is composed of different antibodies.
 
-Cluster 11 (NEW)
+Cluster 11
 ----------
 
 Cluster is composed of a single complex, PDB ID 7LAB.
 It contains DH1052 antibody which is described as non-neutralizing, albeit reducing virus concentrations in infected mice [https://www.news-medical.net/news/20210106/Are-SARS-CoV-2-antibodies-associated-with-disease-enhancement.aspx].
 The epitope of this complex is located at the loops between beta strands in NTD's beta sandwich.
 The epitope of this complex lacks many residues in the original PDB file.
-
-Cluster 11 (OLD)
-----------
-
-This cluster seems to be an artefact as it can be broken into three sub-clusters having no epitope overlap.
 
 Cluster 12
 ----------
