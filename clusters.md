@@ -78,8 +78,7 @@ Cluster 10
 ----------
 
 Contacts in this cluster are very few and are concentrated at S1/S2 boundary.
-All antibodies in this cluster are 2G12.
-Structures might not be well modelled in this cluster.
+All antibodies in this cluster are 2G12 which does not neutralize SARS-CoV-2 [https://doi.org/10.1016/j.cell.2021.04.042].
 
 Cluster 11
 ----------
