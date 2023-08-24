@@ -30,6 +30,7 @@ Contacts are mostly concentrated at the RBM, usually it is the heavy antibody ch
 Contacts, mostly with light antibody chains, are observed with beta strand containing S1 position 355.
 Cluster is composed of many different antibodies, there are several occurrences of COVOX-45 antibody.
 No sources seem to mention the origin of COVOX-45.
+Several antibodies in the cluster are described as binding a cryptic site and disrupt the viral site with good resistance to mutations [https://academic.oup.com/nsr/article/8/8/nwab053/6191202][https://www.nature.com/articles/s41467-021-25997-3][https://www.nature.com/articles/s41467-021-23825-2].
 
 Cluster 5
 ---------
