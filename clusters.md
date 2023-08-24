@@ -101,6 +101,9 @@ Cluster 13
 ----------
 
 In this cluster heavy chain of the antibody binds to S1 NTD by inserting a loop into the beta sandwich structure.
+At least two complexes contain antibodies extracted from vaccinated patients [https://journals.asm.org/doi/10.1128/mbio.03580-21].
+Epitope is described as neutralizing [https://journals.asm.org/doi/10.1128/mbio.03580-21].
+At least one antibody is extracted from recovering patient [https://www.cell.com/cell-reports/fulltext/S2211-1247(21)01401-7].
 
 Cluster 14
 ----------
