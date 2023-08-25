@@ -40,10 +40,11 @@ This cluster is defined by antibody contacts with S1 NTD, N3 and N5 loops.
 Cluster 6
 ---------
 
-Cluster is defined primarily by antibody contacts with beta strand containing S1 position 377.
+Cluster is defined primarily by antibody contacts with beta strand containing S1 position 377, which is inside RBD, but non-RBM.
 RBM contacts are observed very rarely.
-Cluster is composed of many different antibodies.
+The epitope is described as highly conserved and neutralization is caused by antibody competing with ACE2 [https://www.cell.com/immunity/fulltext/S1074-7613(20)30464-7].
 All complexes containing antibody COVA1-16 appear in this cluster.
+COVA1-16 is isolated from recovering person [https://www.cell.com/immunity/fulltext/S1074-7613(20)30464-7].
 
 Cluster 7
 ---------
