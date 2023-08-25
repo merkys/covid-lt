@@ -14,7 +14,7 @@ Cluster 2
 ---------
 
 Antibodies in this cluster contact mostly with S1 helices containing residues 340 (mostly heavy chains) and 440 (mostly light chains).
-Most frequently seen antibody is S309, but it is not the only one.
+Most frequently seen antibody is S309 (parent for Sotrovimab), but it is not the only one.
 S309 has been isolated from patient recovering from SARS-CoV in 2003 [https://www.nature.com/articles/s41586-020-2349-y].
 
 Cluster 3
@@ -23,6 +23,7 @@ Cluster 3
 This cluster is the most populous one with over 200 entries.
 Contacts are mostly concentrated at the RBM (either both heavy and light antibody chains, sometimes just heavy), some contacts are observed with loops of S1 beta sheet region (usually light chains).
 Antibody LY-COV555 (Bamlanivimab) is seen in this cluster, originating from recovering COVID-19 patient [https://www.biorxiv.org/content/10.1101/2020.09.30.318972v3].
+CB6 (Etesevimab) is also found in this cluster.
 
 Cluster 4
 ---------
