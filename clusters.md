@@ -101,8 +101,8 @@ Cluster 13
 ----------
 
 In this cluster heavy chain of the antibody binds to S1 NTD by inserting a loop into the beta sandwich structure.
-At least two complexes contain antibodies extracted from vaccinated patients [https://journals.asm.org/doi/10.1128/mbio.03580-21].
 Epitope is described as neutralizing [https://journals.asm.org/doi/10.1128/mbio.03580-21].
+At least two complexes contain antibodies extracted from vaccinated patients [https://journals.asm.org/doi/10.1128/mbio.03580-21].
 At least one antibody is extracted from recovering patient [https://www.cell.com/cell-reports/fulltext/S2211-1247(21)01401-7].
 
 Cluster 14
@@ -123,6 +123,5 @@ Cluster 16
 ----------
 
 All complexes in the cluster contain antibody S3H3 which is effective against Omicron variant [https://www.nature.com/articles/s41586-022-04581-9].
-Epitopes in this cluster are concentrated at S1's CTD1.
-Contacts are well conserved in this cluster.
+Epitopes in this cluster are concentrated at S1's SD1 region, which is described as extremely conservative [https://www.nature.com/articles/s41586-022-04581-9].
 Model of PDB entry 7WD9 has a weird looking loop at around 625.
