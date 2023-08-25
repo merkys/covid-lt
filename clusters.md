@@ -43,7 +43,7 @@ Cluster 6
 Cluster is defined primarily by antibody contacts with beta strand containing S1 position 377.
 RBM contacts are observed very rarely.
 Cluster is composed of many different antibodies.
-All complexes containing antibody COVA1-16 appears in this cluster.
+All complexes containing antibody COVA1-16 appear in this cluster.
 
 Cluster 7
 ---------
