@@ -42,9 +42,10 @@ Cluster 6
 
 Cluster is defined primarily by antibody contacts with beta strand containing S1 position 377, which is inside RBD, but non-RBM.
 RBM contacts are observed very rarely.
-The epitope is described as highly conserved and neutralization is caused by antibody competing with ACE2 [https://www.cell.com/immunity/fulltext/S1074-7613(20)30464-7].
+The epitope is described as highly conserved and neutralization is caused by antibodies competing with ACE2 [https://www.cell.com/immunity/fulltext/S1074-7613(20)30464-7].
 All complexes containing antibody COVA1-16 appear in this cluster.
 COVA1-16 is isolated from recovering person [https://www.cell.com/immunity/fulltext/S1074-7613(20)30464-7].
+Other widespread antibody is H014 which is a humanized antibody with neutralization potential [https://www.science.org/doi/10.1126/science.abc5881].
 
 Cluster 7
 ---------
