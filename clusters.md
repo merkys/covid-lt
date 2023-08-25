@@ -15,6 +15,7 @@ Cluster 2
 
 Antibodies in this cluster contact mostly with S1 helices containing residues 340 (mostly heavy chains) and 440 (mostly light chains).
 Most frequently seen antibody is S309, but it is not the only one.
+S309 has been isolated from patient recovering from SARS-CoV in 2003 [https://www.nature.com/articles/s41586-020-2349-y].
 
 Cluster 3
 ---------
