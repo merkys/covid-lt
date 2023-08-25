@@ -43,6 +43,7 @@ Cluster 6
 Cluster is defined primarily by antibody contacts with beta strand containing S1 position 377.
 RBM contacts are observed very rarely.
 Cluster is composed of many different antibodies.
+All complexes containing antibody COVA1-16 appears in this cluster.
 
 Cluster 7
 ---------
@@ -63,17 +64,10 @@ Contacts with RBM are very rare.
 Cluster is composed of many different antibodies.
 Cluster contains antibody H014 which was extracted from mice and humanized [https://www.science.org/doi/10.1126/science.abc5881].
 
-Cluster 9 (NEW)
+Cluster 9
 ---------
 
 Antibodies in this cluster contact with loops connecting RBD beta strands with RBM.
-
-Cluster 9 (OLD)
----------
-
-Contacts are mostly conserved at RBD loops.
-Contacts with RBM itself are not very well conserved.
-Most frequent antibody is COVA1-16.
 
 Cluster 10
 ----------
@@ -117,7 +111,7 @@ Cluster 15
 
 This cluster contains a single complex, PDB ID 7UAR.
 Antibody chains contact with beta strand around position 288 and loop regions of NTD.
-Antibody, C1717, is reported to be neutralizing.
+Antibody, C1717, is reported to be neutralizing [https://www.cell.com/immunity/fulltext/S1074-7613(22)00174-1].
 
 Cluster 16
 ----------
