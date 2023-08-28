@@ -86,5 +86,9 @@ for pdb in args.files:
                         if seqres[chain][pos-1] != mutations_for_chain[pos]['from']:
                             raise ValueError('chain {} position {} is {} while mutation requests {}'.format(chain, pos, seqres[chain][pos-1], mutations_for_chain[pos]['from']))
                         seqres[chain][pos-1] = mutations_for_chain[pos]['to']
+                    for pos in deletions_for_chain:
+                        if seqres[chain][pos-1] != deletions_for_chain[pos]['from']:
+                            raise ValueError('chain {} position {} is {} while deletion requests {}'.format(chain, pos, seqres[chain][pos-1], deletions_for_chain[pos]['from']))
+                        seqres[chain].pop(pos-1)
                 pack_seqres(seqres)
                 passthrough = True
