@@ -11,6 +11,31 @@ parser.add_argument('--replace', action='append', help='Specify replacements', d
 parser.add_argument('--delete', action='append', help='Specify deletions', default=[])
 args = parser.parse_args()
 
+def unpack_seqres(lines):
+    seqres = {}
+    for line in lines:
+        line_no = int(line[7:10])
+        chain = line[11]
+        if chain not in seqres:
+            seqres[chain] = []
+        for i in range(0,13):
+            seqres[chain].append(protein_letters_3to1[line[19+i*4:22+i*4]])
+    return seqres
+
+def pack_seqres(seqres):
+    for chain in sorted(seqres):
+        line_no = 1
+        length = len(seqres[chain])
+        while len(seqres[chain]) >= 13:
+            print("SEQRES% 4d %s% 5d " % line_no, chain, length)
+            for i in range(0,13):
+                print(" ", protein_letters_1to3[seqres[chain].pop(0)])
+            line_no += 1
+        if len(seqres[chain]):
+            print("SEQRES% 4d %s% 5d " % line_no, chain, length)
+            while len(seqres[chain]):
+                print(" ", protein_letters_1to3[seqres[chain].pop(0)])
+
 replace_by_chain = {}
 for replacement in args.replace:
     m = fullmatch('([A-Z])([A-Z])?([0-9]+)([A-Z])', replacement)
@@ -42,15 +67,19 @@ for pdb in args.files:
             line_no = int(line[7:10])
             chain = line[11]
             mutations_for_chain = replace_by_chain['any'] if 'any' in replace_by_chain else {}
+            deletions_for_chain = delete_by_chain['any'] if 'any' in delete_by_chain else {}
             if chain in replace_by_chain:
                 mutations_for_chain = { **mutations_for_chain, **replace_by_chain[chain] }
+            if chain in delete_by_chain:
+                deletions_for_chain = { **deletions_for_chain, **delete_by_chain[chain] }
             if mutations_for_chain:
                 for i in range(0,13):
                     resname = line[19+i*4:22+i*4]
                     pos = (line_no-1)*13+i+1
-                    if resname == '   ' or pos not in mutations_for_chain:
+                    if resname == '   ':
                         continue
-                    if mutations_for_chain[pos]['from'] != resname:
-                        raise ValueError('chain {} position {} is {} while mutation requests {}'.format(chain, pos, resname, mutations_for_chain[pos]['from']))
-                    line = line[0:19+i*4] + mutations_for_chain[pos]['to'] + line[22+i*4:]
+                    if mutations_for_chain and pos in mutations_for_chain:
+                        if mutations_for_chain[pos]['from'] != resname:
+                            raise ValueError('chain {} position {} is {} while mutation requests {}'.format(chain, pos, resname, mutations_for_chain[pos]['from']))
+                        line = line[0:19+i*4] + mutations_for_chain[pos]['to'] + line[22+i*4:]
         print(line, end='')
