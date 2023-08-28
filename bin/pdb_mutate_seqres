@@ -8,19 +8,31 @@ import argparse, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
 parser.add_argument('--replace', action='append', help='Specify replacements', default=[])
+parser.add_argument('--delete', action='append', help='Specify deletions', default=[])
 args = parser.parse_args()
 
 replace_by_chain = {}
 for replacement in args.replace:
     m = fullmatch('([A-Z])([A-Z])?([0-9]+)([A-Z])', replacement)
     if not m:
-        raise ValueError('mutation {} cannot be understood'.format(replacement))
+        raise ValueError('replacement {} cannot be understood'.format(replacement))
     chain = m.group(2) if m.group(2) else 'any'
     fro, pos, to = m.group(1), int(m.group(3)), m.group(4)
     if chain not in replace_by_chain:
         replace_by_chain[chain] = {}
     replace_by_chain[chain][pos] = { 'from': protein_letters_1to3[fro].upper(),
                                      'to':   protein_letters_1to3[to].upper() }
+
+delete_by_chain = {}
+for deletion in args.delete:
+    m = fullmatch('([A-Z])([A-Z])?([0-9]+)-?', deletion)
+    if not m:
+        raise ValueError('deletion {} cannot be understood'.format(deletion))
+    chain = m.group(2) if m.group(2) else 'any'
+    fro, pos = m.group(1), int(m.group(3))
+    if chain not in delete_by_chain:
+        delete_by_chain[chain] = {}
+    delete_by_chain[chain][pos] = { 'from': protein_letters_1to3[fro].upper() }
 
 for pdb in args.files:
     if isinstance(pdb, str):
