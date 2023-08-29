@@ -66,13 +66,15 @@ for (i in 1:options$options$rep) {
     }
 }
 
+model = best_model
+
 if( !is.na( options$options$output_model ) ) {
     save( model, file = options$options$output_model )
 }
 
 if( !is.na( options$options$importance ) ) {
     svg( options$options$importance )
-    varImpPlot( best_model )
+    varImpPlot( model )
 }
 
 cat("RMSE", sqrt(mean(errors**2)), "\n")
