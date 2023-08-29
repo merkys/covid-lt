@@ -78,4 +78,4 @@ if( !is.na( options$options$importance ) ) {
 }
 
 cat("RMSE all", sqrt(mean(errors^2)), "\n")
-cat("RMSE best", sqrt(mean(errors^2)), "\n")
+cat("RMSE best", best_model_mse, "\n")
