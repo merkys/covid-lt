@@ -35,3 +35,8 @@ The most populous of the antibody clusters (cluster ID 2) exhibits contacts with
 This cluster encompasses LY-COV555 antibody (Bamlanivimab) which originates from recovering COVID-19 patient [https://www.biorxiv.org/content/10.1101/2020.09.30.318972v3].
 Complexes containing S3H3 antibody which is effective against Omicron variant [https://www.nature.com/articles/s41586-022-04581-9] compose a well-conserved cluster (cluster ID 16) bound to CTD1 of SARS2 spike glycoprotein chains.
 Antibodies CR3022 [https://directorsblog.nih.gov/2020/04/14/antibody-points-to-possible-weak-spot-on-novel-coronavirus/], EY6A [https://www.nature.com/articles/s41594-020-0480-y] and COVA1-16 [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7687367/] which originate from recovered patients constitute a separate cluster (cluster ID 1).
+
+To aid further research, each cluster has been described by a list of its conserved contacts and their distances.
+First the number of conserved contacts is limited to the average number of contacts in a cluster by excluding the rarest contacts.
+Then for each contacting position along the SARS2 spike glycoprotein chain the contact distances are averaged.
+This results in a list of most often observed contacts and their average distances.
