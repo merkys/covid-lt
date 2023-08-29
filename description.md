@@ -20,6 +20,7 @@ Complexes with antibodies consist of three protein chains each: a SARS2 spike gl
 In case of selection ambiguity (for example, multiple antibody chains in one structure), the number of contacts with the SARS2 spike glycoprotein chain was maximized.
 
 For each of the sets a contact map was generated as a real-valued N×M matrix where N is the number of complexes and M is the number of residues in SARS2 spike glycoprotein chain.
+To construct the contact matrices, probe radius of 13 Å was used in Voronota calls to capture even more distant contacts.
 Each element in these contact matrices corresponds to the distance value between a residue in SARS2 spike glycoprotein chain and its closest contact in a complex partner chain.
 For positions in SARS2 spike glycoprotein chain for which no contacts have been detected by Voronota a preselected value of 20 Å is recorded.
 We argue that this value fares well in the comparison of complex contacts, which is described below.
