@@ -3,4 +3,4 @@ From: debian:bookworm
 
 %post
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes moreutils r-base-core r-cran-ape r-cran-devtools r-cran-optparse r-cran-seqinr
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes moreutils r-base-core r-cran-ape r-cran-devtools r-cran-optparse r-cran-randomforest r-cran-seqinr
