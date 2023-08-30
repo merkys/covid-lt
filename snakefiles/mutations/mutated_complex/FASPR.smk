@@ -3,6 +3,8 @@ rule mutated_complex:
         "{pdbid}.pdb"
     output:
         "faspr/{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
+    singularity:
+        "containers/faspr.sif"
     shell:
         """
         rm -f {output}
@@ -28,6 +30,8 @@ rule wild_type:
         "{pdbid}.pdb"
     output:
         "faspr/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+    singularity:
+        "containers/faspr.sif"
     shell:
         """
         rm -f {output}
@@ -44,7 +48,7 @@ rule faspr_simulate:
     output:
         "{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
     singularity:
-        "container.sif"
+        "containers/promod3.sif"
     shell:
         """
         PYTHONPATH=. bin/promod-fix-pdb --do-not-fill-gaps --simulate {input} > {output}
