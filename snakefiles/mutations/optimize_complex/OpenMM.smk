@@ -5,7 +5,7 @@ rule optimize_complex:
         pdb = "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb",
         map = "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.map"
     singularity:
-        "container.sif"
+        "containers/openmm.sif"
     shell:
         """
         mkdir --parents $(dirname {output})

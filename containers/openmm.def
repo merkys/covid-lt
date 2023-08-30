@@ -9,7 +9,7 @@ From: ubuntu:focal
     apt-get update
 
     # Build OpenMM
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes dctrl-tools equivs git git-buildpackage
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes dctrl-tools equivs git git-buildpackage python3-biopython
 
     mkdir debian-packages && cd debian-packages
     git clone https://salsa.debian.org/debichem-team/openmm && cd openmm && git checkout ubuntu/focal
