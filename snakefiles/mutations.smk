@@ -187,6 +187,8 @@ rule dssp:
     output:
         part = "sa_part.tab",
         com = "sa_com.tab"
+    singularity:
+        "containers/dssp.sif"
     shell:
         """
         echo -n > {output.part}
