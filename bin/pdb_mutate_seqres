@@ -19,7 +19,7 @@ def unpack_seqres(lines):
         if chain not in seqres:
             seqres[chain] = []
         for i in range(0,13):
-            if line[19+i*4:22+i*4] != '   ':
+            if line[19+i*4:22+i*4] != '   ' and line[19+i*4:22+i*4] != '':
                 seqres[chain].append(protein_letters_3to1[line[19+i*4:22+i*4].capitalize()])
     return seqres
 
@@ -64,31 +64,33 @@ for deletion in args.delete:
 for pdb in args.files:
     if isinstance(pdb, str):
         pdb = open(pdb, 'r')
+    before_seqres = []
     seqres_lines = []
-    passthrough = True
+    after_seqres = []
     for line in pdb:
         if line[0:6] == 'SEQRES':
-            passthrough = False
             seqres_lines.append(line)
         else:
-            if passthrough:
-                print(line, end='')
+            if seqres_lines:
+                before_seqres.append(line)
             else:
-                seqres = unpack_seqres(seqres_lines)
-                for chain in sorted(seqres):
-                    mutations_for_chain = replace_by_chain['any'] if 'any' in replace_by_chain else {}
-                    deletions_for_chain = delete_by_chain['any'] if 'any' in delete_by_chain else {}
-                    if chain in replace_by_chain:
-                        mutations_for_chain = { **mutations_for_chain, **replace_by_chain[chain] }
-                    if chain in delete_by_chain:
-                        deletions_for_chain = { **deletions_for_chain, **delete_by_chain[chain] }
-                    for pos in mutations_for_chain:
-                        if seqres[chain][pos-1] != mutations_for_chain[pos]['from']:
-                            raise ValueError('chain {} position {} is {} while mutation requests {}'.format(chain, pos, seqres[chain][pos-1], mutations_for_chain[pos]['from']))
-                        seqres[chain][pos-1] = mutations_for_chain[pos]['to']
-                    for pos in deletions_for_chain:
-                        if seqres[chain][pos-1] != deletions_for_chain[pos]['from']:
-                            raise ValueError('chain {} position {} is {} while deletion requests {}'.format(chain, pos, seqres[chain][pos-1], deletions_for_chain[pos]['from']))
-                        seqres[chain].pop(pos-1)
-                pack_seqres(seqres)
-                passthrough = True
+                after_seqres.append(line)
+    print(before_seqres, end='')
+    seqres = unpack_seqres(seqres_lines)
+    for chain in sorted(seqres):
+        mutations_for_chain = replace_by_chain['any'] if 'any' in replace_by_chain else {}
+        deletions_for_chain = delete_by_chain['any'] if 'any' in delete_by_chain else {}
+        if chain in replace_by_chain:
+            mutations_for_chain = { **mutations_for_chain, **replace_by_chain[chain] }
+        if chain in delete_by_chain:
+            deletions_for_chain = { **deletions_for_chain, **delete_by_chain[chain] }
+        for pos in mutations_for_chain:
+            if seqres[chain][pos-1] != mutations_for_chain[pos]['from']:
+                raise ValueError('chain {} position {} is {} while mutation requests {}'.format(chain, pos, seqres[chain][pos-1], mutations_for_chain[pos]['from']))
+            seqres[chain][pos-1] = mutations_for_chain[pos]['to']
+        for pos in deletions_for_chain:
+            if seqres[chain][pos-1] != deletions_for_chain[pos]['from']:
+                raise ValueError('chain {} position {} is {} while deletion requests {}'.format(chain, pos, seqres[chain][pos-1], deletions_for_chain[pos]['from']))
+            seqres[chain].pop(pos-1)
+    pack_seqres(seqres)
+    print(after_seqres, end='')
