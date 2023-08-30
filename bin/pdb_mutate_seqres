@@ -87,7 +87,8 @@ for pdb in args.files:
                 before_seqres.append(line)
             else:
                 after_seqres.append(line)
-    print(before_seqres, end='')
+    if before_seqres:
+        print(before_seqres, end='')
     seqres = unpack_seqres(seqres_lines)
     for chain in sorted(seqres):
         mutations_for_chain = replace_by_chain['any'] if 'any' in replace_by_chain else {}
@@ -105,4 +106,5 @@ for pdb in args.files:
                 raise ValueError('chain {} position {} is {} while deletion requests {}'.format(chain, pos, seqres[chain][pos-1], deletions_for_chain[pos]['from']))
             seqres[chain].pop(pos-1)
     pack_seqres(seqres)
-    print(after_seqres, end='')
+    if after_seqres:
+        print(after_seqres, end='')
