@@ -13,7 +13,7 @@ rule mutated_complex:
             | PYTHONPATH=. bin/pdb_resolve_alternate_locations > $TMPFILE
         PYTHONPATH=. bin/pdb_atom2fasta --with-initial-gaps $TMPFILE \
             | bin/fasta2pdb_seqres \
-            | bin/pdb_mutate_seqres --replace {wildcards.mutation} \
+            | bin/pdb_mutate_seqres --replace {wildcards.mutation} --trim-gaps \
             | bin/pdb_seqres2fasta \
             | grep -v '^>' \
             | grep -o . \
