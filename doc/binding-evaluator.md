@@ -6,12 +6,13 @@ For the simulation, heavy atom positions are restrained using harmonic restraint
 
 The following terms were calculated for every pair of mutated/wild type complexes:
 
-* CADscore and dS are global contact score and the difference in contact area, respectively, as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538].
+* CADscore and dS are global contact score and the difference in contact area, respectively, as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
   Difference in contact area is calculated by subtracting wild type complex area from the mutated complex contact area.
 
 * ddG is the binding interaction score of a protein-protein complex as calculated by EvoEF [https://pubmed.ncbi.nlm.nih.gov/30851277/].
 
-* SA_part and SA_com are surface accessible areas of the mutated residues in wild type complexes as calculated by DSSP v4.2.2.
+* SA_part and SA_com are surface accessible areas of the mutated residues in optimized wild type complexes as calculated by DSSP v4.2.2.
+  SA_part is calculated from the isolated chain while SA_com is calculated from the whole complex.
   For multiple mutations, areas of the mutated residues are summed.
 
 * PotentialEnergy, HarmonicBondForce, PeriodicTorsionForce, CustomTorsionForce, CMAPTorsionForce, LJForce, LennardJones, CMMotionRemover, HarmonicAngleForce, LennardJones14, CustomGBForce and CoulombForce are differences of force terms calculated by OpenMM v7.5.1 using CHARMM36 forcefield with GBN2 implicit solvent.
