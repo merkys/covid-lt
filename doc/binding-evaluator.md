@@ -8,5 +8,5 @@ The following terms were calculated for every pair of mutated/wild type complexe
 * SA_part and SA_com are surface accessible areas of the mutated residues in wild type complexes as calculated by DSSP.
   For multiple mutations, areas of the mutated residues are summed.
 
-* CS is the change of evolutionary conservation of mutated sites upon introducing mutations, calculated using the PROVEAN software package [https://pubmed.ncbi.nlm.nih.gov/23056405/].
+* CS is the change of evolutionary conservation of mutated sites upon introducing mutations, calculated using the PROVEAN v1.1.5 software package [https://pubmed.ncbi.nlm.nih.gov/23056405/].
   For PROVEAN the NR database from August 2011 was used as provided on PROVEAN FTP server, as newer NR releases were incompatible with PROVEAN.
