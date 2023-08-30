@@ -11,7 +11,7 @@ rule mutated_complex:
         TMPFILE=$(mktemp --suffix .pdb)
         bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
             | PYTHONPATH=. bin/pdb_resolve_alternate_locations > $TMPFILE
-        bin/pdb_atom2fasta $TMPFILE \
+        PYTHONPATH=. bin/pdb_atom2fasta --with-initial-gaps $TMPFILE \
             | bin/fasta2pdb_seqres \
             | bin/pdb_mutate_seqres --replace {wildcards.mutation} \
             | bin/pdb_seqres2fasta \
