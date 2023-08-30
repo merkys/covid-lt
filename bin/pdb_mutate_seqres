@@ -9,6 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*', default=[sys.stdin])
 parser.add_argument('--replace', action='append', help='Specify replacements', default=[])
 parser.add_argument('--delete', action='append', help='Specify deletions', default=[])
+parser.add_argument('--trim-gaps', action='store_true', help='Trim initial gaps after mutations')
 args = parser.parse_args()
 
 def unpack_seqres(lines):
@@ -105,6 +106,9 @@ for pdb in args.files:
             if seqres[chain][pos-1] != deletions_for_chain[pos]['from']:
                 raise ValueError('chain {} position {} is {} while deletion requests {}'.format(chain, pos, seqres[chain][pos-1], deletions_for_chain[pos]['from']))
             seqres[chain].pop(pos-1)
+        if args.trim_gaps:
+            while len(seqres[chain]) and seqres[chain][0] == '-':
+                seqres[chain].pop(0)
     pack_seqres(seqres)
     if after_seqres:
         print(after_seqres, end='')
