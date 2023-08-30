@@ -19,7 +19,9 @@ def unpack_seqres(lines):
         if chain not in seqres:
             seqres[chain] = []
         for i in range(0,13):
-            if line[19+i*4:22+i*4] != '   ' and line[19+i*4:22+i*4] != '':
+            if line[19+i*4:22+i*4] == 'XAA':
+                seqres[chain].append('-')
+            elif line[19+i*4:22+i*4] != '   ' and line[19+i*4:22+i*4] != '':
                 seqres[chain].append(protein_letters_3to1[line[19+i*4:22+i*4].capitalize()])
     return seqres
 
@@ -30,13 +32,23 @@ def pack_seqres(seqres):
         while len(seqres[chain]) >= 13:
             print("SEQRES% 4d %s% 5d " % (line_no, chain, length), end='')
             for i in range(0,13):
-                print(" %s" % protein_letters_1to3[seqres[chain].pop(0)].upper(), end='')
+                res = seqres[chain].pop(0)
+                if res == '-':
+                    res = 'XAA'
+                else:
+                    res = protein_letters_1to3[res].upper()
+                print(" %s" % res, end='')
             print()
             line_no += 1
         if len(seqres[chain]):
             print("SEQRES% 4d %s% 5d " % (line_no, chain, length), end='')
             while len(seqres[chain]):
-                print(" %s" % protein_letters_1to3[seqres[chain].pop(0)].upper(), end='')
+                res = seqres[chain].pop(0)
+                if res == '-':
+                    res = 'XAA'
+                else:
+                    res = protein_letters_1to3[res].upper()
+                print(" %s" % res, end='')
             print()
 
 replace_by_chain = {}
