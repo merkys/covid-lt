@@ -195,22 +195,17 @@ rule dssp:
         echo -e "mutation\tSA_com" > {output.com}
         for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
         do
-            ORIG_POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
+            PDB=$(echo $MUT | cut -d _ -f 1)
+            POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
             CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
 
-            test -s optimized/${{MUT}}_wt.pdb || continue
-
-            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt.map | cut -f 2 | cut -c 2-)
-
-            bin/pdb_add_header --id $(echo $MUT | cut -d _ -f 1) optimized/${{MUT}}_wt.pdb \
-                | bin/pdb_select --chain $CHAIN \
+            bin/pdb_select --chain $CHAIN $PDB.pdb \
                 | dssp --output-format dssp /dev/stdin \
                 | grep -vP '\.$' \
                 | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
                 | cut -c 36-38 \
                 | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.part} || true
-            bin/pdb_add_header --id $(echo $MUT | cut -d _ -f 1) optimized/${{MUT}}_wt.pdb \
-                | dssp --output-format dssp /dev/stdin \
+            dssp --output-format dssp $PDB.pdb \
                 | grep -vP '\.$' \
                 | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
                 | cut -c 36-38 \
