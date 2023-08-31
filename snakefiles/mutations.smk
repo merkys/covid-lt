@@ -193,7 +193,7 @@ rule dssp:
         """
         echo -e "mutation\tSA_part" > {output.part}
         echo -e "mutation\tSA_com" > {output.com}
-        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
+        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
         do
             ORIG_POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
             CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
