@@ -531,7 +531,7 @@ rule existing_cadscore:
         "cadscore.tab"
     shell:
         """
-        echo mutation score target_area model_area | sed 's/ /\t/g' > {output}
+        echo mutation CADscore dS | sed 's/ /\t/g' > {output}
         ls -1 optimized/*.cadscore \
             | while read FILE
               do
@@ -539,8 +539,7 @@ rule existing_cadscore:
 
                 MUT=$(basename $FILE .cadscore | cut -d _ -f 1-2)
                 echo -en "$MUT\t"
-
-                sed 's/ /\t/g' $FILE | cut -f 5-
+                awk '{{print $5 "\t" $7-$6}}' < $FILE
               done | sort -k 1b,1 >> {output}
         """
 
