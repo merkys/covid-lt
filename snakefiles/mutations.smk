@@ -204,13 +204,13 @@ rule dssp:
 
             bin/pdb_add_header --id $(echo $MUT | cut -d _ -f 1) optimized/${{MUT}}_wt.pdb \
                 | bin/pdb_select --chain $CHAIN \
-                | dssp /dev/stdin \
+                | dssp --output-format dssp /dev/stdin \
                 | grep -vP '\.$' \
                 | grep -P "^\s+$POS\s" \
                 | cut -c 36-38 \
                 | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.part} || true
             bin/pdb_add_header --id $(echo $MUT | cut -d _ -f 1) optimized/${{MUT}}_wt.pdb \
-                | dssp /dev/stdin \
+                | dssp --output-format dssp /dev/stdin \
                 | grep -vP '\.$' \
                 | grep -P "^\s+$POS\s" \
                 | cut -c 36-38 \
