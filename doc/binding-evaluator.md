@@ -11,7 +11,7 @@ The following terms were calculated for every pair of mutated/wild type complexe
 
 * ddG is the binding interaction score of a protein-protein complex as calculated by EvoEF [https://pubmed.ncbi.nlm.nih.gov/30851277/].
 
-* SA_part and SA_com are surface accessible areas of the mutated residues in optimized wild type complexes as calculated by DSSP v4.2.2.
+* SA_part and SA_com are surface accessible areas of the mutated residues in the original wild type complex structures as calculated by DSSP v4.2.2.
   SA_part is calculated from the isolated chain while SA_com is calculated from the whole complex.
   For multiple mutations, areas of the mutated residues are summed.
 
