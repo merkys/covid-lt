@@ -407,7 +407,7 @@ rule openmm_energy:
     output:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.openmm.ener"
     singularity:
-        "container.sif"
+        "containers/openmm.sif"
     shell:
         """
         (
