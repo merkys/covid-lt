@@ -1,7 +1,7 @@
 Both the mutant and wild type complex structures are built using FASPR, with missing heavy and hydrogen atoms added via ProMod3 v3.2.1.
 Mutant structures are created by providing the mutated aminoacid sequence to FASPR.
 To generate wild type structures, FASPR is given the original wild type aminoacid sequence.
-Produced mutant and wild type complexes are then optimized by running a 100 step simulation in gas phase using OpenMM v7.5.1 with CHARMM36 forcefield.
+Produced mutant and wild type complexes are then optimized by running a 100 step simulation in gas phase using OpenMM v7.7.0 with CHARMM36 forcefield.
 For the simulation, heavy atom positions are restrained using harmonic restraints with a force constant of 5 kcal/(mol * Å^2).
 
 The following terms were calculated for every pair of mutated/wild type complexes:
@@ -16,7 +16,7 @@ The following terms were calculated for every pair of mutated/wild type complexe
   For multiple mutations, areas of the mutated residues are summed.
 
 * PotentialEnergy, HarmonicBondForce, PeriodicTorsionForce, CustomTorsionForce, CMAPTorsionForce, LJForce, LennardJones, CMMotionRemover, HarmonicAngleForce, LennardJones14, CustomGBForce and CoulombForce are differences of force terms calculated by OpenMM v7.5.1 using CHARMM36 forcefield with GBN2 implicit solvent on optimized structures.
-  All force terms are calculated by OpenMM and NonbondedForce is split into LJForce and CoulombForce.
+  All force terms are calculated by OpenMM v7.7.0 and NonbondedForce is split into LJForce and CoulombForce.
   Differences of force terms are calculated by subtracting wild type complex forces from the mutated complex forces.
 
 * CS is the change of evolutionary conservation of mutated sites upon introducing mutations, calculated using the PROVEAN v1.1.5 software package [https://pubmed.ncbi.nlm.nih.gov/23056405/].
