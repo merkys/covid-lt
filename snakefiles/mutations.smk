@@ -200,7 +200,7 @@ rule dssp:
 
             test -s optimized/${{MUT}}_wt.pdb || continue
 
-            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt.map | cut -f 2)
+            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt.map | cut -f 2 | cut -c 2-)
 
             bin/pdb_add_header --id $(echo $MUT | cut -d _ -f 1) optimized/${{MUT}}_wt.pdb \
                 | bin/pdb_select --chain $CHAIN \
