@@ -1,19 +1,6 @@
-# Builds and installs system-wide OpenMM.
-# May not be the newest OpenMM, though.
-# Capable of building CUDA and OpenCL bindings.
-
 Bootstrap: docker
-From: ubuntu:focal
+From: debian:bookworm
 
 %post
     apt-get update
-
-    # Build OpenMM
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes dctrl-tools equivs git git-buildpackage python3-biopython
-
-    mkdir debian-packages && cd debian-packages
-    git clone https://salsa.debian.org/debichem-team/openmm && cd openmm && git checkout ubuntu/focal
-    mk-build-deps --install --tool 'apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' --remove
-    rm -f *.buildinfo *.changes
-    gbp buildpackage -uc -us --git-ignore-branch
-    debi
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes python3-biopython python3-simtk
