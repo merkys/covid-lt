@@ -165,8 +165,8 @@ rule binding_energy_EvoEF2:
             | xargs -n 1 basename \
             | while read BASE
               do
-                MUTATED=$BASE
-                WT=$(echo $BASE | cut -d _ -f 1).pdb
+                MUTATED=optimized/$BASE
+                WT=optimized/$(basename $BASE .pdb)_wt.pdb
 
                 test -s $MUTATED || continue
                 test -s $WT || continue
