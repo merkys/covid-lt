@@ -205,7 +205,8 @@ rule dssp:
                 | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
                 | cut -c 36-38 \
                 | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.part} || true
-            dssp --output-format dssp $PDB.pdb \
+            bin/pdb_select --chain $(echo $MUT | cut -d _ -f 3-4 | tr -d _) $PDB.pdb \
+                | dssp --output-format dssp /dev/stdin \
                 | grep -vP '\.$' \
                 | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
                 | cut -c 36-38 \
