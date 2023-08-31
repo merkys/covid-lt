@@ -128,7 +128,7 @@ rule binding_energy_EvoEF:
         "containers/evoef.sif"
     shell:
         """
-        echo -e "mutation\tEvoEF" > {output}
+        echo -e "mutation\tddG_EvoEF" > {output}
         ls -1 optimized/*.pdb \
             | grep -v _wt \
             | xargs -n 1 basename \
@@ -644,7 +644,7 @@ rule all_provean:
         "provean.tab"
     shell:
         """
-        echo -e "mutation\tprovean" > {output}
+        echo -e "mutation\tCS" > {output}
         ls -1 *.provean.log \
             | while read FILE
               do
