@@ -5,4 +5,4 @@ From: debian:bookworm
     echo libcifpp-data libcifpp/update boolean false | debconf-set-selections
 
     apt-get update
-    apt-get install --yes dssp
+    apt-get install --yes dssp python3
