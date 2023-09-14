@@ -75,17 +75,19 @@ for (i in 1:options$options$rep) {
     }
 
     P = predict(model, newdata=test)
-    names(P) = 'ddG'
 
-    if( !is.na( options$options$input_model ) ) {
-        print(P)
-    }
+    if( is.na( options$options$input_model ) ) {
+        errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
 
-    errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
-
-    if( is.na( best_model ) || best_model_mse > sqrt(mean((P - test$ddG)^2)) ) {
-        best_model = model
-        best_model_mse = sqrt(mean((P - test$ddG)^2))
+        if( is.na( best_model ) || best_model_mse > sqrt(mean((P - test$ddG)^2)) ) {
+            best_model = model
+            best_model_mse = sqrt(mean((P - test$ddG)^2))
+        }
+    } else {
+        P = as.vector(P)
+        for (line in 1:length(P)) {
+            cat(P[line], "\n")
+        }
     }
 }
 
