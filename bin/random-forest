@@ -77,6 +77,10 @@ for (i in 1:options$options$rep) {
     P = predict(model, newdata=test)
     names(P) = 'ddG'
 
+    if( !is.na( options$options$input_model ) ) {
+        print(P)
+    }
+
     errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
 
     if( is.na( best_model ) || best_model_mse > sqrt(mean((P - test$ddG)^2)) ) {
@@ -96,5 +100,7 @@ if( !is.na( options$options$importance ) ) {
     varImpPlot( model )
 }
 
-cat("RMSE all", sqrt(mean(errors^2)), "\n")
-cat("RMSE best", best_model_mse, "\n")
+if( is.na( options$options$input_model ) ) {
+    cat("RMSE all", sqrt(mean(errors^2)), "\n")
+    cat("RMSE best", best_model_mse, "\n")
+}
