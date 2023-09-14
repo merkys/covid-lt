@@ -11,13 +11,21 @@ parser <- OptionParser()
 parser <- add_option(parser, c( '--train-size' ), type = 'double', default = 0.8)
 parser <- add_option(parser, c( '--repeat' ), dest = 'rep', type = 'double', default = 1)
 parser <- add_option(parser, c( '--method' ), type = 'character', default = 'rf')
+parser <- add_option(parser, c( '--input-format' ), dest = 'input_format', type = 'character', default = 'tsv' )
 parser <- add_option(parser, c( '--output-model' ), dest = 'output_model', type = 'character', default = NA)
 parser <- add_option(parser, c( '--use-caret' ), dest = 'caret', action = 'store_true', default = FALSE)
 parser <- add_option(parser, c( '--importance-plot' ), type = 'character', default = NA)
 parser <- add_option(parser, c( '--tune-grid' ), type = 'character', default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
-D = read.csv( options$args[1], quote="", sep="\t" )
+D = NULL
+if( options$options$input_format == 'csv' ) {
+    D = read.csv( options$args[1] )
+} else if( options$options$input_format == 'tsv' ) {
+    D = read.csv( options$args[1], quote="", sep="\t" )
+} else {
+    stop( paste( "unknown input format:", options$options$input_format ) )
+}
 
 train_size = options$options$train
 if( train_size < 1 ) {
