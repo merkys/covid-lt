@@ -75,6 +75,7 @@ for (i in 1:options$options$rep) {
     }
 
     P = predict(model, newdata=test)
+    names(P) = 'ddG'
 
     errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
 
