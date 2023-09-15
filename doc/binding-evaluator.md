@@ -27,3 +27,6 @@ We have as well tested the following terms, but they were not included in the fi
 * ddG_EvoEF2 is the binding interaction score of a protein-protein complex as calculated by EvoEF2.
   As EvoEF2 algorithm differs from its predecessor EvoEF, it was interesting to compare both.
   We have found out that ddG_EvoEF brought larger increase of prediction accuracy than EvoEF1.
+
+* dE is the difference of corrected reaction field energies computed by subtracting wild type complex energies from the mutated complex energies calculated by DelPhi v8.5.0 [doi:10.1002/jcc.26006].
+  Calculations were ran for 800 of non-linear iterations and the suggested convergence threshold value 0.0001 for maximum change of potential was used.
