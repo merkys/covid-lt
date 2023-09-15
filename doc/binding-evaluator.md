@@ -38,3 +38,7 @@ We have as well tested the following terms, but they were not included in the fi
 * Conditional log-likelihood score for mutated sequences against their wild type counterparts as calculated by Evolutionary Scale Modeling v2.0.0 [doi:10.1101/622803].
 
 * Change in stability of the protein complex upon mutation as calculated by FoldX v4 [doi:10.1093/nar/gki387].
+
+* Polar solvation energy as calculated by APBS v3.4.1 [doi:10.1002/pro.3280].
+  Solvation energy is defined as a difference between energies of solvated mutated and wild type complexes.
+  For individual calculations mg-auto APBS mode solving linear Poisson-Boltzmann equation was used with 161 × 161  × 161 grid.
