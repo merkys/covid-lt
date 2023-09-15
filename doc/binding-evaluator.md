@@ -6,9 +6,6 @@ For the simulation, heavy atom positions are restrained using harmonic restraint
 
 The following terms were calculated for every pair of mutated/wild type complexes:
 
-* CADscore and dS are global contact score and the difference in contact area, respectively, as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
-  Difference in contact area is calculated by subtracting wild type complex area from the mutated complex contact area.
-
 * ddG_EvoEF is the binding interaction score of a protein-protein complex as calculated by EvoEF [https://pubmed.ncbi.nlm.nih.gov/30851277/].
 
 * SA_part and SA_com are surface accessible areas of the mutated residues in the original wild type complex structures as calculated by DSSP v4.2.2.
@@ -21,3 +18,8 @@ The following terms were calculated for every pair of mutated/wild type complexe
 
 * CS is the change of evolutionary conservation of mutated sites upon introducing mutations, calculated using the PROVEAN v1.1.5 software package [https://pubmed.ncbi.nlm.nih.gov/23056405/].
   For PROVEAN the NR database from August 2011 was used as provided on PROVEAN FTP server, as newer NR releases were incompatible with PROVEAN.
+
+We have as well tested the following terms, but they were not included in the final best-scoring model as their inclusion did not improve the overall predicting accuracy:
+
+* CADscore and dS are global contact score and the difference in contact area, respectively, as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
+  Difference in contact area is calculated by subtracting wild type complex area from the mutated complex contact area.
