@@ -30,3 +30,7 @@ We have as well tested the following terms, but they were not included in the fi
 
 * Difference of corrected reaction field energies computed by subtracting wild type complex energies from the mutated complex energies calculated by DelPhi v8.5.0 [doi:10.1002/jcc.26006].
   Calculations were ran for 800 of non-linear iterations and the suggested convergence threshold value 0.0001 for maximum change of potential was used.
+
+* Difference in predicted binding affinity as calculated by PRODIGY v2.1.2 [10.21769/BioProtoc.2124] calculated between the contacting partners in optimized wild type and mutated complexes.
+
+* ddG for the mutation in question as calculated by UEP [https://github.com/pepamengual/UEP] from the optimized wild type complex.
