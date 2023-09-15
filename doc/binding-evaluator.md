@@ -36,3 +36,5 @@ We have as well tested the following terms, but they were not included in the fi
 * ddG for the mutation in question as calculated by UEP [https://github.com/pepamengual/UEP] from the optimized wild type complex.
 
 * Conditional log-likelihood score for mutated sequences against their wild type counterparts as calculated by Evolutionary Scale Modeling v2.0.0 [doi:10.1101/622803].
+
+* Change in stability of the protein complex upon mutation as calculated by FoldX v4 [doi:10.1093/nar/gki387].
