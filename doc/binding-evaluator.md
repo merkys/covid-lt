@@ -24,7 +24,7 @@ We have as well tested the following terms, but they were not included in the fi
 * Global contact score and the difference in contact area as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
   Difference in contact area is calculated by subtracting wild type complex area from the mutated complex contact area.
 
-* Binding interaction score of a protein-protein complex as calculated by EvoEF2.
+* Binding interaction score of a protein-protein complex as calculated by EvoEF2 [doi:10.1093/bioinformatics/btz740].
   As EvoEF2 algorithm differs from its predecessor EvoEF, it was interesting to compare both.
   We have found out that ddG_EvoEF brought larger increase of prediction accuracy than EvoEF1.
 
