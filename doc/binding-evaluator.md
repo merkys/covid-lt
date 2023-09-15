@@ -21,12 +21,12 @@ The following terms were calculated for every pair of mutated/wild type complexe
 
 We have as well tested the following terms, but they were not included in the final best-scoring model as their inclusion did not improve the overall predicting accuracy:
 
-* CADscore and dS are global contact score and the difference in contact area, respectively, as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
+* Global contact score and the difference in contact area as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
   Difference in contact area is calculated by subtracting wild type complex area from the mutated complex contact area.
 
-* ddG_EvoEF2 is the binding interaction score of a protein-protein complex as calculated by EvoEF2.
+* Binding interaction score of a protein-protein complex as calculated by EvoEF2.
   As EvoEF2 algorithm differs from its predecessor EvoEF, it was interesting to compare both.
   We have found out that ddG_EvoEF brought larger increase of prediction accuracy than EvoEF1.
 
-* dE is the difference of corrected reaction field energies computed by subtracting wild type complex energies from the mutated complex energies calculated by DelPhi v8.5.0 [doi:10.1002/jcc.26006].
+* Difference of corrected reaction field energies computed by subtracting wild type complex energies from the mutated complex energies calculated by DelPhi v8.5.0 [doi:10.1002/jcc.26006].
   Calculations were ran for 800 of non-linear iterations and the suggested convergence threshold value 0.0001 for maximum change of potential was used.
