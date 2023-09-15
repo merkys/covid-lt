@@ -23,3 +23,7 @@ We have as well tested the following terms, but they were not included in the fi
 
 * CADscore and dS are global contact score and the difference in contact area, respectively, as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
   Difference in contact area is calculated by subtracting wild type complex area from the mutated complex contact area.
+
+* ddG_EvoEF2 is the binding interaction score of a protein-protein complex as calculated by EvoEF2.
+  As EvoEF2 algorithm differs from its predecessor EvoEF, it was interesting to compare both.
+  We have found out that ddG_EvoEF brought larger increase of prediction accuracy than EvoEF1.
