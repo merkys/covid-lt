@@ -13,7 +13,7 @@ The following terms were calculated for every pair of mutated/wild type complexe
   For multiple mutations, areas of the mutated residues are summed.
 
 * PotentialEnergy, HarmonicBondForce, PeriodicTorsionForce, CustomTorsionForce, CMAPTorsionForce, LJForce, LennardJones, CMMotionRemover, HarmonicAngleForce, LennardJones14, CustomGBForce and CoulombForce are differences of force terms calculated by OpenMM v7.5.1 using CHARMM36 forcefield with GBN2 implicit solvent on optimized structures.
-  All force terms are calculated by OpenMM v7.7.0 and NonbondedForce is split into LJForce and CoulombForce.
+  All force terms are calculated by OpenMM, with NonbondedForce being split into LJForce and CoulombForce.
   Differences of force terms are calculated by subtracting wild type complex forces from the mutated complex forces.
 
 * CS is the change of evolutionary conservation of mutated sites upon introducing mutations, calculated using the PROVEAN v1.1.5 software package [https://pubmed.ncbi.nlm.nih.gov/23056405/].
