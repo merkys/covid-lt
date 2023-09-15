@@ -43,3 +43,5 @@ We have as well tested the following terms, but they were not included in the fi
   Solvation energy is defined as a difference between energies of solvated mutated and wild type complexes.
   For individual calculations mg-auto APBS mode solving linear Poisson-Boltzmann equation was used with 161 × 161  × 161 grid.
   Input complexes were converted to PQR format using PDB2PQR v3.5.2 [doi:10.1093/nar/gkm276].
+
+* Difference in potential energies as calculated by CHARMM v47b1 [doi:10.1002/jcc.21287] using GBorn subsystem and CHARMM 36 forcefields.
