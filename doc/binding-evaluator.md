@@ -42,3 +42,4 @@ We have as well tested the following terms, but they were not included in the fi
 * Polar solvation energy as calculated by APBS v3.4.1 [doi:10.1002/pro.3280].
   Solvation energy is defined as a difference between energies of solvated mutated and wild type complexes.
   For individual calculations mg-auto APBS mode solving linear Poisson-Boltzmann equation was used with 161 × 161  × 161 grid.
+  Input complexes were converted to PQR format using PDB2PQR v3.5.2 [doi:10.1093/nar/gkm276].
