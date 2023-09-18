@@ -54,7 +54,8 @@ To train our model we have taken the definition of each mutation (PDB ID, contac
 For every mutation we have computed all the aforementioned terms and trained a random forest estimator using R package randomForest v4.7-1.1 [https://cran.r-project.org/web/packages/randomForest/index.html].
 We have used 80% of data for training and the remaining 20% for testing.
 Data points have been partitioned into these two sets randomly.
-Training procedure was performed 50 times and the best model has been selected based on RMSE.
+Training procedure was performed 50 times and the best estimator has been selected based on RMSE.
+The resulting model has achieved RMSE of 1.2 kcal/mol.
 
 We have as well faithfully reproduced MutaBind2's model by training a random forest estimator on data from MutaBind2 data sheet.
 Using random 80% of MutaBind2's data points for training and 20% for testing we have achieved RMSE of 1.17 kcal/mol for single mutations (compared to the reported RMSE of 1.19 kcal/mol).
