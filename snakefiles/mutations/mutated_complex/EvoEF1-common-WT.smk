@@ -6,6 +6,8 @@ rule mutated_complex:
         "{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
     log:
         "{pdbid}_{mutation}_{partner1}_{partner2}.log"
+    singularity:
+        "containers/evoef.sif"
     shell:
         """
         if ! test -s {input}
@@ -27,6 +29,8 @@ rule wild_type:
         "{pdbid}.pdb"
     output:
         "{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+    singularity:
+        "containers/evoef.sif"
     shell:
         """
         if ls -1 {wildcards.pdbid}_*_{wildcards.partner1}_{wildcards.partner2}_wt.pdb | grep --silent .
