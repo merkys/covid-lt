@@ -8,11 +8,11 @@ The following terms were calculated for every pair of mutated/wild type complexe
 
 * ddG_EvoEF is the binding interaction score of a protein-protein complex as calculated by EvoEF [https://pubmed.ncbi.nlm.nih.gov/30851277/].
 
-* SA_part and SA_com are surface accessible areas of the mutated residues in the original wild type complex structures as calculated by DSSP v4.2.2 [doi:10.1093/nar/gkq1105].
+* SA_part and SA_com are surface accessible areas (in Å^2) of the mutated residues in the original wild type complex structures as calculated by DSSP v4.2.2 [doi:10.1093/nar/gkq1105].
   SA_part is calculated from the isolated chain while SA_com is calculated from the whole complex.
   For multiple mutations, areas of the mutated residues are summed.
 
-* PotentialEnergy, HarmonicBondForce, PeriodicTorsionForce, CustomTorsionForce, CMAPTorsionForce, LJForce, LennardJones, CMMotionRemover, HarmonicAngleForce, LennardJones14, CustomGBForce and CoulombForce are differences of force terms calculated by OpenMM v7.5.1 using CHARMM36 forcefield with GBN2 implicit solvent on optimized structures.
+* PotentialEnergy, HarmonicBondForce, PeriodicTorsionForce, CustomTorsionForce, CMAPTorsionForce, LJForce, LennardJones, CMMotionRemover, HarmonicAngleForce, LennardJones14, CustomGBForce and CoulombForce are differences of force terms (in kcal/mol) calculated by OpenMM v7.5.1 using CHARMM36 forcefield with GBN2 implicit solvent on optimized structures.
   All force terms are calculated by OpenMM, with NonbondedForce being split into LJForce and CoulombForce.
   Differences of force terms are calculated by subtracting wild type complex forces from the mutated complex forces.
 
@@ -41,13 +41,13 @@ We have as well tested the following terms, but they were not included in the fi
 
 * Polar solvation energy as calculated by APBS v3.4.1 [doi:10.1002/pro.3280].
   Solvation energy is defined as a difference between energies of solvated mutated and wild type complexes.
-  For individual calculations mg-auto APBS mode solving linear Poisson-Boltzmann equation was used with 161 × 161  × 161 grid.
+  For individual calculations mg-auto APBS mode solving linear Poisson-Boltzmann equation was used with 161 × 161 × 161 grid.
   Input complexes were converted to PQR format using PDB2PQR v3.5.2 [doi:10.1093/nar/gkm276].
 
 * Difference in potential energies as calculated by CHARMM v47b1 [doi:10.1002/jcc.21287] using GBorn subsystem and CHARMM36 forcefield.
 
 * Number of interacting residues between partners in wild type complex structure.
-  It is defined as the number of residues in the mutated chain which have at least one heavy atom of another chain in close vicinity (10 angstroms or less) from their heavy atoms.
+  It is defined as the number of residues in the mutated chain which have at least one heavy atom of another chain in close vicinity (10 Å or less) from their heavy atoms.
 
 To train and compare our approach to MutaBind2 [doi:10.1016/j.isci.2020.100939], we have taken all single forward mutation data from MutaBind2 data sheet [https://github.com/mutabind-group/MutaBindv2.0], Git commit 1654c87.
 To train our model we have taken the definition of each mutation (PDB ID, contacting partners in a complex, location of the mutation) as well as the associated ddG value (column named 'DDGexp').
