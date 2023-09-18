@@ -219,11 +219,11 @@ rule N_wt_cont:
         "N_wt_cont.tab"
     shell:
         """
-        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
+        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
         do
             PDB_ID=$(echo $MUT | cut -d _ -f 1)
             CHAIN=$( echo $MUT | cut -d _ -f 2 | cut -c 2)
-            CHAINS=$(echo $MUT | cut -d _ -f 3)
+            CHAINS=$(echo $MUT | cut -d _ -f 3,4 | tr -d '_')
 
             echo -en $MUT"\t"
             bin/pdb_select --chain $CHAINS ${{PDB_ID}}.pdb \
