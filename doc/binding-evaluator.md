@@ -47,3 +47,5 @@ We have as well tested the following terms, but they were not included in the fi
 * Difference in potential energies as calculated by CHARMM v47b1 [doi:10.1002/jcc.21287] using GBorn subsystem and CHARMM36 forcefield.
 
 To train and compare our approach to MutaBind2 [doi:10.1016/j.isci.2020.100939], we have taken all single forward mutation data from MutaBind2 data sheet [https://github.com/mutabind-group/MutaBindv2.0], Git commit 1654c87.
+To train our model we have taken the definition of each mutation (PDB ID, contacting partners in a complex, location of the mutation) as well as the associated ddG value.
+For every mutation we have computed all the aforementioned terms and trained a random forest estimator using R package randomForest [https://cran.r-project.org/web/packages/randomForest/index.html].
