@@ -1,8 +1,8 @@
-Both the mutant and wild type complex structures are built using FASPR (Git commit 345441f) [doi:10.1093/bioinformatics/btaa234], with missing heavy and hydrogen atoms added via ProMod3 v3.2.1 [doi:10.1371/journal.pcbi.1008667].
-Mutant structures are created by providing the mutated aminoacid sequence to FASPR.
-To generate wild type structures, FASPR is given the original wild type aminoacid sequence.
-Produced mutant and wild type complexes are then optimized by running a 100 step simulation in gas phase using OpenMM v7.7.0 [doi:10.1371/journal.pcbi.1005659] with CHARMM36 forcefield.
-For the simulation, heavy atom positions are restrained using harmonic restraints with a force constant of 5 kcal/(mol * Å^2).
+Both the mutant and wild type complex structures were built using FASPR (Git commit 345441f) [doi:10.1093/bioinformatics/btaa234], with missing heavy and hydrogen atoms added via ProMod3 v3.2.1 [doi:10.1371/journal.pcbi.1008667].
+Mutant structures were created by providing the mutated aminoacid sequence to FASPR.
+To generate wild type structures, FASPR was given the original wild type aminoacid sequence.
+Produced mutant and wild type complexes were then optimized by running a 100 step simulation in gas phase using OpenMM v7.7.0 [doi:10.1371/journal.pcbi.1005659] with CHARMM36 forcefield.
+For the simulation, heavy atom positions were restrained using harmonic restraints with a force constant of 5 kcal/(mol * Å^2).
 
 The following terms were calculated for every pair of mutated/wild type complexes:
 
