@@ -48,4 +48,4 @@ We have as well tested the following terms, but they were not included in the fi
 
 To train and compare our approach to MutaBind2 [doi:10.1016/j.isci.2020.100939], we have taken all single forward mutation data from MutaBind2 data sheet [https://github.com/mutabind-group/MutaBindv2.0], Git commit 1654c87.
 To train our model we have taken the definition of each mutation (PDB ID, contacting partners in a complex, location of the mutation) as well as the associated ddG value.
-For every mutation we have computed all the aforementioned terms and trained a random forest estimator using R package randomForest [https://cran.r-project.org/web/packages/randomForest/index.html].
+For every mutation we have computed all the aforementioned terms and trained a random forest estimator using R package randomForest v4.7-1.1 [https://cran.r-project.org/web/packages/randomForest/index.html].
