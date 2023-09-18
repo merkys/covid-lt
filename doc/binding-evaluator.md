@@ -45,3 +45,5 @@ We have as well tested the following terms, but they were not included in the fi
   Input complexes were converted to PQR format using PDB2PQR v3.5.2 [doi:10.1093/nar/gkm276].
 
 * Difference in potential energies as calculated by CHARMM v47b1 [doi:10.1002/jcc.21287] using GBorn subsystem and CHARMM36 forcefield.
+
+To train and compare our approach to MutaBind2 [doi:10.1016/j.isci.2020.100939], we have taken all single forward mutation data from MutaBind2 data sheet [https://github.com/mutabind-group/MutaBindv2.0], Git commit 1654c87.
