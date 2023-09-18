@@ -3,15 +3,25 @@
 library( 'optparse' )
 
 parser <- OptionParser()
+parser <- add_option(parser, c( '--horizontal' ), type = 'character', default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
 D = read.csv( options$args[1], quote="", sep="\t" )
 
-svg( '/dev/stdout' )
-par(mfrow = c(2, 2))
+horizontal = 1:length(names(D))
+vertical = 1:length(names(D))
 
-for (i in 1:2) {
-    for (j in 1:2) {
+if( !is.na( options$options$horizontal ) ) {
+    horizontal_columns = strsplit( options$options$horizontal, ',' )[[1]]
+    horizontal = which( names(D) %in% horizontal_columns )
+    vertical = which( !(names(D) %in% horizontal_columns) )
+}
+
+svg( '/dev/stdout' )
+par(mfrow = c( length( horizontal ), length( vertical ) ) )
+
+for (i in horizontal) {
+    for (j in vertical) {
         plot( D[,i], D[,j], xlab = names(D)[i], ylab = names(D)[j] )
     }
 }
