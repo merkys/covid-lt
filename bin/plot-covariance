@@ -1,0 +1,17 @@
+#!/usr/bin/Rscript --vanilla
+
+library( 'optparse' )
+
+parser <- OptionParser()
+options = parse_args(parser, positional_arguments = TRUE)
+
+D = read.csv( options$args[1], quote="", sep="\t" )
+
+svg( '/dev/stdout' )
+par(mfrow = c(2, 2))
+
+for (i in 1:2) {
+    for (j in 1:2) {
+        plot( D[,i], D[,j], xlab = names(D)[i], ylab = names(D)[j] )
+    }
+}
