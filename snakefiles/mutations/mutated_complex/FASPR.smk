@@ -3,15 +3,17 @@ rule mutated_complex:
         "{pdbid}.pdb"
     output:
         "faspr/{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
+    singularity:
+        "containers/faspr.sif"
     shell:
         """
         rm -f {output}
         TMPFILE=$(mktemp --suffix .pdb)
         bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
             | PYTHONPATH=. bin/pdb_resolve_alternate_locations > $TMPFILE
-        bin/pdb_atom2fasta $TMPFILE \
+        PYTHONPATH=. bin/pdb_atom2fasta --with-initial-gaps $TMPFILE \
             | bin/fasta2pdb_seqres \
-            | bin/pdb_mutate_seqres --replace {wildcards.mutation} \
+            | bin/pdb_mutate_seqres --replace {wildcards.mutation} --trim-gaps \
             | bin/pdb_seqres2fasta \
             | grep -v '^>' \
             | grep -o . \
@@ -28,6 +30,8 @@ rule wild_type:
         "{pdbid}.pdb"
     output:
         "faspr/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+    singularity:
+        "containers/faspr.sif"
     shell:
         """
         rm -f {output}
@@ -44,7 +48,7 @@ rule faspr_simulate:
     output:
         "{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
     singularity:
-        "container.sif"
+        "containers/promod3.sif"
     shell:
         """
         PYTHONPATH=. bin/promod-fix-pdb --do-not-fill-gaps --simulate {input} > {output}

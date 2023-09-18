@@ -11,12 +11,22 @@ parser <- OptionParser()
 parser <- add_option(parser, c( '--train-size' ), type = 'double', default = 0.8)
 parser <- add_option(parser, c( '--repeat' ), dest = 'rep', type = 'double', default = 1)
 parser <- add_option(parser, c( '--method' ), type = 'character', default = 'rf')
+parser <- add_option(parser, c( '--input-format' ), dest = 'input_format', type = 'character', default = 'tsv' )
+parser <- add_option(parser, c( '--input-model' ), dest = 'input_model', type = 'character', default = NA)
+parser <- add_option(parser, c( '--output-model' ), dest = 'output_model', type = 'character', default = NA)
 parser <- add_option(parser, c( '--use-caret' ), dest = 'caret', action = 'store_true', default = FALSE)
 parser <- add_option(parser, c( '--importance-plot' ), type = 'character', default = NA)
 parser <- add_option(parser, c( '--tune-grid' ), type = 'character', default = NA)
 options = parse_args(parser, positional_arguments = TRUE)
 
-D = read.csv( options$args[1], quote="", sep="\t" )
+D = NULL
+if( options$options$input_format == 'csv' ) {
+    D = read.csv( options$args[1] )
+} else if( options$options$input_format == 'tsv' ) {
+    D = read.csv( options$args[1], quote="", sep="\t" )
+} else {
+    stop( paste( "unknown input format:", options$options$input_format ) )
+}
 
 train_size = options$options$train
 if( train_size < 1 ) {
@@ -32,42 +42,67 @@ if( !is.na( options$options$tune ) ) {
     tune_grid = read.csv( options$options$tune, quote="", sep="\t" )
 }
 
+model = NULL
+if( !is.na( options$options$input_model ) ) {
+    load( options$options$input_model )
+}
+
 best_model = NA
 best_model_mse = NA
 
 errors = numeric( options$options$rep * ( length(D[,1]) - train_size ) )
 
 for (i in 1:options$options$rep) {
-    is_train = logical( length(D[,1]) )
-    is_train[1:train_size] = TRUE
-    is_train = sample( is_train )
+    test = NULL
+    if( is.na( options$options$input_model ) ) { # Perform the training
+        is_train = logical( length(D[,1]) )
+        is_train[1:train_size] = TRUE
+        is_train = sample( is_train )
 
-    train = D[ is_train, 2:length(D)]
-    test  = D[!is_train, 2:length(D)]
+        train = D[ is_train, 2:length(D)]
+        test  = D[!is_train, 2:length(D)]
 
-    names(train) = names(D)[2:length(D)]
-    names(test)  = names(D)[2:length(D)]
+        names(train) = names(D)[2:length(D)]
+        names(test)  = names(D)[2:length(D)]
 
-    model = NULL
-    if( options$options$caret ) {
-        model = train( ddG ~ ., data = train, method = options$options$method, tuneGrid = tune_grid )
+        if( options$options$caret ) {
+            model = train( ddG ~ ., data = train, method = options$options$method, tuneGrid = tune_grid )
+        } else {
+            model = randomForest( formula = ddG ~ ., data = train )
+        }
     } else {
-        model = randomForest( formula = ddG ~ ., data = train )
+        test = D
     }
 
     P = predict(model, newdata=test)
 
-    errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
+    if( is.na( options$options$input_model ) ) {
+        errors[1:( length(D[,1]) - train_size ) + ( length(D[,1]) - train_size ) * (i-1)] = P - test$ddG
 
-    if( is.na( best_model ) || best_model_mse > sqrt(mean((P - test$ddG)^2)) ) {
-        best_model = model
-        best_model_mse = sqrt(mean((P - test$ddG)^2))
+        if( is.na( best_model ) || best_model_mse > sqrt(mean((P - test$ddG)^2)) ) {
+            best_model = model
+            best_model_mse = sqrt(mean((P - test$ddG)^2))
+        }
+    } else {
+        P = as.vector(P)
+        for (line in 1:length(P)) {
+            cat(P[line], "\n")
+        }
     }
+}
+
+model = best_model
+
+if( !is.na( options$options$output_model ) ) {
+    save( model, file = options$options$output_model )
 }
 
 if( !is.na( options$options$importance ) ) {
     svg( options$options$importance )
-    varImpPlot( best_model )
+    varImpPlot( model )
 }
 
-cat("RMSE", sqrt(mean(errors**2)), "\n")
+if( is.na( options$options$input_model ) ) {
+    cat("RMSE all", sqrt(mean(errors^2)), "\n")
+    cat("RMSE best", best_model_mse, "\n")
+}

@@ -1,0 +1,40 @@
+#!/usr/bin/Rscript --vanilla
+
+library( 'optparse' )
+
+parser <- OptionParser()
+parser <- add_option(parser, c( '--horizontal' ), type = 'character', default = NA)
+parser <- add_option(parser, c( '--vertical' ), type = 'character', default = NA)
+parser <- add_option(parser, c( '--mark' ), type = 'character', default = 'o')
+options = parse_args(parser, positional_arguments = TRUE)
+
+D = read.csv( options$args[1], quote="", sep="\t" )
+
+horizontal = 1:length(names(D))
+vertical = 1:length(names(D))
+
+if( !is.na( options$options$horizontal ) ) {
+    horizontal_columns = strsplit( options$options$horizontal, ',' )[[1]]
+    horizontal = which( names(D) %in% horizontal_columns )
+    if( is.na( options$options$vertical ) ) {
+        vertical = which( !(names(D) %in% horizontal_columns) )
+    }
+}
+
+if( !is.na( options$options$vertical ) ) {
+    vertical_columns = strsplit( options$options$vertical, ',' )[[1]]
+    vertical = which( names(D) %in% vertical_columns )
+    if( is.na( options$options$horizontal ) ) {
+        horizontal = which( !(names(D) %in% vertical_columns) )
+    }
+}
+
+svg( '/dev/stdout' )
+par( mfrow = c( length( horizontal ), length( vertical ) ),
+     mar   = c( 4, 4, 0.5, 0.5 ) + 0.1 )
+
+for (i in horizontal) {
+    for (j in vertical) {
+        plot( D[,i], D[,j], xlab = names(D)[i], ylab = names(D)[j], pch = options$options$mark )
+    }
+}

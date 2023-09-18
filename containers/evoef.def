@@ -1,0 +1,13 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    apt-get update
+
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes git git-buildpackage
+
+    mkdir debian-packages && cd debian-packages
+    git clone https://salsa.debian.org/merkys/evoef && cd evoef
+    uscan --download-current-version
+    gbp buildpackage -uc -us --git-overlay --git-export-dir=.. --git-no-pristine-tar
+    debi

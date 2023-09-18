@@ -124,21 +124,21 @@ rule binding_energy_EvoEF:
 #         expand("optimized/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
     output:
         "binding_energy_EvoEF.tab"
+    singularity:
+        "containers/evoef.sif"
     shell:
         """
-        echo -e "mutation\tEvoEF" > {output}
+        echo -e "mutation\tddG_EvoEF" > {output}
         ls -1 optimized/*.pdb \
             | grep -v _wt \
             | xargs -n 1 basename \
             | while read BASE
               do
-                MUTATED=$BASE
-                WT=$(echo $BASE | cut -d _ -f 1).pdb
+                MUTATED=optimized/$BASE
+                WT=optimized/$(basename $BASE .pdb)_wt.pdb
 
                 test -s $MUTATED || continue
                 test -s $WT || continue
-
-                grep --silent ^MODEL $WT && continue || true
 
                 MUT=$(echo $BASE | cut -d _ -f 1-2)
 
@@ -165,8 +165,8 @@ rule binding_energy_EvoEF2:
             | xargs -n 1 basename \
             | while read BASE
               do
-                MUTATED=$BASE
-                WT=$(echo $BASE | cut -d _ -f 1).pdb
+                MUTATED=optimized/$BASE
+                WT=optimized/$(basename $BASE .pdb)_wt.pdb
 
                 test -s $MUTATED || continue
                 test -s $WT || continue
@@ -187,28 +187,28 @@ rule dssp:
     output:
         part = "sa_part.tab",
         com = "sa_com.tab"
+    singularity:
+        "containers/dssp.sif"
     shell:
         """
-        echo -n > {output.part}
-        echo -n > {output.com}
-        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
+        echo -e "mutation\tSA_part" > {output.part}
+        echo -e "mutation\tSA_com" > {output.com}
+        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
         do
-            ORIG_POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
+            PDB=$(echo $MUT | cut -d _ -f 1)
+            POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
             CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
 
-            test -s optimized/${{MUT}}_wt.pdb || continue
-
-            POS=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt.map | cut -f 2)
-            POS_IN_CHAIN=$(grep -P "^${{CHAIN}}${{ORIG_POS}}\s" optimized/${{MUT}}_wt_$CHAIN.map | cut -f 2)
-
-            dssp optimized/${{MUT}}_wt_$CHAIN.pdb \
+            bin/pdb_select --chain $CHAIN $PDB.pdb \
+                | dssp --output-format dssp /dev/stdin \
                 | grep -vP '\.$' \
-                | grep -P "^\s+$POS_IN_CHAIN\s" \
+                | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
                 | cut -c 36-38 \
                 | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.part} || true
-            dssp optimized/${{MUT}}_wt.pdb \
+            bin/pdb_select --chain $(echo $MUT | cut -d _ -f 3-4 | tr -d _) $PDB.pdb \
+                | dssp --output-format dssp /dev/stdin \
                 | grep -vP '\.$' \
-                | grep -P "^\s+$POS\s" \
+                | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
                 | cut -c 36-38 \
                 | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.com} || true
         done
@@ -219,11 +219,11 @@ rule N_wt_cont:
         "N_wt_cont.tab"
     shell:
         """
-        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
+        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
         do
             PDB_ID=$(echo $MUT | cut -d _ -f 1)
             CHAIN=$( echo $MUT | cut -d _ -f 2 | cut -c 2)
-            CHAINS=$(echo $MUT | cut -d _ -f 3)
+            CHAINS=$(echo $MUT | cut -d _ -f 3,4 | tr -d '_')
 
             echo -en $MUT"\t"
             bin/pdb_select --chain $CHAINS ${{PDB_ID}}.pdb \
@@ -405,7 +405,7 @@ rule openmm_energy:
     output:
         "optimized/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.openmm.ener"
     singularity:
-        "container.sif"
+        "containers/openmm.sif"
     shell:
         """
         (
@@ -527,7 +527,7 @@ rule existing_cadscore:
         "cadscore.tab"
     shell:
         """
-        echo mutation score target_area model_area | sed 's/ /\t/g' > {output}
+        echo mutation CADscore dS | sed 's/ /\t/g' > {output}
         ls -1 optimized/*.cadscore \
             | while read FILE
               do
@@ -535,8 +535,7 @@ rule existing_cadscore:
 
                 MUT=$(basename $FILE .cadscore | cut -d _ -f 1-2)
                 echo -en "$MUT\t"
-
-                sed 's/ /\t/g' $FILE | cut -f 5-
+                awk '{{print $5 "\t" $7-$6}}' < $FILE
               done | sort -k 1b,1 >> {output}
         """
 
@@ -646,7 +645,7 @@ rule all_provean:
         "provean.tab"
     shell:
         """
-        echo -e "mutation\tprovean" > {output}
+        echo -e "mutation\tCS" > {output}
         ls -1 *.provean.log \
             | while read FILE
               do
