@@ -21,7 +21,7 @@ The following terms were calculated for every pair of mutated/wild type complexe
 
 We have as well tested the following terms, but they were not included in the final best-scoring model as their inclusion did not improve the overall predicting accuracy:
 
-* Global contact score and the difference in contact area as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
+* Global contact score and the difference in contact areas as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
   Difference in contact area is calculated by subtracting wild type complex area from the mutated complex contact area.
 
 * Binding interaction score of a protein-protein complex as calculated by EvoEF2 [doi:10.1093/bioinformatics/btz740].
@@ -54,5 +54,5 @@ Data points have been partitioned into these two sets randomly.
 Training procedure was performed 50 times and the best model has been selected based on RMSE.
 
 We have as well faithfully reproduced MutaBind2's model by training a random forest estimator on data from MutaBind2 data sheet.
-Using random 80% of MutaBind2's data points for training and 20% for testing we have achieved RMSE of 1.18 kcal/mol for single mutations (compared to the reported RMSE of 1.19 kcal/mol).
+Using random 80% of MutaBind2's data points for training and 20% for testing we have achieved RMSE of 1.17 kcal/mol for single mutations (compared to the reported RMSE of 1.19 kcal/mol).
 This finding helped us by confirming our approach to training methodology.
