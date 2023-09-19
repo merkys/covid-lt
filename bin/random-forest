@@ -14,6 +14,7 @@ parser <- add_option(parser, c( '--method' ), type = 'character', default = 'rf'
 parser <- add_option(parser, c( '--input-format' ), dest = 'input_format', type = 'character', default = 'tsv' )
 parser <- add_option(parser, c( '--input-model' ), dest = 'input_model', type = 'character', default = NA)
 parser <- add_option(parser, c( '--output-model' ), dest = 'output_model', type = 'character', default = NA)
+parser <- add_option(parser, c( '--seed' ), type = 'double', default = NA)
 parser <- add_option(parser, c( '--use-caret' ), dest = 'caret', action = 'store_true', default = FALSE)
 parser <- add_option(parser, c( '--importance-plot' ), type = 'character', default = NA)
 parser <- add_option(parser, c( '--tune-grid' ), type = 'character', default = NA)
@@ -31,6 +32,10 @@ if( options$options$input_format == 'csv' ) {
 train_size = options$options$train
 if( train_size < 1 ) {
     train_size = round( length(D[,1]) * train_size )
+}
+
+if( !is.na( options$options$seed ) ) {
+    set.seed( options$options$seed )
 }
 
 if( options$options$caret ) {
