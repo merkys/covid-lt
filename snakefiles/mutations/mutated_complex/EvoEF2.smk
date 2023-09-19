@@ -7,6 +7,8 @@ rule mutated_complex:
         "{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
     log:
         "{pdbid}_{mutation}_{partner1}_{partner2}.log"
+    singularity:
+        "containers/evoef.sif"
     shell:
         """
         if ! test -s {input.pdb}
@@ -37,7 +39,7 @@ rule wild_type:
         pdb = "{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb",
         map = "{pdbid}_{mutation}_{partner1}_{partner2}_wt.map"
     singularity:
-        "container.sif"
+        "containers/promod3.sif"
     shell:
         """
         echo -n > {output.map}
