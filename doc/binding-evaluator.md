@@ -56,8 +56,13 @@ We have used 80% of data for training and the remaining 20% for testing.
 Data points have been partitioned into these two sets randomly.
 Training procedure was performed 50 times and the best model has been selected based on RMSE, achieving RMSE of 1.2 kcal/mol.
 
-We have as well faithfully reproduced MutaBind2's model by training a random forest model on data from MutaBind2 data sheet.
-Using random 80% of MutaBind2's data points for training and 20% for testing we have achieved RMSE of 1.17 kcal/mol for single mutations (compared to the reported RMSE of 1.19 kcal/mol).
+MutaBind2 dataset contains 4191 data points, out of which 2485 describe single, forward mutations.
+Of these, our method was able to derive abovementioned terms for 1919 input data points.
+The remaining one fifth of input data points could not be processed mostly due to problems with input PDB files.
+
+We have as well faithfully reproduced MutaBind2's model by training a random forest model on a subset from MutaBind2 data sheet.
+For input we have used the data points which our method was capable to handle.
+Using random 80% data points for training and 20% for testing we have achieved RMSE of 1.17 kcal/mol for single mutations (compared to the reported RMSE of 1.19 kcal/mol).
 This finding helped us by confirming our approach to training methodology.
 
 The designed approach has lead to a random forest model with prediction power very close to MutaBind2 models.
