@@ -7,7 +7,13 @@ From: debian:bookworm
     DEBIAN_FRONTEND=noninteractive apt-get install --yes git git-buildpackage python3-biopython voronota
 
     mkdir debian-packages && cd debian-packages
+
     git clone https://salsa.debian.org/merkys/evoef && cd evoef
+    uscan --download-current-version
+    gbp buildpackage -uc -us --git-overlay --git-export-dir=.. --git-no-pristine-tar
+    debi
+
+    git clone https://salsa.debian.org/merkys/evoef2 && cd evoef2
     uscan --download-current-version
     gbp buildpackage -uc -us --git-overlay --git-export-dir=.. --git-no-pristine-tar
     debi
