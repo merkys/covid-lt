@@ -15,6 +15,7 @@ parser <- add_option(parser, c( '--input-format' ), dest = 'input_format', type 
 parser <- add_option(parser, c( '--input-model' ), dest = 'input_model', type = 'character', default = NA)
 parser <- add_option(parser, c( '--output-model' ), dest = 'output_model', type = 'character', default = NA)
 parser <- add_option(parser, c( '--output-errors' ), dest = 'output_errors', action = 'store_true', default = FALSE)
+parser <- add_option(parser, c( '--output-absolute' ), dest = 'output_absolute', action = 'store_true', default = FALSE)
 parser <- add_option(parser, c( '--seed' ), type = 'double', default = NA)
 parser <- add_option(parser, c( '--use-caret' ), dest = 'caret', action = 'store_true', default = FALSE)
 parser <- add_option(parser, c( '--importance-plot' ), type = 'character', default = NA)
@@ -87,8 +88,13 @@ for (i in 1:options$options$rep) {
 
         if( options$options$output_errors ) {
             cat( "mutation\terror\n" )
-            write.table( data.frame( mutation = D[!is_train, 1], error = errors, row.names = 1 ),
-                         col.names = FALSE, quote = FALSE, sep = "\t" )
+            if( options$options$output_absolute ) {
+                write.table( data.frame( mutation = D[!is_train, 1], error = P - test$ddG, row.names = 1 ),
+                             col.names = FALSE, quote = FALSE, sep = "\t" )
+            } else {
+                write.table( data.frame( mutation = D[!is_train, 1], ddG = P, row.names = 1 ),
+                             col.names = FALSE, quote = FALSE, sep = "\t" )
+            }
         }
 
         if( is.na( best_model ) || best_model_mse > sqrt(mean((P - test$ddG)^2)) ) {
