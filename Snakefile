@@ -13,6 +13,7 @@ wildcard_constraints:
 
 include: "snakefiles/dG-datasets.smk"
 include: "snakefiles/forcefields.smk"
+include: "snakefiles/mutations.smk"
 include: "snakefiles/pdb-model-quality.smk"
 
 # Top-level 'all' rule:

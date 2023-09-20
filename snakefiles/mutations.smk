@@ -36,12 +36,12 @@ rule all_complexes:
 
 # Alternative ways to produce mutants:
 
-# include: "snakefiles/mutations/mutated_complex/FoldX.smk"
-# include: "snakefiles/mutations/mutated_complex/EvoEF1.smk"
-# include: "snakefiles/mutations/mutated_complex/EvoEF1-common-WT.smk"
-include: "snakefiles/mutations/mutated_complex/EvoEF2.smk"
-# include: "snakefiles/mutations/mutated_complex/FASPR.smk"
-# include: "snakefiles/mutations/mutated_complex/ProMod3.smk"
+# include: "mutations/mutated_complex/FoldX.smk"
+# include: "mutations/mutated_complex/EvoEF1.smk"
+# include: "mutations/mutated_complex/EvoEF1-common-WT.smk"
+include: "mutations/mutated_complex/EvoEF2.smk"
+# include: "mutations/mutated_complex/FASPR.smk"
+# include: "mutations/mutated_complex/ProMod3.smk"
 
 rule all_original_pdbs:
     input:
@@ -58,8 +58,8 @@ rule original_pdb:
 
 # Alternative ways to optimize complexes:
 
-# include: "snakefiles/mutations/optimize_complex/namd.smk"
-include: "snakefiles/mutations/optimize_complex/OpenMM.smk"
+# include: "mutations/optimize_complex/namd.smk"
+include: "mutations/optimize_complex/OpenMM.smk"
 
 def list_chains(name):
     name_parts = name.split('_')
