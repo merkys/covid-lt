@@ -2,3 +2,6 @@
 	path = dependencies/UEP
 	url = https://github.com/merkys/UEP
 	branch = relative-path
+[submodule "externals/mutabind2-data"]
+	path = externals/mutabind2-data
+	url = https://github.com/mutabind-group/MutaBindv2.0
