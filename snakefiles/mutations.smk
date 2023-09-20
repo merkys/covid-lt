@@ -14,7 +14,7 @@ wildcard_constraints:
 
 def skempi_filtered():
     skempi = []
-    for line in open('SkempiS.txt', 'r').readlines():
+    for line in open('externals/mutabind2-data/SkempiS.txt', 'r').readlines():
         fields = line.split("\t")
         if fields[7] != 'forward': # Filter out non-forward (reverse) mutations for now
             continue
@@ -239,7 +239,7 @@ rule N_wt_cont:
 
 rule join_with_skempi:
     input:
-        skempi = "SkempiS.txt",
+        skempi = "externals/mutabind2-data/SkempiS.txt",
         fold = "fold.tab",
         sa_com = "sa_com.tab",
         sa_part = "sa_part.tab",
@@ -289,7 +289,7 @@ rule train_dataset_our:
         sa_part = "sa_part.tab",
         sa_com = "sa_com.tab",
         N_wt_cont = "N_wt_cont.tab",
-        skempi = "SkempiS.txt"
+        skempi = "externals/mutabind2-data/SkempiS.txt"
     output:
         "train-dataset-our.tab"
     shell:
@@ -307,7 +307,7 @@ rule train_dataset_our:
 
 rule train_data_skempi:
     input:
-        skempi = "SkempiS.txt"
+        skempi = "externals/mutabind2-data/SkempiS.txt"
     output:
         "train-dataset-skempi.tab"
     shell:
