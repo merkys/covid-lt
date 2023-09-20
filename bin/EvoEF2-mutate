@@ -39,15 +39,18 @@ TMPDIR=$(mktemp --directory)
 
 cat $INPUT_PDB > $TMPDIR/input.pdb
 
-MUT_RES=$(echo $MUTATION   | cut -c 1)
-MUT_CHAIN=$(echo $MUTATION | cut -c 2)
-MUT_POS=$(echo $MUTATION   | grep -o '[0-9]\+' | head -n 1)
-
-if [ ${DIE_ON_MISMATCH} -a "$(bin/pdb_select $TMPDIR/input.pdb --chain $MUT_CHAIN --residues $MUT_POS- | grep ^ATOM | bin/pdb_atom2fasta | grep -v '^>' | head -n 1 | cut -c 1)" != "$MUT_RES" ]
+if ${DIE_ON_MISMATCH}
 then
-    echo $(basename $0): $INPUT_PDB: residue in mutated position does not match the declared one >&2
-    rm -rf "$TMPDIR"
-    exit 1
+    MUT_RES=$(echo $MUTATION   | cut -c 1)
+    MUT_CHAIN=$(echo $MUTATION | cut -c 2)
+    MUT_POS=$(echo $MUTATION   | grep -o '[0-9]\+' | head -n 1)
+
+    if [ "$(bin/pdb_select $TMPDIR/input.pdb --chain $MUT_CHAIN --residues $MUT_POS- | grep ^ATOM | bin/pdb_atom2fasta | grep -v '^>' | head -n 1 | cut -c 1)" != "$MUT_RES" ]
+    then
+        echo $(basename $0): $INPUT_PDB: residue in mutated position does not match the declared one >&2
+        rm -rf "$TMPDIR"
+        exit 1
+    fi
 fi
 
 (
