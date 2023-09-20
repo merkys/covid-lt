@@ -4,15 +4,19 @@ rule mutated_complex:
     output:
         pdb = "{pdbid}_{mutation}_{partner1}_{partner2}.pdb",
         map = "{pdbid}_{mutation}_{partner1}_{partner2}.map"
+    log:
+        "{pdbid}_{mutation}_{partner1}_{partner2}.log"
     singularity:
         "containers/promod3.sif"
     shell:
         """
         echo -n > {output.map}
-        bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
-            | bin/pdb_mutate_seqres --replace {wildcards.mutation} \
-            | PYTHONPATH=. bin/pdb_align --output-map {output.map} \
-            | PYTHONPATH=. bin/promod-fix-pdb --simulate > {output.pdb} || echo -n > {output.pdb}
+        (
+            bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
+                | bin/pdb_mutate_seqres --replace {wildcards.mutation} \
+                | PYTHONPATH=. bin/pdb_align --output-map {output.map} \
+                | PYTHONPATH=. bin/promod-fix-pdb --simulate > {output.pdb} || echo -n > {output.pdb}
+        ) 2> {log}
         """
 
 rule wild_type:
@@ -21,12 +25,16 @@ rule wild_type:
     output:
         pdb = "{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb",
         map = "{pdbid}_{mutation}_{partner1}_{partner2}_wt.map"
+    log:
+        "{pdbid}_{mutation}_{partner1}_{partner2}_wt.log"
     singularity:
         "containers/promod3.sif"
     shell:
         """
         echo -n > {output.map}
-        bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
-            | PYTHONPATH=. bin/pdb_align --output-map {output.map} \
-            | PYTHONPATH=. bin/promod-fix-pdb --simulate > {output.pdb} || echo -n > {output.pdb}
+        (
+            bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
+                | PYTHONPATH=. bin/pdb_align --output-map {output.map} \
+                | PYTHONPATH=. bin/promod-fix-pdb --simulate > {output.pdb} || echo -n > {output.pdb}
+        ) 2> {log}
         """
