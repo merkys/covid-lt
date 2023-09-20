@@ -85,11 +85,11 @@ for pdb in args.files:
             seqres_lines.append(line)
         else:
             if seqres_lines:
-                before_seqres.append(line)
-            else:
                 after_seqres.append(line)
+            else:
+                before_seqres.append(line)
     if before_seqres:
-        print(before_seqres, end='')
+        print(*before_seqres, sep='', end='')
     seqres = unpack_seqres(seqres_lines)
     for chain in sorted(seqres):
         mutations_for_chain = replace_by_chain['any'] if 'any' in replace_by_chain else {}
@@ -111,4 +111,4 @@ for pdb in args.files:
                 seqres[chain].pop(0)
     pack_seqres(seqres)
     if after_seqres:
-        print(after_seqres, end='')
+        print(*after_seqres, sep='', end='')
