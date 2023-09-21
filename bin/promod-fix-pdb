@@ -17,6 +17,7 @@ parser.add_argument('--trim', action='store_true', help='Trim nonmodelled residu
 parser.add_argument('--do-not-fill-gaps', action='store_true', help='Do not fill gaps')
 parser.add_argument('--simulate', action='store_true', help='Perform a simulation on resulting model')
 parser.add_argument('--forcefield', help='Specify the forcefield ("AMBER" by default)', choices=['AMBER', 'CHARMM'], default='AMBER')
+parser.add_argument('--replace', action='append', help='Perform mutation (replacement), may be multiple', default=[])
 args = parser.parse_args()
 
 file = None
@@ -30,6 +31,14 @@ else:
 pdb = io.LoadPDB(file)
 alignments = seq.AlignmentList()
 
+replacements = []
+for replacement in args.replace:
+    m = re.fullmatch('([A-Z])([A-Z])([0-9]+)([A-Z])', replacement)
+    if not m:
+        warn('mutation {} cannot be parsed'.format(replacement))
+        continue
+    replacements.append({ 'from': m.group(1), 'chain': m.group(2), 'position': int(m.group(3)), 'to': m.group(4), 'full': replacement })
+
 original_chains = []
 for chain in PDBFile(file):
     original_chains.append(chain.name)
@@ -37,21 +46,43 @@ for chain in PDBFile(file):
     if args.do_not_fill_gaps:
         continue
 
-    atom_seq = chain.sequence_atom()
+    atom_seq = chain.sequence_atom(with_gaps=True)
     seqres_seq = chain.sequence_seqres(replace_unknown_with='-')
+
+    for replacement in replacements:
+        if replacement['chain'] != chain.name:
+            continue
+        if atom_seq[replacement['position']-1] != replacement['from']:
+            warn('mutation {} does not match sequence'.format(replacement['full']))
+            continue
+        replacement['offset'] = replacement['position'] - 1 - atom_seq[0:replacement['position']].count('-')
+
     # NW parameters taken from https://www.arabidopsis.org/Blast/BLASToptions.jsp
     align = pairwise2.align.globalms(seqres_seq, atom_seq, 1, -3, -5, -2, one_alignment_only=True)[0]
     sequence = MutableSeq(align[0])
     structure = MutableSeq(align[1])
 
+    # Replace 'X' (gaps) with '-', perform mutations if any
+    pos = 0
+    for i, aa in enumerate(structure):
+        if aa in ['X', '-']:
+            structure[i] = '-'
+            continue
+        for replacement in replacements:
+            if replacement['chain'] != chain.name:
+                continue
+            if replacement['offset'] != pos:
+                continue
+            sequence[i] = replacement['to']
+        pos += 1
+
+    # Cleanup common gaps
     pos = 0
     while pos < len(structure):
-        if structure[pos] == 'X':
-            structure[pos] = '-'
-            if sequence[pos] == '-':
-                del(structure[pos])
-                del(sequence[pos])
-                continue
+        if structure[pos] == '-' and sequence[pos] == '-':
+            del(structure[pos])
+            del(sequence[pos])
+            continue
         pos += 1
 
     if args.trim:
