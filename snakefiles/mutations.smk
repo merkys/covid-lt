@@ -158,6 +158,8 @@ rule binding_energy_EvoEF2:
 #         expand("optimized/{complex}.pdb", complex=filter(lambda x: not x.endswith("_wt"), input_complexes()))
     output:
         "binding_energy_EvoEF2.tab"
+    singularity:
+        "containers/evoef.sif"
     shell:
         """
         echo -e "mutation\tEvoEF2" > {output}
