@@ -257,6 +257,7 @@ rule dssp_part:
                 | grep -vP '\.$' \
                 | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
                 | cut -c 36-38 > {output} || true
+        """
 
 rule N_wt_cont:
     output:
