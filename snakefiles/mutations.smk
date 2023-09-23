@@ -239,7 +239,24 @@ rule dssp_com:
                 | cut -c 36-38 > {output} || true
         """
 
-# rule dssp_part:
+rule dssp_part:
+    input:
+        "{pdbid}.pdb"
+    output:
+        "dssp/{pdbid}_{mutation}_{partner1}_{partner2}.part"
+    singularity:
+        "containers/dssp.sif"
+    shell:
+        """
+        POS=$(echo {wildcards.mutation} | cut -d _ -f 2 | grep -Po '[0-9]+')
+        CHAIN=$(echo {wildcards.mutation} | cut -d _ -f 2 | cut -c 2)
+
+        bin/pdb_select --chain $CHAIN {input} \
+                | grep -e ^HEADER -e ^ATOM \
+                | dssp --output-format dssp /dev/stdin \
+                | grep -vP '\.$' \
+                | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
+                | cut -c 36-38 > {output} || true
 
 rule N_wt_cont:
     output:
