@@ -191,6 +191,7 @@ rule dssp_com_all:
         "sa_{type}.tab"
     shell:
         """
+        echo -e "mutation\tsa_{wildcards.type}" > {output}
         ls -1 dssp/ \
             | grep '.{wildcards.type}$' \
             | xargs -i basename {{}} .{wildcards.type} \
@@ -198,8 +199,8 @@ rule dssp_com_all:
             | while read MUT
               do
                 test -s dssp/$MUT.{wildcards.type} || continue
-                echo $(echo $MUT | cut -d _ -f 1-2) $(cat dssp/$MUT.{wildcards.type})
-              done > {output}
+                echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"$(cat dssp/$MUT.{wildcards.type})
+              done >> {output}
         """
 
 rule dssp_com:
