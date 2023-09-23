@@ -186,37 +186,20 @@ rule binding_energy_EvoEF2:
               done | sort -k 1b,1 >> {output}
         """
 
-rule dssp:
+rule dssp_com_all:
     output:
-        part = "sa_part.tab",
-        com = "sa_com.tab"
-    singularity:
-        "containers/dssp.sif"
+        "sa_{type}.tab"
     shell:
         """
-        echo -e "mutation\tSA_part" > {output.part}
-        echo -e "mutation\tSA_com" > {output.com}
-        for MUT in $(ls -1 optimized/ | grep -P '^[^_]+_[^_]+_[^_]+_[^_]+.pdb$' | xargs -i basename {{}} .pdb | sort | uniq)
-        do
-            PDB=$(echo $MUT | cut -d _ -f 1)
-            POS=$(echo $MUT | cut -d _ -f 2 | grep -Po '[0-9]+')
-            CHAIN=$(echo $MUT | cut -d _ -f 2 | cut -c 2)
-
-            bin/pdb_select --chain $CHAIN $PDB.pdb \
-                | grep -e ^HEADER -e ^ATOM \
-                | dssp --output-format dssp /dev/stdin \
-                | grep -vP '\.$' \
-                | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
-                | cut -c 36-38 \
-                | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.part} || true
-            bin/pdb_select --chain $(echo $MUT | cut -d _ -f 3-4 | tr -d _) $PDB.pdb \
-                | grep -e ^HEADER -e ^ATOM \
-                | dssp --output-format dssp /dev/stdin \
-                | grep -vP '\.$' \
-                | awk '{{ if( $2 == '$POS' && $3 == "'$CHAIN'" ) {{ print }} }}' \
-                | cut -c 36-38 \
-                | xargs -i echo -e $(echo $MUT | cut -d _ -f 1-2)"\t"{{}} >> {output.com} || true
-        done
+        ls -1 dssp/ \
+            | grep '.{wildcards.type}$' \
+            | xargs -i basename {{}} .{wildcards.type} \
+            | sort \
+            | while read MUT
+              do
+                test -s dssp/$MUT.{wildcards.type} || continue
+                echo $(echo $MUT | cut -d _ -f 1-2) $(cat dssp/$MUT.{wildcards.type})
+              done > {output}
         """
 
 rule dssp_com:
