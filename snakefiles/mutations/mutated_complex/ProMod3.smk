@@ -9,7 +9,6 @@ rule mutated_complex:
         "containers/promod3.sif"
     shell:
         """
-        echo -n > {output.map}
         (
             bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
                 | PYTHONPATH=. bin/promod-fix-pdb --replace {wildcards.mutation} --simulate > {output.pdb} || echo -n > {output.pdb}
@@ -27,7 +26,6 @@ rule wild_type:
         "containers/promod3.sif"
     shell:
         """
-        echo -n > {output.map}
         (
             bin/pdb_select --first-model --chain {wildcards.partner1}{wildcards.partner2} {input} \
                 | PYTHONPATH=. bin/promod-fix-pdb --simulate > {output.pdb} || echo -n > {output.pdb}
