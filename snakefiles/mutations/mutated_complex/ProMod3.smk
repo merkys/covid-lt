@@ -2,9 +2,9 @@ rule mutated_complex:
     input:
         "{pdbid}.pdb"
     output:
-        pdb = "{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
+        pdb = "promod/{pdbid}_{mutation}_{partner1}_{partner2}.pdb"
     log:
-        "{pdbid}_{mutation}_{partner1}_{partner2}.log"
+        "promod/{pdbid}_{mutation}_{partner1}_{partner2}.log"
     singularity:
         "containers/promod3.sif"
     shell:
@@ -19,9 +19,9 @@ rule wild_type:
     input:
         "{pdbid}.pdb"
     output:
-        pdb = "{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
+        pdb = "promod/{pdbid}_{mutation}_{partner1}_{partner2}_wt.pdb"
     log:
-        "{pdbid}_{mutation}_{partner1}_{partner2}_wt.log"
+        "promod/{pdbid}_{mutation}_{partner1}_{partner2}_wt.log"
     singularity:
         "containers/promod3.sif"
     shell:
