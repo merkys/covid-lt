@@ -41,7 +41,8 @@ rule complex_faspr:
         "containers/faspr.sif"
     shell:
         """
-        FASPR -i {input} -o {output} || echo -n > {output}
+        echo -n > {output}
+        FASPR -i {input} -o {output}
         """
 
 rule complex_pdb2pqr:
