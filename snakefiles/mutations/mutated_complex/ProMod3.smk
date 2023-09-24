@@ -31,3 +31,15 @@ rule wild_type:
                 | PYTHONPATH=. bin/promod-fix-pdb --simulate > {output.pdb} || echo -n > {output.pdb}
         ) 2> {log}
         """
+
+rule complex_faspr:
+    input:
+        "promod/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        "faspr/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    singularity:
+        "containers/faspr.sif"
+    shell:
+        """
+        FASPR -i {input} -o {output} || echo -n > {output}
+        """
