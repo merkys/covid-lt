@@ -54,5 +54,5 @@ rule complex_pdb2pqr:
         "containers/pdb2pqr.sif"
     shell:
         """
-        pdb2pqr --drop-water --include-header {input} {output.pqr} --pdb-output {output.pdb} &> {log}
+        pdb2pqr --drop-water --include-header {input} {output.pqr} --pdb-output {output.pdb}
         """
