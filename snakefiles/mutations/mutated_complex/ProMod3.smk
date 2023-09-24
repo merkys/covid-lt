@@ -43,3 +43,16 @@ rule complex_faspr:
         """
         FASPR -i {input} -o {output} || echo -n > {output}
         """
+
+rule complex_pdb2pqr:
+    input:
+        "faspr/{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb"
+    output:
+        pdb = "{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pdb",
+        pqr = "{pdbid}_{mutation}_{partner1}_{partner2}{maybe_wt}.pqr"
+    singularity:
+        "containers/pdb2pqr.sif"
+    shell:
+        """
+        pdb2pqr --drop-water --include-header {input} {output.pqr} --pdb-output {output.pdb} &> {log}
+        """
