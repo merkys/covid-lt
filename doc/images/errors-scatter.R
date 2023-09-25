@@ -41,3 +41,5 @@ fit = lm( merged[,2] ~ merged[,3] )
 
 abline( fit, col = 'red' )
 abline( diagonal, col='black' )
+
+legend( 'bottomright', c( 'y = x', 'trend' ), col = c( 'black', 'red' ), lty = c( 1, 1 ) )
