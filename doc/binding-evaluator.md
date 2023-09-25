@@ -6,13 +6,13 @@ For the simulation, heavy atom positions were restrained using harmonic restrain
 
 The following terms were calculated for every pair of mutated/wild type complexes:
 
-* ddG_EvoEF is the binding interaction score of a protein-protein complex as calculated by EvoEF [https://pubmed.ncbi.nlm.nih.gov/30851277/].
+* ddG_EvoEF is the binding interaction score of a protein-protein complex as calculated by EvoEF (Git commit 6bce56d) [https://pubmed.ncbi.nlm.nih.gov/30851277/].
 
 * SA_part and SA_com are surface accessible areas (in Å^2) of the mutated residues in the original wild type complex structures as calculated by DSSP v4.2.2 [doi:10.1093/nar/gkq1105].
   SA_part is calculated from the isolated chain while SA_com is calculated from the whole complex.
   For multiple mutations, areas of the mutated residues are summed.
 
-* PotentialEnergy, HarmonicBondForce, PeriodicTorsionForce, CustomTorsionForce, CMAPTorsionForce, LJForce, LennardJones, CMMotionRemover, HarmonicAngleForce, LennardJones14, CustomGBForce and CoulombForce are differences of force terms (in kcal/mol) calculated by OpenMM v7.5.1 using CHARMM36 forcefield with GBN2 implicit solvent on optimized structures.
+* PotentialEnergy, HarmonicBondForce, PeriodicTorsionForce, CustomTorsionForce, CMAPTorsionForce, LJForce, LennardJones, CMMotionRemover, HarmonicAngleForce, LennardJones14, CustomGBForce and CoulombForce are differences of force terms (in kcal/mol) calculated by OpenMM using CHARMM36 forcefield with GBN2 implicit solvent on optimized structures.
   All force terms are calculated by OpenMM, with NonbondedForce being split into LJForce and CoulombForce.
   Differences of force terms are calculated by subtracting wild type complex forces from the mutated complex forces.
 
@@ -24,16 +24,16 @@ We have as well tested the following terms, but they were not included in the fi
 * Global contact score and the difference in contact areas as calculated by voronota-cadscore from Voronota v1.22.3149 software package [doi:10.1002/jcc.23538] from the optimized complexes.
   Difference in contact area is calculated by subtracting wild type complex area from the mutated complex contact area.
 
-* Binding interaction score of a protein-protein complex as calculated by EvoEF2 [doi:10.1093/bioinformatics/btz740].
+* Binding interaction score of a protein-protein complex as calculated by EvoEF2 (Git commit 38df01d) [doi:10.1093/bioinformatics/btz740].
   As EvoEF2 algorithm differs from its predecessor EvoEF, it was interesting to compare both.
-  We have found out that ddG_EvoEF brought larger increase of prediction accuracy than EvoEF1.
+  We have found out that ddG_EvoEF brought larger increase of prediction accuracy than EvoEF2.
 
 * Difference of corrected reaction field energies computed by subtracting wild type complex energies from the mutated complex energies calculated by DelPhi v8.5.0 [doi:10.1002/jcc.26006].
   Calculations were ran for 800 of non-linear iterations and the suggested convergence threshold value 0.0001 for maximum change of potential was used.
 
 * Difference in predicted binding affinity as calculated by PRODIGY v2.1.2 [doi:10.21769/BioProtoc.2124] calculated between the contacting partners in optimized wild type and mutated complexes.
 
-* ddG for the mutation in question as calculated by UEP [https://github.com/pepamengual/UEP] from the optimized wild type complex.
+* ddG for the mutation in question as calculated by UEP (Git commit 7a7475e) [https://github.com/pepamengual/UEP] from the optimized wild type complex.
 
 * Conditional log-likelihood score for mutated sequences against their wild type counterparts as calculated by Evolutionary Scale Modeling v2.0.0 [doi:10.1101/622803].
 
