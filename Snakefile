@@ -12,6 +12,7 @@ wildcard_constraints:
     search = "[^/]+"
 
 include: "snakefiles/dG-datasets.smk"
+include: "snakefiles/documentation.smk"
 include: "snakefiles/forcefields.smk"
 include: "snakefiles/mutations.smk"
 include: "snakefiles/pdb-model-quality.smk"
@@ -40,7 +41,7 @@ rule svg_to_png:
     singularity:
         "containers/inkscape.sif"
     shell:
-        "inkscape --export-type png {input}"
+        "inkscape --without-gui {input} --export-dpi 300 --export-png {output}"
 
 rule pdb_seqres_fa:
     output:
