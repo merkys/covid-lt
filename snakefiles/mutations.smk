@@ -727,9 +727,9 @@ rule mutation_model_mutabind2:
     input:
         "train-dataset-skempi.tab"
     output:
-        "binding-evaluator-model-skempi.RData"
+        "binding-evaluator-model-mutabind2.RData"
     log:
-        "binding-evaluator-model-skempi.log"
+        "binding-evaluator-model-mutabind2.log"
     singularity:
         "containers/r-cran.sif"
     shell:
