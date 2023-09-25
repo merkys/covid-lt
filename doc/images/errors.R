@@ -32,4 +32,12 @@ svg( '/dev/stdout' )
 plot( merged[,3], merged[,2], pch='x',
       xlab = 'ddG errors of model trained on MutaBind2 terms',
       ylab = 'ddG errors of model trained on our terms' )
-lines( c( -1.5, 2 ), c( -1.5, 2 ) )
+
+x = c( 1, 2, 3 )
+y = c( 1, 2, 3 )
+
+diagonal = lm( y ~ x )
+fit = lm( merged[,2] ~ merged[,3] )
+
+abline( fit, col = 'red' )
+abline( diagonal, col='black' )
