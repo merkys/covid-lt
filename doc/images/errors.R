@@ -1,0 +1,35 @@
+#!/usr/bin/Rscript --vanilla
+
+library( 'randomForest' )
+
+errors = list()
+
+for (method in c( 'our', 'mutabind2' )) {
+    D = read.csv( paste( 'train-dataset-', method, '.tab', sep='' ), sep="\t", quote='' )
+    train_size = round( length(D[,1]) * 0.8 )
+
+    set.seed( 1410 )
+    
+    is_train = logical( length(D[,1]) )
+    is_train[1:train_size] = TRUE
+    is_train = sample( is_train )
+
+    train = D[ is_train, 2:length(D)]
+    test  = D[!is_train, 2:length(D)]
+
+    names(train) = names(D)[2:length(D)]
+    names(test)  = names(D)[2:length(D)]
+
+    load( paste( 'binding-evaluator-model-', method, '.RData', sep='' ) )
+    P = predict(model, newdata=test)
+    errors[[method]] = data.frame( mutation = D[!is_train,1], error = P - test$ddG )
+}
+
+merged = merge( errors[['our']], errors[['mutabind2']], by='mutation' )
+names(merged) <- c( 'mutation', 'our', 'mutabind2' )
+
+svg( '/dev/stdout' )
+plot( merged[,3], merged[,2], pch='x',
+      xlab = 'ddG errors of model trained on MutaBind2 terms',
+      ylab = 'ddG errors of model trained on our terms' )
+lines( c( -1.5, 2 ), c( -1.5, 2 ) )
