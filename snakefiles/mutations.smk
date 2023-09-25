@@ -714,6 +714,8 @@ rule mutation_model:
         "binding-evaluator-model.RData"
     log:
         "binding-evaluator-model.log"
+    singularity:
+        "containers/r-cran.sif"
     shell:
         """
         bin/multijoin {input} \
