@@ -312,38 +312,28 @@ rule side_by_side:
 
 rule train_dataset_our:
     input:
-        vdw = "vdw.tab",
-        solv = "solv.tab",
-        fold = "fold.tab",
-        sa_part = "sa_part.tab",
-        sa_com = "sa_com.tab",
-        N_wt_cont = "N_wt_cont.tab",
-        skempi = "externals/mutabind2-data/SkempiS.txt"
+        "train-dataset-mutabind2.tab",
+        "binding_energy_EvoEF.tab",
+        "sa_com.tab",
+        "sa_part.tab",
+        "openmm.tab",
+        "provean.tab"
     output:
         "train-dataset-our.tab"
     shell:
         """
-        join {input.vdw} {input.solv} | join - <(sed 's/_[^_]\+\t/\t/' {input.fold}) | join - {input.sa_part} | join - {input.sa_com} | join - <(sed 's/_[^_]\+\t/\t/' {input.N_wt_cont} | sort) | sed 's/ /\t/g' > {output}
-
-        grep forward {input.skempi} \
-            | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $7}}' \
-            | sort \
-            | join {output} - \
-            | cat <(echo mutation vdw solv fold sa_part sa_com cont ddG) - \
-            | sed 's/ /\t/g' \
-            | sponge {output}
+        bin/multijoin {input} | cut -f 1,9- > {output}
         """
 
-rule train_data_skempi:
+rule train_data_mutabind2:
     input:
-        skempi = "externals/mutabind2-data/SkempiS.txt"
+        "externals/mutabind2-data/SkempiS.txt"
     output:
         "train-dataset-mutabind2.tab"
     shell:
         """
         echo mutation vdw solv fold sa_part sa_com cs cont ddG | sed 's/ /\t/g' > {output}
-
-        grep forward {input.skempi} \
+        grep forward {input} \
             | awk '{{print $1 "_" substr($5,1,1) substr($4,1,1) substr($5,2) "\t" $13 "\t" $14 "\t" $15 "\t" $16 "\t" $17 "\t" $18 "\t" $19 "\t" $7}}' \
             | sed 's/\r//g' \
             | sort >> {output}
