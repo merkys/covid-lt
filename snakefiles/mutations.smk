@@ -692,34 +692,13 @@ rule provean_nr:
         )
         """
 
-rule mutation_model_our:
+rule mutation_model:
     input:
-        "train-dataset-mutabind2.tab",
-        "binding_energy_EvoEF.tab",
-        "sa_com.tab",
-        "sa_part.tab",
-        "openmm.tab",
-        "provean.tab"
+        "train-dataset-{method}.tab"
     output:
-        "binding-evaluator-model-our.RData"
+        "binding-evaluator-model-{method}.RData"
     log:
-        "binding-evaluator-model-our.log"
-    singularity:
-        "containers/r-cran.sif"
-    shell:
-        """
-        bin/multijoin {input} \
-            | cut -f 1,9- \
-            | bin/random-forest /dev/stdin --repeat 100 --seed 1410 --output-model {output} > {log} 2>&1
-        """
-
-rule mutation_model_mutabind2:
-    input:
-        "train-dataset-mutabind2.tab"
-    output:
-        "binding-evaluator-model-mutabind2.RData"
-    log:
-        "binding-evaluator-model-mutabind2.log"
+        "binding-evaluator-model-{method}.log"
     singularity:
         "containers/r-cran.sif"
     shell:
