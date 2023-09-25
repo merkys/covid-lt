@@ -65,6 +65,6 @@ For input we have used the data points which our method was capable to handle.
 Using random 80% data points for training and 20% for testing we have achieved RMSE of 1.17 kcal/mol for single mutations (compared to the reported RMSE of 1.19 kcal/mol).
 This finding helped us by confirming our approach to training methodology.
 
-The designed approach has lead to a random forest model with prediction power very close to MutaBind2 models.
+The designed approach has lead to a random forest model with prediction power similar to MutaBind2 models.
 This finding proves that it is possible to produce similarly precise predictor with terms calculated solely from free and open-access software.
-Even higher precision can possibly be achieved by tweaking the term calculation details or introducing additional ones.
+Even higher precision can possibly be achieved by tweaking the term calculation details, introducing additional ones or replacing random forest with a different approach.
