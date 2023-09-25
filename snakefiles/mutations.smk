@@ -702,7 +702,7 @@ rule provean_nr:
         )
         """
 
-rule mutation_model:
+rule mutation_model_our:
     input:
         "train-dataset-skempi.tab",
         "binding_energy_EvoEF.tab",
@@ -711,9 +711,9 @@ rule mutation_model:
         "openmm.tab",
         "provean.tab"
     output:
-        "binding-evaluator-model.RData"
+        "binding-evaluator-model-our.RData"
     log:
-        "binding-evaluator-model.log"
+        "binding-evaluator-model-our.log"
     singularity:
         "containers/r-cran.sif"
     shell:
@@ -721,4 +721,18 @@ rule mutation_model:
         bin/multijoin {input} \
             | cut -f 1,9- \
             | bin/random-forest /dev/stdin --repeat 100 --seed 1410 --output-model {output} > {log} 2>&1
+        """
+
+rule mutation_model_mutabind2:
+    input:
+        "train-dataset-skempi.tab"
+    output:
+        "binding-evaluator-model-skempi.RData"
+    log:
+        "binding-evaluator-model-skempi.log"
+    singularity:
+        "containers/r-cran.sif"
+    shell:
+        """
+        bin/random-forest {input} --repeat 100 --seed 1410 --output-model {output} > {log} 2>&1
         """
