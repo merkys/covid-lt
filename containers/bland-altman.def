@@ -1,0 +1,8 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes r-base-core r-cran-randomforest
+
+    echo 'install.packages( "BlandAltmanLeh" )' | Rscript -
