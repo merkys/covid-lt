@@ -720,5 +720,5 @@ rule mutation_model:
         """
         bin/multijoin {input} \
             | cut -f 1,9- \
-            | bin/random-forest /dev/stdin --repeat 100 --seed 1918 --output-model {output} > {log} 2>&1
+            | bin/random-forest /dev/stdin --repeat 100 --seed 1410 --output-model {output} > {log} 2>&1
         """
