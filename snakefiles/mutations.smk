@@ -338,7 +338,7 @@ rule train_data_skempi:
     input:
         skempi = "externals/mutabind2-data/SkempiS.txt"
     output:
-        "train-dataset-skempi.tab"
+        "train-dataset-mutabind2.tab"
     shell:
         """
         echo mutation vdw solv fold sa_part sa_com cs cont ddG | sed 's/ /\t/g' > {output}
@@ -704,7 +704,7 @@ rule provean_nr:
 
 rule mutation_model_our:
     input:
-        "train-dataset-skempi.tab",
+        "train-dataset-mutabind2.tab",
         "binding_energy_EvoEF.tab",
         "sa_com.tab",
         "sa_part.tab",
@@ -725,7 +725,7 @@ rule mutation_model_our:
 
 rule mutation_model_mutabind2:
     input:
-        "train-dataset-skempi.tab"
+        "train-dataset-mutabind2.tab"
     output:
         "binding-evaluator-model-mutabind2.RData"
     log:
