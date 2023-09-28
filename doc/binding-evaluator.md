@@ -54,17 +54,17 @@ To train our model we have taken the definition of each mutation (PDB ID, contac
 For every mutation we have computed all the aforementioned terms and trained a random forest estimator using R package randomForest v4.7-1.1 [https://cran.r-project.org/web/packages/randomForest/index.html].
 We have used 80% of data for training and the remaining 20% for testing.
 Data points have been partitioned into these two sets randomly.
-Training procedure was performed 100 times and the best model has been selected based on RMSE, achieving RMSE of 1.02 kcal/mol.
+Training procedure was performed 100 times and the best model has been selected based on ddG RMSE, achieving RMSE of 1.02 kcal/mol.
 
 MutaBind2 dataset contains 4191 data points, out of which 3310 describe forward mutations.
 Of these, our method was able to derive abovementioned terms for 2871 input data points.
 The remaining one fifth of input data points could not be processed mostly due to problems with input PDB files.
 
-We have as well faithfully reproduced MutaBind2's model by training a random forest model on a subset from MutaBind2 data sheet.
-For input we have used the data points which our method was capable to handle.
-Using random 80% data points for training and 20% for testing we have achieved average RMSE of 1.2 kcal/mol for single mutations (compared to the reported RMSE of 1.19 kcal/mol).
+We have as well trained a random forest estimator using the MutaBind2 terms as provided in the MutaBind2 data sheet for single forward mutations.
+We have used the same training and testing methodology as for our model.
+The best model achieved ddG RMSE of 1.03 kcal/mol which is very close to our model, as well as in a close agreement with the reported MutaBind2 RMSE of 1.19 kcal/mol for single mutations.
 This finding helped us by confirming our approach to training methodology.
 
-The designed approach has lead to a random forest model with prediction power similar to MutaBind2 models.
-This finding proves that it is possible to produce similarly precise predictor with terms calculated solely from free and open-access software.
-Even higher precision can possibly be achieved by tweaking the term calculation details, introducing additional ones or replacing random forest with a different approach.
+The designed approach has lead to a random forest model with prediction power similar to the MutaBind2 model.
+This finding proves that it is possible to produce similarly precise predictor with terms calculated solely using free and open-access software.
+Even higher precision can possibly be achieved by adjusting the term calculation parameters, introducing additional terms or replacing random forest with a different machine learning approach.
