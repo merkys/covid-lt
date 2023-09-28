@@ -25,21 +25,26 @@ for (method in c( 'our', 'mutabind2' )) {
     values[[method]] = data.frame( mutation = D[!is_train,1], value = P )
 }
 
-merged = merge( values[['our']], values[['mutabind2']], by='mutation' )
-names(merged) <- c( 'mutation', 'our', 'mutabind2' )
+D = read.csv( 'train-dataset-mutabind2.tab', sep="\t", quote='' )
+experimental = data.frame( mutation = D$mutation, ddG = D$ddG )
 
-svg( '/dev/stdout' )
-plot( merged[,3], merged[,2], pch='x',
-      xlab = 'ddG values of model trained on MutaBind2 terms',
-      ylab = 'ddG values of model trained on our terms' )
+merged = merge( merge( values[['our']], values[['mutabind2']], by='mutation' ), experimental, by='mutation' )
+names(merged) <- c( 'mutation', 'our', 'mutabind2', 'experimental' )
 
 x = c( 1, 2, 3 )
 y = c( 1, 2, 3 )
 
 diagonal = lm( y ~ x )
-fit = lm( merged[,2] ~ merged[,3] )
 
-abline( fit, col = 'red' )
-abline( diagonal, col='black' )
+svg( '/dev/stdout' )
 
-legend( 'bottomright', c( 'y = x', 'trend' ), col = c( 'black', 'red' ), lty = c( 1, 1 ) )
+par( mfrow = c( 3, 3 ) )
+for (i in 2:4) {
+    for (j in 2:4) {
+        plot( merged[,j], merged[,i], xlab = names(merged)[j], ylab = names(merged)[i], pch = 'x' )
+
+        fit = lm( merged[,i] ~ merged[,j] )
+        abline( fit, col = 'red' )
+        abline( diagonal, col='black' )
+    }
+}
