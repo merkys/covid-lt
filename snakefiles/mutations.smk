@@ -188,10 +188,10 @@ rule binding_energy_EvoEF2:
 
 rule dssp_com_all:
     output:
-        "sa_{type}.tab"
+        "SA_{type}.tab"
     shell:
         """
-        echo -e "mutation\tsa_{wildcards.type}" > {output}
+        echo -e "mutation\tSA_{wildcards.type}" > {output}
         ls -1 dssp/ \
             | grep '.{wildcards.type}$' \
             | xargs -i basename {{}} .{wildcards.type} \
@@ -314,8 +314,8 @@ rule train_dataset_our:
     input:
         "train-dataset-mutabind2.tab",
         "binding_energy_EvoEF.tab",
-        "sa_com.tab",
-        "sa_part.tab",
+        "SA_com.tab",
+        "SA_part.tab",
         "openmm.tab",
         "provean.tab"
     output:
