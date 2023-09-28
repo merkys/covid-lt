@@ -10,7 +10,6 @@ The following terms were calculated for every pair of mutated/wild type complexe
 
 * SA_part and SA_com are surface accessible areas (in Å^2) of the mutated residues in the original wild type complex structures as calculated by DSSP v4.2.2 [doi:10.1093/nar/gkq1105].
   SA_part is calculated from the isolated chain while SA_com is calculated from the whole complex.
-  For multiple mutations, areas of the mutated residues are summed.
 
 * PotentialEnergy, HarmonicBondForce, PeriodicTorsionForce, CustomTorsionForce, CMAPTorsionForce, LJForce, LennardJones, CMMotionRemover, HarmonicAngleForce, LennardJones14, CustomGBForce and CoulombForce are differences of force terms (in kcal/mol) calculated by OpenMM using CHARMM36 forcefield with GBN2 implicit solvent on optimized structures.
   All force terms are calculated by OpenMM, with NonbondedForce being split into LJForce and CoulombForce.
