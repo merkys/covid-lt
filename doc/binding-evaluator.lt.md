@@ -16,7 +16,7 @@ Kiekvienai mutuotos bei laukinio tipo struktūros porai buvo paskaičiuoti šie 
   Dedamųjų skirtumai gaunami atimant laukinio tipo kompleksų jėgas iš mutuotųjų kompleksų jėgų.
 
 * CS yra evoliucinio konservatyvumo įverčio pokytis atsižvelgiant į mutacijas, suskaičiuotas naudojant PROVEAN v1.1.5 programinės įrangos paketą [https://pubmed.ncbi.nlm.nih.gov/23056405/].
-  Skaičiavimams naudota 2011 m. rugpjūčio mėnesio NR duomenų bazės laida, priteinama PROVEAN FTP serveryje, nes naujesnės NR laidos nėra suderinamos su PROVEAN.
+  Skaičiavimams naudota 2011 m. rugpjūčio mėnesio NR duomenų bazės laida, prieinama PROVEAN FTP serveryje, nes naujesnės NR laidos nėra suderinamos su PROVEAN.
 
 Taip pat suskaičiavome ir išbandėme žemiau pateiktus parametrus, tačiau jų neįtraukėme į galutinio modelio apmokymą, nes tarpiniams modeliams jie neturėjo pakankamai reikšmingos įtakos:
 
@@ -40,7 +40,7 @@ Taip pat suskaičiavome ir išbandėme žemiau pateiktus parametrus, tačiau jų
 
 * Polinės solvatacijos energija, suskaičiuota APBS v3.4.1 [doi:10.1002/pro.3280].
   Solvatacijos energija šiuo atveju atitinka mutuoto ir laukinio tipo kompleksų energijų tirpale skirtumą.
-  Skaičiavimams naudotas mg-auto APBS režimas, spendžiantis tiesinę Puasonon-Bolcmano lygtį 161 × 161 × 161 gardelėje.
+  Skaičiavimams naudotas mg-auto APBS režimas, spendžiantis tiesinę Puasono-Bolcmano lygtį 161 × 161 × 161 gardelėje.
   Kompleksams PDB formate paversti į PQR formatą naudotas PDB2PQR v3.5.2 įrankis [doi:10.1093/nar/gkm276].
 
 * Potencinių energijų skirtumas, suskaičiuotas naudojant CHARMM v47b1 įrankio [doi:10.1002/jcc.21287] GBorn posistemę su CHARMM36 jėgų lauku.
