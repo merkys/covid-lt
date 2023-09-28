@@ -48,22 +48,23 @@ Taip pat suskaičiavome ir išbandėme žemiau pateiktus parametrus, tačiau jų
 * Sąveikaujančių aminorūgščių skaičius laukinio tipo komplekse.
   Šis skaičius apibrėžtas kaip skaičius mutuotosios grandinės aminorūgščių, kurių sunkiųjų atomų atstumas iki kitos grandinės sunkiųjų atomų neviršija 10 Å.
 
-To train and compare our approach to MutaBind2 [doi:10.1016/j.isci.2020.100939], we have taken all forward single mutation data from MutaBind2 data sheet [https://github.com/mutabind-group/MutaBindv2.0], Git commit 1654c87, with their experimental ddG values (column named 'DDGexp').
-To train our model we have taken the definition of each mutation (PDB ID, contacting partners in a complex, location of the mutation) as well as the associated ddG value.
-For every mutation we have computed all the aforementioned terms and trained a random forest estimator using R package randomForest v4.7-1.1 [https://cran.r-project.org/web/packages/randomForest/index.html].
-We have used 80% of data for training and the remaining 20% for testing.
-Data points have been partitioned into these two sets randomly.
-Training procedure was performed 100 times and the best model has been selected based on ddG RMSE, achieving RMSE of 1.02 kcal/mol.
+Savo modelio apmokymui bei palyginimui su MutaBind2 [doi:10.1016/j.isci.2020.100939] paėmėme visų taškinių mutacijų duomenis iš MutaBind2 duomenų lentelės [https://github.com/mutabind-group/MutaBindv2.0], Git įkėlimas 1654c87, kartu su jų eksperimentinėmis ddG vertėmis ('DDGexp' stulpelis).
+Savo modelio apmokymui panaudojome kiekvienos mutacijos aprašą (PDB ID, sąveikaujančios komplekso grandinės, mutacijos vieta) bei susijusi ddG vertė.
+Kiekvienai mutacijai buvo apskaičiuoti visi aukščiau minėti parametrai ir apmokytas atsitiktinio miško (angl. random forest) modelis panaudojant R paketą randomForest v4.7-1.1 [https://cran.r-project.org/web/packages/randomForest/index.html].
+80 % duomenų buvo naudojama apmokymui, o likusi 20 % – testavimui.
+Į šias dvi grupes duomenys buvo padalinti atsitiktinai.
+Apmokymo procedūra buvo atlikta 100 kartų, geriausias modelis pasirinktas pagal ddG RMSE, pasiekdamas RMSE 1,02 kcal/mol.
 
-MutaBind2 dataset contains 4191 data points, out of which 3310 describe forward mutations.
-Of these, our method was able to derive abovementioned terms for 2871 input data points.
-The remaining one fifth of input data points could not be processed mostly due to problems with input PDB files.
+MutaBind2 duomenų rinkinys aprašo 4191 mutacijas, iš kurių 3310 aprašo tiesiogines taškines mutacijas (kitos mutacijos yra arba atvirkštinės, arba daugybinės).
+Iš šių mutacijų aukščiau minėtus parametrus apskaičiavome 2871 mutacijai.
+Likusios įvesties duomenų dalies nepavyko apdoroti, daugiausia dėl problemų su įvesties PDB failais.
 
-We have as well trained a random forest estimator using the MutaBind2 terms as provided in the MutaBind2 data sheet for single forward mutations.
-We have used the same training and testing methodology as for our model.
-The best model achieved ddG RMSE of 1.03 kcal/mol which is very close to our model, as well as in a close agreement with the reported MutaBind2 RMSE of 1.19 kcal/mol for single mutations.
-This finding helped us by confirming our approach to training methodology.
+Taip pat apmokėme atsitiktinio miško modelį panaudodami MutaBind2 parametrus, pateiktus MutaBind2 duomenų lentelėje tiesioginėms taškinėms mutacijoms.
+Apmokymui panaudojome tą pačią aukščiau aprašytą apmokymo ir testavimo metodiką.
+Geriausias modelis pasiekė ddG RMSE 1,03 kcal/mol tikslumą, labai artimą mūsų apmokytam modeliui.
+Šis tikslumo įvertis taip pat artimas MutaBind2 publikacijoje nurodytam taškinių mutacijų įverčių RMSE 1,19 kcal/mol.
+Šis rezultatas patvirtino mūsų apmokymo metodikos tinkamumą.
 
-The designed approach has lead to a random forest model with prediction power similar to the MutaBind2 model.
-This finding proves that it is possible to produce similarly precise predictor with terms calculated solely using free and open-access software.
-Even higher precision can possibly be achieved by adjusting the term calculation parameters, introducing additional terms or replacing random forest with a different machine learning approach.
+Sukurtas metodas leido apmokyti atsitiktinio miško modelį, kurio prognozavimo tikslumas yra palyginamas su MutaBind2 modeliu.
+Šis rezultatas rodo, kad įmanoma sukurti panašaus prognozavimo tikslumo modelį panaudojant parametrus, apskaičiuotus naudojant tik laisvąją programinę įrangą.
+Didesnį tikslumą galima pasiekti koreguojant parametrų skaičiavimo būdus, įtraukiant papildomus parametrus ar keičiant atsitiktinio miško modelį kitu mašininio mokymosi metodu.
