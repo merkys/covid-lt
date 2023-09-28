@@ -57,7 +57,7 @@ Training procedure was performed 100 times and the best model has been selected 
 
 MutaBind2 dataset contains 4191 data points, out of which 3310 describe forward mutations.
 Of these, our method was able to derive abovementioned terms for 2871 input data points.
-The remaining one fifth of input data points could not be processed mostly due to problems with input PDB files.
+The remaining input data points could not be processed mostly due to problems with input PDB files.
 
 We have as well trained a random forest estimator using the MutaBind2 terms as provided in the MutaBind2 data sheet for single forward mutations.
 We have used the same training and testing methodology as for our model.
