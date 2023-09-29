@@ -634,7 +634,7 @@ rule chain_seqres:
         """
         bin/pdb_select --chain {wildcards.chain} {input} \
             | PYTHONPATH=. bin/pdb_atom2fasta --replace-unknown-with X --with-initial-gaps \
-            | sed 's/-/X/g' > {output}
+            | tr - X > {output}
         """
 
 rule provean:
