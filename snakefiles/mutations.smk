@@ -633,8 +633,7 @@ rule chain_seqres:
     shell:
         """
         bin/pdb_select --chain {wildcards.chain} {input} \
-            | PYTHONPATH=. bin/pdb_atom2fasta --replace-unknown-with X --with-initial-gaps \
-            | sed 's/-/X/g' > {output}
+            | PYTHONPATH=. bin/pdb_seqres2fasta > {output}
         """
 
 rule provean:
