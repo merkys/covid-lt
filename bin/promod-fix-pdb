@@ -18,6 +18,7 @@ parser.add_argument('--do-not-fill-gaps', action='store_true', help='Do not fill
 parser.add_argument('--simulate', action='store_true', help='Perform a simulation on resulting model')
 parser.add_argument('--forcefield', help='Specify the forcefield ("AMBER" by default)', choices=['AMBER', 'CHARMM'], default='AMBER')
 parser.add_argument('--replace', action='append', help='Perform mutation (replacement), may be multiple', default=[])
+parser.add_argument('--output-sequence-only', action='store_true', help='Do not perform the modeling, only output the sequence used for modeling')
 args = parser.parse_args()
 
 file = None
@@ -95,6 +96,10 @@ for chain in PDBFile(file):
         structure = structure[start:end]
         sequence = sequence[start:end]
 
+    if args.output_sequence_only:
+        print('>', chain.name)
+        print(sequence)
+
     alignment = seq.CreateAlignment(seq.CreateSequence('trg_' + chain.name, str(sequence)),
                                     seq.CreateSequence('tpl_' + chain.name, str(structure)))
 
@@ -105,6 +110,9 @@ for chain in PDBFile(file):
             view.RemoveChain(ch)
     alignment.AttachView(1, view)
     alignments.append(alignment)
+
+if args.output_sequence_only:
+    sys.exit()
 
 if not args.do_not_fill_gaps:
     handle = modelling.BuildRawModel(alignments)
