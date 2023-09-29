@@ -147,7 +147,7 @@ rule binding_energy_EvoEF:
                     EvoEF --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $MUTATED
                     EvoEF --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $WT
                 ) \
-                    | grep ^Total \
+                    | grep -P '^Total\s+=' \
                     | xargs \
                     | awk '{{print "'$MUT'\t" $3 - $6}}'
               done | sort -k 1b,1 >> {output}
@@ -180,7 +180,7 @@ rule binding_energy_EvoEF2:
                     EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $MUTATED
                     EvoEF2 --command ComputeBinding --split $(echo $BASE | cut -d _ -f 3-4 | sed 's/_/,/g') --pdb $WT
                 ) \
-                    | grep ^Total \
+                    | grep -P '^Total\s+=' \
                     | xargs \
                     | awk '{{print "'$MUT'\t" $3 - $6}}'
               done | sort -k 1b,1 >> {output}
