@@ -53,7 +53,7 @@ To train our model we have taken the definition of each mutation (PDB ID, contac
 For every mutation we have computed all the aforementioned terms and trained a random forest estimator using R package randomForest v4.7-1.1 [https://cran.r-project.org/web/packages/randomForest/index.html].
 We have used 80% of data for training and the remaining 20% for testing.
 Data points have been partitioned into these two sets randomly.
-Training procedure was performed 100 times and the best model has been selected based on the root of mean of squared errors (RMSE) of ddG, achieving RMSE of ddG of 1.05 kcal/mol.
+Training procedure was performed 100 times and the best model has been selected based on the root of mean of squared errors (RMSE) of ddG, achieving RMSE of ddG of 1.09 kcal/mol.
 
 MutaBind2 dataset contains 4191 data points, out of which 3310 describe forward mutations.
 Of these, our method was able to derive abovementioned terms for 2871 input data points.
