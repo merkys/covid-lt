@@ -53,7 +53,7 @@ Savo modelio apmokymui panaudojome kiekvienos mutacijos aprašą (PDB ID, sąvei
 Kiekvienai mutacijai buvo apskaičiuoti visi aukščiau minėti parametrai ir apmokytas atsitiktinio miško (angl. random forest) modelis panaudojant R paketą randomForest v4.7-1.1 [https://cran.r-project.org/web/packages/randomForest/index.html].
 80 % duomenų buvo naudojama apmokymui, o likusi 20 % – testavimui.
 Į šias dvi grupes duomenys buvo padalinti atsitiktinai.
-Apmokymo procedūra buvo atlikta 100 kartų, geriausias modelis pasirinktas pagal ddG klaidų kvadratų vidurkio šaknį (RMSE), pasiekdamas RMSE 1,02 kcal/mol.
+Apmokymo procedūra buvo atlikta 100 kartų, geriausias modelis pasirinktas pagal ddG klaidų kvadratų vidurkio šaknį (RMSE), pasiekdamas RMSE 1,05 kcal/mol.
 
 MutaBind2 duomenų rinkinys aprašo 4191 mutacijas, iš kurių 3310 aprašo tiesiogines taškines mutacijas (kitos mutacijos yra arba atvirkštinės, arba daugybinės).
 Iš šių mutacijų aukščiau minėtus parametrus apskaičiavome 2871 mutacijai.
@@ -61,7 +61,7 @@ Likusios įvesties duomenų dalies nepavyko apdoroti, daugiausia dėl problemų 
 
 Taip pat apmokėme atsitiktinio miško modelį panaudodami MutaBind2 parametrus, pateiktus MutaBind2 duomenų lentelėje tiesioginėms taškinėms mutacijoms.
 Apmokymui panaudojome tą pačią aukščiau aprašytą apmokymo ir testavimo metodiką.
-Geriausias modelis pasiekė ddG RMSE 1,03 kcal/mol tikslumą, labai artimą mūsų apmokytam modeliui.
+Geriausias modelis pasiekė ddG RMSE 1,07 kcal/mol tikslumą, labai artimą mūsų apmokytam modeliui.
 Šis tikslumo įvertis taip pat artimas MutaBind2 publikacijoje nurodytam taškinių mutacijų įverčių RMSE 1,19 kcal/mol.
 Šis rezultatas patvirtino mūsų apmokymo metodikos tinkamumą.
 
