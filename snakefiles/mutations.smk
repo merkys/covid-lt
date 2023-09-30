@@ -408,7 +408,7 @@ rule existing_openmm_energy:
                     | uniq \
                     | while read FORCE
                       do
-                        grep --no-filename ^$FORCE optimized/${{BASE}}.openmm.ener optimized/${{BASE}}_wt.openmm.ener \
+                        grep --no-filename -P "^$FORCE\s" optimized/${{BASE}}.openmm.ener optimized/${{BASE}}_wt.openmm.ener \
                             | cut -f 2 \
                             | xargs \
                             | awk '{{print $1 - $2 - $3 - $4 + $5 + $6}}' \
