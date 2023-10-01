@@ -18,6 +18,7 @@ parser.add_argument('--do-not-fill-gaps', action='store_true', help='Do not fill
 parser.add_argument('--simulate', action='store_true', help='Perform a simulation on resulting model')
 parser.add_argument('--forcefield', help='Specify the forcefield ("AMBER" by default)', choices=['AMBER', 'CHARMM'], default='AMBER')
 parser.add_argument('--replace', action='append', help='Perform mutation (replacement), may be multiple', default=[])
+parser.add_argument('--output-alignment-only', action='store_true', help='Do not perform the modeling, only output the alignment used for modeling')
 parser.add_argument('--output-sequence-only', action='store_true', help='Do not perform the modeling, only output the sequence used for modeling')
 args = parser.parse_args()
 
@@ -95,6 +96,12 @@ for chain in PDBFile(file):
             end = -len(end.group(1))
         structure = structure[start:end]
         sequence = sequence[start:end]
+
+    if args.output_alignment_only:
+        print('>', chain.name + ':sequence')
+        print(sequence)
+        print('>', chain.name + ':structure')
+        print(structure)
 
     if args.output_sequence_only:
         print('>', chain.name)
