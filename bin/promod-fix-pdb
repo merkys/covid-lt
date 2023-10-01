@@ -118,7 +118,7 @@ for chain in PDBFile(file):
     alignment.AttachView(1, view)
     alignments.append(alignment)
 
-if args.output_sequence_only:
+if args.output_alignment_only or args.output_sequence_only:
     sys.exit()
 
 if not args.do_not_fill_gaps:
