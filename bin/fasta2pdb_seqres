@@ -13,4 +13,4 @@ for file in files:
     for chain in SeqIO.parse(file, 'fasta'):
         for line in range(0, ceil(len(chain)/13)):
             residues = [seq3(x).upper() for x in chain[13*line:13*(line+1)]]
-            print('SEQRES', '% 3d' % (line+1), chain.id[-1], '% 4d ' % len(chain), *residues)
+            print('SEQRES', '%3d' % (line+1), chain.id[-1], '%4d ' % len(chain), *residues)
