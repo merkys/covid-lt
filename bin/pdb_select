@@ -104,6 +104,9 @@ for file in files:
             print(line, end='')
             continue
         if chains:
+            if len(line) <= chain_identifiers[keyword][-1]: # This may happer for, for example, TER keyword
+                print(line, end='')
+                continue
             mentioned_chains = set([line[x] for x in chain_identifiers[keyword]])
             if chains.isdisjoint(mentioned_chains):
                 continue
