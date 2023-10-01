@@ -408,7 +408,7 @@ rule existing_openmm_energy:
                     | uniq \
                     | while read FORCE
                       do
-                        grep --no-filename ^$FORCE optimized/${{BASE}}.openmm.ener optimized/${{BASE}}_wt.openmm.ener \
+                        grep --no-filename -P "^$FORCE\s" optimized/${{BASE}}.openmm.ener optimized/${{BASE}}_wt.openmm.ener \
                             | cut -f 2 \
                             | xargs \
                             | awk '{{print $1 - $2 - $3 - $4 + $5 + $6}}' \
@@ -703,5 +703,5 @@ rule mutation_model:
         "containers/r-cran.sif"
     shell:
         """
-        bin/random-forest {input} --repeat 100 --seed 1260 --output-model {output} > {log} 2>&1
+        bin/random-forest {input} --repeat 100 --seed 1410 --output-model {output} > {log} 2>&1
         """
