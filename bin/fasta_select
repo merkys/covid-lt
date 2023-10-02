@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 parser.add_argument('--hmmsearch', help='Specify the output log of hmmsearch for selection')
 parser.add_argument('--pdb-ids', help='Specify comma-separated list of PDB IDs for selection. Currently works only with --hmmsearch option.')
+parser.add_argument('--id', help='Specify FASTA header up to first space symbol')
 parser.add_argument('--min-length', type=int, help='Specify minimum length of a sequence')
 args = parser.parse_args()
 
@@ -53,5 +54,7 @@ for file in files:
         pdb_id = sequence.id[0:4].upper()
         chain = sequence.id[5]
         if selected and (pdb_id not in selected or chain not in selected[pdb_id]):
+            continue
+        if args.id and sequence.id != args.id:
             continue
         SeqIO.write([sequence], sys.stdout, format='fasta')
